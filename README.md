@@ -14,10 +14,16 @@ After attending an event, users can rate it and give feedback for potential futu
 On the other hand, event organizers will be able to report users who didn't attend their gathering.
 
 # Team members
-Elias Mir
-Wesley Nana Davies
-Mathurin Charles Joseph Verclytte
-Fabrice Saucy
-Melvin Malonga-Matouba
-Samuel Olivier Bachmann
+Elias Mir 
+
+Wesley Nana Davies 
+
+Mathurin Charles Joseph Verclytte 
+
+Fabrice Saucy 
+
+Melvin Malonga-Matouba 
+
+Samuel Olivier Bachmann 
+
 Benoit Morawiec
