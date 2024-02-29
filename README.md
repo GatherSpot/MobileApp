@@ -66,10 +66,13 @@ Benoit Morawiec
 
 Why ? 
 - pannels
-- an alternative to instagram, facebook 
+- an alternative to instagram, facebook
+- not sure about the event location ? get navigation info to the event
+- fear of missing out 
 
 Link with SwEnt ? 
-- as the prefered media by the young 
+- as the prefered media by the young
+- a tool box, interactivity
 
 ## Planned features v2
 
