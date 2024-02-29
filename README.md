@@ -1,4 +1,7 @@
 # Software entreprise Project 2024: GatherSpot
+
+# App Blurb
+
 Have you ever wanted to meet people in real life who share your intersts and hobbies? Look no further than the GatherSpot App.
 
 GatherSpot is an android application where we want to make it easy for people to gather and organize events. 
@@ -12,6 +15,26 @@ Users can respond to event organizers through a messaging feature.
 After attending an event, users can rate it and give feedback for potential future participants.
 
 On the other hand, event organizers will be able to report users who didn't attend their gathering.
+
+# App final proposal 
+
+Have you ever wanted to meet people in real life who share your interests and hobbies ? 
+Tired of endless scrolling on instagram or facebook for sparse university life informations ? 
+
+Look no further than the GatherSpot App. Our android application is the centralized media to simplify the event creation and event search process. 
+
+GatherSpot is an alternative to putting event posters on the university walls.  Clubs can publish their comming events directly on GatherSpot and get feedback about the impacted audience. It doesn’t take to be a club to initiate events, any user can register their own public events ranging from a chess game to organizing a giant barbecue.
+
+GatherSpot eases the whole lifecycle of events. It starts with the event idea and registration.  Draft for events can be created offline and published latter when we have internet connection. Events details includes a concise description of the event, the planned gps location, the date, the hour, an activity class and can be accompanied by images. Events can also be assigned with restrictions like a maximal number of participants. 
+
+GatherSpot than provides visibility to events. When published, events appear in the feed of followed event creator. Users see in their feeds, events published only by accounts they follow.  Events are also globaly displayed on an interactive map. They can be filtered by nearby radius, date and activity category so that users can find events based on their taste and availabilities. 
+
+Users can sign up to events, registering their participation. Saved events information are stored in the local cache. Events time can be exported to the calendar. In order to synchronize with the other users, GatherSpot provides a chat for communication. A few minutes to hours before the activity, a notification is send to the participants as a reminder.  Additionally when meeting IRL, the GPS sensor can be used to guide to the meeting spot, with functionnalities like life position sharing. As events information and maps tiles 
+can be saved on the phone, the GPS can be used within the app even without connectivity. 
+
+During the activities users can exchange informations with both QRCode and NFC. NFC will be used as an identity verifier.
+
+GatherSpot inally involves a grading mechanism. On completion, the activity is graded and bad behaviors can be reported.  This includes participant not showing up, as it can be penalizing for some activities like volley ball.Those serves as an historic and is part of a user’s visible profile for future participants. 
 
 # Team members
 Elias Mir 
@@ -27,6 +50,7 @@ Melvin Malonga-Matouba
 Samuel Olivier Bachmann 
 
 Benoit Morawiec
+
 
 ## Planned features v1
 
@@ -61,18 +85,6 @@ Benoit Morawiec
 - - draft events
 - - use of NFC to identify and verify members joining the event
 - - keep track of events date in a calendar that can be accessed in the app without connection
-
-## Pitch
-
-Why ? 
-- pannels
-- an alternative to instagram, facebook
-- not sure about the event location ? get navigation info to the event
-- fear of missing out 
-
-Link with SwEnt ? 
-- as the prefered media by the young
-- a tool box, interactivity
 
 ## Planned features v2
 
