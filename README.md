@@ -27,3 +27,36 @@ Melvin Malonga-Matouba
 Samuel Olivier Bachmann 
 
 Benoit Morawiec
+
+## planned features v1
+
+- event creation
+
+- save event date to the calendar
+
+- follow friends on the app
+
+- notifications :
+- - remind the registered events
+- - friends flollow up
+- - event recommandations
+
+- rating past events 
+
+- filter events by activity types
+- - search by distance radius 
+
+- use of NFC to identify and verify members joining the event   
+
+- share events with ease using a QRcode
+
+- cross referencing events from different social medias
+
+- offline features
+- - 
+
+## planned features v2
+
+- languages selection,
+- - post event description in multiple languages
+- - display the event information in the prefered user language  
