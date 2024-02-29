@@ -59,7 +59,8 @@ Benoit Morawiec
 - offline features
 - - keep most recently lookup activities in the cache
 - - draft events
-- - use of NFC to identify and verify members joining the event 
+- - use of NFC to identify and verify members joining the event
+- - keep track of events date in a calendar that can be accessed in the app without connection
 
 ## planned features v2
 
