@@ -64,11 +64,11 @@ Benoit Morawiec
 
 ## Pitch
 
-why ? 
+Why ? 
 - pannels
 - an alternative to instagram, facebook 
 
-link with SwEnt ? 
+Link with SwEnt ? 
 - as the prefered media by the young 
 
 ## Planned features v2
