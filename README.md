@@ -7,7 +7,7 @@ You can for example create your own event and make it possible for people nearby
 
 Users will be able to locate nearby events on a map and filter them out based on their taste and availability. 
 
-Users(initially thought for EPFL members) will have to authenticate through their academic authentication service (for example tequila). They can respond to event organizers through a messaging feature. 
+Users can respond to event organizers through a messaging feature. 
 
 After attending an event, users can rate it and give feedback for potential future participants.
 
@@ -40,20 +40,26 @@ Benoit Morawiec
 - - remind the registered events
 - - friends flollow up
 - - event recommandations
+ 
+- chat during the event 
+ 
+- be able to register to events 
 
 - rating past events 
 
 - filter events by activity types
-- - search by distance radius 
-
-- use of NFC to identify and verify members joining the event   
+- - search by distance radius
+ 
+- display events on a map   
 
 - share events with ease using a QRcode
 
 - cross referencing events from different social medias
 
 - offline features
-- - 
+- - keep most recently lookup activities in the cache
+- - draft events
+- - use of NFC to identify and verify members joining the event 
 
 ## planned features v2
 
