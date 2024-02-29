@@ -67,4 +67,6 @@ Benoit Morawiec
 - - post event description in multiple languages
 - - display the event information in the prefered user language
  
-- verify that a user is part of a given university 
+- verify that a user is part of a given university
+
+- include payment to share the event costs 
