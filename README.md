@@ -34,7 +34,7 @@ can be saved on the phone, the GPS can be used within the app even without conne
 
 During the activities users can exchange informations with both QRCode and NFC. NFC will be used as an identity verifier.
 
-GatherSpot inally involves a grading mechanism. On completion, the activity is graded and bad behaviors can be reported.  This includes participant not showing up, as it can be penalizing for some activities like volley ball.Those serves as an historic and is part of a user’s visible profile for future participants. 
+GatherSpot finally involves a grading mechanism. On completion, the activity is graded and bad behaviors can be reported.  This includes participant not showing up, as it can be penalizing for some activities like volley ball.Those serves as an historic and is part of a user’s visible profile for future participants. 
 
 # Team members
 Elias Mir 
