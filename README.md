@@ -94,4 +94,6 @@ Benoit Morawiec
  
 - verify that a user is part of a given university
 
-- include payment to share the event costs 
+- include payment to share the event costs
+
+Link to figma : https://www.figma.com/files/project/207299293/Team-project?fuid=1342089692507679169
