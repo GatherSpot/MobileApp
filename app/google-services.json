@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "814289148775",
+    "project_id": "gatherspot-9047d",
+    "storage_bucket": "gatherspot-9047d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814289148775:android:87502731b71dae8e7f2dc2",
+        "android_client_info": {
+          "package_name": "com.github.se.gatherspot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDZXxAKVddAAF1NMafqh-8nONtuV7m4ms"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

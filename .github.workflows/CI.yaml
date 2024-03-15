@@ -1,0 +1,47 @@
+name: Project CI - Test Runner
+
+# Run the workflow when commits are pushed on main or when a PR is modified
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+jobs:
+  bootcamp-ci:
+    name: CI-Project
+    # Execute the CI on the Ubuntu (Change that to what course asks for)
+    runs-on: ubuntu-latest
+
+    steps:
+      # First step : Checkout the repository on the runner
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: KTFmt Check
+        run: ./gradlew ktfmtCheck --info
+
+      # This step runs gradle commands to build the application
+      - name: Assemble
+        run: ./gradlew assembleDebug lint --parallel --build-cache
+
+      - name: Run tests
+        run: ./gradlew test --parallel --build-cache
+
+      # This step generates the coverage report
+      - name: Generate coverage
+        run: ./gradlew jacocoTestReport
+
