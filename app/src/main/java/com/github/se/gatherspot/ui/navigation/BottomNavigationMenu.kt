@@ -1,8 +1,7 @@
 package com.github.se.gatherspot.ui.navigation
 
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
@@ -15,7 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
 @Composable
 fun BottomNavigationMenu(
     onTabSelect: (TopLevelDestination) -> Unit,
@@ -23,18 +21,18 @@ fun BottomNavigationMenu(
     selectedItem: String?
 ) {
 
-    BottomNavigation(backgroundColor = Color.LightGray) {
-        tabList.forEach { tld ->
-            BottomNavigationItem(
-                icon = {
-                    Icon(
-                        painter = painterResource(tld.icon),
-                        contentDescription = null,
-                        modifier = Modifier.width(30.dp).height(30.dp))
-                },
-                label = { Text(stringResource(tld.textId), fontSize = 12.sp) },
-                selected = selectedItem == tld.route,
-                onClick = { onTabSelect(tld) })
-        }
+  BottomNavigation(backgroundColor = Color.LightGray) {
+    tabList.forEach { tld ->
+      BottomNavigationItem(
+          icon = {
+            Icon(
+                painter = painterResource(tld.icon),
+                contentDescription = null,
+                modifier = Modifier.width(30.dp).height(30.dp))
+          },
+          label = { Text(stringResource(tld.textId), fontSize = 12.sp) },
+          selected = selectedItem == tld.route,
+          onClick = { onTabSelect(tld) })
     }
+  }
 }
