@@ -9,17 +9,14 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 
 @Composable
-fun Profile(nav: NavigationActions){
-    Scaffold(
-        bottomBar = {
-            BottomNavigationMenu(
-                onTabSelect = { tld -> nav.navigateTo(tld) },
-                tabList = TOP_LEVEL_DESTINATIONS,
-                selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
-
-        }
-    ) {
-            paddingValues ->  Log.d(ContentValues.TAG, paddingValues.toString())
-    }
-
+fun Profile(nav: NavigationActions) {
+  Scaffold(
+      bottomBar = {
+        BottomNavigationMenu(
+            onTabSelect = { tld -> nav.navigateTo(tld) },
+            tabList = TOP_LEVEL_DESTINATIONS,
+            selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
+      }) { paddingValues ->
+        Log.d(ContentValues.TAG, paddingValues.toString())
+      }
 }
