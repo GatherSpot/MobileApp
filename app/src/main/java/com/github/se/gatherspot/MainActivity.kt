@@ -1,16 +1,21 @@
 package com.github.se.gatherspot
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.ui.Chat
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.Events
@@ -22,34 +27,58 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 
 class MainActivity : ComponentActivity() {
+
+  private lateinit var signInLauncher: ActivityResultLauncher<Intent>
+  private lateinit var navController: NavHostController
+
   override fun onCreate(savedInstanceState: Bundle?) {
+
     super.onCreate(savedInstanceState)
+
+    signInLauncher =
+        registerForActivityResult(
+            FirebaseAuthUIActivityResultContract(),
+        ) { res ->
+          val ret = this.onSignInResult(res, navController)
+          // see
+        }
+
     setContent {
       GatherSpotTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          val controller = rememberNavController()
-          NavHost(navController = controller, startDestination = "auth") {
+          navController = rememberNavController()
+          NavHost(navController = navController, startDestination = "auth") {
             navigation(startDestination = "login", route = "auth") {
-              composable("login") { LogIn(NavigationActions(controller)) }
+              composable("login") { LogIn(NavigationActions(navController), signInLauncher) }
 
-              composable("signup") { SignUp(NavigationActions(controller)) }
+              composable("signup") { SignUp(NavigationActions(navController)) }
             }
 
             navigation(startDestination = "events", route = "home") {
-              composable("events") { Events(NavigationActions(controller)) }
+              composable("events") { Events(NavigationActions(navController)) }
 
-              composable("map") { Map(NavigationActions(controller)) }
+              composable("map") { Map(NavigationActions(navController)) }
 
-              composable("community") { Community(NavigationActions(controller)) }
+              composable("community") { Community(NavigationActions(navController)) }
 
-              composable("chat") { Chat(NavigationActions(controller)) }
+              composable("chat") { Chat(NavigationActions(navController)) }
 
-              composable("profile") { Profile(NavigationActions(controller)) }
+              composable("profile") { Profile(NavigationActions(navController)) }
             }
           }
         }
       }
     }
+  }
+
+  private fun onSignInResult(
+      result: FirebaseAuthUIAuthenticationResult,
+      navController: NavHostController
+  ): Int {
+    if (result.resultCode == RESULT_OK) {
+      navController.navigate("home")
+    }
+    return result.resultCode
   }
 }
