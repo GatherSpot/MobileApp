@@ -50,12 +50,7 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
                   animation = tween(durationMillis = 3500, delayMillis = 500),
                   repeatMode = RepeatMode.Reverse),
           label = "index")
-  /*
-  LaunchedEffect(content) {
-    animatedText = if (content == Color.Black) "Welcome to GatherSpot !" else "Hope you will enjoy :)"
-  }
 
-   */
   Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(40.dp, Alignment.CenterVertically),
@@ -67,7 +62,10 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
             modifier = Modifier.width(200.dp).height(200.dp))
         Button(
             onClick = {
-              val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
+              val providers =
+                  arrayListOf(
+                      AuthUI.IdpConfig.GoogleBuilder().build(),
+                      AuthUI.IdpConfig.EmailBuilder().build())
               val signInIntent =
                   AuthUI.getInstance()
                       .createSignInIntentBuilder()
@@ -86,8 +84,8 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_logo_google),
                     contentDescription = "Google Logo")
-                Spacer(modifier = Modifier.width(20.dp))
-                Text("Sign in with Google", color = Color.White)
+                Spacer(modifier = Modifier.width(10.dp))
+                Text("Sign in with Google/Email", color = Color.White)
               }
             }
 
