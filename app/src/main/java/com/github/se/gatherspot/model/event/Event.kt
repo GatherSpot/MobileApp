@@ -1,7 +1,9 @@
 package com.github.se.gatherspot.model.event
 
-import android.location.Location
-import android.media.Image
+import androidx.compose.ui.graphics.ImageBitmap
+import com.github.se.gatherspot.model.location.Location
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * Data class for an event
@@ -24,24 +26,24 @@ import android.media.Image
  */
 data class Event(
     // How to generate a unique ID
-    val eventID: Int,
+    val eventID: String,
     val title: String,
     val description: String?,
-    val location: Location?, //TODO Change 
-    val eventDate: java.time.LocalDate?,
-    val timeBeginning: java.time.LocalTime?,
-    val timeEnding: java.time.LocalTime?,
+    val location: Location?,
+    val eventDate: LocalDate?,
+    val timeBeginning: LocalTime?,
+    val timeEnding: LocalTime?,
     val attendanceCapacity: Int?,
-    val inscriptionLimitDate: java.time.LocalDate?,
-    val status: EventStatus = EventStatus.DRAFT,
+    val inscriptionLimitDate: LocalDate?,
+    val eventStatus: EventStatus = EventStatus.DRAFT,
     // TODO : List of Categories, but for now before the implementation of category class just use String
     val category: List<String>?,
     // TODO : List of User, but for now before the implementation of user class just use String
     val registeredUsers: List<String>? = emptyList(),
-    val finalAttendee: List<String>? = emptyList(),
-    // Find a way to upload images
-    val images : List<Image> = emptyList(),
-    val globalRating : Int?
+    val finalAttendees: List<String>? = emptyList(),
+    // Find a way to upload image
+    val images: ImageBitmap? = null, //TODO find default image
+    val globalRating: Int?
 )
 
 
