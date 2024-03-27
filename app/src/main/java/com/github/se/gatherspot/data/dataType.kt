@@ -14,7 +14,7 @@ abstract class DataType<T> {
    * @return the json string
    */
   fun toJson(): String {
-    //TODO: we currently have 2 json libraries imported, maybe we should use only one
+    // TODO: we currently have 2 json libraries imported, maybe we should use only one
     return Gson().toJson(this)
   }
   /**
@@ -71,7 +71,7 @@ class Profile(private var _userName: String, private var _bio: String, private v
    * @param bio the bio of the profile
    */
   fun setBio(bio: String) {
-    //TODO: make this better shorten and add support for more characters (accents maybe emojis)
+    // TODO: make this better shorten and add support for more characters (accents maybe emojis)
     val sanitized = bio.replace("[^A-Za-z0-9 .,?!']".toRegex(), "")
     val shortened = sanitized.take(40)
     _bio = shortened

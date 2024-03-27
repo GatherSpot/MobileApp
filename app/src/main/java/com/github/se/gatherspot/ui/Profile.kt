@@ -55,12 +55,13 @@ fun Profile(nav: NavigationActions) {
 fun ProfileScreen() {
   var edit by rememberSaveable { mutableStateOf(false) }
   val profile = getProfile()
-  // Note: we need duplicate states because we need to keep the original values when the user cancels
+  // Note: we need duplicate states because we need to keep the original values when the user
+  // cancels
   var username by rememberSaveable { mutableStateOf(profile.getUserName()) }
   var bio by rememberSaveable { mutableStateOf(profile.getBio()) }
   var imageUri by rememberSaveable { mutableStateOf(profile.getImage()) }
-  //helper functions to update states
-  
+  // helper functions to update states
+
   fun cancelProfile() {
     username = profile.getUserName()
     bio = profile.getBio()
@@ -69,103 +70,83 @@ fun ProfileScreen() {
   val toggleEdit = { edit = !edit }
   val updateUsername = { it: String -> username = sanitizeUsername(it) }
   val updateBio = { it: String -> bio = sanitizeBio(it) }
-  Column(modifier = Modifier
-    .verticalScroll(rememberScrollState())
-    .padding(8.dp)) {
-    
-    Buttons(edit,toggleEdit ,{cancelProfile()},{ saveProfile(username, bio, imageUri)} )
-    ProfileImage(edit,imageUri)
+  Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+    Buttons(edit, toggleEdit, { cancelProfile() }, { saveProfile(username, bio, imageUri) })
+    ProfileImage(edit, imageUri)
     UsernameField(edit, username, updateUsername)
     BioField(edit, bio, updateBio)
-
   }
 }
 
 @Composable
 fun BioField(edit: Boolean, bio: String, updateBio: (String) -> Unit) {
-    OutlinedTextField(
-      label = {Text("Bio")},
+  OutlinedTextField(
+      label = { Text("Bio") },
       enabled = edit,
       value = bio,
-      onValueChange = { updateBio (it) },
-      modifier = Modifier
-        .height(150.dp)
-        .fillMaxWidth()
-        .padding(8.dp)
-    )
+      onValueChange = { updateBio(it) },
+      modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp))
 }
 
 @Composable
 fun UsernameField(edit: Boolean, username: String, updateUsername: (String) -> Unit) {
-    OutlinedTextField(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp),
+  OutlinedTextField(
+      modifier = Modifier.fillMaxWidth().padding(8.dp),
       label = { Text("Username") },
       enabled = edit,
       value = username,
-      onValueChange = { updateUsername(it)})
+      onValueChange = { updateUsername(it) })
 }
 
 @Composable
-fun Buttons(edit: Boolean,toggleEdit:()-> Unit, cancel: ()-> Unit, save: ()-> Unit){
+fun Buttons(edit: Boolean, toggleEdit: () -> Unit, cancel: () -> Unit, save: () -> Unit) {
   if (edit) {
     Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp),
-      horizontalArrangement = Arrangement.SpaceBetween) {
-      Text(
-        text = "Cancel",
-        modifier =
-        Modifier.clickable {
-          cancel()
-          toggleEdit()
-        })
-      Text(
-        text = "Save",
-        modifier =
-        Modifier.clickable {
-          save()
-          toggleEdit()
-        })
-    }
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+          Text(
+              text = "Cancel",
+              modifier =
+                  Modifier.clickable {
+                    cancel()
+                    toggleEdit()
+                  })
+          Text(
+              text = "Save",
+              modifier =
+                  Modifier.clickable {
+                    save()
+                    toggleEdit()
+                  })
+        }
   } else {
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp),
-      horizontalArrangement = Arrangement.End) {
-      //Text(text = "Edit", modifier = Modifier.clickable { edit = true })
-      Icon(painter = painterResource(R.drawable.edit), contentDescription = "edit", modifier = Modifier
-        .clickable { toggleEdit() }
-        .size(24.dp))
+    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
+      // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
+      Icon(
+          painter = painterResource(R.drawable.edit),
+          contentDescription = "edit",
+          modifier = Modifier.clickable { toggleEdit() }.size(24.dp))
     }
   }
 }
+
 @Composable
 fun ProfileImage(edit: Boolean, imageUri: String) {
   val painter = rememberAsyncImagePainter(imageUri.ifEmpty { R.drawable.user })
   Column(
-      modifier = Modifier
-        .padding(8.dp)
-        .fillMaxWidth(),
+      modifier = Modifier.padding(8.dp).fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally) {
-        Card(shape = CircleShape, modifier = Modifier
-          .padding(8.dp)
-          .size(180.dp)) {
+        Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
           Image(
               painter = painter,
               contentDescription = "Profile Image",
-              modifier = Modifier
-
-                  .clickable { /*TODO: select image*/ },
-              contentScale = ContentScale.Crop
-          )
+              modifier = Modifier.clickable { /*TODO: select image*/},
+              contentScale = ContentScale.Crop)
         }
         if (edit) Text(text = "Change profile picture")
       }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun ProfilePreview() {
@@ -186,6 +167,6 @@ fun sanitizeUsername(name: String): String {
 }
 
 fun sanitizeBio(bio: String): String {
-    // TODO: make this better
+  // TODO: make this better
   return bio.split("\n").take(4).joinToString("\n").take(100)
 }

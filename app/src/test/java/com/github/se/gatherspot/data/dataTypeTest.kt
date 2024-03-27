@@ -10,12 +10,14 @@ class ProfileTest {
     profile.setUserName("John")
     assertEquals("John", profile.getUserName())
   }
+
   @Test
   fun testProfileNameSanitization() {
     val profile = Profile()
     profile.setUserName("John Doe#@!$%^&*()_+2")
     assertEquals("John Doe2", profile.getUserName())
   }
+
   @Test
   fun testProfileBioSetGet() {
     val profile = Profile()
@@ -23,13 +25,15 @@ class ProfileTest {
     assertEquals("I love trains", profile.getBio())
   }
 
-  //WARN: THE NEXT ONES WILL BREAK EVERYTIME WE ADD A NEW FIELD TO PROFILE, do not panic and simply update the test if it fails
+  // WARN: THE NEXT ONES WILL BREAK EVERYTIME WE ADD A NEW FIELD TO PROFILE, do not panic and simply
+  // update the test if it fails
   @Test
   fun testProfileToJsonEmpty() {
     val profile = Profile("", "", "")
     val json = profile.toJson()
     assertEquals("{\"_userName\":\"\",\"_bio\":\"\",\"_image\":\"\"}", json)
   }
+
   @Test
   fun testProfileFromJsonEmpty() {
     val profile = Profile()
@@ -39,6 +43,7 @@ class ProfileTest {
     assertEquals("", newProfile.getBio())
     assertEquals("", newProfile.getImage())
   }
+
   @Test
   fun testProfileConstructorEmpty() {
     val profile = Profile()
@@ -46,13 +51,13 @@ class ProfileTest {
     assertEquals("", profile.getBio())
     assertEquals("", profile.getImage())
   }
+
   @Test
-  //TODO : add image when we have one to make this a trivial case
+  // TODO : add image when we have one to make this a trivial case
   fun testProfileConstructor() {
     val profile = Profile("John", "Doe", "")
     assertEquals("John", profile.getUserName())
     assertEquals("Doe", profile.getBio())
     assertEquals("", profile.getImage())
   }
-
 }
