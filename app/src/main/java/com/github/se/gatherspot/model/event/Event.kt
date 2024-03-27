@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.model.event
 
-import android.location.Location
+
+import com.github.se.gatherspot.model.location.Location
 import android.media.Image
 
 /**
@@ -27,7 +28,7 @@ data class Event(
     val eventID: Int,
     val title: String,
     val description: String?,
-    val location: Location?, //TODO Change 
+    val location: Location?,
     val eventDate: java.time.LocalDate?,
     val timeBeginning: java.time.LocalTime?,
     val timeEnding: java.time.LocalTime?,
@@ -39,7 +40,6 @@ data class Event(
     // TODO : List of User, but for now before the implementation of user class just use String
     val registeredUsers: List<String>? = emptyList(),
     val finalAttendee: List<String>? = emptyList(),
-    // Find a way to upload images
     val images : List<Image> = emptyList(),
     val globalRating : Int?
 )
