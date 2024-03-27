@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.ui
 
 // GUI to create an event
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.model.EventViewModel
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -45,7 +47,7 @@ private val DESCRIPTION_HEIGHT = 150.dp
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateEvent() {
+fun CreateEvent(nav: NavigationActions) {
     var title by remember { mutableStateOf(TextFieldValue("")) }
     var description by remember { mutableStateOf(TextFieldValue("")) }
     var location by remember { mutableStateOf<Location?>(null) }
@@ -56,7 +58,7 @@ fun CreateEvent() {
     var minAttendees by remember { mutableStateOf(TextFieldValue("")) }
 
     var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
+    var errorMessage : String = ""
 
 
 
@@ -66,13 +68,25 @@ fun CreateEvent() {
             MediumTopAppBar(
                 title = {
                     Text(
-                        text = "Create a new task",
+                        text = "Create a new event",
                         modifier = Modifier.testTag("createEventTitle")
                     )
                 },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { nav.goBack() }, modifier = Modifier.testTag("goBackButton")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Go back to overview"
+                        )
+                    }
+                }
 
             )
+
         }
+
 
 
     ) { innerPadding ->
@@ -161,12 +175,11 @@ fun CreateEvent() {
             // Button to create the event
             Button(
                 onClick = {
-                    println("CLICKED")
                     try {
                         EventViewModel.validateEventData(
                             title.text,
                             description.text,
-                            location!!,
+                            /*location,*/
                             eventDate.text,
                             eventTimeStart.text,
                             eventTimeEnd.text,
@@ -174,7 +187,7 @@ fun CreateEvent() {
                         )
                     } catch (e: Exception) {
                         // Display error message
-                        errorMessage = e.message ?: "An error occurred"
+                        errorMessage = e.message.toString()
                         showErrorDialog = true
                     }
                 },
@@ -182,8 +195,8 @@ fun CreateEvent() {
                     .width(WIDTH)
                     .height(HEIGHT)
                     .testTag("createEventButton"),
-                //enabled = (title.text != "") && (description.text != "") && (eventDate.text != "")
-                 //       && (eventTimeStart.text != "") && (eventTimeEnd.text != ""),
+                enabled = (title.text != "") && (description.text != "") && (eventDate.text != "")
+                       && (eventTimeStart.text != "") && (eventTimeEnd.text != ""),
                 shape = RoundedCornerShape(size = 10.dp)
             ) {
                 Text(text = "Create event")
@@ -194,7 +207,7 @@ fun CreateEvent() {
                 onDismissRequest = { showErrorDialog = false },
                 icon = { Icon(Icons.Default.Warning, contentDescription = null) },
                 title = { Text("Error on the event creation") },
-                text = { Text(errorMessage.toString()) },
+                text = { Text(errorMessage) },
                 confirmButton = {
                     Button(
                         onClick = { showErrorDialog = false },
@@ -215,5 +228,6 @@ fun CreateEvent() {
 @Preview
 @Composable
 fun CreateEventPreview() {
-    CreateEvent()
+    val controller = rememberNavController()
+    CreateEvent(nav = NavigationActions(controller))
 }

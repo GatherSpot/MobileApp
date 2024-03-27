@@ -2,6 +2,7 @@ package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 class EventViewModel {
@@ -28,7 +29,7 @@ class EventViewModel {
         fun validateEventData(
             title: String,
             description: String,
-            location: Location,
+            /*location: Location,*/
             eventDate: String,
             eventTimeStart: String,
             eventTimeEnd: String,
@@ -50,12 +51,12 @@ class EventViewModel {
 
             //test if the time is valid
             val parsedEventTimeStart = try {
-                LocalDate.parse(eventTimeStart, DateTimeFormatter.ofPattern("hh:mm"))
+                LocalTime.parse(eventTimeStart, DateTimeFormatter.ofPattern("HH:mm"))
             } catch (e: Exception) {
                 throw Exception("Invalid time format for start time")
             }
             val parsedEventTimeEnd = try {
-                LocalDate.parse(eventTimeEnd, DateTimeFormatter.ofPattern("hh:mm"))
+                LocalTime.parse(eventTimeEnd, DateTimeFormatter.ofPattern("HH:mm"))
             } catch (e: Exception) {
                 throw Exception("Invalid time format for end time")
             }
@@ -65,14 +66,14 @@ class EventViewModel {
             }
 
             //If the event is today, check if the start time is in the future
-            if (isToday && parsedEventTimeStart.isBefore(LocalDate.now())) {
+            if (isToday && parsedEventTimeStart.isBefore(LocalTime.now())) {
                 throw Exception("Event start time must be in the future")
             }
 
 
             //test if the max attendees is valid
             var parsedMaxAttendees: Int? = null
-            if (!maxAttendees.isEmpty()) {
+            if (maxAttendees.isNotEmpty()) {
                 parsedMaxAttendees = try {
                     maxAttendees.toInt()
                 } catch (e: Exception) {
