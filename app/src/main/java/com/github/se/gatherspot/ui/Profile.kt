@@ -53,10 +53,9 @@ fun Profile(nav: NavigationActions) {
 
 @Composable
 fun ProfileScreen() {
-  //states
-
   var edit by rememberSaveable { mutableStateOf(false) }
   val profile = getProfile()
+  // Note: we need duplicate states because we need to keep the original values when the user cancels
   var username by rememberSaveable { mutableStateOf(profile.getUserName()) }
   var bio by rememberSaveable { mutableStateOf(profile.getBio()) }
   var imageUri by rememberSaveable { mutableStateOf(profile.getImage()) }

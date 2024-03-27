@@ -14,6 +14,7 @@ abstract class DataType<T> {
    * @return the json string
    */
   fun toJson(): String {
+    //TODO: we currently have 2 json libraries imported, maybe we should use only one
     return Gson().toJson(this)
   }
   /**
@@ -53,7 +54,7 @@ class Profile(private var _userName: String, private var _bio: String, private v
    * @param name username non-alphanumeric characters are removed
    */
   fun setUserName(name: String) {
-    val sanitized = name.replace("[^A-Za-z0-9]".toRegex(), "")
+    val sanitized = name.replace("[^A-Za-z0-9 ]".toRegex(), "")
     _userName = sanitized
   }
   /**
@@ -67,10 +68,11 @@ class Profile(private var _userName: String, private var _bio: String, private v
   /**
    * Bio setter
    *
-   * @param bio the bio of the profile accepts null
+   * @param bio the bio of the profile
    */
   fun setBio(bio: String) {
-    val sanitized = bio.replace("[^A-Za-z0-9 .,?!]".toRegex(), "")
+    //TODO: make this better shorten and add support for more characters (accents maybe emojis)
+    val sanitized = bio.replace("[^A-Za-z0-9 .,?!']".toRegex(), "")
     val shortened = sanitized.take(40)
     _bio = shortened
   }
@@ -78,7 +80,7 @@ class Profile(private var _userName: String, private var _bio: String, private v
   /**
    * Image getter
    *
-   * @return the image of the profile
+   * @return the image of the profile, may be empty if no image
    */
   fun getImage(): String {
     return _image
@@ -86,7 +88,7 @@ class Profile(private var _userName: String, private var _bio: String, private v
   /**
    * Image setter
    *
-   * @param image the image of the profile accepts null
+   * @param image the image of the profile, may be empty if no image
    */
   fun setImage(image: String) {
     // Todo: check if link is correct and file size and format,...
