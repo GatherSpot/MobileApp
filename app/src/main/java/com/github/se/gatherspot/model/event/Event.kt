@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.model.event
 
 import android.location.Location
 import android.media.Image
@@ -16,26 +16,27 @@ import android.media.Image
  * @param attendanceCapacity: The maximum number of attendees (optional)
  * @param inscriptionLimitDate: The last date to register for the event (optional)
  * @param status: The status of the event (draft, created, ongoing, completed)
- * @param category: The categories labels of the event
+ * @param category: List of category labels of the event
  * @param registeredUsers: The list of users who registered for the event
  * @param finalAttendee: The list of users who attended the event
  * @param images: The images uploaded for the event
  * @param globalRating: The rating of the event by the attendees
  */
 data class Event(
+    // How to generate a unique ID
     val eventID: Int,
     val title: String,
     val description: String?,
-    val location: Location?,
+    val location: Location?, //TODO Change 
     val eventDate: java.time.LocalDate?,
     val timeBeginning: java.time.LocalTime?,
     val timeEnding: java.time.LocalTime?,
     val attendanceCapacity: Int?,
     val inscriptionLimitDate: java.time.LocalDate?,
     val status: EventStatus = EventStatus.DRAFT,
-    // List of Categories, but for now before the implementation of category class just use String
+    // TODO : List of Categories, but for now before the implementation of category class just use String
     val category: List<String>?,
-    // List of User, but for now before the implementation of user class just use String
+    // TODO : List of User, but for now before the implementation of user class just use String
     val registeredUsers: List<String>? = emptyList(),
     val finalAttendee: List<String>? = emptyList(),
     // Find a way to upload images
@@ -44,12 +45,3 @@ data class Event(
 )
 
 
-/**
- * Enum class for the status of an event
- */
-enum class EventStatus {
-    DRAFT,
-    CREATED,
-    ON_GOING,
-    COMPLETED
-}
