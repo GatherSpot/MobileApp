@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model
 
-import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -19,7 +18,7 @@ class EventViewModel {
          *
          * @param title: The title of the event
          * @param description: A short description of the event
-         * @param eventDate: The date of the event
+         * @param eventStartDate: The date of the event
          * @param eventTimeStart: The time the event starts
          * @param eventTimeEnd: The time the event ends
          * @param maxAttendees: The maximum number of attendees
@@ -30,14 +29,14 @@ class EventViewModel {
             title: String,
             description: String,
             /*location: Location,*/
-            eventDate: String,
+            eventStartDate: String,
             eventTimeStart: String,
             eventTimeEnd: String,
             maxAttendees: String,
         ) {
             //test if the date is valid
             val parsedEventDate = try {
-                LocalDate.parse(eventDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                LocalDate.parse(eventStartDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
             } catch (e: Exception) {
                 throw Exception("Invalid date format")
             }
@@ -46,7 +45,7 @@ class EventViewModel {
                 throw Exception("Event date must be in the future")
             }
 
-            //Check if eventDate is today
+            //Check if eventStartDate is today
             val isToday = parsedEventDate.isEqual(LocalDate.now())
 
             //test if the time is valid

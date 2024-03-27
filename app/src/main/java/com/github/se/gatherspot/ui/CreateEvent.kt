@@ -123,7 +123,7 @@ fun CreateEvent(nav: NavigationActions) {
                 onValueChange = { description = it },
                 label = { Text("Description *") },
                 placeholder = { Text("Describe the event") })
-            // Date
+            // Start Date
             OutlinedTextField(
                 modifier = Modifier
                     .width(WIDTH)
@@ -133,6 +133,9 @@ fun CreateEvent(nav: NavigationActions) {
                 onValueChange = { eventDate = it },
                 label = { Text("Date *") },
                 placeholder = { Text("dd/MM/yyyy") })
+            // End Date
+
+
             // Time Start
             OutlinedTextField(
                 modifier = Modifier

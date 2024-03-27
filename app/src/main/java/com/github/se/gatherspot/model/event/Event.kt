@@ -12,15 +12,18 @@ import java.time.LocalTime
  * @param title: The title of the event
  * @param description: A short description of the event
  * @param location: The location of the event (GPS coordinates)
- * @param eventDate: The date of the event
+ * @param eventStartDate: The date of the start the event
+ * @param eventEndDate: The date the event ends, if it is a multi-day event.
+ * If not precised, it is the same as the start date
  * @param timeBeginning: The time the event starts
  * @param timeEnding: The time the event ends
- * @param attendanceCapacity: The maximum number of attendees (optional)
+ * @param attendanceMaxCapacity: The maximum number of attendees (optional)
+ * @param attendanceMinCapacity: The minimum number of attendees (optional)
  * @param inscriptionLimitDate: The last date to register for the event (optional)
- * @param status: The status of the event (draft, created, ongoing, completed)
+ * @param eventStatus: The status of the event (draft, created, ongoing, completed)
  * @param category: List of category labels of the event
  * @param registeredUsers: The list of users who registered for the event
- * @param finalAttendee: The list of users who attended the event
+ * @param finalAttendees: The list of users who attended the event
  * @param images: The images uploaded for the event
  * @param globalRating: The rating of the event by the attendees
  */
@@ -30,10 +33,12 @@ data class Event(
     val title: String,
     val description: String?,
     val location: Location?,
-    val eventDate: LocalDate?,
+    val eventStartDate: LocalDate?,
+    val eventEndDate: LocalDate?,
     val timeBeginning: LocalTime?,
     val timeEnding: LocalTime?,
-    val attendanceCapacity: Int?,
+    val attendanceMaxCapacity: Int?,
+    val attendanceMinCapacity: Int?,
     val inscriptionLimitDate: LocalDate?,
     val eventStatus: EventStatus = EventStatus.DRAFT,
     // TODO : List of Categories, but for now before the implementation of category class just use String
