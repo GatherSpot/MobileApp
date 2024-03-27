@@ -11,19 +11,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,10 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.data.Profile
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
@@ -72,15 +67,15 @@ fun ProfileScreen() {
     bio = profile.getBio()
     imageUri = profile.getImage()
   }
-  val enterEdit = { edit = true }
+  val toggleEdit = { edit = !edit }
   val updateUsername = { it: String -> username = sanitizeUsername(it) }
   val updateBio = { it: String -> bio = sanitizeBio(it) }
   Column(modifier = Modifier
     .verticalScroll(rememberScrollState())
     .padding(8.dp)) {
     
-    Buttons(edit,enterEdit ,{cancelProfile();edit = false},{ saveProfile(username, bio, imageUri);edit = false} )
-    ProfileImage(imageUri)
+    Buttons(edit,toggleEdit ,{cancelProfile()},{ saveProfile(username, bio, imageUri)} )
+    ProfileImage(edit,imageUri)
     UsernameField(edit, username, updateUsername)
     BioField(edit, bio, updateBio)
 
@@ -89,37 +84,32 @@ fun ProfileScreen() {
 
 @Composable
 fun BioField(edit: Boolean, bio: String, updateBio: (String) -> Unit) {
-  Row(modifier = Modifier
-    .fillMaxWidth()
-    .padding(8.dp), verticalAlignment = Alignment.Top) {
-    Text(text = "Bio", modifier = Modifier
-      .width(100.dp)
-      .padding(top = 8.dp))
-    TextField(
-      readOnly = !edit,
+    OutlinedTextField(
+      label = {Text("Bio")},
+      enabled = edit,
       value = bio,
       onValueChange = { updateBio (it) },
-      modifier = Modifier.height(150.dp))
-  }
+      modifier = Modifier
+        .height(150.dp)
+        .fillMaxWidth()
+        .padding(8.dp)
+    )
 }
 
 @Composable
 fun UsernameField(edit: Boolean, username: String, updateUsername: (String) -> Unit) {
-  Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(start = 4.dp, end = 4.dp),
-    verticalAlignment = Alignment.CenterVertically) {
-    Text(text = "Username", modifier = Modifier.width(105.dp), maxLines = 1)
-    TextField(
-      readOnly = !edit,
+    OutlinedTextField(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp),
+      label = { Text("Username") },
+      enabled = edit,
       value = username,
       onValueChange = { updateUsername(it)})
-  }
 }
 
 @Composable
-fun Buttons(edit: Boolean,enterEdit:()-> Unit, cancel: ()-> Unit, save: ()-> Unit){
+fun Buttons(edit: Boolean,toggleEdit:()-> Unit, cancel: ()-> Unit, save: ()-> Unit){
   if (edit) {
     Row(
       modifier = Modifier
@@ -131,12 +121,14 @@ fun Buttons(edit: Boolean,enterEdit:()-> Unit, cancel: ()-> Unit, save: ()-> Uni
         modifier =
         Modifier.clickable {
           cancel()
+          toggleEdit()
         })
       Text(
         text = "Save",
         modifier =
         Modifier.clickable {
           save()
+          toggleEdit()
         })
     }
   } else {
@@ -147,13 +139,13 @@ fun Buttons(edit: Boolean,enterEdit:()-> Unit, cancel: ()-> Unit, save: ()-> Uni
       horizontalArrangement = Arrangement.End) {
       //Text(text = "Edit", modifier = Modifier.clickable { edit = true })
       Icon(painter = painterResource(R.drawable.edit), contentDescription = "edit", modifier = Modifier
-        .clickable { enterEdit() }
+        .clickable { toggleEdit() }
         .size(24.dp))
     }
   }
 }
 @Composable
-fun ProfileImage(imageUri: String) {
+fun ProfileImage(edit: Boolean, imageUri: String) {
   val painter = rememberAsyncImagePainter(imageUri.ifEmpty { R.drawable.user })
   Column(
       modifier = Modifier
@@ -172,7 +164,7 @@ fun ProfileImage(imageUri: String) {
               contentScale = ContentScale.Crop
           )
         }
-        Text(text = "Change profile picture")
+        if (edit) Text(text = "Change profile picture")
       }
 }
 @Preview(showBackground = true)
