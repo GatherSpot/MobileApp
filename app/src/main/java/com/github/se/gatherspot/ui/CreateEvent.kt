@@ -3,11 +3,15 @@ package com.github.se.gatherspot.ui
 // GUI to create an event
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Warning
@@ -43,6 +47,20 @@ private val HEIGHT = 65.dp
 private val DESCRIPTION_HEIGHT = 150.dp
 
 /**
+ * Composable routine that creates a scrollable Box with the content passed as a parameter
+ */
+@Composable
+fun ScrollableContent(content: @Composable () -> Unit) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)) {
+            content()
+        }
+    }
+}
+
+/**
  * Composable function that gives the GUI to create an event
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,11 +69,14 @@ fun CreateEvent(nav: NavigationActions) {
     var title by remember { mutableStateOf(TextFieldValue("")) }
     var description by remember { mutableStateOf(TextFieldValue("")) }
     var location by remember { mutableStateOf<Location?>(null) }
-    var eventDate by remember { mutableStateOf(TextFieldValue("")) }
+    var eventStartDate by remember { mutableStateOf(TextFieldValue("")) }
+    var eventEndDate by remember { mutableStateOf(TextFieldValue("")) }
     var eventTimeStart by remember { mutableStateOf(TextFieldValue("")) }
     var eventTimeEnd by remember { mutableStateOf(TextFieldValue("")) }
     var maxAttendees by remember { mutableStateOf(TextFieldValue("")) }
     var minAttendees by remember { mutableStateOf(TextFieldValue("")) }
+    var inscriptionLimitDate by remember { mutableStateOf(TextFieldValue("")) }
+    var inscriptionLimitTime by remember { mutableStateOf(TextFieldValue("")) }
 
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage : String = ""
@@ -87,122 +108,170 @@ fun CreateEvent(nav: NavigationActions) {
 
         }
 
-
-
     ) { innerPadding ->
-        // Create event form
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 28.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        )
-        {
-            Text(
-                text = "Fields with * are required",
-                modifier = Modifier.testTag("requiredFields")
+        // Make the content scrollable
+        ScrollableContent {
+            // Create event form
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(horizontal = 28.dp),
+                verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally,
             )
-            // Title
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputTitle"),
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Event title *") },
-                placeholder = { Text(text = "Give a name to the event") })
-            // Description
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(DESCRIPTION_HEIGHT)
-                    .testTag("inputDescription"),
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description *") },
-                placeholder = { Text("Describe the event") })
-            // Start Date
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputDateEvent"),
-                value = eventDate,
-                onValueChange = { eventDate = it },
-                label = { Text("Date *") },
-                placeholder = { Text("dd/MM/yyyy") })
-            // End Date
+            {
+                Text(
+                    text = "Fields with * are required",
+                    modifier = Modifier.testTag("requiredFields")
+                )
+                // Title
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputTitle"),
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Event title *") },
+                    placeholder = { Text(text = "Give a name to the event") })
+                // Description
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(DESCRIPTION_HEIGHT)
+                        .testTag("inputDescription"),
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description *") },
+                    placeholder = { Text("Describe the event") })
+                // Start Date
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputStartDateEvent"),
+                    value = eventStartDate,
+                    onValueChange = { eventStartDate = it },
+                    label = { Text("Start Date of the event*") },
+                    placeholder = { Text("dd/MM/yyyy") })
+                // End Date
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputEndDateEvent"),
+                    value = eventEndDate,
+                    onValueChange = { eventEndDate = it },
+                    label = { Text("End date (if identical to start date leave empty") },
+                    placeholder = { Text("dd/MM/yyyy") })
+
+                // Time Start
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputTimeStartEvent"),
+                    value = eventTimeStart,
+                    onValueChange = { eventTimeStart = it },
+                    label = { Text("Start time*") },
+                    placeholder = { Text("hh:mm") })
+                // Time End
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputTimeEndEvent"),
+                    value = eventTimeEnd,
+                    onValueChange = { eventTimeEnd = it },
+                    label = { Text("End time*") },
+                    placeholder = { Text("hh:mm") })
+                // Location
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputLocation"),
+                    // Do a query to get a location from text input
+                    value = TextFieldValue(location?.toString() ?: ""),
+                    onValueChange = { },
+                    label = { Text("Location") },
+                    placeholder = { Text("Enter an address") })
 
 
-            // Time Start
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputTimeStartEvent"),
-                value = eventTimeStart,
-                onValueChange = { eventTimeStart = it },
-                label = { Text("Start time*") },
-                placeholder = { Text("hh:mm") })
-            // Time End
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputTimeEndEvent"),
-                value = eventTimeEnd,
-                onValueChange = { eventTimeEnd = it },
-                label = { Text("End time*") },
-                placeholder = { Text("hh:mm") })
-            // TODO : Location
-            // Location
+                // Max attendees
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputMaxAttendees"),
+                    value = maxAttendees,
+                    onValueChange = { maxAttendees = it },
+                    label = { Text("Max attendees") },
+                    placeholder = { Text("Maximum number of attendees") })
+                // Min attendees
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputMinAttendees"),
+                    value = minAttendees,
+                    onValueChange = { minAttendees = it },
+                    label = { Text("Min attendees") },
+                    placeholder = { Text("Minimum number of attendees") })
+
+                // Inscription limit date
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputInscriptionLimitDate"),
+                    value = inscriptionLimitDate,
+                    onValueChange = { inscriptionLimitDate = it },
+                    label = { Text("Inscription limit date") },
+                    placeholder = { Text("dd/MM/yyyy") })
+                // Inscription limit time
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputInscriptionLimitTime"),
+                    value = inscriptionLimitTime,
+                    onValueChange = { inscriptionLimitTime = it },
+                    label = { Text("Inscription limit time") },
+                    placeholder = { Text("hh:mm") })
+
+                // TODO :Upload images
 
 
-            // Max attendees
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputMaxAttendees"),
-                value = maxAttendees,
-                onValueChange = { maxAttendees = it },
-                label = { Text("Max attendees") },
-                placeholder = { Text("Maximum number of attendees") })
-            //TODO: add a min attendee
-
-            // TODO :Upload images
-
-
-            // Button to create the event
-            Button(
-                onClick = {
-                    try {
-                        EventViewModel.validateEventData(
-                            title.text,
-                            description.text,
-                            /*location,*/
-                            eventDate.text,
-                            eventTimeStart.text,
-                            eventTimeEnd.text,
-                            maxAttendees.text
-                        )
-                    } catch (e: Exception) {
-                        // Display error message
-                        errorMessage = e.message.toString()
-                        showErrorDialog = true
-                    }
-                },
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("createEventButton"),
-                enabled = (title.text != "") && (description.text != "") && (eventDate.text != "")
-                       && (eventTimeStart.text != "") && (eventTimeEnd.text != ""),
-                shape = RoundedCornerShape(size = 10.dp)
-            ) {
-                Text(text = "Create event")
+                // Button to create the event
+                Button(
+                    onClick = {
+                        try {
+                            EventViewModel.validateEventData(
+                                title.text,
+                                description.text,
+                                /*location,*/
+                                eventStartDate.text,
+                                eventTimeStart.text,
+                                eventTimeEnd.text,
+                                maxAttendees.text
+                            )
+                        } catch (e: Exception) {
+                            // Display error message
+                            errorMessage = e.message.toString()
+                            showErrorDialog = true
+                        }
+                    },
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("createEventButton"),
+                    enabled = (title.text != "") && (description.text != "") && (eventStartDate.text != "")
+                            && (eventTimeStart.text != "") && (eventTimeEnd.text != ""),
+                    shape = RoundedCornerShape(size = 10.dp)
+                ) {
+                    Text(text = "Create event")
+                }
             }
         }
         if (showErrorDialog) {
