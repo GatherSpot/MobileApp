@@ -32,7 +32,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.gatherspot.FirebaseConnection
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
@@ -51,7 +55,10 @@ fun SignUp(nav: NavigationActions) {
     if (isClicked) {
       val success = checkCredentials(email, password)
       if (success) {
-        nav.controller.navigate("home")
+        MainActivity.uid = FirebaseConnection.getUID()
+        val newUser = User(MainActivity.uid, username, email, password, Profile(""))
+        FirebaseConnection.addUser(newUser)
+        nav.controller.navigate("setup")
       } else {
         showDialog = true
         isClicked = false
@@ -97,7 +104,7 @@ fun SignUp(nav: NavigationActions) {
           label = { Text(text = "Password") })
 
       Button(
-          enabled = isEmailValid(email) and password.isNotEmpty(),
+          enabled = isEmailValid(email) and password.isNotEmpty() and username.isNotEmpty(),
           onClick = { isClicked = true },
           colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
           modifier = Modifier.width(250.dp)) {
