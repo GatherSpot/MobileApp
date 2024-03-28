@@ -250,11 +250,14 @@ fun CreateEvent(nav: NavigationActions) {
                             EventViewModel.validateEventData(
                                 title.text,
                                 description.text,
-                                /*location,*/
                                 eventStartDate.text,
+                                eventEndDate.text,
                                 eventTimeStart.text,
                                 eventTimeEnd.text,
-                                maxAttendees.text
+                                maxAttendees.text,
+                                minAttendees.text,
+                                inscriptionLimitDate.text,
+                                inscriptionLimitTime.text
                             )
                         } catch (e: Exception) {
                             // Display error message
