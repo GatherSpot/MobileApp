@@ -1,27 +1,88 @@
 package com.github.se.gatherspot.model
 
+import com.github.se.gatherspot.EventFirebaseConnection
+import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 class EventViewModel {
     companion object {
-        //From verified inputs create an event
-        fun createEvent() {
-            //firebase.getNewUID()
-
-        }
-
         /**
-         * Check if the data entered by the user is valid
-         * Parse the data and check if it is in the correct format, then call createEvent function
+         * Create an event from verified data
          *
          * @param title: The title of the event
          * @param description: A short description of the event
-         * @param eventStartDate: The date of the event
-         * @param eventTimeStart: The time the event starts
-         * @param eventTimeEnd: The time the event ends
+         * @param location: The location of the event (GPS coordinates)
+         * @param eventStartDate: The date of the start the event
+         * @param eventEndDate: The date the event ends, if it is a multi-day event.
+         * @param eventTimeStart: The time in the eventStartDate the event starts
+         * @param eventTimeEnd: The time in the eventEndDate the event ends
          * @param maxAttendees: The maximum number of attendees
+         * @param minAttendees: The minimum number of attendees (default 0)
+         * @param dateLimitInscription: The last date to register for the event
+         * @param timeLimitInscription: The last time to register for the event
+         *
+         * @return The event created
+         */
+        fun createEvent(
+            title: String,
+            description: String,
+            location: Location,
+            eventStartDate: LocalDate,
+            eventEndDate: LocalDate?,
+            eventTimeStart: LocalTime,
+            eventTimeEnd: LocalTime,
+            maxAttendees: Int?,
+            minAttendees: Int?,
+            dateLimitInscription: LocalDate?,
+            timeLimitInscription: LocalTime?
+        ) : Event{
+            // First fetch an unique ID for the event
+            val eventID = EventFirebaseConnection.getNewEventID()
+            // Check if the end date is null, if so set it to the start date
+            val eventEndDateChecked = eventEndDate ?: eventStartDate
+
+            // Create the event
+            val event = Event(
+                eventID,
+                title,
+                description,
+                location,
+                eventStartDate,
+                eventEndDateChecked,
+                eventTimeStart,
+                eventTimeEnd,
+                maxAttendees,
+                attendanceMinCapacity = minAttendees ?: 0,
+                dateLimitInscription,
+                timeLimitInscription,
+                globalRating = null
+            )
+
+            // Add the event to the database
+            EventFirebaseConnection.addNewEvent(event)
+
+            return event
+        }
+
+        /**
+         * Check if the data entered by the user is valid.
+         * Parse the data and check if it is in the correct format, then call createEvent function.
+         * All the parameters are strings, as they are taken from the user input.
+         *
+         * @param title: The title of the event
+         * @param description: A short description of the event
+         * @param location: The location of the event (GPS coordinates)
+         * @param eventStartDate: The date of the start the event
+         * @param eventEndDate: The date the event ends, if it is a multi-day event.
+         * @param eventTimeStart: The time in the eventStartDate the event starts
+         * @param eventTimeEnd: The time in the eventEndDate the event ends
+         * @param maxAttendees: The maximum number of attendees
+         * @param minAttendees: The minimum number of attendees
+         * @param dateLimitInscription: The last date to register for the event
+         * @param timeLimitInscription: The last time to register for the event
          *
          * @throws Exception if the data is not valid
          */
@@ -108,7 +169,6 @@ class EventViewModel {
             }
 
 
-
             // If given by the user,check if the inscription limit date and time are valid and
             // before the start date and time
             var parsedDateLimitInscription: LocalDate? = null
@@ -124,15 +184,14 @@ class EventViewModel {
                     throw Exception("Inscription limit date must be before event start date")
                 }
                 //If Limit time is not given, set it to 23:59
-                if (timeLimitInscription.isNotEmpty()) {
-
-                    parsedTimeLimitInscription = try {
+                parsedTimeLimitInscription = if (timeLimitInscription.isNotEmpty()) {
+                    try {
                         LocalTime.parse(timeLimitInscription, DateTimeFormatter.ofPattern("HH:mm"))
                     } catch (e: Exception) {
                         throw Exception("Invalid inscription limit time format")
                     }
                 } else {
-                    parsedTimeLimitInscription = LocalTime.of(23, 59)
+                    LocalTime.of(23, 59)
                 }
                 if (parsedDateLimitInscription.isEqual(parsedEventDate) && parsedTimeLimitInscription!!.isAfter(
                         parsedEventTimeStart
@@ -148,8 +207,5 @@ class EventViewModel {
 
         }
 
-        fun addImages() {
-
-        }
     }
 }

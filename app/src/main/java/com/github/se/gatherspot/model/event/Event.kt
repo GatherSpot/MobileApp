@@ -13,8 +13,7 @@ import java.time.LocalTime
  * @param description: A short description of the event
  * @param location: The location of the event (GPS coordinates)
  * @param eventStartDate: The date of the start the event
- * @param eventEndDate: The date the event ends, if it is a multi-day event.
- * If not precised, it is the same as the start date
+ * @param eventEndDate: The date the event ends
  * @param timeBeginning: The time in the eventStartDate the event starts
  * @param timeEnding: The time in the eventEndDate the event ends
  * @param attendanceMaxCapacity: The maximum number of attendees (optional)
@@ -43,7 +42,7 @@ data class Event(
     val inscriptionLimitTime: LocalTime?,
     val eventStatus: EventStatus = EventStatus.DRAFT,
     // TODO : List of Categories, but for now before the implementation of category class just use String
-    val categories: List<String>?,
+    val categories: List<String>? = emptyList(),
     // List of the IDs of the users who registered for the event
     val registeredUsers: List<String>? = emptyList(),
     val finalAttendees: List<String>? = emptyList(),
