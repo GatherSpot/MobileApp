@@ -62,7 +62,7 @@ class EventViewModel {
             )
 
             // Add the event to the database
-            EventFirebaseConnection.addNewEvent(event)
+            //EventFirebaseConnection.addNewEvent(event)
 
             return event
         }
@@ -70,6 +70,7 @@ class EventViewModel {
         /**
          * Check if the data entered by the user is valid.
          * Parse the data and check if it is in the correct format, then call createEvent function.
+         * If the eventCreation is successful, return true.
          * All the parameters are strings, as they are taken from the user input.
          *
          * @param title: The title of the event
@@ -85,11 +86,12 @@ class EventViewModel {
          * @param timeLimitInscription: The last time to register for the event
          *
          * @throws Exception if the data is not valid
+         * @return true  if the data is valid
          */
-        fun validateEventData(
+        fun validateParseEventData(
             title: String,
             description: String,
-            /*location: Location,*/
+            location: Location,
             eventStartDate: String,
             eventEndDate: String,
             eventTimeStart: String,
@@ -98,7 +100,7 @@ class EventViewModel {
             minAttendees: String,
             dateLimitInscription: String,
             timeLimitInscription: String
-        ) {
+        ): Boolean {
             //test if the date is valid
             val parsedEventDate = try {
                 LocalDate.parse(eventStartDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
@@ -201,10 +203,22 @@ class EventViewModel {
                 }
             }
 
+            //If all the data is valid, call createEvent function
+            createEvent(
+                title,
+                description,
+                location,
+                parsedEventDate,
+                parsedEventEndDate,
+                parsedEventTimeStart,
+                parsedEventTimeEnd,
+                parsedMaxAttendees,
+                parsedMinAttendees,
+                parsedDateLimitInscription,
+                parsedTimeLimitInscription
+            )
 
-            //If all the data is valid, create the event
-            //createEvent()
-
+            return true
         }
 
     }

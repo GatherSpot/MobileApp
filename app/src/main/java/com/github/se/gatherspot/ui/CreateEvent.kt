@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.ui
 
 // GUI to create an event
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,7 +83,8 @@ fun CreateEvent(nav: NavigationActions) {
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage : String = ""
 
-
+    // For now, the location is not handled
+    location = Location(0.0, 0.0, "Test Location")
 
     Scaffold(
         modifier = Modifier.testTag("CreateEventScreen"),
@@ -205,6 +205,7 @@ fun CreateEvent(nav: NavigationActions) {
                     onValueChange = { },
                     label = { Text("Location") },
                     placeholder = { Text("Enter an address") })
+                // TODO : Handle location fetching from text input,
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -259,10 +260,12 @@ fun CreateEvent(nav: NavigationActions) {
                 // Button to create the event
                 Button(
                     onClick = {
+                        var isDataValid = false
                         try {
-                            EventViewModel.validateEventData(
+                             isDataValid = EventViewModel.validateParseEventData(
                                 title.text,
                                 description.text,
+                                location!!,
                                 eventStartDate.text,
                                 eventEndDate.text,
                                 eventTimeStart.text,
@@ -277,6 +280,7 @@ fun CreateEvent(nav: NavigationActions) {
                             errorMessage = e.message.toString()
                             showErrorDialog = true
                         }
+
                     },
                     modifier = Modifier
                         .width(WIDTH)
