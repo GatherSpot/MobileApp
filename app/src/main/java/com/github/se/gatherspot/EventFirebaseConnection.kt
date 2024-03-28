@@ -70,8 +70,8 @@ class EventFirebaseConnection {
             val title = document.getString("title") as String
             val description = document.getString("description") as String
             val location: Location?
-            val location_name = document.getString("location_name")
-            location = if (location_name == "") {
+            val locationName = document.getString("location_name")
+            location = if (locationName == "") {
                 null
             } else {
                 Location(
