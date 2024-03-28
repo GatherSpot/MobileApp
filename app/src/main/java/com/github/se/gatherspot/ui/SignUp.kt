@@ -56,7 +56,7 @@ fun SignUp(nav: NavigationActions) {
       val success = checkCredentials(email, password)
       if (success) {
         MainActivity.uid = FirebaseConnection.getUID()
-        val newUser = User(MainActivity.uid, username, email, password, Profile(""))
+        val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
         FirebaseConnection.addUser(newUser)
         nav.controller.navigate("setup")
       } else {

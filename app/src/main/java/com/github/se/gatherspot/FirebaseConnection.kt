@@ -22,15 +22,16 @@ class FirebaseConnection {
                     "uid" to user.uid,
                     "username" to user.username,
                     "email" to user.email,
-                    "password" to user.password
+                    "password" to user.password,
+                    "profile" to user.profile.interests.toList()
                 )
 
-            val nested =
+            val interests =
                 hashMapOf(
-                    "string" to user.profile.s,
+                    "interests" to user.profile.interests.toList(),
                 )
 
-            userMap["profile"] = nested
+            userMap["profile"] = interests
 
             Firebase.firestore
                 .collection("users")
@@ -40,8 +41,17 @@ class FirebaseConnection {
                 .addOnFailureListener { e -> Log.w(TAG, "Error creating user", e) }
         }
 
-        fun updateUser(uid: String, interests: MutableSet<Category>){
+        fun updateUserInterests(uid: String, profile: Profile){
+            val hm : HashMap<String, Any?> = hashMapOf(
+                "profile.interests" to profile.interests.toList()
+            )
 
+            Firebase.firestore
+                .collection("users")
+                .document(uid)
+                .update(hm)
+                .addOnSuccessListener { Log.d(TAG, "Interests sucessfully added!") }
+                .addOnFailureListener { e -> Log.w(TAG, "Error for interests", e) }
         }
 
     }

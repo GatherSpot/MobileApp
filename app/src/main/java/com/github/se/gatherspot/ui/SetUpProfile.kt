@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.FirebaseConnection
 import com.github.se.gatherspot.model.Category
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
 
@@ -47,10 +48,9 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             onClick = {
-                FirebaseConnection.updateUser(uid, interests)
+                FirebaseConnection.updateUserInterests(uid, Profile(interests))
                 nav.controller.navigate("profile")
                       },
-
             modifier = Modifier.border(
                 width = 1.dp, color = Color.Black,
                 shape = RoundedCornerShape(100.dp)
