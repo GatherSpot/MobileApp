@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -42,7 +44,8 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 
 
 //Constant values for the the width and the height of the text fields
-private val WIDTH = 340.dp
+private val WIDTH = 300.dp
+private val WIDTH_2ELEM = 150.dp
 private val HEIGHT = 65.dp
 private val DESCRIPTION_HEIGHT = 150.dp
 
@@ -166,25 +169,31 @@ fun CreateEvent(nav: NavigationActions) {
                     placeholder = { Text("dd/MM/yyyy") })
 
                 // Time Start
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly){
+
                 OutlinedTextField(
                     modifier = Modifier
-                        .width(WIDTH)
+                        .width(WIDTH_2ELEM)
                         .height(HEIGHT)
                         .testTag("inputTimeStartEvent"),
                     value = eventTimeStart,
                     onValueChange = { eventTimeStart = it },
                     label = { Text("Start time*") },
                     placeholder = { Text("hh:mm") })
+
                 // Time End
                 OutlinedTextField(
                     modifier = Modifier
-                        .width(WIDTH)
+                        .width(WIDTH_2ELEM)
                         .height(HEIGHT)
                         .testTag("inputTimeEndEvent"),
                     value = eventTimeEnd,
                     onValueChange = { eventTimeEnd = it },
                     label = { Text("End time*") },
                     placeholder = { Text("hh:mm") })
+                }
                 // Location
                 OutlinedTextField(
                     modifier = Modifier
@@ -197,17 +206,20 @@ fun CreateEvent(nav: NavigationActions) {
                     label = { Text("Location") },
                     placeholder = { Text("Enter an address") })
 
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly){
 
                 // Max attendees
                 OutlinedTextField(
                     modifier = Modifier
-                        .width(WIDTH)
+                        .width(WIDTH_2ELEM)
                         .height(HEIGHT)
                         .testTag("inputMaxAttendees"),
                     value = maxAttendees,
                     onValueChange = { maxAttendees = it },
                     label = { Text("Max attendees") },
-                    placeholder = { Text("Maximum number of attendees") })
+                    placeholder = { Text("Max attendees") })
                 // Min attendees
                 OutlinedTextField(
                     modifier = Modifier
@@ -217,7 +229,8 @@ fun CreateEvent(nav: NavigationActions) {
                     value = minAttendees,
                     onValueChange = { minAttendees = it },
                     label = { Text("Min attendees") },
-                    placeholder = { Text("Minimum number of attendees") })
+                    placeholder = { Text("Min attendees") })
+                }
 
                 // Inscription limit date
                 OutlinedTextField(
