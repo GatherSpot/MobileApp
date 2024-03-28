@@ -15,13 +15,13 @@ import java.time.LocalTime
  * @param eventStartDate: The date of the start the event
  * @param eventEndDate: The date the event ends, if it is a multi-day event.
  * If not precised, it is the same as the start date
- * @param timeBeginning: The time the event starts
- * @param timeEnding: The time the event ends
+ * @param timeBeginning: The time in the eventStartDate the event starts
+ * @param timeEnding: The time in the eventEndDate the event ends
  * @param attendanceMaxCapacity: The maximum number of attendees (optional)
  * @param attendanceMinCapacity: The minimum number of attendees (optional)
  * @param inscriptionLimitDate: The last date to register for the event (optional)
  * @param eventStatus: The status of the event (draft, created, ongoing, completed)
- * @param category: List of category labels of the event
+ * @param categories: List of category labels of the event
  * @param registeredUsers: The list of users who registered for the event
  * @param finalAttendees: The list of users who attended the event
  * @param images: The images uploaded for the event
