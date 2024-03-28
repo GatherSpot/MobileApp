@@ -41,8 +41,7 @@ class EventViewModel {
         ) : Event{
             // First fetch an unique ID for the event
             val eventID = EventFirebaseConnection.getNewEventID()
-            // Check if the end date is null, if so set it to the start date
-            val eventEndDateChecked = eventEndDate ?: eventStartDate
+
 
             // Create the event
             val event = Event(
@@ -51,7 +50,7 @@ class EventViewModel {
                 description,
                 location,
                 eventStartDate,
-                eventEndDateChecked,
+                eventEndDate,
                 eventTimeStart,
                 eventTimeEnd,
                 maxAttendees,
@@ -62,7 +61,7 @@ class EventViewModel {
             )
 
             // Add the event to the database
-            //EventFirebaseConnection.addNewEvent(event)
+            EventFirebaseConnection.addNewEvent(event)
 
             return event
         }
@@ -102,29 +101,37 @@ class EventViewModel {
             timeLimitInscription: String
         ): Boolean {
             //test if the date is valid
-            val parsedEventDate = try {
+            val parsedEventStartDate = try {
                 LocalDate.parse(eventStartDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
             } catch (e: Exception) {
                 throw Exception("Invalid date format")
             }
             //Check whether the start date is in the future
-            if (parsedEventDate.isBefore(LocalDate.now())) {
+            if (parsedEventStartDate.isBefore(LocalDate.now())) {
                 throw Exception("Event date must be in the future")
             }
 
             // Check if the end date is valid and after the start date
-            val parsedEventEndDate = try {
-                LocalDate.parse(eventEndDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-            } catch (e: Exception) {
-                throw Exception("Invalid end date format")
-            }
-            if (parsedEventEndDate.isBefore(parsedEventDate)) {
-                throw Exception("Event end date must be after start date")
+            var parsedEventEndDate: LocalDate? = parsedEventStartDate
+            if (eventEndDate.isNotEmpty()) {
+                parsedEventEndDate = try {
+                    LocalDate.parse(eventEndDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                } catch (e: Exception) {
+                    throw Exception("Invalid end date format")
+                }
+                //If the end date is before the start date, throw an exception
+                //If the end date = start date, it's valid, the event is on the same day
+                if (parsedEventEndDate!!.isEqual(parsedEventStartDate)) {
+                    throw Exception("Event end date must be after start date")
+                }
+                if (parsedEventEndDate.isBefore(parsedEventStartDate)) {
+                    throw Exception("Event end date must be after start date")
+                }
             }
 
 
             //Check if eventStartDate is today
-            val isToday = parsedEventDate.isEqual(LocalDate.now())
+            val isToday = parsedEventStartDate.isEqual(LocalDate.now())
 
             //test if the time is valid
             val parsedEventTimeStart = try {
@@ -182,7 +189,7 @@ class EventViewModel {
                 } catch (e: Exception) {
                     throw Exception("Invalid inscription limit date format")
                 }
-                if (parsedDateLimitInscription!!.isAfter(parsedEventDate)) {
+                if (parsedDateLimitInscription!!.isAfter(parsedEventStartDate)) {
                     throw Exception("Inscription limit date must be before event start date")
                 }
                 //If Limit time is not given, set it to 23:59
@@ -195,7 +202,7 @@ class EventViewModel {
                 } else {
                     LocalTime.of(23, 59)
                 }
-                if (parsedDateLimitInscription.isEqual(parsedEventDate) && parsedTimeLimitInscription!!.isAfter(
+                if (parsedDateLimitInscription.isEqual(parsedEventStartDate) && parsedTimeLimitInscription!!.isAfter(
                         parsedEventTimeStart
                     )
                 ) {
@@ -208,7 +215,7 @@ class EventViewModel {
                 title,
                 description,
                 location,
-                parsedEventDate,
+                parsedEventStartDate,
                 parsedEventEndDate,
                 parsedEventTimeStart,
                 parsedEventTimeEnd,
