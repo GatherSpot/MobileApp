@@ -26,6 +26,7 @@ import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
   companion object{
@@ -82,7 +83,14 @@ class MainActivity : ComponentActivity() {
       navController: NavHostController
   ): Int {
     if (result.resultCode == RESULT_OK) {
-      navController.navigate("home")
+      if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
+        FirebaseAuth.getInstance().currentUser!!.sendEmailVerification()
+        navController.navigate("auth")
+        return RESULT_CANCELED
+      }
+      else {
+        navController.navigate("home")
+      }
     }
     return result.resultCode
   }

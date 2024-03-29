@@ -113,6 +113,7 @@ dependencies {
     implementation("androidx.compose.material:material:1.6.2")
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
 
     //For location
     implementation("com.squareup.okhttp3:okhttp:4.9.0")

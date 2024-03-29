@@ -50,15 +50,25 @@ fun SignUp(nav: NavigationActions) {
   var passwordDisplayed by remember { mutableStateOf("") }
   var showDialog by remember { mutableStateOf(false) }
   var isClicked by remember { mutableStateOf(false) }
+    var showDialogVerif by remember { mutableStateOf(false) }
+
 
   LaunchedEffect(isClicked) {
     if (isClicked) {
       val success = checkCredentials(email, password)
       if (success) {
+
         MainActivity.uid = FirebaseConnection.getUID()
         val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
         FirebaseConnection.addUser(newUser)
-        nav.controller.navigate("setup")
+          FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
+          if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
+              showDialogVerif = true
+
+          }
+          else {
+              nav.controller.navigate("setup")
+          }
       } else {
         showDialog = true
         isClicked = false
@@ -118,6 +128,16 @@ fun SignUp(nav: NavigationActions) {
             title = { Text("Login Failed") },
             text = { Text("Invalid email or password. Please try again.") })
       }
+        if (showDialogVerif) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialogVerif = false
+                nav.controller.navigate("auth")
+                               },
+            buttons = {},
+            title = { Text("Verification Email Sent") },
+            text = { Text("Please check your email to verify your account.") })
+        }
     }
   }
 }
