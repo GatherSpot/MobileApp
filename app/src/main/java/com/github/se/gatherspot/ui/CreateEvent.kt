@@ -67,7 +67,7 @@ fun ScrollableContent(content: @Composable () -> Unit) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateEvent(nav: NavigationActions) {
+fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
     var title by remember { mutableStateOf(TextFieldValue("")) }
     var description by remember { mutableStateOf(TextFieldValue("")) }
     var location by remember { mutableStateOf<Location?>(null) }
@@ -262,7 +262,7 @@ fun CreateEvent(nav: NavigationActions) {
                     onClick = {
                         var isDataValid = false
                         try {
-                             isDataValid = EventViewModel.validateParseEventData(
+                             isDataValid = eventViewModel.validateParseEventData(
                                 title.text,
                                 description.text,
                                 location!!,
@@ -321,5 +321,6 @@ fun CreateEvent(nav: NavigationActions) {
 @Composable
 fun CreateEventPreview() {
     val controller = rememberNavController()
-    CreateEvent(nav = NavigationActions(controller))
+    val eventViewModel = EventViewModel()
+    CreateEvent(nav = NavigationActions(controller), eventViewModel)
 }

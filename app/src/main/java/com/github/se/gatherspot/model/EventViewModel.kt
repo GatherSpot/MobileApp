@@ -2,13 +2,14 @@ package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 class EventViewModel {
-    companion object {
+
         /**
          * Create an event from verified data
          *
@@ -41,6 +42,7 @@ class EventViewModel {
         ) : Event{
             // First fetch an unique ID for the event
             val eventID = EventFirebaseConnection.getNewEventID()
+            //val eventID = "eventID"
 
 
             // Create the event
@@ -57,11 +59,12 @@ class EventViewModel {
                 attendanceMinCapacity = minAttendees ?: 0,
                 dateLimitInscription,
                 timeLimitInscription,
-                globalRating = null
+                globalRating = null,
+                eventStatus = EventStatus.CREATED
             )
 
             // Add the event to the database
-            EventFirebaseConnection.addNewEvent(event)
+            //EventFirebaseConnection.addNewEvent(event)
 
             return event
         }
@@ -228,5 +231,9 @@ class EventViewModel {
             return true
         }
 
-    }
+        suspend fun fetchLocationSuggestions(query: String): List<Location> {
+            return emptyList()
+        }
+
+
 }
