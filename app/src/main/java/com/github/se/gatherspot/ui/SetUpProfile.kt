@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.FirebaseConnection
 import com.github.se.gatherspot.model.Category
+import com.github.se.gatherspot.model.Category.*
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
@@ -47,7 +50,8 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
     var isEmailVerified by remember { mutableStateOf(false) }
     var email_text by remember { mutableStateOf("") }
 
-    LaunchedEffect(key1 = false) {
+
+    SideEffect {
         auth.currentUser?.reload()
         isEmailVerified = auth.currentUser?.isEmailVerified == true
         email_text = if (!isEmailVerified) {
@@ -57,13 +61,15 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
         }
     }
 
-
     val allCategories = enumValues<Category>().toList()
     val interests = mutableSetOf<Category>()
     Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp)) {
+        Text(text = "Choose your interests", fontSize = 30.sp)
+        
         LazyColumn {
             items(allCategories) { interest ->
                 FilterChipCompose(interest, interests)
+                Spacer(modifier = Modifier.height(5.dp))
             }
         }
 
@@ -83,7 +89,8 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
                     width = 1.dp, color = Color.Black,
                     shape = RoundedCornerShape(100.dp)
                 )
-                .padding(horizontal = 120.dp)
+                .padding(horizontal = 100.dp)
+                .wrapContentSize()
             ) {
                 Text("Save", color = Color.Black)
             }
@@ -91,28 +98,28 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
         }
 }
 
-@Composable
-fun ToggleButton(interest: Category, interests: MutableSet<Category>){
-    var selected by remember { mutableStateOf(false) }
-    Button(
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-        onClick = {
-            selected = !selected
-            if(selected){
-                interests.add(interest)
-            }
-            else{
-                interests.remove(interest)
-            }
-        },
-        modifier = Modifier.border(width = 1.dp,
-            color = if(selected) Color.Black else Color.LightGray,
-            shape = RoundedCornerShape(200.dp)
-           )
-    ){
-        Text(interest.toString(), fontSize = 20.sp, color = Color.Black)
-    }
-}
+//@Composable
+//fun ToggleButton(interest: Category, interests: MutableSet<Category>){
+//    var selected by remember { mutableStateOf(false) }
+//    Button(
+//        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+//        onClick = {
+//            selected = !selected
+//            if(selected){
+//                interests.add(interest)
+//            }
+//            else{
+//                interests.remove(interest)
+//            }
+//        },
+//        modifier = Modifier.border(width = 1.dp,
+//            color = if(selected) Color.Black else Color.LightGray,
+//            shape = RoundedCornerShape(200.dp)
+//           )
+//    ){
+//        Text(interest.toString(), fontSize = 20.sp, color = Color.Black)
+//    }
+//}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -131,7 +138,7 @@ fun FilterChipCompose(interest: Category, interests: MutableSet<Category>) {
             }
         },
         label = {
-            Text("Filter chip")
+            Text(interest.toString(), fontSize = 20.sp, color = Color.Black)
         },
         selected = selected,
         leadingIcon = if (selected) {
