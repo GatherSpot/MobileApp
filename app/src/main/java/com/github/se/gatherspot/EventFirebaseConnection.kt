@@ -70,14 +70,14 @@ class EventFirebaseConnection {
             val title = document.getString("title") as String
             val description = document.getString("description") as String
             val location: Location?
-            val locationName = document.getString("location_name")
+            val locationName = document.getString("locationName")
             location = if (locationName == "") {
                 null
             } else {
                 Location(
-                    latitude = document.get("location_latitude") as Double,
-                    longitude = document.get("location_latitude") as Double,
-                    name = document.getString("location_name") as String)
+                    latitude = document.get("locationLatitude") as Double,
+                    longitude = document.get("locationLongitude") as Double,
+                    name = document.getString("locationName") as String)
             }
             var date = document.getString("eventStartDate") as String
             val eventStartDate =
@@ -184,17 +184,17 @@ class EventFirebaseConnection {
                     "eventID" to event.eventID,
                     "title" to event.title,
                     "description" to event.description,
-                    "location_latitude" to
+                    "locationLatitude" to
                             when (event.location) {
                                 null -> 200.0
                                 else -> event.location.latitude
                             },
-                    "location_longitude" to
+                    "locationLongitude" to
                             when (event.location) {
                                 null -> 200.0
                                 else -> event.location.longitude
                             },
-                    "location_name" to
+                    "locationName" to
                             when (event.location) {
                                 null -> ""
                                 else -> event.location.name
