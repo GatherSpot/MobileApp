@@ -79,10 +79,13 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
                         .setIsSmartLockEnabled(false)
                         .build()
                 launcher.launch(signInIntent)
+
                 if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
                     FirebaseAuth.getInstance().currentUser!!.sendEmailVerification()
                     FirebaseAuth.getInstance().signOut()
                 }
+
+
             },
             contentPadding = PaddingValues(start = 1.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),

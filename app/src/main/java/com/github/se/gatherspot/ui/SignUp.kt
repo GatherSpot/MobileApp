@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,8 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.tasks.await
 
 @Composable
@@ -51,11 +54,13 @@ fun SignUp(nav: NavigationActions) {
   var showDialog by remember { mutableStateOf(false) }
   var isClicked by remember { mutableStateOf(false) }
     var showDialogVerif by remember { mutableStateOf(false) }
+  val t = remember { mutableStateOf("") }
+
 
 
   LaunchedEffect(isClicked) {
     if (isClicked) {
-      val success = checkCredentials(email, password)
+      val success = checkCredentials(email, password, t)
       if (success) {
 
         MainActivity.uid = FirebaseConnection.getUID()
@@ -69,7 +74,9 @@ fun SignUp(nav: NavigationActions) {
       }
     }
   }
-  Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
+  Box(modifier = Modifier
+      .fillMaxSize()
+      .background(Color.LightGray)) {
     Column(
         modifier = Modifier.padding(vertical = 80.dp, horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(70.dp, Alignment.Top),
@@ -77,14 +84,17 @@ fun SignUp(nav: NavigationActions) {
     ) {
       Row(
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
+          modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 10.dp)) {
             Icon(
                 painter = painterResource(R.drawable.backarrow),
                 contentDescription = "",
                 modifier =
-                    Modifier.clickable { nav.controller.navigate("auth") }
-                        .width(30.dp)
-                        .height(30.dp))
+                Modifier
+                    .clickable { nav.controller.navigate("auth") }
+                    .width(30.dp)
+                    .height(30.dp))
 
             Spacer(modifier = Modifier.width(80.dp))
 
@@ -119,8 +129,8 @@ fun SignUp(nav: NavigationActions) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
             buttons = {},
-            title = { Text("Login Failed") },
-            text = { Text("Invalid email or password. Please try again.") })
+            title = { Text("Signup Failed") },
+            text = { Text(t.value) })
       }
         if (showDialogVerif) {
         AlertDialog(
@@ -141,14 +151,18 @@ fun isEmailValid(email: String): Boolean {
   return email.matches(emailRegex.toRegex())
 }
 
-suspend fun checkCredentials(email: String, password: String): Boolean {
+suspend fun checkCredentials(email: String, password: String, t: MutableState<String>): Boolean {
   val auth = FirebaseAuth.getInstance()
 
   return try {
     auth.createUserWithEmailAndPassword(email, password).await()
     true
-  } catch (e: Exception) {
-    Log.d(TAG, e.toString())
+  } catch (e: FirebaseAuthUserCollisionException) {
+    t.value = "Email already in use"
     false
+  }
+  catch (e: FirebaseAuthInvalidCredentialsException) {
+      t.value = "Wrong credentials"
+      false
   }
 }

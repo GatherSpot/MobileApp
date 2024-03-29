@@ -1,8 +1,6 @@
 package com.github.se.gatherspot.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -23,7 +21,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,13 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.FirebaseConnection
 import com.github.se.gatherspot.model.Category
-import com.github.se.gatherspot.model.Category.*
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
@@ -48,13 +42,13 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
 
     val auth = FirebaseAuth.getInstance()
     var isEmailVerified by remember { mutableStateOf(false) }
-    var email_text by remember { mutableStateOf("") }
+    var emailText by remember { mutableStateOf("") }
 
 
     SideEffect {
         auth.currentUser?.reload()
         isEmailVerified = auth.currentUser?.isEmailVerified == true
-        email_text = if (!isEmailVerified) {
+        emailText = if (!isEmailVerified) {
             "Please verify your email before continuing"
         } else {
             ""
@@ -94,7 +88,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
             ) {
                 Text("Save", color = Color.Black)
             }
-        Text(text = email_text, color = Color.Red)
+        Text(text = emailText, color = Color.Red)
         }
 }
 
