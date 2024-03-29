@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
         return RESULT_CANCELED
       }
       else {
-        navController.navigate("home")
+        navController.navigate("signup")
       }
     }
     return result.resultCode

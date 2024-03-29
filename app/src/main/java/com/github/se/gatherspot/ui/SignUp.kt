@@ -62,13 +62,7 @@ fun SignUp(nav: NavigationActions) {
         val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
         FirebaseConnection.addUser(newUser)
           FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
-          if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
-              showDialogVerif = true
-
-          }
-          else {
-              nav.controller.navigate("setup")
-          }
+          showDialogVerif = true
       } else {
         showDialog = true
         isClicked = false
@@ -132,7 +126,7 @@ fun SignUp(nav: NavigationActions) {
         AlertDialog(
             onDismissRequest = {
                 showDialogVerif = false
-                nav.controller.navigate("auth")
+                nav.controller.navigate("setup")
                                },
             buttons = {},
             title = { Text("Verification Email Sent") },

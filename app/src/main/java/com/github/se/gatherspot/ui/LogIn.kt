@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.firebase.ui.auth.AuthUI
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
@@ -67,16 +68,21 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
                 .height(200.dp))
         Button(
             onClick = {
-              val providers =
-                  arrayListOf(
-                      AuthUI.IdpConfig.EmailBuilder().build())
-              val signInIntent =
-                  AuthUI.getInstance()
-                      .createSignInIntentBuilder()
-                      .setAvailableProviders(providers)
-                      .setIsSmartLockEnabled(false)
-                      .build()
-              launcher.launch(signInIntent)
+                val providers =
+                    arrayListOf(
+                        AuthUI.IdpConfig.EmailBuilder().build()
+                    )
+                val signInIntent =
+                    AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setIsSmartLockEnabled(false)
+                        .build()
+                launcher.launch(signInIntent)
+                if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
+                    FirebaseAuth.getInstance().currentUser!!.sendEmailVerification()
+                    FirebaseAuth.getInstance().signOut()
+                }
             },
             contentPadding = PaddingValues(start = 1.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
