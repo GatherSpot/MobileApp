@@ -3,13 +3,32 @@ plugins {
     id ("org.jetbrains.kotlin.android")
     id("com.ncorti.ktfmt.gradle") version "0.16.0"
     id("com.google.gms.google-services")
+    id("jacoco")
+    id("org.sonarqube") version "4.4.1.3373"
+}
+sonar{
+    properties {
+        property("sonar.projectKey", "GatherSpot_MobileApp")
+        property("sonar.projectName", "MobileApp")
+        property("sonar.organization", "GatherSpot")
+        property("sonar.host.url", "https://sonarcloud.io")
+        // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
+        property("sonar.junit.reportPaths", "${project.layout.buildDirectory.get()}/test-results/testDebugunitTest/")
+        // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will have to be changed too.
+        property("sonar.androidLint.reportPaths", "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
+        // Paths to JaCoCo XML coverage report files.
+        property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+    }
 
 }
-
 
 android {
     namespace = "com.github.se.gatherspot"
     compileSdk = 34
+
+    testCoverage {
+        jacocoVersion = "0.8.8"
+    }
 
     defaultConfig {
         applicationId = "com.github.se.gatherspot"
@@ -116,6 +135,13 @@ dependencies {
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+}
+tasks.withType<Test> {
+    // Configure Jacoco for each tests
+    configure<JacocoTaskExtension> {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
 }
 tasks.register("jacocoTestReport", JacocoReport::class) {
     mustRunAfter("testDebugUnitTest", "connectedDebugAndroidTest")

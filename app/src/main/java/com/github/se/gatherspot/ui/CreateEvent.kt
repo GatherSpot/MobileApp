@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventViewModel
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -122,14 +123,14 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 value = eventStartDate,
                 onValueChange = { eventStartDate = it },
                 label = { Text("Start Date of the event*") },
-                placeholder = { Text("dd/MM/yyyy") })
+                placeholder = { Text(EventFirebaseConnection.dateFormat) })
             // End Date
             OutlinedTextField(
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
                 value = eventEndDate,
                 onValueChange = { eventEndDate = it },
                 label = { Text("End date (if identical to start date leave empty") },
-                placeholder = { Text("dd/MM/yyyy") })
+                placeholder = { Text(EventFirebaseConnection.dateFormat) })
 
             // Time Start
             Row(
@@ -141,7 +142,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                       value = eventTimeStart,
                       onValueChange = { eventTimeStart = it },
                       label = { Text("Start time*") },
-                      placeholder = { Text("hh:mm") })
+                      placeholder = { Text(EventFirebaseConnection.timeFormat) })
 
                   // Time End
                   OutlinedTextField(
@@ -150,7 +151,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                       value = eventTimeEnd,
                       onValueChange = { eventTimeEnd = it },
                       label = { Text("End time*") },
-                      placeholder = { Text("hh:mm") })
+                      placeholder = { Text(EventFirebaseConnection.timeFormat) })
                 }
             // Location
             OutlinedTextField(
@@ -190,7 +191,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
                 label = { Text("Inscription limit date") },
-                placeholder = { Text("dd/MM/yyyy") })
+                placeholder = { Text(EventFirebaseConnection.dateFormat) })
             // Inscription limit time
             OutlinedTextField(
                 modifier =
@@ -198,7 +199,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 value = inscriptionLimitTime,
                 onValueChange = { inscriptionLimitTime = it },
                 label = { Text("Inscription limit time") },
-                placeholder = { Text("hh:mm") })
+                placeholder = { Text(EventFirebaseConnection.timeFormat) })
 
             // TODO :Upload images
 
@@ -208,7 +209,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                   var isDataValid = false
                   try {
                     isDataValid =
-                        eventViewModel.validateParseEventData(
+                        eventViewModel.validateEvent(
                             title.text,
                             description.text,
                             location!!,

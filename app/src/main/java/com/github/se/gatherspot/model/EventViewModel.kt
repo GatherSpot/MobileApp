@@ -41,7 +41,6 @@ class EventViewModel {
   ): Event {
     // First fetch an unique ID for the event
     val eventID = EventFirebaseConnection.getNewEventID()
-    // val eventID = "eventID"
 
     // Create the event
     val event =
@@ -86,7 +85,7 @@ class EventViewModel {
    * @return true if the data is valid
    * @throws Exception if the data is not valid
    */
-  fun validateParseEventData(
+  fun validateEvent(
       title: String,
       description: String,
       location: Location,
@@ -102,7 +101,8 @@ class EventViewModel {
     // test if the date is valid
     val parsedEventStartDate =
         try {
-          LocalDate.parse(eventStartDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+          LocalDate.parse(
+              eventStartDate, DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat))
         } catch (e: Exception) {
           throw Exception("Invalid date format")
         }
@@ -116,7 +116,8 @@ class EventViewModel {
     if (eventEndDate.isNotEmpty()) {
       parsedEventEndDate =
           try {
-            LocalDate.parse(eventEndDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            LocalDate.parse(
+                eventEndDate, DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat))
           } catch (e: Exception) {
             throw Exception("Invalid end date format")
           }
@@ -134,13 +135,15 @@ class EventViewModel {
     // test if the time is valid
     val parsedEventTimeStart =
         try {
-          LocalTime.parse(eventTimeStart, DateTimeFormatter.ofPattern("HH:mm"))
+          LocalTime.parse(
+              eventTimeStart, DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat))
         } catch (e: Exception) {
           throw Exception("Invalid time format for start time")
         }
     val parsedEventTimeEnd =
         try {
-          LocalTime.parse(eventTimeEnd, DateTimeFormatter.ofPattern("HH:mm"))
+          LocalTime.parse(
+              eventTimeEnd, DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat))
         } catch (e: Exception) {
           throw Exception("Invalid time format for end time")
         }
@@ -187,7 +190,9 @@ class EventViewModel {
 
       parsedDateLimitInscription =
           try {
-            LocalDate.parse(dateLimitInscription, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            LocalDate.parse(
+                dateLimitInscription,
+                DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat))
           } catch (e: Exception) {
             throw Exception("Invalid inscription limit date format")
           }
@@ -198,7 +203,9 @@ class EventViewModel {
       parsedTimeLimitInscription =
           if (timeLimitInscription.isNotEmpty()) {
             try {
-              LocalTime.parse(timeLimitInscription, DateTimeFormatter.ofPattern("HH:mm"))
+              LocalTime.parse(
+                  timeLimitInscription,
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat))
             } catch (e: Exception) {
               throw Exception("Invalid inscription limit time format")
             }

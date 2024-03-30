@@ -44,7 +44,7 @@ class EventFirebaseConnection {
           .document(eventID)
           .get()
           .addOnSuccessListener { result ->
-            val event = mapDocumentToEvent(result)
+            val event = mapDocToEvent(result)
             continuation.resume(event)
           }
           .addOnFailureListener { exception -> continuation.resumeWithException(exception) }
@@ -56,15 +56,15 @@ class EventFirebaseConnection {
      * @param document: The document to map
      * @return The Event object
      */
-    private fun mapDocumentToEvent(document: DocumentSnapshot): Event? {
+    private fun mapDocToEvent(document: DocumentSnapshot): Event? {
       if (document.getString("eventID") == null) {
         return null
       }
-      val eventID = document.getString("eventID") as String
-      val title = document.getString("title") as String
-      val description = document.getString("description") as String
+      val eventID = document.getString("eventID")!!
+      val title = document.getString("title")!!
+      val description = document.getString("description")!!
       val location: Location?
-      val locationName = document.getString("locationName")
+      val locationName = document.getString("locationName")!!
       location =
           if (locationName == "") {
             null
@@ -72,9 +72,9 @@ class EventFirebaseConnection {
             Location(
                 latitude = document.get("locationLatitude") as Double,
                 longitude = document.get("locationLongitude") as Double,
-                name = document.getString("locationName") as String)
+                name = document.getString("locationName")!!)
           }
-      var date = document.getString("eventStartDate") as String
+      var date = document.getString("eventStartDate")!!
       val eventStartDate =
           when (date) {
             "null" -> null
@@ -85,7 +85,7 @@ class EventFirebaseConnection {
                   null
                 }
           }
-      date = document.getString("eventEndDate") as String
+      date = document.getString("eventEndDate")!!
       val eventEndDate =
           when (date) {
             "null" -> null
@@ -96,28 +96,28 @@ class EventFirebaseConnection {
                   null
                 }
           }
-      var time = document.getString("timeBeginning") as String
+      var time = document.getString("timeBeginning")!!
       val timeBeginning =
           when (time) {
             "null" -> null
             else -> LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat))
           }
-      time = document.getString("timeEnding") as String
+      time = document.getString("timeEnding")!!
       val timeEnding =
           when (time) {
             "null" -> null
             else -> LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat))
           }
-      var capacity = document.getString("attendanceMaxCapacity")
+      var capacity = document.getString("attendanceMaxCapacity")!!
       val attendanceMaxCapacity =
           when (capacity) {
             "Unlimited" -> null
-            else -> capacity?.toInt()
+            else -> capacity.toInt()
           }
-      capacity = document.getString("attendanceMinCapacity")
+      capacity = document.getString("attendanceMinCapacity")!!
       val attendanceMinCapacity =
-          capacity?.toInt() // Min will be 0 by default if min is not mentioned
-      date = document.getString("inscriptionLimitDate") as String
+          capacity.toInt() // Min will be 0 by default if min is not mentioned
+      date = document.getString("inscriptionLimitDate")!!
       val inscriptionLimitDate =
           when (date) {
             "null" -> null
@@ -128,13 +128,13 @@ class EventFirebaseConnection {
                   null
                 }
           }
-      time = document.getString("inscriptionLimitTime") as String
+      time = document.getString("inscriptionLimitTime")!!
       val inscriptionLimitTime =
           when (time) {
             "null" -> null
             else -> LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat))
           }
-      val status = document.getString("eventStatus") as String
+      val status = document.getString("eventStatus")!!
       val eventStatus: EventStatus =
           when (status) {
             "CREATED" -> EventStatus.CREATED
@@ -148,7 +148,7 @@ class EventFirebaseConnection {
       val finalAttendee = document.get("finalAttendee") as List<String>
       val images = null // TODO: Retrieve images from database
       val globalRating =
-          when (val rating = document.getString("globalRating") as String) {
+          when (val rating = document.getString("globalRating")!!) {
             "null" -> null
             else -> rating.toInt()
           }
@@ -162,7 +162,7 @@ class EventFirebaseConnection {
           timeBeginning = timeBeginning,
           timeEnding = timeEnding,
           attendanceMaxCapacity = attendanceMaxCapacity,
-          attendanceMinCapacity = attendanceMinCapacity!!,
+          attendanceMinCapacity = attendanceMinCapacity,
           inscriptionLimitDate = inscriptionLimitDate,
           inscriptionLimitTime = inscriptionLimitTime,
           eventStatus = eventStatus,
