@@ -12,7 +12,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class LoginFirebaseConnectionUnit {
+class UserFirebaseConnectionUnit {
   @Test
   fun newUID() {
     val uid = UserFirebaseConnection.getUID()
