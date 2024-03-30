@@ -34,21 +34,20 @@ data class Event(
     val location: Location?,
     val eventStartDate: LocalDate?,
     val eventEndDate: LocalDate?,
-    val timeBeginning: LocalTime?, //Beginning in the eventStartDate
-    val timeEnding: LocalTime?, //End in the eventEndDate
+    val timeBeginning: LocalTime?, // Beginning in the eventStartDate
+    val timeEnding: LocalTime?, // End in the eventEndDate
     val attendanceMaxCapacity: Int?,
     val attendanceMinCapacity: Int = 0,
     val inscriptionLimitDate: LocalDate?,
     val inscriptionLimitTime: LocalTime?,
     val eventStatus: EventStatus = EventStatus.DRAFT,
-    // TODO : List of Categories, but for now before the implementation of category class just use String
+    // TODO : List of Categories, but for now before the implementation of category class just use
+    // String
     val categories: List<String>? = emptyList(),
     // List of the IDs of the users who registered for the event
     val registeredUsers: List<String>? = emptyList(),
     val finalAttendees: List<String>? = emptyList(),
     // Find a way to upload image
-    val images: ImageBitmap? = null, //TODO find default image
+    val images: ImageBitmap? = null, // TODO find default image
     val globalRating: Int?
 )
-
-
