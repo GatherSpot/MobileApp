@@ -11,63 +11,29 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.github.se.gatherspot.ui.theme.Red80
+import com.github.se.gatherspot.ui.theme.Pink40
 import com.google.maps.android.compose.Circle
 import java.util.BitSet
 
 
 enum class Interests {
-    SPORT {
-          fun color() = Red80
-          },
-    FOOTBALL{
-        fun color() = Red80
-    },
-    BASKETBALL{
-        fun color() = Red80
-    },
-    TENNIS{
-        fun color() = Red80
-    },
-    BOARD_GAMES{
-        fun color() = Red80
-    },
-    CHESS{
-        fun color() = Red80
-    },
-    ROLE_PLAY{
-        fun color() = Red80
-    },
-    VIDEO_GAMES{
-        fun color() = Red80
-    },
-    NIGHTLIFE{
-        fun color() = Red80
-    },
-    CONCERTS{
-        fun color() = Red80
-    },
-    TECHNOLOGY{
-        fun color() = Red80
-    },
-    NETWORKING{
-        fun color() = Red80
-    },
-    SPEED_DATING{
-        fun color() = Red80
-    },
-    ART{
-        fun color() = Red80
-    },
-    TRAVEL{
-        fun color() = Red80
-    },
-    LEISURE{
-        fun color() = Red80
-    },
-    BOWLING{
-        fun color() = Red80
-    }
+    SPORT ,
+    FOOTBALL,
+    BASKETBALL,
+    TENNIS,
+    BOARD_GAMES,
+    CHESS,
+    ROLE_PLAY,
+    VIDEO_GAMES,
+    NIGHTLIFE,
+    CONCERTS,
+    TECHNOLOGY,
+    NETWORKING,
+    SPEED_DATING,
+    ART,
+    TRAVEL,
+    LEISURE,
+    BOWLING
     ;
 
 
@@ -87,7 +53,7 @@ enum class Interests {
 
 
         fun color(interest: Interests) : Color{
-            return Red80;
+            return Pink40;
         }
 
         // This function creates a new BitSet to store interests
@@ -150,10 +116,10 @@ enum class Interests {
                         .drawBehind {
                             drawCircle(
                                 color = color(interest),
-                                radius = this.size.maxDimension
+                                radius = this.size.width
                             )
                         },
-                    text = interest.toString(),
+                    text = Interests.CHESS.toString(),
                 )
 
             }
