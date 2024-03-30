@@ -10,7 +10,7 @@ class EventViewModelTest {
     @Test
     fun createEvent_withValidData_returnsEvent() {
         val event = eventViewModel.createEvent(
-            "Test Event",
+            "Test Event1",
             "This is a test event",
             Location(0.0, 0.0, "Test Location"),
             LocalDate.now().plusDays(1),
@@ -22,7 +22,20 @@ class EventViewModelTest {
             LocalDate.now().plusDays(1),
             LocalTime.of(9, 0)
         )
-        Assert.assertEquals("Test Event", event.title)
+        Assert.assertEquals("Test Event1", event.title)
+        Assert.assertEquals("This is a test event", event.description)
+        Assert.assertEquals(0.0, event.location?.latitude)
+        Assert.assertEquals(0.0, event.location?.longitude)
+        Assert.assertEquals("Test Location", event.location?.name)
+        Assert.assertEquals(LocalDate.now().plusDays(1), event.eventStartDate)
+        Assert.assertEquals(LocalDate.now().plusDays(2), event.eventEndDate)
+        Assert.assertEquals(LocalTime.of(10, 0), event.timeBeginning)
+        Assert.assertEquals(LocalTime.of(12, 0), event.timeEnding)
+        Assert.assertEquals(100, event.attendanceMaxCapacity)
+        Assert.assertEquals(10, event.attendanceMinCapacity)
+        Assert.assertEquals(LocalDate.now().plusDays(1), event.inscriptionLimitDate)
+        Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
+
     }
 
     // Write tests for validateParseEventData
@@ -30,7 +43,7 @@ class EventViewModelTest {
     fun validateEventData_withValidData_returnsTrue() {
         //validate data parse strings
         val result = eventViewModel.validateParseEventData(
-            "Test Event",
+            "Test Event2",
             "This is a test event",
             Location(0.0, 0.0, "Test Location"),
             "12/04/2026",
@@ -48,11 +61,11 @@ class EventViewModelTest {
     }
 
     @Test
-    fun validateEventData_withEventDateAfterStartDate_returnsFalse() {
+    fun validateEventData_withEventStartDateAfterEndDate_returnsFalse() {
         //validate data parse strings
         try{
             val result = eventViewModel.validateParseEventData(
-                "Test Event",
+                "Test Event3",
                 "This is a test event",
                 Location(0.0, 0.0, "Test Location"),
                 "12/04/2026",
@@ -75,7 +88,7 @@ class EventViewModelTest {
         //validate data parse strings
         try{
         val result = eventViewModel.validateParseEventData(
-            "Test Event",
+            "Test Event4",
             "This is a test event",
             Location(0.0, 0.0, "Test Location"),
             "12022020",
@@ -99,7 +112,7 @@ class EventViewModelTest {
         //validate data parse strings
         try {
             val result = eventViewModel.validateParseEventData(
-                "Test Event",
+                "Test Event5",
                 "This is a test event",
                 Location(0.0, 0.0, "Test Location"),
                 "12/04/2026",
@@ -116,5 +129,54 @@ class EventViewModelTest {
             Assert.assertEquals("Event end date must be after start date", e.message)
         }
     }
+
+    @Test
+    fun validateEventData_withInvalidTime_returnsFalse() {
+        //validate data parse strings
+        try{
+            val result = eventViewModel.validateParseEventData(
+                "Test Event6",
+                "This is a test event",
+                Location(0.0, 0.0, "Test Location"),
+                "12/04/2026",
+                "12/05/2026",
+                "10:00",
+                "25:00",
+                "100",
+                "10",
+                "10/04/2025",
+                "09:00"
+
+            )
+        }catch (e: Exception) {
+            Assert.assertEquals("Invalid time format for end time", e.message)
+        }
+    }
+
+    @Test
+    fun validateEventData_withInvalidCapacity_returnsFalse() {
+        //validate data parse strings
+        try{
+            val result = eventViewModel.validateParseEventData(
+                "Test Event",
+                "This is a test event",
+                Location(0.0, 0.0, "Test Location"),
+                "12/04/2026",
+                "12/04/2026",
+                "10:00",
+                "12:00",
+                "two",
+                "0",
+                "10/04/2025",
+                "09:00"
+
+            )
+        }catch (e: Exception) {
+            Assert.assertEquals("Invalid max attendees format, must be a number", e.message)
+        }
+    }
+
+
+
 
 }

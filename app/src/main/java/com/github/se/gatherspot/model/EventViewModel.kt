@@ -64,7 +64,7 @@ class EventViewModel {
             )
 
             // Add the event to the database
-            //EventFirebaseConnection.addNewEvent(event)
+            EventFirebaseConnection.addNewEvent(event)
 
             return event
         }
@@ -124,10 +124,8 @@ class EventViewModel {
                 }
                 //If the end date is before the start date, throw an exception
                 //If the end date = start date, it's valid, the event is on the same day
-                if (parsedEventEndDate!!.isEqual(parsedEventStartDate)) {
-                    throw Exception("Event end date must be after start date")
-                }
-                if (parsedEventEndDate.isBefore(parsedEventStartDate)) {
+
+                if (parsedEventEndDate!!.isBefore(parsedEventStartDate)) {
                     throw Exception("Event end date must be after start date")
                 }
             }
