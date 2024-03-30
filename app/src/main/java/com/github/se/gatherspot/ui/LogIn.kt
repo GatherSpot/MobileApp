@@ -16,9 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -36,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import com.firebase.ui.auth.AuthUI
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
@@ -64,43 +61,34 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
         Image(
             painter = painterResource(R.drawable.community),
             contentDescription = "",
-            modifier = Modifier
-                .width(200.dp)
-                .height(200.dp))
+            modifier = Modifier.width(200.dp).height(200.dp))
         Button(
             onClick = {
-                val providers =
-                    arrayListOf(
-                        AuthUI.IdpConfig.EmailBuilder().build()
-                    )
-                val signInIntent =
-                    AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .setIsSmartLockEnabled(false)
-                        .build()
-                launcher.launch(signInIntent)
-
+              val providers = arrayListOf(AuthUI.IdpConfig.EmailBuilder().build())
+              val signInIntent =
+                  AuthUI.getInstance()
+                      .createSignInIntentBuilder()
+                      .setAvailableProviders(providers)
+                      .setIsSmartLockEnabled(false)
+                      .build()
+              launcher.launch(signInIntent)
             },
             contentPadding = PaddingValues(start = 1.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
             border = BorderStroke(1.dp, Color.LightGray),
-            modifier = Modifier
-                .width(250.dp)
-                .height(40.dp)
-                .testTag("loginButton")
-        )
-            {
+            modifier = Modifier.width(250.dp).height(40.dp).testTag("loginButton")) {
               Row(
                   verticalAlignment = Alignment.CenterVertically,
                   horizontalArrangement = Arrangement.Center,
               ) {
-                Image(painter = painterResource(id = R.drawable.ic_logo_google),
+                Image(
+                    painter = painterResource(id = R.drawable.ic_logo_google),
                     contentDescription = "Google Logo")
                 Spacer(modifier = Modifier.width(10.dp))
-                Image(painter = painterResource(id = R.drawable.box),
-                       contentDescription = "Email",
-                        modifier = Modifier.width(30.dp).height(30.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.box),
+                    contentDescription = "Email",
+                    modifier = Modifier.width(30.dp).height(30.dp))
                 Spacer(modifier = Modifier.width(10.dp))
                 Text("Sign in with Gmail/Email", color = Color.White)
               }
@@ -110,19 +98,18 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
             onClick = { nav.controller.navigate("signup") },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
             border = BorderStroke(1.dp, Color.LightGray),
-            modifier = Modifier
-                .width(190.dp)
-                .height(40.dp)
-                .testTag("signUpButton")) {
+            modifier = Modifier.width(190.dp).height(40.dp).testTag("signUpButton")) {
               Row {
-                  Image(painter = painterResource(id = R.drawable.ic_logo_google),
-                      contentDescription = "Google Logo")
-                  Spacer(modifier = Modifier.width(10.dp))
-                  Image(painter = painterResource(id = R.drawable.box),
-                      contentDescription = "Email",
-                      modifier = Modifier.width(30.dp).height(30.dp))
-                  Spacer(modifier = Modifier.width(10.dp))
-                  Text("Sign up", color = Color.White)
+                Image(
+                    painter = painterResource(id = R.drawable.ic_logo_google),
+                    contentDescription = "Google Logo")
+                Spacer(modifier = Modifier.width(10.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.box),
+                    contentDescription = "Email",
+                    modifier = Modifier.width(30.dp).height(30.dp))
+                Spacer(modifier = Modifier.width(10.dp))
+                Text("Sign up", color = Color.White)
               }
             }
       }

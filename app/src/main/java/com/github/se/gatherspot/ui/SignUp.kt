@@ -1,7 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,9 +32,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.gatherspot.FirebaseConnection
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.UserFirebaseConnection
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -54,30 +52,26 @@ fun SignUp(nav: NavigationActions) {
   var passwordDisplayed by remember { mutableStateOf("") }
   var showDialog by remember { mutableStateOf(false) }
   var isClicked by remember { mutableStateOf(false) }
-    var showDialogVerif by remember { mutableStateOf(false) }
+  var showDialogVerif by remember { mutableStateOf(false) }
   val t = remember { mutableStateOf("") }
-
-
 
   LaunchedEffect(isClicked) {
     if (isClicked) {
       val success = checkCredentials(email, password, t)
       if (success) {
 
-        MainActivity.uid = FirebaseConnection.getUID()
+        MainActivity.uid = UserFirebaseConnection.getUID()
         val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
-        FirebaseConnection.addUser(newUser)
-          FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
-          showDialogVerif = true
+        UserFirebaseConnection.addUser(newUser)
+        FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
+        showDialogVerif = true
       } else {
         showDialog = true
         isClicked = false
       }
     }
   }
-  Box(modifier = Modifier
-      .fillMaxSize()
-      .background(Color.LightGray)) {
+  Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
     Column(
         modifier = Modifier.padding(vertical = 80.dp, horizontal = 20.dp).testTag("signUpScreen"),
         verticalArrangement = Arrangement.spacedBy(70.dp, Alignment.Top),
@@ -85,17 +79,14 @@ fun SignUp(nav: NavigationActions) {
     ) {
       Row(
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 10.dp)) {
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
             Icon(
                 painter = painterResource(R.drawable.backarrow),
                 contentDescription = "",
                 modifier =
-                Modifier
-                    .clickable { nav.controller.navigate("auth") }
-                    .width(30.dp)
-                    .height(30.dp))
+                    Modifier.clickable { nav.controller.navigate("auth") }
+                        .width(30.dp)
+                        .height(30.dp))
 
             Spacer(modifier = Modifier.width(80.dp))
 
@@ -106,15 +97,13 @@ fun SignUp(nav: NavigationActions) {
           value = username,
           onValueChange = { s -> username = s },
           label = { Text(text = "Username") },
-          modifier = Modifier.testTag("user")
-      )
+          modifier = Modifier.testTag("user"))
 
       OutlinedTextField(
           value = email,
           onValueChange = { s -> email = s },
           label = { Text(text = "Email") },
-          modifier = Modifier.testTag("email")
-      )
+          modifier = Modifier.testTag("email"))
 
       OutlinedTextField(
           value = passwordDisplayed,
@@ -123,8 +112,7 @@ fun SignUp(nav: NavigationActions) {
             passwordDisplayed = "*".repeat(s.length)
           },
           label = { Text(text = "Password") },
-          modifier = Modifier.testTag("password")
-          )
+          modifier = Modifier.testTag("password"))
 
       Button(
           enabled = isEmailValid(email) and password.isNotEmpty() and username.isNotEmpty(),
@@ -141,16 +129,16 @@ fun SignUp(nav: NavigationActions) {
             title = { Text("Signup Failed") },
             text = { Text(t.value) })
       }
-        if (showDialogVerif) {
+      if (showDialogVerif) {
         AlertDialog(
             onDismissRequest = {
-                showDialogVerif = false
-                nav.controller.navigate("setup")
-                               },
+              showDialogVerif = false
+              nav.controller.navigate("setup")
+            },
             buttons = {},
             title = { Text("Verification Email Sent") },
             text = { Text("Please check your email to verify your account.") })
-        }
+      }
     }
   }
 }
@@ -166,12 +154,11 @@ suspend fun checkCredentials(email: String, password: String, t: MutableState<St
   return try {
     auth.createUserWithEmailAndPassword(email, password).await()
     true
+  } catch (e: FirebaseAuthInvalidCredentialsException) {
+    t.value = "Wrong credentials"
+    false
   } catch (e: FirebaseAuthUserCollisionException) {
     t.value = "Email already in use"
     false
-  }
-  catch (e: FirebaseAuthInvalidCredentialsException) {
-      t.value = "Wrong credentials"
-      false
   }
 }

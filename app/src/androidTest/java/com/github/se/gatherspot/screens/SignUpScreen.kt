@@ -18,9 +18,9 @@ class SignUpScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
     ComposeScreen<SignUpScreen>(
         semanticsProvider = semanticsProvider, viewBuilderAction = { hasTestTag("signUpScreen") }) {
 
-    // Structural elements of the UI
-    val usernameField: KNode = child { hasTestTag("user") }
-    val emailField: KNode = child { hasTestTag("email") }
-    val passwordField: KNode = child { hasTestTag("password") }
-    val button: KNode = child { hasTestTag("validate") }
+  // Structural elements of the UI
+  val usernameField: KNode = child { hasTestTag("user") }
+  val emailField: KNode = child { hasTestTag("email") }
+  val passwordField: KNode = child { hasTestTag("password") }
+  val button: KNode = child { hasTestTag("validate") }
 }

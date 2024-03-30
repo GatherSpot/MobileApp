@@ -29,12 +29,13 @@ import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
-  companion object{
+  companion object {
     lateinit var uid: String
   }
 
   private lateinit var signInLauncher: ActivityResultLauncher<Intent>
   private lateinit var navController: NavHostController
+
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
@@ -70,7 +71,7 @@ class MainActivity : ComponentActivity() {
 
               composable("profile") { Profile(NavigationActions(navController)) }
 
-              composable("setup"){ SetUpProfile(NavigationActions(navController), uid)}
+              composable("setup") { SetUpProfile(NavigationActions(navController), uid) }
             }
           }
         }
@@ -87,8 +88,7 @@ class MainActivity : ComponentActivity() {
         FirebaseAuth.getInstance().currentUser!!.sendEmailVerification()
         navController.navigate("auth")
         return RESULT_CANCELED
-      }
-      else {
+      } else {
         navController.navigate("home")
       }
     }

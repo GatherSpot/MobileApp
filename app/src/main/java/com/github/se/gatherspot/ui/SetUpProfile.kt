@@ -4,7 +4,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -30,124 +29,88 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.gatherspot.FirebaseConnection
+import com.github.se.gatherspot.UserFirebaseConnection
 import com.github.se.gatherspot.model.Category
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 
-
 @Composable
 fun SetUpProfile(nav: NavigationActions, uid: String) {
 
-    val auth = FirebaseAuth.getInstance()
-    var isEmailVerified by remember { mutableStateOf(false) }
-    var emailText by remember { mutableStateOf("") }
+  val auth = FirebaseAuth.getInstance()
+  var isEmailVerified by remember { mutableStateOf(false) }
+  var emailText by remember { mutableStateOf("") }
 
-
-    SideEffect {
-        auth.currentUser?.reload()
-        isEmailVerified = auth.currentUser?.isEmailVerified == true
-        emailText = if (!isEmailVerified) {
-            "Please verify your email before continuing"
+  SideEffect {
+    auth.currentUser?.reload()
+    isEmailVerified = auth.currentUser?.isEmailVerified == true
+    emailText =
+        if (!isEmailVerified) {
+          "Please verify your email before continuing"
         } else {
-            ""
+          ""
         }
+  }
+
+  val allCategories = enumValues<Category>().toList()
+  val interests = mutableSetOf<Category>()
+  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp)) {
+    Text(text = "Choose your interests", fontSize = 30.sp)
+
+    LazyColumn {
+      items(allCategories) { interest ->
+        FilterChipCompose(interest, interests)
+        Spacer(modifier = Modifier.height(5.dp))
+      }
     }
 
-    val allCategories = enumValues<Category>().toList()
-    val interests = mutableSetOf<Category>()
-    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp)) {
-        Text(text = "Choose your interests", fontSize = 30.sp)
-        
-        LazyColumn {
-            items(allCategories) { interest ->
-                FilterChipCompose(interest, interests)
-                Spacer(modifier = Modifier.height(5.dp))
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-        Text("You can change your interests at any time in your profile")
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(
-
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-            onClick = {
-                FirebaseConnection.updateUserInterests(uid, Profile(interests))
-                nav.controller.navigate("profile")
-                      },
-            enabled = isEmailVerified,
-            modifier = Modifier
-                .border(
-                    width = 1.dp, color = Color.Black,
-                    shape = RoundedCornerShape(100.dp)
-                )
+    Spacer(modifier = Modifier.height(20.dp))
+    Text("You can change your interests at any time in your profile")
+    Spacer(modifier = Modifier.height(20.dp))
+    Button(
+        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        onClick = {
+          UserFirebaseConnection.updateUserInterests(uid, Profile(interests))
+          nav.controller.navigate("profile")
+        },
+        enabled = isEmailVerified,
+        modifier =
+            Modifier.border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(100.dp))
                 .padding(horizontal = 100.dp)
-                .wrapContentSize()
-            ) {
-                Text("Save", color = Color.Black)
-            }
-        Text(text = emailText, color = Color.Red)
+                .wrapContentSize()) {
+          Text("Save", color = Color.Black)
         }
+    Text(text = emailText, color = Color.Red)
+  }
 }
-
-//@Composable
-//fun ToggleButton(interest: Category, interests: MutableSet<Category>){
-//    var selected by remember { mutableStateOf(false) }
-//    Button(
-//        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-//        onClick = {
-//            selected = !selected
-//            if(selected){
-//                interests.add(interest)
-//            }
-//            else{
-//                interests.remove(interest)
-//            }
-//        },
-//        modifier = Modifier.border(width = 1.dp,
-//            color = if(selected) Color.Black else Color.LightGray,
-//            shape = RoundedCornerShape(200.dp)
-//           )
-//    ){
-//        Text(interest.toString(), fontSize = 20.sp, color = Color.Black)
-//    }
-//}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterChipCompose(interest: Category, interests: MutableSet<Category>) {
-    var selected by remember { mutableStateOf(false) }
+  var selected by remember { mutableStateOf(false) }
 
-    FilterChip(
-        onClick = {
-            selected = !selected
-            if(selected){
-                interests.add(interest)
-            }
-            else{
-                interests.remove(interest)
-            }
-        },
-        label = {
-            Text(interest.toString(), fontSize = 20.sp, color = Color.Black)
-        },
-        selected = selected,
-        leadingIcon = if (selected) {
-            {
-                Icon(
-                    imageVector = Icons.Filled.Done,
-                    contentDescription = "Done icon",
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            }
+  FilterChip(
+      onClick = {
+        selected = !selected
+        if (selected) {
+          interests.add(interest)
         } else {
+          interests.remove(interest)
+        }
+      },
+      label = { Text(interest.toString(), fontSize = 20.sp, color = Color.Black) },
+      selected = selected,
+      leadingIcon =
+          if (selected) {
+            {
+              Icon(
+                  imageVector = Icons.Filled.Done,
+                  contentDescription = "Done icon",
+                  modifier = Modifier.size(FilterChipDefaults.IconSize))
+            }
+          } else {
             null
-        },
-    )
+          },
+  )
 }
-
-
-
