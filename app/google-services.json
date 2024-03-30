@@ -12,7 +12,28 @@
           "package_name": "com.github.se.gatherspot"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "814289148775-0upcdvd3kmcvmh6vh380bd3vdep9jplq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.se.gatherspot",
+            "certificate_hash": "998388490a270eb39c7b79fab5c170be0c1b2e36"
+          }
+        },
+        {
+          "client_id": "814289148775-sc060tvmr5lqhgmu9lnnfp0na7a2ulin.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.se.gatherspot",
+            "certificate_hash": "4086fc1e2073655b52f623ce0029bcfb45e7a4ef"
+          }
+        },
+        {
+          "client_id": "814289148775-7m5kb78d5csm1pq9dhamccitpgjc2eoo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBDZXxAKVddAAF1NMafqh-8nONtuV7m4ms"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "814289148775-7m5kb78d5csm1pq9dhamccitpgjc2eoo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

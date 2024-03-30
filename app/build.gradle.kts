@@ -73,6 +73,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation("com.google.android.play:core-ktx:1.7.0")
 
+    androidTestImplementation("com.google.firebase:firebase-database-ktx:20.3.0")
+    androidTestImplementation("com.google.firebase:firebase-firestore:24.10.0")
 
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.material:material:1.10.0")
@@ -108,6 +110,11 @@ dependencies {
 
     testImplementation("org.mockito:mockito-core:3.11.2")
     testImplementation("org.mockito:mockito-inline:2.13.0")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
+    androidTestImplementation("org.mockito:mockito-core:3.11.2")
+    androidTestImplementation("org.mockito:mockito-inline:2.13.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 }
 tasks.register("jacocoTestReport", JacocoReport::class) {
