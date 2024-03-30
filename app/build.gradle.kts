@@ -11,6 +11,11 @@ android {
     namespace = "com.github.se.gatherspot"
     compileSdk = 34
 
+    packagingOptions {
+        exclude("META-INF/LICENSE.md")
+        exclude("META-INF/LICENSE-notice.md")
+    }
+
     defaultConfig {
         applicationId = "com.github.se.gatherspot"
         minSdk = 29

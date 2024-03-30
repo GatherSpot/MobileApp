@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,7 +79,7 @@ fun SignUp(nav: NavigationActions) {
       .fillMaxSize()
       .background(Color.LightGray)) {
     Column(
-        modifier = Modifier.padding(vertical = 80.dp, horizontal = 20.dp),
+        modifier = Modifier.padding(vertical = 80.dp, horizontal = 20.dp).testTag("signUpScreen"),
         verticalArrangement = Arrangement.spacedBy(70.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -104,10 +105,16 @@ fun SignUp(nav: NavigationActions) {
       OutlinedTextField(
           value = username,
           onValueChange = { s -> username = s },
-          label = { Text(text = "Username") })
+          label = { Text(text = "Username") },
+          modifier = Modifier.testTag("user")
+      )
 
       OutlinedTextField(
-          value = email, onValueChange = { s -> email = s }, label = { Text(text = "Email") })
+          value = email,
+          onValueChange = { s -> email = s },
+          label = { Text(text = "Email") },
+          modifier = Modifier.testTag("email")
+      )
 
       OutlinedTextField(
           value = passwordDisplayed,
@@ -115,13 +122,15 @@ fun SignUp(nav: NavigationActions) {
             password = s
             passwordDisplayed = "*".repeat(s.length)
           },
-          label = { Text(text = "Password") })
+          label = { Text(text = "Password") },
+          modifier = Modifier.testTag("password")
+          )
 
       Button(
           enabled = isEmailValid(email) and password.isNotEmpty() and username.isNotEmpty(),
           onClick = { isClicked = true },
           colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-          modifier = Modifier.width(250.dp)) {
+          modifier = Modifier.width(250.dp).testTag("validate")) {
             Text("Sign Up", color = Color.White)
           }
 

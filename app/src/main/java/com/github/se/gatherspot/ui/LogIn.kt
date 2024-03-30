@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,7 +59,7 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
   Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(40.dp, Alignment.CenterVertically),
-      modifier = Modifier.background(color = Color.LightGray)) {
+      modifier = Modifier.background(color = Color.LightGray).testTag("loginScreen")) {
         Text(s.substring(0, range.coerceAtMost(s.length)), fontSize = 24.sp)
         Image(
             painter = painterResource(R.drawable.community),
@@ -80,12 +81,6 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
                         .build()
                 launcher.launch(signInIntent)
 
-                if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
-                    FirebaseAuth.getInstance().currentUser!!.sendEmailVerification()
-                    FirebaseAuth.getInstance().signOut()
-                }
-
-
             },
             contentPadding = PaddingValues(start = 1.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -93,6 +88,7 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
             modifier = Modifier
                 .width(250.dp)
                 .height(40.dp)
+                .testTag("loginButton")
         )
             {
               Row(
@@ -116,7 +112,8 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
             border = BorderStroke(1.dp, Color.LightGray),
             modifier = Modifier
                 .width(190.dp)
-                .height(40.dp)) {
+                .height(40.dp)
+                .testTag("signUpButton")) {
               Row {
                   Image(painter = painterResource(id = R.drawable.ic_logo_google),
                       contentDescription = "Google Logo")
