@@ -8,16 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.ui.theme.Pink40
-import com.google.maps.android.compose.Circle
+import com.github.se.gatherspot.ui.theme.drawPill
 import java.util.BitSet
 
 
@@ -45,16 +43,16 @@ enum class Interests {
     // This companion object contains utility functions for working with Interests
     companion object {
 
-        val unselected : Color = Color(0xFFFFFFFF)
+        private val unselected : Color = Color(0xFFFFFFFF)
 
-        val parents = mapOf(
+        private val parents = mapOf(
             FOOTBALL to SPORT,
             BASKETBALL to SPORT,
             TENNIS to SPORT,
             BOWLING to LEISURE
         )
 
-        val children = parents.toList().groupBy({it.second}, {it.first})
+        private val children = parents.toList().groupBy({it.second}, {it.first})
 
 
         fun color(selection: BitSet, interest: Interests) : Color{
@@ -114,12 +112,22 @@ enum class Interests {
             }
         }
 
-        fun flip(bitset: BitSet, interest: Interests){
+        fun profileFlip(bitset: BitSet, interest: Interests){
             if (hasInterest(bitset, interest)){
                 removeChildrenInterest(bitset, interest)
                 removeInterest(bitset,interest)
             } else {
                 addChildrenInterest(bitset,interest)
+                addInterest(bitset,interest)
+            }
+        }
+
+        fun eventFlip(bitset: BitSet, interest: Interests){
+            if (hasInterest(bitset, interest)){
+                removeChildrenInterest(bitset, interest)
+                removeInterest(bitset,interest)
+            } else {
+                addParentInterest(bitset, interest)
                 addInterest(bitset,interest)
             }
         }
@@ -137,7 +145,7 @@ enum class Interests {
 
 
         @Composable
-        fun Display(selection: MutableState<BitSet>, interest: Interests, paddingValues: PaddingValues){
+        fun DisplayInterestSelector(selection: MutableState<BitSet>, interest: Interests, flip : (BitSet, Interests) -> Unit){
             Text(
                 modifier = Modifier
                     .padding(16.dp)
@@ -146,37 +154,53 @@ enum class Interests {
                     })
                     .drawBehind {
 
-                        drawRect(
-                            topLeft = Offset(-this.size.width*0.1f,-this.size.height*0.1f),
+                        drawPill(
+                            drawScope = this,
+                            topLeft = Offset(0f, 0f),
                             color = color(selection.value, interest),
-                            size = Size(width = this.size.width * 1.2f , this.size.height * 1.2f)
+                            size = Size(width = this.size.width, this.size.height)
                         )
                     },
                 text = interest.toString(),
             )
         }
         @Composable
-        fun selectUserInterestsScreen(selection: MutableState<BitSet>, paddingValues: PaddingValues){
+        fun selectInterestsScreen(selection: MutableState<BitSet>, paddingValues: PaddingValues, flip: (BitSet, Interests) -> Unit){
             // This function is used to select interests of a user or event
             Column {
                 for (i in 0..entries.size-3 step 3) {
                     Row{
-                        Display(selection, entries.get(i), paddingValues)
-                        Display(selection, entries.get(i+1), paddingValues)
-                        Display(selection, entries.get(i+2), paddingValues)
+                        DisplayInterestSelector(selection, entries.get(i), flip)
+                        DisplayInterestSelector(selection, entries.get(i+1), flip)
+                        DisplayInterestSelector(selection, entries.get(i+2), flip)
 
                     }
 
                 }
                 Row {
                     for (i in entries.size-2..entries.size-1){
-                        Display(selection, entries.get(i), paddingValues)
+                        DisplayInterestSelector(selection, entries.get(i), flip)
                     }
                 }
             }
 
 
         }
+
+        @Composable
+        fun selectProfileInterests(selection: MutableState<BitSet>, paddingValues: PaddingValues){
+
+            selectInterestsScreen(selection, paddingValues, ::profileFlip)
+
+        }
+
+        @Composable
+        fun selectEventInterests(selection: MutableState<BitSet>, paddingValues: PaddingValues){
+
+            selectInterestsScreen(selection, paddingValues, ::eventFlip)
+
+        }
+
 
 
     }
