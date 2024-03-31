@@ -59,7 +59,7 @@ enum class Interests {
             if (hasInterest(selection, interest)){
                 return Pink40
             }
-            return unselected;
+            return unselected
         }
 
         // This function creates a new BitSet to store interests
@@ -165,7 +165,7 @@ enum class Interests {
             )
         }
         @Composable
-        fun selectInterestsScreen(selection: MutableState<BitSet>, paddingValues: PaddingValues, flip: (BitSet, Interests) -> Unit){
+        fun SelectInterestsScreen(selection: MutableState<BitSet>, paddingValues: PaddingValues, flip: (BitSet, Interests) -> Unit){
             // This function is used to select interests of a user or event
             Column {
                 for (i in 0..entries.size-3 step 3) {
@@ -188,16 +188,16 @@ enum class Interests {
         }
 
         @Composable
-        fun selectProfileInterests(selection: MutableState<BitSet>, paddingValues: PaddingValues){
+        fun SelectProfileInterests(selection: MutableState<BitSet>, paddingValues: PaddingValues){
 
-            selectInterestsScreen(selection, paddingValues, ::profileFlip)
+            SelectInterestsScreen(selection, paddingValues, ::profileFlip)
 
         }
 
         @Composable
-        fun selectEventInterests(selection: MutableState<BitSet>, paddingValues: PaddingValues){
+        fun SelectEventInterests(selection: MutableState<BitSet>, paddingValues: PaddingValues){
 
-            selectInterestsScreen(selection, paddingValues, ::eventFlip)
+            SelectInterestsScreen(selection, paddingValues, ::eventFlip)
 
         }
 
