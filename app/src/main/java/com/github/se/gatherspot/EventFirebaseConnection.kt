@@ -75,39 +75,13 @@ class EventFirebaseConnection {
                 name = document.getString("locationName")!!)
           }
       var date = document.getString("eventStartDate")!!
-      val eventStartDate =
-          when (date) {
-            "null" -> null
-            else ->
-                try {
-                  LocalDate.parse(date, DateTimeFormatter.ofPattern(dateFormat))
-                } catch (e: Exception) {
-                  null
-                }
-          }
+      val eventStartDate = mapDateStringToDate(date)
       date = document.getString("eventEndDate")!!
-      val eventEndDate =
-          when (date) {
-            "null" -> null
-            else ->
-                try {
-                  LocalDate.parse(date, DateTimeFormatter.ofPattern(dateFormat))
-                } catch (e: Exception) {
-                  null
-                }
-          }
+      val eventEndDate = mapDateStringToDate(date)
       var time = document.getString("timeBeginning")!!
-      val timeBeginning =
-          when (time) {
-            "null" -> null
-            else -> LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat))
-          }
+      val timeBeginning = mapTimeStringToTime(time)
       time = document.getString("timeEnding")!!
-      val timeEnding =
-          when (time) {
-            "null" -> null
-            else -> LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat))
-          }
+      val timeEnding = mapTimeStringToTime(time)
       var capacity = document.getString("attendanceMaxCapacity")!!
       val attendanceMaxCapacity =
           when (capacity) {
@@ -118,22 +92,9 @@ class EventFirebaseConnection {
       val attendanceMinCapacity =
           capacity.toInt() // Min will be 0 by default if min is not mentioned
       date = document.getString("inscriptionLimitDate")!!
-      val inscriptionLimitDate =
-          when (date) {
-            "null" -> null
-            else ->
-                try {
-                  LocalDate.parse(date, DateTimeFormatter.ofPattern(dateFormat))
-                } catch (e: Exception) {
-                  null
-                }
-          }
+      val inscriptionLimitDate = mapDateStringToDate(date)
       time = document.getString("inscriptionLimitTime")!!
-      val inscriptionLimitTime =
-          when (time) {
-            "null" -> null
-            else -> LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat))
-          }
+      val inscriptionLimitTime = mapTimeStringToTime(time)
       val status = document.getString("eventStatus")!!
       val eventStatus: EventStatus =
           when (status) {
@@ -172,7 +133,40 @@ class EventFirebaseConnection {
           images = images,
           globalRating = globalRating)
     }
-
+    /**
+     * Maps a string to a LocalTime object
+     *
+     * @param timeString: The time string to map
+     * @return The LocalTime object
+     */
+    private fun mapTimeStringToTime(timeString: String): LocalTime? {
+      return when (timeString) {
+        "null" -> null
+        else ->
+            try {
+              LocalTime.parse(timeString, DateTimeFormatter.ofPattern(timeFormat))
+            } catch (e: Exception) {
+              null
+            }
+      }
+    }
+    /**
+     * Maps a string to a LocalDate object
+     *
+     * @param dateString: The date string to map
+     * @return The LocalDate object
+     */
+    private fun mapDateStringToDate(dateString: String): LocalDate? {
+      return when (dateString) {
+        "null" -> null
+        else ->
+            try {
+              LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat))
+            } catch (e: Exception) {
+              null
+            }
+      }
+    }
     /**
      * Adds an event to the database
      *

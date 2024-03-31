@@ -10,7 +10,7 @@ sonar{
     properties {
         property("sonar.projectKey", "GatherSpot_MobileApp")
         property("sonar.projectName", "MobileApp")
-        property("sonar.organization", "GatherSpot")
+        property("sonar.organization", "gatherspot")
         property("sonar.host.url", "https://sonarcloud.io")
         // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
         property("sonar.junit.reportPaths", "${project.layout.buildDirectory.get()}/test-results/testDebugunitTest/")
