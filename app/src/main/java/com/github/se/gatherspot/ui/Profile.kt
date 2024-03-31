@@ -28,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -85,14 +87,14 @@ fun BioField(edit: Boolean, bio: String, updateBio: (String) -> Unit) {
       enabled = edit,
       value = bio,
       onValueChange = { updateBio(it) },
-      modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp))
+      modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).semantics { contentDescription = "bio" })
 }
 
 @Composable
 fun UsernameField(edit: Boolean, username: String, updateUsername: (String) -> Unit) {
   OutlinedTextField(
-      modifier = Modifier.fillMaxWidth().padding(8.dp),
-      label = { Text("Username") },
+      modifier = Modifier.fillMaxWidth().padding(8.dp).semantics { contentDescription = "username" },
+      label = { Text("username") },
       enabled = edit,
       value = username,
       onValueChange = { updateUsername(it) })
@@ -107,17 +109,20 @@ fun Buttons(edit: Boolean, toggleEdit: () -> Unit, cancel: () -> Unit, save: () 
           Text(
               text = "Cancel",
               modifier =
-                  Modifier.clickable {
+                  Modifier
+                      .clickable {
                     cancel()
                     toggleEdit()
-                  })
+                  }
+                      .semantics { contentDescription = "cancel" }
+          )
           Text(
               text = "Save",
               modifier =
                   Modifier.clickable {
                     save()
                     toggleEdit()
-                  })
+                  }.semantics { contentDescription = "save" })
         }
   } else {
     Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
@@ -125,7 +130,7 @@ fun Buttons(edit: Boolean, toggleEdit: () -> Unit, cancel: () -> Unit, save: () 
       Icon(
           painter = painterResource(R.drawable.edit),
           contentDescription = "edit",
-          modifier = Modifier.clickable { toggleEdit() }.size(24.dp))
+          modifier = Modifier.clickable { toggleEdit() }.size(24.dp).semantics { contentDescription = "edit" })
     }
   }
 }
