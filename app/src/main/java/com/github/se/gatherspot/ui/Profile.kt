@@ -3,6 +3,8 @@
 package com.github.se.gatherspot.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
@@ -13,6 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import com.github.se.gatherspot.interest.Interests
 import com.github.se.gatherspot.interest.Interests.Companion.newBitset
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
@@ -53,9 +56,12 @@ fun Profile(nav: NavigationActions) {
             tabList = TOP_LEVEL_DESTINATIONS,
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
       }) { paddingValues ->
-        Interests.SelectEventInterests(
-            selection = mutableStateOf(newBitset()),
-            paddingValues = paddingValues
-        )
+        Box(Modifier.padding(paddingValues)) {
+          Interests.SelectEventInterests(
+              selection = mutableStateOf(newBitset()),
+              paddingValues = paddingValues
+          )
+        }
       }
 }
+
