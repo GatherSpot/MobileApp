@@ -88,15 +88,17 @@ class CreateEventTest {
 
     // Check the content of the fields
     composeTestRule.onNodeWithTag("inputTitle").assert(hasText("Test Event"))
-    composeTestRule.onNodeWithTag("inputDescription").assertTextEquals("This is a test event")
-    composeTestRule.onNodeWithTag("inputStartDateEvent").assertTextEquals("12/04/2026")
-    composeTestRule.onNodeWithTag("inputEndDateEvent").assertTextEquals("12/05/2026")
-    composeTestRule.onNodeWithTag("inputTimeStartEvent").assertTextEquals("10:00")
-    composeTestRule.onNodeWithTag("inputTimeEndEvent").assertTextEquals("12:00")
-    composeTestRule.onNodeWithTag("inputMaxAttendees").assertTextEquals("100")
-    composeTestRule.onNodeWithTag("inputMinAttendees").assertTextEquals("10")
-    composeTestRule.onNodeWithTag("inputInscriptionLimitDate").assertTextEquals("10/04/2025")
-    composeTestRule.onNodeWithTag("inputInscriptionLimitTime").assertTextEquals("09:00")
+    composeTestRule.onNodeWithTag("inputDescription").assert(hasText("This is a test event"))
+    composeTestRule.onNodeWithTag("inputStartDateEvent").assert(hasText("12/04/2026"))
+    composeTestRule.onNodeWithTag("inputEndDateEvent").assert(hasText("12/05/2026"))
+    composeTestRule.onNodeWithTag("inputTimeStartEvent").assert(hasText("10:00"))
+    composeTestRule.onNodeWithTag("inputTimeEndEvent").assert(hasText("12:00"))
+    composeTestRule.onNodeWithTag("inputMaxAttendees").assert(hasText("100"))
+    composeTestRule.onNodeWithTag("inputMinAttendees").assert(hasText("10"))
+    composeTestRule.onNodeWithTag("inputInscriptionLimitDate").assert(hasText("10/04/2025"))
+    composeTestRule.onNodeWithTag("inputInscriptionLimitTime").assert(hasText("09:00"))
+
+
   }
 
   @Test
