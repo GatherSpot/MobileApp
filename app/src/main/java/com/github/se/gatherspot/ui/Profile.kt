@@ -43,8 +43,7 @@ fun Profile(nav: NavigationActions) {
       }) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
           Interests.SelectEventInterests(
-              selection = selection,
-              paddingValues = paddingValues
+              selection = selection
           )
         }
       }
