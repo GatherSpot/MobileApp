@@ -3,7 +3,6 @@ package com.github.se.gatherspot.ui
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -97,8 +96,6 @@ class CreateEventTest {
     composeTestRule.onNodeWithTag("inputMinAttendees").assert(hasText("10"))
     composeTestRule.onNodeWithTag("inputInscriptionLimitDate").assert(hasText("10/04/2025"))
     composeTestRule.onNodeWithTag("inputInscriptionLimitTime").assert(hasText("09:00"))
-
-
   }
 
   @Test
