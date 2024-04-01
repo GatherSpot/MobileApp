@@ -164,9 +164,10 @@ enum class Interests {
                 text = interest.toString(),
             )
         }
+        // This function is used to select interests of a user or event
         @Composable
         fun SelectInterestsScreen(selection: MutableState<BitSet>, paddingValues: PaddingValues, flip: (BitSet, Interests) -> Unit){
-            // This function is used to select interests of a user or event
+            val og_selection = selection.value
             Column {
                 for (i in 0..entries.size-3 step 3) {
                     Row{
