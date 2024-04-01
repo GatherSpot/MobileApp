@@ -166,7 +166,7 @@ enum class Interests {
         }
         // This function is used to select interests of a user or event
         @Composable
-        fun SelectInterestsScreen(selection: MutableState<BitSet>, paddingValues: PaddingValues, flip: (BitSet, Interests) -> Unit){
+        fun SelectInterestsScreen(selection: MutableState<BitSet>, flip: (BitSet, Interests) -> Unit){
             val og_selection = selection.value
             Column {
                 for (i in 0..entries.size-3 step 3) {
@@ -189,16 +189,16 @@ enum class Interests {
         }
 
         @Composable
-        fun SelectProfileInterests(selection: MutableState<BitSet>, paddingValues: PaddingValues){
+        fun SelectProfileInterests(selection: MutableState<BitSet>){
 
-            SelectInterestsScreen(selection, paddingValues, ::profileFlip)
+            SelectInterestsScreen(selection , ::profileFlip)
 
         }
 
         @Composable
-        fun SelectEventInterests(selection: MutableState<BitSet>, paddingValues: PaddingValues){
+        fun SelectEventInterests(selection: MutableState<BitSet>){
 
-            SelectInterestsScreen(selection, paddingValues, ::eventFlip)
+            SelectInterestsScreen(selection , ::eventFlip)
 
         }
 
