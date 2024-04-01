@@ -129,7 +129,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
                 value = eventEndDate,
                 onValueChange = { eventEndDate = it },
-                label = { Text("End date (if identical to start date leave empty") },
+                label = { Text("End date of the event") },
                 placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
 
             // Time Start
