@@ -42,24 +42,24 @@ class EventFirebaseConnectionTest {
             location = Location(0.0, 0.0, "Test Location"),
             eventStartDate =
                 LocalDate.parse(
-                    "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat)),
+                    "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
             eventEndDate =
                 LocalDate.parse(
-                    "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat)),
+                    "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
             timeBeginning =
                 LocalTime.parse(
-                    "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat)),
+                    "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             timeEnding =
                 LocalTime.parse(
-                    "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat)),
+                    "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             attendanceMaxCapacity = 100,
             attendanceMinCapacity = 10,
             inscriptionLimitDate =
                 LocalDate.parse(
-                    "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat)),
+                    "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
             inscriptionLimitTime =
                 LocalTime.parse(
-                    "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat)),
+                    "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
             categories = listOf("Test Category"),
             registeredUsers = emptyList(),
@@ -81,26 +81,26 @@ class EventFirebaseConnectionTest {
     assertEquals(
         resultEvent!!.eventStartDate,
         LocalDate.parse(
-            "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat)))
+            "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)))
     assertEquals(
         resultEvent!!.eventEndDate,
         LocalDate.parse(
-            "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat)))
+            "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)))
     assertEquals(
         resultEvent!!.timeBeginning,
-        LocalTime.parse("10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat)))
+        LocalTime.parse("10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)))
     assertEquals(
         resultEvent!!.timeEnding,
-        LocalTime.parse("12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat)))
+        LocalTime.parse("12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)))
     assertEquals(resultEvent!!.attendanceMaxCapacity, 100)
     assertEquals(resultEvent!!.attendanceMinCapacity, 10)
     assertEquals(
         resultEvent!!.inscriptionLimitDate,
         LocalDate.parse(
-            "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat)))
+            "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)))
     assertEquals(
         resultEvent!!.inscriptionLimitTime,
-        LocalTime.parse("09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat)))
+        LocalTime.parse("09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)))
     assertEquals(resultEvent!!.eventStatus, EventStatus.DRAFT)
     assertEquals(resultEvent!!.categories, listOf("Test Category"))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
@@ -126,24 +126,24 @@ class EventFirebaseConnectionTest {
             location = Location(0.0, 0.0, "Test Location"),
             eventStartDate =
                 LocalDate.parse(
-                    "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat)),
+                    "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
             eventEndDate =
                 LocalDate.parse(
-                    "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat)),
+                    "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
             timeBeginning =
                 LocalTime.parse(
-                    "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat)),
+                    "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             timeEnding =
                 LocalTime.parse(
-                    "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat)),
+                    "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             attendanceMaxCapacity = 100,
             attendanceMinCapacity = 10,
             inscriptionLimitDate =
                 LocalDate.parse(
-                    "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.dateFormat)),
+                    "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
             inscriptionLimitTime =
                 LocalTime.parse(
-                    "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.timeFormat)),
+                    "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
             categories = listOf("Test Category"),
             registeredUsers = emptyList(),

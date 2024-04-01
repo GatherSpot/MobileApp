@@ -18,10 +18,10 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection {
   companion object {
-    private val TAG = "FirebaseConnection" // Used for debugging/logs
-    private val EVENTS = "events" // Collection name for events
-    val dateFormat = "dd/MM/yyyy"
-    val timeFormat = "H:mm"
+        private const val TAG = "FirebaseConnection" // Used for debugging/logs
+        private const val EVENTS = "events" // Collection name for events
+        const val DATE_FORMAT = "dd/MM/yyyy"
+        const val TIME_FORMAT = "H:mm"
 
     /**
      * Creates a unique new identifier This function can be used for both Event IDs and User IDs
@@ -144,7 +144,7 @@ class EventFirebaseConnection {
         "null" -> null
         else ->
             try {
-              LocalTime.parse(timeString, DateTimeFormatter.ofPattern(timeFormat))
+              LocalTime.parse(timeString, DateTimeFormatter.ofPattern(TIME_FORMAT))
             } catch (e: Exception) {
               null
             }
@@ -161,7 +161,7 @@ class EventFirebaseConnection {
         "null" -> null
         else ->
             try {
-              LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat))
+              LocalDate.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT))
             } catch (e: Exception) {
               null
             }
@@ -196,22 +196,22 @@ class EventFirebaseConnection {
               "eventStartDate" to
                   when (event.eventStartDate) {
                     null -> "null"
-                    else -> event.eventStartDate.format(DateTimeFormatter.ofPattern(dateFormat))
+                    else -> event.eventStartDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
                   },
               "eventEndDate" to
                   when (event.eventEndDate) {
                     null -> "null"
-                    else -> event.eventEndDate.format(DateTimeFormatter.ofPattern(dateFormat))
+                    else -> event.eventEndDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
                   },
               "timeBeginning" to
                   when (event.timeBeginning) {
                     null -> "null"
-                    else -> event.timeBeginning.format(DateTimeFormatter.ofPattern(timeFormat))
+                    else -> event.timeBeginning.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   },
               "timeEnding" to
                   when (event.timeEnding) {
                     null -> "null"
-                    else -> event.timeEnding.format(DateTimeFormatter.ofPattern(timeFormat))
+                    else -> event.timeEnding.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   },
               "attendanceMaxCapacity" to
                   when (event.attendanceMaxCapacity) {
@@ -223,13 +223,13 @@ class EventFirebaseConnection {
                   when (event.inscriptionLimitDate) {
                     null -> "null"
                     else ->
-                        event.inscriptionLimitDate.format(DateTimeFormatter.ofPattern(dateFormat))
+                        event.inscriptionLimitDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
                   },
               "inscriptionLimitTime" to
                   when (event.inscriptionLimitTime) {
                     null -> "null"
                     else ->
-                        event.inscriptionLimitTime.format(DateTimeFormatter.ofPattern(timeFormat))
+                        event.inscriptionLimitTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   },
               "categories" to event.categories,
               "registeredUsers" to event.registeredUsers,

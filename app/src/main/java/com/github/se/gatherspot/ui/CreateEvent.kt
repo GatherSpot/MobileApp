@@ -123,14 +123,14 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 value = eventStartDate,
                 onValueChange = { eventStartDate = it },
                 label = { Text("Start Date of the event*") },
-                placeholder = { Text(EventFirebaseConnection.dateFormat) })
+                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
             // End Date
             OutlinedTextField(
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
                 value = eventEndDate,
                 onValueChange = { eventEndDate = it },
                 label = { Text("End date (if identical to start date leave empty") },
-                placeholder = { Text(EventFirebaseConnection.dateFormat) })
+                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
 
             // Time Start
             Row(
@@ -142,7 +142,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                       value = eventTimeStart,
                       onValueChange = { eventTimeStart = it },
                       label = { Text("Start time*") },
-                      placeholder = { Text(EventFirebaseConnection.timeFormat) })
+                      placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
                   // Time End
                   OutlinedTextField(
@@ -151,7 +151,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                       value = eventTimeEnd,
                       onValueChange = { eventTimeEnd = it },
                       label = { Text("End time*") },
-                      placeholder = { Text(EventFirebaseConnection.timeFormat) })
+                      placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
                 }
             // Location
             OutlinedTextField(
@@ -191,7 +191,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
                 label = { Text("Inscription limit date") },
-                placeholder = { Text(EventFirebaseConnection.dateFormat) })
+                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
             // Inscription limit time
             OutlinedTextField(
                 modifier =
@@ -199,7 +199,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 value = inscriptionLimitTime,
                 onValueChange = { inscriptionLimitTime = it },
                 label = { Text("Inscription limit time") },
-                placeholder = { Text(EventFirebaseConnection.timeFormat) })
+                placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
             // TODO :Upload images
 
