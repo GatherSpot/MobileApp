@@ -18,10 +18,10 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection {
   companion object {
-        private const val TAG = "FirebaseConnection" // Used for debugging/logs
-        private const val EVENTS = "events" // Collection name for events
-        const val DATE_FORMAT = "dd/MM/yyyy"
-        const val TIME_FORMAT = "H:mm"
+    private const val TAG = "FirebaseConnection" // Used for debugging/logs
+    private const val EVENTS = "events" // Collection name for events
+    const val DATE_FORMAT = "dd/MM/yyyy"
+    const val TIME_FORMAT = "H:mm"
 
     /**
      * Creates a unique new identifier This function can be used for both Event IDs and User IDs
