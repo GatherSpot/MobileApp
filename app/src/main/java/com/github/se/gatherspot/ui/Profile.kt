@@ -1,8 +1,6 @@
 package com.github.se.gatherspot.ui
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
-import android.util.Log
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +20,7 @@ fun Profile(nav: NavigationActions) {
             tabList = TOP_LEVEL_DESTINATIONS,
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
       }) { paddingValues ->
-        Interests.selectEventInterests(
+        Interests.SelectEventInterests(
             selection = mutableStateOf(newBitset()),
             paddingValues = paddingValues
         )
