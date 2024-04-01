@@ -84,8 +84,10 @@ enum class Interests {
         }
 
 
-        // This function adds recursively the parent interest of a particular interest to the BitSet
-        // This function is used at event creation
+        /* This function adds recursively the parent interest of a particular interest to the BitSet
+        This function is used at event creation
+        Event side : Select football -> Football is a sport therefore event should be classified as sport as well
+         */
         fun addParentInterest(bitset: BitSet, interest: Interests){
             val parent = parents[interest]
             if (parent != null){
@@ -97,11 +99,9 @@ enum class Interests {
         /*
         This function adds recursively the child interest of a particular interest to the BitSet
 
-        This function might be used during interest selection by a user or an event creator
+        This function is used during interest selection by a user
         User side : Select sport -> every sport or only specific subset ? With this function highlight
-        all subcategories so they can adjust their selection
-        Event side : Select sport -> is it a specific sport ? With this function offer more specific
-        and appropriate tags  to compliment
+        all subcategories so they can adjust their selection to their liking
          */
         fun addChildrenInterest(bitset: BitSet, interest : Interests){
             val children = children[interest]
@@ -113,6 +113,19 @@ enum class Interests {
             }
         }
 
+        /*
+        This function removes recursively the child interest of a particular interest to the BitSet
+
+        This function is used both during interest selection for an event or a profile
+
+        If you unsubscribe from sport, you should also unsubscribe from football
+
+        /!\ It's use in the case of a profile is more debatable because
+        You can be subscribed to football without being subscribed to sport.
+        The logic is : unsubscribing from sport should at first unsubscribe you from football as well.
+        This is to give more importance to the last act of unsubscribing to sport. "I don't want sport" = no sport at all, of any kind
+
+         */
         fun removeChildrenInterest(bitset: BitSet, interest: Interests){
             val children = children[interest]
             if (children != null){
@@ -124,6 +137,10 @@ enum class Interests {
         }
 
 
+        /*
+            Behaviour of the bitset when the value for the interest interest is flipped
+            in the context of a profile
+        */
         fun profileFlip(bitset: BitSet, interest: Interests){
             if (hasInterest(bitset, interest)){
                 removeChildrenInterest(bitset, interest)
@@ -134,6 +151,10 @@ enum class Interests {
             }
         }
 
+        /*
+            Behaviour of the bitset when the value for the interest interest is flipped
+            in the context of a profile
+        */
         fun eventFlip(bitset: BitSet, interest: Interests){
             if (hasInterest(bitset, interest)){
                 removeChildrenInterest(bitset, interest)
