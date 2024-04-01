@@ -2,7 +2,6 @@ package com.github.se.gatherspot.interest
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -64,7 +63,9 @@ enum class Interests {
 
         // This function creates a new BitSet to store interests
         fun newBitset(): BitSet{
-            return BitSet(Interests.entries.size)
+            val bitset = BitSet(Interests.entries.size)
+            bitset.clear()
+            return bitset
         }
 
         // This function checks if a particular interest is present in the BitSet
@@ -112,6 +113,17 @@ enum class Interests {
             }
         }
 
+        fun removeChildrenInterest(bitset: BitSet, interest: Interests){
+            val children = children[interest]
+            if (children != null){
+                children.forEach { child ->
+                    removeChildrenInterest(bitset, child)
+                    removeInterest(bitset, child)
+                }
+            }
+        }
+
+
         fun profileFlip(bitset: BitSet, interest: Interests){
             if (hasInterest(bitset, interest)){
                 removeChildrenInterest(bitset, interest)
@@ -129,16 +141,6 @@ enum class Interests {
             } else {
                 addParentInterest(bitset, interest)
                 addInterest(bitset,interest)
-            }
-        }
-
-        fun removeChildrenInterest(bitset: BitSet, interest: Interests){
-            val children = children[interest]
-            if (children != null){
-                children.forEach { child ->
-                    removeChildrenInterest(bitset, child)
-                    removeInterest(bitset, child)
-                }
             }
         }
 
@@ -167,7 +169,6 @@ enum class Interests {
         // This function is used to select interests of a user or event
         @Composable
         fun SelectInterestsScreen(selection: MutableState<BitSet>, flip: (BitSet, Interests) -> Unit){
-            val og_selection = selection.value
             Column {
                 for (i in 0..entries.size-3 step 3) {
                     Row{
