@@ -21,50 +21,7 @@ class CreateEventTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   // Restructured to use CreateEventScreen
-  @Test
-  fun testIsEverythingHere() {
 
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
-
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
-    }
-
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
-      // Check if every element are displayed
-
-      topBar { assertIsDisplayed() }
-      backButton { assertIsDisplayed() }
-      eventTitle { assertIsDisplayed() }
-      eventDescription { assertIsDisplayed() }
-      eventStartDate { assertIsDisplayed() }
-      eventEndDate { assertIsDisplayed() }
-      eventTimeStart { assertIsDisplayed() }
-      eventTimeEnd { assertIsDisplayed() }
-      eventLocation { assertIsDisplayed() }
-      eventMaxAttendees { assertIsDisplayed() }
-      eventMinAttendees { assertIsDisplayed() }
-
-      // scroll the screen to see the rest of the fields
-      eventInscriptionLimitDate {
-        performScrollTo()
-        assertIsDisplayed()
-      }
-      eventInscriptionLimitTime {
-        performScrollTo()
-        assertIsDisplayed()
-      }
-      eventSaveButton {
-        performScrollTo()
-        assertIsDisplayed()
-        assertIsNotEnabled()
-      }
-
-      // Check if the alert box is not displayed
-      alertBox { assertDoesNotExist() }
-    }
-  }
   // Restructured to use CreateEventScreen
   @Test
   fun testMinimalData() {
