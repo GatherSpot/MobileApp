@@ -10,24 +10,24 @@ class CreateEventScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         viewBuilderAction = { hasTestTag("CreateEventScreen") }) {
 
   // Structural elements of the UI
-  val eventScaffold: KNode = child { hasTestTag("CreateEventScreen") }
-  val topBar: KNode = child { hasTestTag("createEventTitle") }
-  val backButton: KNode = child { hasTestTag("goBackButton") }
+  val eventScaffold: KNode = onNode { hasTestTag("CreateEventScreen") }
+  val topBar: KNode = onNode { hasTestTag("createEventTitle") }
+  val backButton: KNode = onNode { hasTestTag("goBackButton") }
 
-  val eventTitle: KNode = child { hasTestTag("inputTitle") }
-  val eventDescription: KNode = child { hasTestTag("inputDescription") }
-  val eventStartDate: KNode = child { hasTestTag("inputStartDateEvent") }
-  val eventEndDate: KNode = child { hasTestTag("inputEndDateEvent") }
-  val eventTimeStart: KNode = child { hasTestTag("inputTimeStartEvent") }
-  val eventTimeEnd: KNode = child { hasTestTag("inputTimeEndEvent") }
-  val eventLocation: KNode = child { hasTestTag("inputLocation") }
-  val eventMaxAttendees: KNode = child { hasTestTag("inputMaxAttendees") }
-  val eventMinAttendees: KNode = child { hasTestTag("inputMinAttendees") }
-  val eventInscriptionLimitDate: KNode = child { hasTestTag("inputInscriptionLimitDate") }
-  val eventInscriptionLimitTime: KNode = child { hasTestTag("inputInscriptionLimitTime") }
-  val eventSaveButton: KNode = child { hasTestTag("createEventButton") }
+  val eventTitle: KNode = onNode { hasTestTag("inputTitle") }
+  val eventDescription: KNode = onNode { hasTestTag("inputDescription") }
+  val eventStartDate: KNode = onNode { hasTestTag("inputStartDateEvent") }
+  val eventEndDate: KNode = onNode { hasTestTag("inputEndDateEvent") }
+  val eventTimeStart: KNode = onNode { hasTestTag("inputTimeStartEvent") }
+  val eventTimeEnd: KNode = onNode { hasTestTag("inputTimeEndEvent") }
+  val eventLocation: KNode = onNode { hasTestTag("inputLocation") }
+  val eventMaxAttendees: KNode = onNode { hasTestTag("inputMaxAttendees") }
+  val eventMinAttendees: KNode = onNode { hasTestTag("inputMinAttendees") }
+  val eventInscriptionLimitDate: KNode = onNode { hasTestTag("inputInscriptionLimitDate") }
+  val eventInscriptionLimitTime: KNode = onNode { hasTestTag("inputInscriptionLimitTime") }
+  val eventSaveButton: KNode = onNode { hasTestTag("createEventButton") }
 
-  val alertBox: KNode = child { hasTestTag("alertBox") }
-  val alertBoxText: KNode = child { hasTestTag("errorMessage") }
-  val alertBoxButton: KNode = child { hasTestTag("alertButton") }
+  val alertBox: KNode = onNode { hasTestTag("alertBox") }
+  val alertBoxText: KNode = onNode { hasTestTag("errorMessage") }
+  val alertBoxButton: KNode = onNode { hasTestTag("alertButton") }
 }
