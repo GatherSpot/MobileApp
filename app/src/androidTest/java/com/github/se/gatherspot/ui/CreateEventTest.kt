@@ -1,9 +1,11 @@
 package com.github.se.gatherspot.ui
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -48,9 +50,18 @@ class CreateEventTest {
       eventLocation { assertIsDisplayed() }
       eventMaxAttendees { assertIsDisplayed() }
       eventMinAttendees { assertIsDisplayed() }
-      eventInscriptionLimitDate { assertIsDisplayed() }
-      eventInscriptionLimitTime { assertIsDisplayed() }
+
+      // scroll the screen to see the rest of the fields
+      eventInscriptionLimitDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventInscriptionLimitTime {
+        performScrollTo()
+        assertIsDisplayed()
+      }
       eventSaveButton {
+        performScrollTo()
         assertIsDisplayed()
         assertIsNotEnabled()
       }
@@ -92,30 +103,32 @@ class CreateEventTest {
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
 
-    // Fill every field
-    composeTestRule.onNodeWithTag("inputTitle").performTextInput("Test Event")
-    composeTestRule.onNodeWithTag("inputDescription").performTextInput("This is a test event")
-    composeTestRule.onNodeWithTag("inputStartDateEvent").performTextInput("12/04/2026")
-    composeTestRule.onNodeWithTag("inputEndDateEvent").performTextInput("12/05/2026")
-    composeTestRule.onNodeWithTag("inputTimeStartEvent").performTextInput("10:00")
-    composeTestRule.onNodeWithTag("inputTimeEndEvent").performTextInput("12:00")
-    // Location is not finished yet
-    composeTestRule.onNodeWithTag("inputMaxAttendees").performTextInput("100")
-    composeTestRule.onNodeWithTag("inputMinAttendees").performTextInput("10")
-    composeTestRule.onNodeWithTag("inputInscriptionLimitDate").performTextInput("10/04/2025")
-    composeTestRule.onNodeWithTag("inputInscriptionLimitTime").performTextInput("09:00")
-
-    // Check the content of the fields
-    composeTestRule.onNodeWithTag("inputTitle").assert(hasText("Test Event"))
-    composeTestRule.onNodeWithTag("inputDescription").assert(hasText("This is a test event"))
-    composeTestRule.onNodeWithTag("inputStartDateEvent").assert(hasText("12/04/2026"))
-    composeTestRule.onNodeWithTag("inputEndDateEvent").assert(hasText("12/05/2026"))
-    composeTestRule.onNodeWithTag("inputTimeStartEvent").assert(hasText("10:00"))
-    composeTestRule.onNodeWithTag("inputTimeEndEvent").assert(hasText("12:00"))
-    composeTestRule.onNodeWithTag("inputMaxAttendees").assert(hasText("100"))
-    composeTestRule.onNodeWithTag("inputMinAttendees").assert(hasText("10"))
-    composeTestRule.onNodeWithTag("inputInscriptionLimitDate").assert(hasText("10/04/2025"))
-    composeTestRule.onNodeWithTag("inputInscriptionLimitTime").assert(hasText("09:00"))
+    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+      // Fill every field
+      eventTitle.performTextInput("Test Event")
+      eventDescription.performTextInput("This is a test event")
+      eventStartDate.performTextInput("12/04/2026")
+      eventEndDate.performTextInput("12/05/2026")
+      eventTimeStart.performTextInput("10:00")
+      eventTimeEnd.performTextInput("12:00")
+      // eventLocation.performTextInput("Test Location")
+      eventMaxAttendees.performTextInput("100")
+      eventMinAttendees.performTextInput("10")
+      eventInscriptionLimitDate.performTextInput("10/04/2025")
+      eventInscriptionLimitTime.performTextInput("09:00")
+      // Check the content of the fields
+      eventTitle.assert(hasText("Test Event"))
+      eventDescription.assert(hasText("This is a test event"))
+      eventStartDate.assert(hasText("12/04/2026"))
+      eventEndDate.assert(hasText("12/05/2026"))
+      eventTimeStart.assert(hasText("10:00"))
+      eventTimeEnd.assert(hasText("12:00"))
+      // eventLocation.assert(hasText("Test Location"))
+      eventMaxAttendees.assert(hasText("100"))
+      eventMinAttendees.assert(hasText("10"))
+      eventInscriptionLimitDate.assert(hasText("10/04/2025"))
+      eventInscriptionLimitTime.assert(hasText("09:00"))
+    }
   }
 
   @Test
@@ -126,23 +139,35 @@ class CreateEventTest {
 
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
+    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+      // Check if the button is disabled
+      eventSaveButton.assertIsNotEnabled()
+      // Fill every field
+      eventTitle.performTextInput("Test Event")
+      eventSaveButton.assertIsNotEnabled()
+      eventDescription.performTextInput("This is a test event")
+      eventSaveButton.assertIsNotEnabled()
+      eventStartDate.performTextInput("12/04/2026")
+      eventSaveButton.assertIsNotEnabled()
+      eventEndDate.performTextInput("12/05/2026")
+      eventSaveButton.assertIsNotEnabled()
+      eventTimeStart.performTextInput("10:00")
+      eventSaveButton.assertIsNotEnabled()
+      eventTimeEnd.performTextInput("12:00")
 
-    // Fill every field
-    composeTestRule.onNodeWithTag("inputTitle").performTextInput("Test Event")
-    composeTestRule.onNodeWithTag("createEventButton").assertIsNotEnabled()
-    composeTestRule.onNodeWithTag("inputDescription").performTextInput("This is a test event")
-    composeTestRule.onNodeWithTag("createEventButton").assertIsNotEnabled()
-    composeTestRule.onNodeWithTag("inputStartDateEvent").performTextInput("12/04/2026")
-    composeTestRule.onNodeWithTag("createEventButton").assertIsNotEnabled()
-    composeTestRule.onNodeWithTag("inputEndDateEvent").performTextInput("12/05/2026")
-    composeTestRule.onNodeWithTag("createEventButton").assertIsNotEnabled()
-    composeTestRule.onNodeWithTag("inputTimeStartEvent").performTextInput("10:00")
-    composeTestRule.onNodeWithTag("createEventButton").assertIsNotEnabled()
-    composeTestRule.onNodeWithTag("inputTimeEndEvent").performTextInput("12:00")
-    // Location is not finished yet
-    composeTestRule.onNodeWithTag("createEventButton").assertIsEnabled()
+      eventSaveButton.assertIsEnabled()
+
+      eventLocation.performTextInput("Test Location")
+      eventMaxAttendees.performTextInput("100")
+      eventMinAttendees.performTextInput("10")
+      eventInscriptionLimitDate.performTextInput("10/04/2025")
+      eventInscriptionLimitTime.performTextInput("09:00")
+      // Check if the button is enabled
+      eventSaveButton.assertIsEnabled()
+    }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testDialogBoxDisplayedWhenErrorsAreRaised() {
     composeTestRule.setContent {
@@ -151,84 +176,79 @@ class CreateEventTest {
 
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
+    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+      // Fill every field
+      eventTitle.performTextInput("Test Event")
+      eventDescription.performTextInput("This is a test event")
+      eventStartDate.performTextInput("12/04/2026")
+      eventEndDate.performTextInput("12/05/2026")
+      eventTimeStart.performTextInput("10:00")
+      eventTimeEnd.performTextInput("12:00")
+      // eventLocation.performTextInput("Test Location")
+      eventMaxAttendees.performTextInput("toto")
+      eventMinAttendees.performTextInput("titi")
+      eventInscriptionLimitDate.performTextInput("10/04/2025")
+      eventInscriptionLimitTime.performTextInput("09:00")
 
-    // Fill every field
-    composeTestRule.onNodeWithTag("inputTitle").performTextInput("Test Event")
-    composeTestRule.onNodeWithTag("inputDescription").performTextInput("This is a test event")
-    composeTestRule.onNodeWithTag("inputStartDateEvent").performTextInput("12/04/2026")
-    composeTestRule.onNodeWithTag("inputEndDateEvent").performTextInput("12/05/2026")
-    composeTestRule.onNodeWithTag("inputTimeStartEvent").performTextInput("10:00")
-    composeTestRule.onNodeWithTag("inputTimeEndEvent").performTextInput("12:00")
-    // Location is not finished yet
-    // False entry
-    composeTestRule.onNodeWithTag("inputMaxAttendees").performTextInput("toto")
-    // False entry
-    composeTestRule.onNodeWithTag("inputMinAttendees").performTextInput("titi")
-    composeTestRule.onNodeWithTag("inputInscriptionLimitDate").performTextInput("10/04/2025")
-    composeTestRule.onNodeWithTag("inputInscriptionLimitTime").performTextInput("09:00")
+      // Click on the button
+      eventSaveButton {
+        performScrollTo()
+        assertIsDisplayed()
+        performClick()
+      }
+      // Check if the dialog box is displayed
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
 
-    // Click on the button
-    composeTestRule.onNodeWithTag("createEventButton").performClick()
-    // add a delay to let the dialog box appear
-    Thread.sleep(1000)
-    // Check if the dialog box is displayed
-
-    composeTestRule.onNodeWithTag("alertBox").assertExists()
-    composeTestRule
-        .onNodeWithTag("alertBox")
-        .assertTextContains("Invalid max attendees format, must be a number")
-    composeTestRule.onNodeWithTag("alertBox").assertExists()
-    // Click the OK button
-    composeTestRule.onNodeWithTag("alertBoxButton").performClick()
-    // Check if the dialog box is closed
-    composeTestRule.onNodeWithTag("alertBox").assertDoesNotExist()
+      alertBox.assertIsDisplayed()
+      alertBoxText.assertTextContains("Invalid max attendees format, must be a number")
+      // Click the OK button
+      alertBoxButton.performClick()
+      // Check if the dialog box is closed
+      alertBox.assertDoesNotExist()
+    }
   }
   // Does not work
 
-  //    @Test
-  //    fun testDialogBoxErrorDate() {
-  //        composeTestRule.setContent {
-  //            val navController = rememberNavController()
-  //            val eventViewModel = EventViewModel()
-  //
-  //            CreateEvent(nav = NavigationActions(navController), eventViewModel)
-  //        }
-  //
-  //        // Fill every field
-  //        composeTestRule.onNodeWithTag("inputTitle").performTextInput("Test Event")
-  //        composeTestRule.onNodeWithTag("inputDescription").performTextInput("This is a test
-  // event")
-  //        composeTestRule.onNodeWithTag("inputStartDateEvent").performTextInput("09/04/2026")
-  //        composeTestRule.onNodeWithTag("inputEndDateEvent").performTextInput("12/05/2026")
-  //        composeTestRule.onNodeWithTag("inputTimeStartEvent").performTextInput("10:00")
-  //        composeTestRule.onNodeWithTag("inputTimeEndEvent").performTextInput("12:00")
-  //        // Location is not finished yet
-  //        composeTestRule.onNodeWithTag("inputMaxAttendees").performTextInput("100")
-  //        composeTestRule.onNodeWithTag("inputMinAttendees").performTextInput("10")
-  //        //False entry
-  //
-  // composeTestRule.onNodeWithTag("inputInscriptionLimitDate").performTextInput("10/04/2026")
-  //        composeTestRule.onNodeWithTag("inputInscriptionLimitTime").performTextInput("09:00")
-  //
-  //        // Click on the button
-  //        composeTestRule.onNodeWithTag("createEventButton").performClick()
-  //        composeTestRule.onNodeWithTag("createEventButton").assertExists()
-  //
-  //        // Wait for the dialog box to appear
-  //        //composeTestRule.waitForIdle()
-  //
-  //        // Check if the dialog box is displayed
-  //        composeTestRule.onNodeWithTag("alertBox").assertExists()
-  //
-  //        // Click the OK button
-  //        composeTestRule.onNodeWithTag("alertButton").performClick()
-  //
-  //        // Wait for the dialog box to disappear
-  //        composeTestRule.waitForIdle()
-  //
-  //        // Check if the dialog box is closed
-  //        composeTestRule.onNodeWithTag("alertBox").assertDoesNotExist()
-  //    }
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun testDialogBoxErrorDate() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventViewModel = EventViewModel()
+
+      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+    }
+    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+      // Fill every field
+      eventTitle.performTextInput("Test Event")
+      eventDescription.performTextInput("This is a test event")
+      eventStartDate.performTextInput("09/04/2025")
+      eventEndDate.performTextInput("12/05/2026")
+      eventTimeStart.performTextInput("10:00")
+      eventTimeEnd.performTextInput("12:00")
+      // eventLocation.performTextInput("Test Location")
+      eventMaxAttendees.performTextInput("100")
+      eventMinAttendees.performTextInput("10")
+      eventInscriptionLimitDate.performTextInput("10/04/2025")
+      eventInscriptionLimitTime.performTextInput("09:00")
+
+      // Click on the button
+      eventSaveButton {
+        performScrollTo()
+        assertIsDisplayed()
+        performClick()
+      }
+      // Check if the dialog box is displayed
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
+
+      alertBox.assertIsDisplayed()
+      alertBoxText.assertTextContains("Inscription limit date must be before event start date")
+      // Click the OK button
+      alertBoxButton.performClick()
+      // Check if the dialog box is closed
+      alertBox.assertDoesNotExist()
+    }
+  }
 
   @Test
   fun testLocationFieldEditable() {
