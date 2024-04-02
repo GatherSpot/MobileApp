@@ -241,10 +241,11 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
         }
         if (showErrorDialog) {
           AlertDialog(
+              modifier = Modifier.testTag("alertBox"),
               onDismissRequest = { showErrorDialog = false },
               icon = { Icon(Icons.Default.Warning, contentDescription = null) },
               title = { Text("Error on the event creation") },
-              text = { Text(errorMessage) },
+              text = { Text(modifier = Modifier.testTag("errorMessage"), text = errorMessage) },
               confirmButton = {
                 Button(
                     onClick = { showErrorDialog = false },
