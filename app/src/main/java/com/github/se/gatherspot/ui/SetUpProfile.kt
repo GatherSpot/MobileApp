@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.ui
 
+import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +38,12 @@ import com.github.se.gatherspot.model.Category
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import okhttp3.internal.wait
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun SetUpProfile(nav: NavigationActions, uid: String) {
 
@@ -43,15 +51,25 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   var isEmailVerified by remember { mutableStateOf(false) }
   var emailText by remember { mutableStateOf("") }
   var isClicked by remember { mutableStateOf(false) }
+    val allCategories = enumValues<Category>().toList()
+    var interests by remember { mutableStateOf(mutableSetOf<Category>())  }
 
-  LaunchedEffect(isClicked) {
-    auth.currentUser?.reload()
-    isEmailVerified = auth.currentUser?.isEmailVerified ?: false
-    Log.d("SetUpProfile", "Email verified: $isEmailVerified, ${auth.currentUser?.isEmailVerified}")
+
+  LaunchedEffect(isClicked, interests) {
+      if(isClicked) {
+          withContext(Dispatchers.Main) {
+              auth.currentUser?.reload()?.await()
+              isEmailVerified = auth.currentUser!!.isEmailVerified
+              if (isEmailVerified) {
+                  UserFirebaseConnection.updateUserInterests(uid, Profile(interests))
+                  nav.controller.navigate("profile")
+              } else {
+                  emailText = "Please verify your email before continuing"
+              }
+          }
+      }
   }
 
-  val allCategories = enumValues<Category>().toList()
-  val interests = mutableSetOf<Category>()
   Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp)) {
     Text(text = "Choose your interests", fontSize = 30.sp)
 
@@ -68,18 +86,13 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
     Button(
         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
         onClick = {
-          isClicked = !isClicked
-          if (isEmailVerified) {
-            UserFirebaseConnection.updateUserInterests(uid, Profile(interests))
-            nav.controller.navigate("profile")
-          } else {
-            emailText = "Please verify your email before continuing"
-          }
+          isClicked = true
         },
         modifier =
-            Modifier.border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(100.dp))
-                .padding(horizontal = 100.dp)
-                .wrapContentSize()) {
+        Modifier
+            .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(100.dp))
+            .padding(horizontal = 100.dp)
+            .wrapContentSize()) {
           Text("Save", color = Color.Black)
         }
     Text(text = emailText, color = Color.Red)
