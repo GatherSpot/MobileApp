@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,9 +21,8 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,20 +40,14 @@ import com.google.firebase.auth.FirebaseAuth
 fun SetUpProfile(nav: NavigationActions, uid: String) {
 
   val auth = FirebaseAuth.getInstance()
-  var isEmailVerified by remember { mutableStateOf(auth.currentUser?.isEmailVerified ?: false) }
+  var isEmailVerified by remember { mutableStateOf(false) }
   var emailText by remember { mutableStateOf("") }
+  var isClicked by remember { mutableStateOf(false) }
 
-  DisposableEffect(key1 = auth) {
-    val listener =
-        FirebaseAuth.AuthStateListener { firebaseAuth ->
-          val user = firebaseAuth.currentUser
-          if (user != null) {
-            // Update email verification state
-            isEmailVerified = user.isEmailVerified
-          }
-        }
-    auth.addAuthStateListener(listener)
-    onDispose { auth.removeAuthStateListener(listener) }
+  LaunchedEffect(isClicked) {
+    auth.currentUser?.reload()
+    isEmailVerified = auth.currentUser?.isEmailVerified ?: false
+    Log.d("SetUpProfile", "Email verified: $isEmailVerified, ${auth.currentUser?.isEmailVerified}")
   }
 
   val allCategories = enumValues<Category>().toList()
@@ -68,31 +62,27 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
       }
     }
 
-    Spacer(modifier = Modifier.height(20.dp))
+    Spacer(modifier = Modifier.height(15.dp))
     Text("You can change your interests at any time in your profile")
     Spacer(modifier = Modifier.height(20.dp))
     Button(
         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
         onClick = {
-          UserFirebaseConnection.updateUserInterests(uid, Profile(interests))
-          nav.controller.navigate("profile")
+          isClicked = !isClicked
+          if (isEmailVerified) {
+            UserFirebaseConnection.updateUserInterests(uid, Profile(interests))
+            nav.controller.navigate("profile")
+          } else {
+            emailText = "Please verify your email before continuing"
+          }
         },
-        enabled = isEmailVerified,
         modifier =
             Modifier.border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(100.dp))
                 .padding(horizontal = 100.dp)
                 .wrapContentSize()) {
           Text("Save", color = Color.Black)
         }
-    key(isEmailVerified) {
-      emailText =
-          if (isEmailVerified) {
-            "Email verified"
-          } else {
-            "Email not verified"
-          }
-      Text(text = emailText, color = Color.Red)
-    }
+    Text(text = emailText, color = Color.Red)
   }
 }
 

@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -47,8 +47,6 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 @Composable
@@ -82,33 +80,26 @@ fun SignUp(nav: NavigationActions) {
     }
   }
 
-    LaunchedEffect(key1 = username) {
-        UserFirebaseConnection.usernameExists(username) { result -> isUsernameValid = !result }
-    }
+  LaunchedEffect(key1 = username) {
+    UserFirebaseConnection.usernameExists(username) { result -> isUsernameValid = !result }
+  }
 
-  Box(modifier = Modifier
-      .fillMaxSize()
-      .background(Color.LightGray)) {
+  Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
     Column(
-        modifier = Modifier
-            .padding(vertical = 80.dp, horizontal = 20.dp)
-            .testTag("signUpScreen"),
+        modifier = Modifier.padding(vertical = 80.dp, horizontal = 20.dp).testTag("signUpScreen"),
         verticalArrangement = Arrangement.spacedBy(70.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Row(
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 10.dp)) {
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
             Icon(
                 painter = painterResource(R.drawable.backarrow),
                 contentDescription = "",
                 modifier =
-                Modifier
-                    .clickable { nav.controller.navigate("auth") }
-                    .width(30.dp)
-                    .height(30.dp))
+                    Modifier.clickable { nav.controller.navigate("auth") }
+                        .width(30.dp)
+                        .height(30.dp))
 
             Spacer(modifier = Modifier.width(80.dp))
 
@@ -123,7 +114,8 @@ fun SignUp(nav: NavigationActions) {
                 value = username,
                 onValueChange = { s -> username = s },
                 label = { Text(text = "Username") },
-                modifier = Modifier.testTag("user"))
+                modifier = Modifier.testTag("user"),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text))
             if (username.isEmpty()) {
               Text(text = "", color = Color.Red)
             } else if (isUsernameValid) {
@@ -142,7 +134,7 @@ fun SignUp(nav: NavigationActions) {
                 onValueChange = { s -> email = s },
                 label = { Text(text = "Email") },
                 modifier = Modifier.testTag("email"),
-            )
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
 
             if (email.isEmpty()) {
               Text(text = "", color = Color.Red)
@@ -168,6 +160,7 @@ fun SignUp(nav: NavigationActions) {
                     if (isPasswordDisplayed) VisualTransformation.None
                     else PasswordVisualTransformation(),
                 modifier = Modifier.testTag("password"),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
                   IconButton(
                       onClick = { isPasswordDisplayed = !isPasswordDisplayed },
@@ -199,9 +192,7 @@ fun SignUp(nav: NavigationActions) {
           enabled = isEmailValid(email) and isUsernameValid and isPasswordValid,
           onClick = { isClicked = true },
           colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-          modifier = Modifier
-              .width(250.dp)
-              .testTag("validate")) {
+          modifier = Modifier.width(250.dp).testTag("validate")) {
             Text("Sign Up", color = Color.White)
           }
 
@@ -224,11 +215,7 @@ fun SignUp(nav: NavigationActions) {
       }
     }
   }
-
-
 }
-
-
 
 fun isEmailValid(email: String): Boolean {
   if (email.isEmpty()) return false
