@@ -88,6 +88,32 @@ class UserFirebaseConnection {
           Profile(interests.map { s -> Category.valueOf(s) }.toSet()))
     }
 
+    fun usernameExists(username: String, onComplete: (Boolean) -> Unit) {
+
+      var res = false
+      Firebase.firestore
+          .collection(USERS)
+          .get()
+          .addOnSuccessListener { result ->
+            for (document in result) {
+              Log.d(TAG, "Username already exists: ${document.get("username")}, $username")
+              if (document.get("username") == username) {
+                Log.d(TAG, "LOL")
+                res = true
+              }
+              if (res) {
+                break
+              }
+            }
+            Log.d(TAG, "RES//: $res")
+            onComplete(res)
+          }
+          .addOnFailureListener { exception ->
+            Log.d(TAG, "Error getting documents: ", exception)
+            onComplete(true)
+          }
+    }
+
     fun updateUserInterests(uid: String, profile: Profile) {
       val hm: HashMap<String, Any?> = hashMapOf("profile.interests" to profile.interests.toList())
 

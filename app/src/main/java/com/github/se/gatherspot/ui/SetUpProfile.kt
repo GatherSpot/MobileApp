@@ -20,8 +20,9 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,18 +40,20 @@ import com.google.firebase.auth.FirebaseAuth
 fun SetUpProfile(nav: NavigationActions, uid: String) {
 
   val auth = FirebaseAuth.getInstance()
-  var isEmailVerified by remember { mutableStateOf(false) }
+  var isEmailVerified by remember { mutableStateOf(auth.currentUser?.isEmailVerified ?: false) }
   var emailText by remember { mutableStateOf("") }
 
-  SideEffect {
-    auth.currentUser?.reload()
-    isEmailVerified = auth.currentUser?.isEmailVerified == true
-    emailText =
-        if (!isEmailVerified) {
-          "Please verify your email before continuing"
-        } else {
-          ""
+  DisposableEffect(key1 = auth) {
+    val listener =
+        FirebaseAuth.AuthStateListener { firebaseAuth ->
+          val user = firebaseAuth.currentUser
+          if (user != null) {
+            // Update email verification state
+            isEmailVerified = user.isEmailVerified
+          }
         }
+    auth.addAuthStateListener(listener)
+    onDispose { auth.removeAuthStateListener(listener) }
   }
 
   val allCategories = enumValues<Category>().toList()
@@ -81,7 +84,15 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
                 .wrapContentSize()) {
           Text("Save", color = Color.Black)
         }
-    Text(text = emailText, color = Color.Red)
+    key(isEmailVerified) {
+      emailText =
+          if (isEmailVerified) {
+            "Email verified"
+          } else {
+            "Email not verified"
+          }
+      Text(text = emailText, color = Color.Red)
+    }
   }
 }
 

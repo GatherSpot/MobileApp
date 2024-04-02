@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,16 +12,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.MainActivity
@@ -41,15 +47,19 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 @Composable
 fun SignUp(nav: NavigationActions) {
 
   var username by remember { mutableStateOf("") }
+  var isUsernameValid by remember { mutableStateOf(true) }
   var email by remember { mutableStateOf("") }
   var password by remember { mutableStateOf("") }
-  var passwordDisplayed by remember { mutableStateOf("") }
+  var isPasswordDisplayed by remember { mutableStateOf(false) }
+  var isPasswordValid by remember { mutableStateOf(false) }
   var showDialog by remember { mutableStateOf(false) }
   var isClicked by remember { mutableStateOf(false) }
   var showDialogVerif by remember { mutableStateOf(false) }
@@ -71,54 +81,127 @@ fun SignUp(nav: NavigationActions) {
       }
     }
   }
-  Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
+
+    LaunchedEffect(key1 = username) {
+        UserFirebaseConnection.usernameExists(username) { result -> isUsernameValid = !result }
+    }
+
+  Box(modifier = Modifier
+      .fillMaxSize()
+      .background(Color.LightGray)) {
     Column(
-        modifier = Modifier.padding(vertical = 80.dp, horizontal = 20.dp).testTag("signUpScreen"),
+        modifier = Modifier
+            .padding(vertical = 80.dp, horizontal = 20.dp)
+            .testTag("signUpScreen"),
         verticalArrangement = Arrangement.spacedBy(70.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Row(
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
+          modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 10.dp)) {
             Icon(
                 painter = painterResource(R.drawable.backarrow),
                 contentDescription = "",
                 modifier =
-                    Modifier.clickable { nav.controller.navigate("auth") }
-                        .width(30.dp)
-                        .height(30.dp))
+                Modifier
+                    .clickable { nav.controller.navigate("auth") }
+                    .width(30.dp)
+                    .height(30.dp))
 
             Spacer(modifier = Modifier.width(80.dp))
 
             Text("Sign Up", fontSize = 32.sp, lineHeight = 32.sp, color = Color.Black)
           }
 
-      OutlinedTextField(
-          value = username,
-          onValueChange = { s -> username = s },
-          label = { Text(text = "Username") },
-          modifier = Modifier.testTag("user"))
+      Column(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            OutlinedTextField(
+                value = username,
+                onValueChange = { s -> username = s },
+                label = { Text(text = "Username") },
+                modifier = Modifier.testTag("user"))
+            if (username.isEmpty()) {
+              Text(text = "", color = Color.Red)
+            } else if (isUsernameValid) {
+              Text(text = "Username is valid", color = Color.Blue)
+            } else {
+              Text(text = "Username is already in use", color = Color.Red)
+            }
+          }
 
-      OutlinedTextField(
-          value = email,
-          onValueChange = { s -> email = s },
-          label = { Text(text = "Email") },
-          modifier = Modifier.testTag("email"))
+      Column(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            OutlinedTextField(
+                value = email,
+                onValueChange = { s -> email = s },
+                label = { Text(text = "Email") },
+                modifier = Modifier.testTag("email"),
+            )
 
-      OutlinedTextField(
-          value = passwordDisplayed,
-          onValueChange = { s ->
-            password = s
-            passwordDisplayed = "*".repeat(s.length)
-          },
-          label = { Text(text = "Password") },
-          modifier = Modifier.testTag("password"))
+            if (email.isEmpty()) {
+              Text(text = "", color = Color.Red)
+            } else if (isEmailValid(email)) {
+              Text(text = "Email is valid", color = Color.Blue)
+            } else {
+              Text(text = "Email is not valid", color = Color.Red)
+            }
+          }
 
+      Column(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                  password = it
+                  isPasswordValid = isPasswordValid(it)
+                },
+                label = { Text(text = "Password") },
+                visualTransformation =
+                    if (isPasswordDisplayed) VisualTransformation.None
+                    else PasswordVisualTransformation(),
+                modifier = Modifier.testTag("password"),
+                trailingIcon = {
+                  IconButton(
+                      onClick = { isPasswordDisplayed = !isPasswordDisplayed },
+                      content = {
+                        if (isPasswordDisplayed) {
+                          Icon(
+                              painter = painterResource(id = R.drawable.hide),
+                              contentDescription = "Toggle password visibility",
+                              Modifier.size(30.dp))
+                        } else {
+                          Icon(
+                              painter = painterResource(id = R.drawable.show),
+                              contentDescription = "Toggle password visibility",
+                              Modifier.size(30.dp))
+                        }
+                      })
+                },
+            )
+
+            if (password.isEmpty()) {
+              Text(text = "", color = Color.Red)
+            } else if (isPasswordValid) {
+              Text(text = "Password is valid", color = Color.Blue)
+            } else {
+              Text(text = "Password is not valid", color = Color.Red)
+            }
+          }
       Button(
-          enabled = isEmailValid(email) and password.isNotEmpty() and username.isNotEmpty(),
+          enabled = isEmailValid(email) and isUsernameValid and isPasswordValid,
           onClick = { isClicked = true },
           colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-          modifier = Modifier.width(250.dp).testTag("validate")) {
+          modifier = Modifier
+              .width(250.dp)
+              .testTag("validate")) {
             Text("Sign Up", color = Color.White)
           }
 
@@ -141,11 +224,22 @@ fun SignUp(nav: NavigationActions) {
       }
     }
   }
+
+
 }
 
+
+
 fun isEmailValid(email: String): Boolean {
-  val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
+  if (email.isEmpty()) return false
+  val emailRegex = "^[A-Za-z](.*)(@)(.+)(\\.)(.+)"
   return email.matches(emailRegex.toRegex())
+}
+
+fun isPasswordValid(password: String): Boolean {
+  if (password.isEmpty()) return false
+  val passwordRegex = """^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$"""
+  return password.matches(passwordRegex.toRegex())
 }
 
 suspend fun checkCredentials(email: String, password: String, t: MutableState<String>): Boolean {
