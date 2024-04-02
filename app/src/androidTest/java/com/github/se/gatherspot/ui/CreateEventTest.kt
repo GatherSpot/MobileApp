@@ -21,7 +21,83 @@ class CreateEventTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   // Restructured to use CreateEventScreen
+  @Test
+  fun testIsEverythingExist(){
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventViewModel = EventViewModel()
 
+      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+    }
+
+    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+      // Check if every element are displayed
+        eventScaffold { assertExists() }
+        topBar{assertExists()}
+        backButton{assertExists()}
+        formColumn{assertExists()}
+        eventTitle{assertExists()}
+        eventDescription{assertExists()}
+        eventStartDate{assertExists()}
+        eventEndDate{assertExists()}
+        eventTimeStart{assertExists()}
+        eventTimeEnd{assertExists()}
+        eventLocation{assertExists()}
+        eventMaxAttendees{assertExists()}
+        eventMinAttendees{assertExists()}
+        eventInscriptionLimitDate{assertExists()}
+        eventInscriptionLimitTime{assertExists()}
+        eventSaveButton{assertExists()}
+        alertBox{assertDoesNotExist()}
+        alertBoxText{assertDoesNotExist()}
+        alertBoxButton{assertDoesNotExist()}
+    }
+  }
+
+  @Test
+  fun testIsEverythingHere() {
+
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventViewModel = EventViewModel()
+
+      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+    }
+
+    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+      // Check if every element are displayed
+
+      topBar { assertIsDisplayed() }
+      backButton { assertIsDisplayed() }
+      eventTitle { assertIsDisplayed() }
+      eventDescription { assertIsDisplayed() }
+      eventStartDate { assertIsDisplayed() }
+      eventEndDate { assertIsDisplayed() }
+      eventTimeStart { assertIsDisplayed() }
+      eventTimeEnd { assertIsDisplayed() }
+      eventLocation { assertIsDisplayed() }
+      eventMaxAttendees { assertIsDisplayed() }
+      eventMinAttendees { assertIsDisplayed() }
+
+      // scroll the screen to see the rest of the fields
+      eventInscriptionLimitDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventInscriptionLimitTime {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventSaveButton {
+        performScrollTo()
+        assertIsDisplayed()
+        assertIsNotEnabled()
+      }
+
+      // Check if the alert box is not displayed
+      alertBox { assertDoesNotExist() }
+    }
+  }
   // Restructured to use CreateEventScreen
   @Test
   fun testMinimalData() {
@@ -214,4 +290,31 @@ class CreateEventTest {
     // Check if the location field is enabled for text input
     composeTestRule.onNodeWithTag("inputLocation").assertIsEnabled()
   }
+
+  @Test
+  fun testVerifyLabelContent(){
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventViewModel = EventViewModel()
+      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+    }
+
+    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+      // Check if the labels are displayed
+      eventTitle.assert(hasText("Event Title*"))
+      eventDescription.assert(hasText("Description*"))
+      eventStartDate.assert(hasText("Start Date of the event*"))
+      eventEndDate.assert(hasText("End date of the event"))
+      eventTimeStart.assert(hasText("Start time*"))
+      eventTimeEnd.assert(hasText("End time*"))
+      //eventLocation.assert(hasText("Event Location"))
+      eventMaxAttendees.assert(hasText("Max Attendees"))
+      eventMinAttendees.assert(hasText("Min Attendees"))
+      eventInscriptionLimitDate.assert(hasText("Inscription Limit Date"))
+      eventInscriptionLimitTime.assert(hasText("Inscription Limit Time"))
+    }
+
+  }
+
+
 }

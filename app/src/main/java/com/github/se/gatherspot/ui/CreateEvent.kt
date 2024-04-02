@@ -88,6 +88,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
             navigationIcon = {
               IconButton(onClick = { nav.goBack() }, modifier = Modifier.testTag("goBackButton")) {
                 Icon(
+                    modifier = Modifier.testTag("backIcon"),
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Go back to overview")
               }
@@ -97,7 +98,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
         ScrollableContent {
           // Create event form
           Column(
-              modifier = Modifier.padding(innerPadding).padding(horizontal = 28.dp),
+              modifier = Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
               verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
               horizontalAlignment = Alignment.CenterHorizontally,
           ) {
@@ -107,7 +108,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputTitle"),
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Event title *") },
+                label = { Text("Event Title*") },
                 placeholder = { Text(text = "Give a name to the event") })
             // Description
             OutlinedTextField(
@@ -115,7 +116,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                     Modifier.width(WIDTH).height(DESCRIPTION_HEIGHT).testTag("inputDescription"),
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description *") },
+                label = { Text("Description*") },
                 placeholder = { Text("Describe the event") })
             // Start Date
             OutlinedTextField(
@@ -173,15 +174,15 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                           Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
                       value = maxAttendees,
                       onValueChange = { maxAttendees = it },
-                      label = { Text("Max attendees") },
-                      placeholder = { Text("Max attendees") })
+                      label = { Text("Max Attendees") },
+                      placeholder = { Text("Max Attendees") })
                   // Min attendees
                   OutlinedTextField(
                       modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputMinAttendees"),
                       value = minAttendees,
                       onValueChange = { minAttendees = it },
-                      label = { Text("Min attendees") },
-                      placeholder = { Text("Min attendees") })
+                      label = { Text("Min Attendees") },
+                      placeholder = { Text("Min Attendees") })
                 }
 
             // Inscription limit date
@@ -190,7 +191,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                     Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
-                label = { Text("Inscription limit date") },
+                label = { Text("Inscription Limit Date") },
                 placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
             // Inscription limit time
             OutlinedTextField(
@@ -198,7 +199,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                     Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
                 value = inscriptionLimitTime,
                 onValueChange = { inscriptionLimitTime = it },
-                label = { Text("Inscription limit time") },
+                label = { Text("Inscription Limit Time") },
                 placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
             // TODO :Upload images
