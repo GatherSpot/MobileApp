@@ -72,13 +72,28 @@ class CreateEventTest {
       backButton { assertIsDisplayed() }
       eventTitle { assertIsDisplayed() }
       eventDescription { assertIsDisplayed() }
-      eventStartDate { assertIsDisplayed() }
-      eventEndDate { assertIsDisplayed() }
-      eventTimeStart { assertIsDisplayed() }
-      eventTimeEnd { assertIsDisplayed() }
-      eventLocation { assertIsDisplayed() }
-      eventMaxAttendees { assertIsDisplayed() }
-      eventMinAttendees { assertIsDisplayed() }
+      eventStartDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventEndDate {
+        performScrollTo()
+        assertIsDisplayed() }
+      eventTimeStart {
+        performScrollTo()
+        assertIsDisplayed() }
+      eventTimeEnd {
+        performScrollTo()
+        assertIsDisplayed() }
+      eventLocation {
+        performScrollTo()
+        assertIsDisplayed() }
+      eventMaxAttendees {
+        performScrollTo()
+        assertIsDisplayed() }
+      eventMinAttendees {
+        performScrollTo()
+        assertIsDisplayed() }
 
       // scroll the screen to see the rest of the fields
       eventInscriptionLimitDate {
