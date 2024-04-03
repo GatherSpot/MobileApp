@@ -259,11 +259,3 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
         }
       }
 }
-
-@Preview
-@Composable
-fun CreateEventPreview() {
-  val controller = rememberNavController()
-  val eventViewModel = EventViewModel()
-  CreateEvent(nav = NavigationActions(controller), eventViewModel)
-}
