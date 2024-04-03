@@ -96,7 +96,6 @@ class UserFirebaseConnection {
           .get()
           .addOnSuccessListener { result ->
             for (document in result) {
-              Log.d(TAG, "Username already exists: ${document.get("username")}, $username")
               if (document.get("username") == username) {
                 Log.d(TAG, "LOL")
                 res = true
@@ -105,13 +104,9 @@ class UserFirebaseConnection {
                 break
               }
             }
-            Log.d(TAG, "RES//: $res")
             onComplete(res)
           }
-          .addOnFailureListener { exception ->
-            Log.d(TAG, "Error getting documents: ", exception)
-            onComplete(true)
-          }
+          .addOnFailureListener { onComplete(true) }
     }
 
     fun updateUserInterests(uid: String, profile: Profile) {

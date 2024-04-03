@@ -68,27 +68,25 @@ fun SignUp(nav: NavigationActions) {
   val t = remember { mutableStateOf("") }
 
   LaunchedEffect(isClicked) {
-      if (isClicked) {
-          try {
-              withContext(Dispatchers.IO) {
-                  val success = checkCredentials(email, password, t)
-                  if (success) {
-                      MainActivity.uid = UserFirebaseConnection.getUID()
-                      val newUser =
-                          User(MainActivity.uid, username, email, password, Profile(emptySet()))
-                      UserFirebaseConnection.addUser(newUser)
-                      FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
-                      showDialogVerif = true
-                  } else {
-                      showDialog = true
-                      isClicked = false
-                  }
-              }
+    if (isClicked) {
+      try {
+        withContext(Dispatchers.IO) {
+          val success = checkCredentials(email, password, t)
+          if (success) {
+            MainActivity.uid = UserFirebaseConnection.getUID()
+            val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
+            UserFirebaseConnection.addUser(newUser)
+            FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
+            showDialogVerif = true
+          } else {
+            showDialog = true
+            isClicked = false
           }
-          catch (e: Exception){
-              Log.d(TAG, e.toString())
-          }
+        }
+      } catch (e: Exception) {
+        Log.d(TAG, e.toString())
       }
+    }
   }
 
   LaunchedEffect(key1 = username) {
@@ -160,68 +158,66 @@ fun SignUp(nav: NavigationActions) {
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.CenterHorizontally,
           verticalArrangement = Arrangement.spacedBy(10.dp)) {
-          OutlinedTextField(
-              value = password,
-              onValueChange = {
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
                   password = it
                   isPasswordValid = isPasswordValid(it)
-              },
-              label = { Text(text = "Password") },
-              visualTransformation =
-              if (isPasswordDisplayed) VisualTransformation.None
-              else PasswordVisualTransformation(),
-              modifier = Modifier.testTag("password"),
-              keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-              trailingIcon = {
+                },
+                label = { Text(text = "Password") },
+                visualTransformation =
+                    if (isPasswordDisplayed) VisualTransformation.None
+                    else PasswordVisualTransformation(),
+                modifier = Modifier.testTag("password"),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
                   IconButton(
                       onClick = { isPasswordDisplayed = !isPasswordDisplayed },
                       content = {
-                          if (isPasswordDisplayed) {
-                              Icon(
-                                  painter = painterResource(id = R.drawable.hide),
-                                  contentDescription = "Toggle password visibility",
-                                  Modifier.size(30.dp)
-                              )
-                          } else {
-                              Icon(
-                                  painter = painterResource(id = R.drawable.show),
-                                  contentDescription = "Toggle password visibility",
-                                  Modifier.size(30.dp)
-                              )
-                          }
+                        if (isPasswordDisplayed) {
+                          Icon(
+                              painter = painterResource(id = R.drawable.hide),
+                              contentDescription = "Toggle password visibility",
+                              Modifier.size(30.dp))
+                        } else {
+                          Icon(
+                              painter = painterResource(id = R.drawable.show),
+                              contentDescription = "Toggle password visibility",
+                              Modifier.size(30.dp))
+                        }
                       })
-              },
-          )
+                },
+            )
 
-          if (password.isEmpty()) {
+            if (password.isEmpty()) {
               Text(text = "", color = Color.Red)
-          } else if (isPasswordValid) {
+            } else if (isPasswordValid) {
               Text(text = "Password is valid", color = Color.Blue)
-          } else {
+            } else {
               Text(text = "Password is not valid", color = Color.Red)
+            }
           }
 
-          Button(
-              enabled = isEmailValid(email) and isUsernameValid and isPasswordValid,
-              onClick = {
-                isClicked = true
-              },
-              colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-              modifier = Modifier.width(250.dp).testTag("validate")
-          ) {
-              Text("Sign Up", color = Color.White)
+      Button(
+          enabled = isEmailValid(email) and isUsernameValid and isPasswordValid,
+          onClick = { isClicked = true },
+          colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+          modifier = Modifier.width(250.dp).testTag("validate")) {
+            Text("Sign Up", color = Color.White)
           }
-      }
 
       if (showDialog) {
         AlertDialog(
+            modifier = Modifier.testTag("signupFailed"),
             onDismissRequest = { showDialog = false },
             buttons = {},
             title = { Text("Signup Failed") },
             text = { Text(t.value) })
       }
       if (showDialogVerif) {
+        Log.d(TAG, "verification email sent")
         AlertDialog(
+            modifier = Modifier.testTag("verificationEmailSent"),
             onDismissRequest = {
               showDialogVerif = false
               nav.controller.navigate("setup")
