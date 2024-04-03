@@ -98,7 +98,8 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
         ScrollableContent {
           // Create event form
           Column(
-              modifier = Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
+              modifier =
+                  Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
               verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
               horizontalAlignment = Alignment.CenterHorizontally,
           ) {

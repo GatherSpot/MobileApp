@@ -82,7 +82,7 @@ class EventViewModelTest {
   }
 
   @Test
-  fun validateEventData_withInvalidDate_returnsFalse() {
+  fun validateEventData_withInvalidStartDate_returnsFalse() {
     // validate data parse strings
     try {
       val result =
@@ -100,6 +100,28 @@ class EventViewModelTest {
               "09:00")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid date format", e.message)
+    }
+  }
+
+  @Test
+  fun validateEventData_withInvalidEndDate_returnsFalse() {
+    // validate data parse strings
+    try {
+      val result =
+          eventViewModel.validateEvent(
+              "Test Event",
+              "This is a test event",
+              Location(0.0, 0.0, "Test Location"),
+              "12/04/2026",
+              "10/04/2026",
+              "10:00",
+              "12:00",
+              "100",
+              "10",
+              "10/04/2025",
+              "09:00")
+    } catch (e: Exception) {
+      Assert.assertEquals("Event end date must be after start date", e.message)
     }
   }
 
@@ -148,7 +170,7 @@ class EventViewModelTest {
   }
 
   @Test
-  fun validateEventData_withInvalidCapacity_returnsFalse() {
+  fun validateEventData_withInvalidMaxCapacity_returnsFalse() {
     // validate data parse strings
     try {
       val result =
@@ -166,6 +188,117 @@ class EventViewModelTest {
               "09:00")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid max attendees format, must be a number", e.message)
+    }
+  }
+
+  @Test
+  fun validateEventData_withInvalidMinCapacity_returnsFalse() {
+    // validate data parse strings
+    try {
+      val result =
+          eventViewModel.validateEvent(
+              "Test Event",
+              "This is a test event",
+              Location(0.0, 0.0, "Test Location"),
+              "12/04/2026",
+              "12/04/2026",
+              "10:00",
+              "12:00",
+              "100",
+              "two",
+              "10/04/2025",
+              "09:00")
+    } catch (e: Exception) {
+      Assert.assertEquals("Invalid min attendees format, must be a number", e.message)
+    }
+  }
+
+  @Test
+  fun validateEventData_withEventDateBeforeToday_returnsFalse() {
+    // validate data parse strings
+    try {
+      val result =
+          eventViewModel.validateEvent(
+              "Test Event",
+              "This is a test event",
+              Location(0.0, 0.0, "Test Location"),
+              "12/04/2020",
+              "12/04/2026",
+              "10:00",
+              "12:00",
+              "100",
+              "10",
+              "10/04/2025",
+              "09:00")
+    } catch (e: Exception) {
+      Assert.assertEquals("Event date must be in the future", e.message)
+    }
+  }
+
+  @Test
+  fun validateEventData_withMinAttendeesGreaterThanMaxAttendees_returnsFalse() {
+    // validate data parse strings
+    try {
+      val result =
+          eventViewModel.validateEvent(
+              "Test Event",
+              "This is a test event",
+              Location(0.0, 0.0, "Test Location"),
+              "12/04/2026",
+              "12/04/2026",
+              "10:00",
+              "12:00",
+              "100",
+              "200",
+              "10/04/2025",
+              "09:00")
+    } catch (e: Exception) {
+      Assert.assertEquals("Minimum attendees must be less than maximum attendees", e.message)
+    }
+  }
+
+  @Test
+  fun validateEventData_withInvalidInscriptionLimitDate_returnsFalse() {
+    // validate data parse strings
+    try {
+      val result =
+          eventViewModel.validateEvent(
+              "Test Event",
+              "This is a test event",
+              Location(0.0, 0.0, "Test Location"),
+              "12/04/2026",
+              "12/04/2026",
+              "10:00",
+              "12:00",
+              "100",
+              "10",
+              "10/04/2020",
+              "09:00")
+    } catch (e: Exception) {
+      Assert.assertEquals("Inscription limit date must be in the future", e.message)
+    }
+  }
+
+  @Test
+  fun validateEventData_withInvalidInscriptionLimitTime_returnsFalse() {
+    // validate data parse strings
+    try {
+      val result =
+          eventViewModel.validateEvent(
+              "Test Event",
+              "This is a test event",
+              Location(0.0, 0.0, "Test Location"),
+              "10/04/2026",
+              "12/04/2026",
+              "10:00",
+              "12:00",
+              "100",
+              "10",
+              "10/04/2026",
+              "11:00")
+    } catch (e: Exception) {
+      Assert.assertEquals(
+          "Inscription limit time must be before event start time on the same day", e.message)
     }
   }
 }

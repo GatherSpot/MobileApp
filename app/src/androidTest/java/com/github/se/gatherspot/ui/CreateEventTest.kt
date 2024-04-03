@@ -22,7 +22,7 @@ class CreateEventTest {
 
   // Restructured to use CreateEventScreen
   @Test
-  fun testIsEverythingExist(){
+  fun testIsEverythingExist() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventViewModel = EventViewModel()
@@ -32,25 +32,26 @@ class CreateEventTest {
 
     ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
       // Check if every element are displayed
-        eventScaffold { assertExists() }
-        topBar{assertExists()}
-        backButton{assertExists()}
-        formColumn{assertExists()}
-        eventTitle{assertExists()}
-        eventDescription{assertExists()}
-        eventStartDate{assertExists()}
-        eventEndDate{assertExists()}
-        eventTimeStart{assertExists()}
-        eventTimeEnd{assertExists()}
-        eventLocation{assertExists()}
-        eventMaxAttendees{assertExists()}
-        eventMinAttendees{assertExists()}
-        eventInscriptionLimitDate{assertExists()}
-        eventInscriptionLimitTime{assertExists()}
-        eventSaveButton{assertExists()}
-        alertBox{assertDoesNotExist()}
-        alertBoxText{assertDoesNotExist()}
-        alertBoxButton{assertDoesNotExist()}
+      eventScaffold { assertExists() }
+      topBar { assertExists() }
+      backButton { assertExists() }
+      formColumn { assertExists() }
+      eventTitle { assertExists() }
+      eventDescription { assertExists() }
+      eventStartDate { assertExists() }
+      eventEndDate { assertExists() }
+      eventTimeStart { assertExists() }
+      eventTimeEnd { assertExists() }
+      eventLocation { assertExists() }
+      eventMaxAttendees { assertExists() }
+      eventMinAttendees { assertExists() }
+      eventInscriptionLimitDate { assertExists() }
+      eventInscriptionLimitTime { assertExists() }
+      eventSaveButton { assertExists() }
+
+      alertBox { assertDoesNotExist() }
+      alertBoxText { assertDoesNotExist() }
+      alertBoxButton { assertDoesNotExist() }
     }
   }
 
@@ -292,7 +293,7 @@ class CreateEventTest {
   }
 
   @Test
-  fun testVerifyLabelContent(){
+  fun testVerifyLabelContent() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventViewModel = EventViewModel()
@@ -307,14 +308,11 @@ class CreateEventTest {
       eventEndDate.assert(hasText("End date of the event"))
       eventTimeStart.assert(hasText("Start time*"))
       eventTimeEnd.assert(hasText("End time*"))
-      //eventLocation.assert(hasText("Event Location"))
+      // eventLocation.assert(hasText("Event Location"))
       eventMaxAttendees.assert(hasText("Max Attendees"))
       eventMinAttendees.assert(hasText("Min Attendees"))
       eventInscriptionLimitDate.assert(hasText("Inscription Limit Date"))
       eventInscriptionLimitTime.assert(hasText("Inscription Limit Time"))
     }
-
   }
-
-
 }
