@@ -78,22 +78,28 @@ class CreateEventTest {
       }
       eventEndDate {
         performScrollTo()
-        assertIsDisplayed() }
+        assertIsDisplayed()
+      }
       eventTimeStart {
         performScrollTo()
-        assertIsDisplayed() }
+        assertIsDisplayed()
+      }
       eventTimeEnd {
         performScrollTo()
-        assertIsDisplayed() }
+        assertIsDisplayed()
+      }
       eventLocation {
         performScrollTo()
-        assertIsDisplayed() }
+        assertIsDisplayed()
+      }
       eventMaxAttendees {
         performScrollTo()
-        assertIsDisplayed() }
+        assertIsDisplayed()
+      }
       eventMinAttendees {
         performScrollTo()
-        assertIsDisplayed() }
+        assertIsDisplayed()
+      }
 
       // scroll the screen to see the rest of the fields
       eventInscriptionLimitDate {
