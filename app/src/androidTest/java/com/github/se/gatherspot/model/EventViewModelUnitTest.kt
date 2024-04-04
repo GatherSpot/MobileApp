@@ -301,6 +301,7 @@ class EventViewModelTest {
           "Inscription limit time must be before event start time on the same day", e.message)
     }
   }
+
   @Test
   fun validateEventData_withEndTimeBeforeStartTime_returnsFalse() {
     // validate data parse strings
