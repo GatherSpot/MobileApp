@@ -207,18 +207,18 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
             Button(
                 onClick = {
                   try {
-                        eventViewModel.validateEvent(
-                            title.text,
-                            description.text,
-                            location!!,
-                            eventStartDate.text,
-                            eventEndDate.text,
-                            eventTimeStart.text,
-                            eventTimeEnd.text,
-                            maxAttendees.text,
-                            minAttendees.text,
-                            inscriptionLimitDate.text,
-                            inscriptionLimitTime.text)
+                    eventViewModel.validateEvent(
+                        title.text,
+                        description.text,
+                        location!!,
+                        eventStartDate.text,
+                        eventEndDate.text,
+                        eventTimeStart.text,
+                        eventTimeEnd.text,
+                        maxAttendees.text,
+                        minAttendees.text,
+                        inscriptionLimitDate.text,
+                        inscriptionLimitTime.text)
                   } catch (e: Exception) {
                     // Display error message
                     errorMessage = e.message.toString()

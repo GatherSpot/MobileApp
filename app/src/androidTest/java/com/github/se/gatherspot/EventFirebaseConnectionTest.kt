@@ -160,8 +160,9 @@ class EventFirebaseConnectionTest {
     async { resultEvent = EventFirebaseConnection.fetchEvent(eventID) }.await()
     assertEquals(resultEvent, null)
   }
+
   @Test
-  fun nullCasesTest() = runTest{
+  fun nullCasesTest() = runTest {
     val eventID = EventFirebaseConnection.getNewEventID()
     val event =
         Event(
@@ -192,26 +193,14 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.title, "Test Event")
     assertEquals(resultEvent!!.description, "This is a test event")
     assertEquals(resultEvent!!.location, null)
-    assertEquals(
-        resultEvent!!.eventStartDate,
-        null)
-    assertEquals(
-        resultEvent!!.eventEndDate,
-        null)
-    assertEquals(
-        resultEvent!!.timeBeginning,
-        null)
-    assertEquals(
-        resultEvent!!.timeEnding,
-        null)
+    assertEquals(resultEvent!!.eventStartDate, null)
+    assertEquals(resultEvent!!.eventEndDate, null)
+    assertEquals(resultEvent!!.timeBeginning, null)
+    assertEquals(resultEvent!!.timeEnding, null)
     assertEquals(resultEvent!!.attendanceMaxCapacity, null)
     assertEquals(resultEvent!!.attendanceMinCapacity, 10)
-    assertEquals(
-        resultEvent!!.inscriptionLimitDate,
-        null)
-    assertEquals(
-        resultEvent!!.inscriptionLimitTime,
-        null)
+    assertEquals(resultEvent!!.inscriptionLimitDate, null)
+    assertEquals(resultEvent!!.inscriptionLimitTime, null)
     assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
     assertEquals(resultEvent!!.categories, listOf("Test Category"))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
@@ -219,13 +208,15 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.images, null)
     EventFirebaseConnection.deleteEvent(eventID)
   }
+
   @Test
-  fun mapStringToTimeTest() = runTest{
+  fun mapStringToTimeTest() = runTest {
     val time = EventFirebaseConnection.mapTimeStringToTime("Not good format")
     assertEquals(time, null)
   }
+
   @Test
-  fun mapStringToDateTest() = runTest{
+  fun mapStringToDateTest() = runTest {
     val date = EventFirebaseConnection.mapDateStringToDate("Not good format")
     assertEquals(date, null)
   }

@@ -340,14 +340,14 @@ class CreateEventTest {
   }
 
   @Test
-  fun verifyPlaceHolderAndLabel(){
+  fun verifyPlaceHolderAndLabel() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventViewModel = EventViewModel()
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule){
+    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
       // Check if the placeholders are displayed
       eventTitle.assert(hasText("Event Title*"))
       eventDescription.assert(hasText("Description*"))
@@ -361,54 +361,54 @@ class CreateEventTest {
       eventInscriptionLimitDate.assert(hasText("Inscription Limit Date"))
       eventInscriptionLimitTime.assert(hasText("Inscription Limit Time"))
 
-      //Check if the labels are displayed when clicked
-      eventTitle{
+      // Check if the labels are displayed when clicked
+      eventTitle {
         performClick()
         assert(hasText("Give a name to the event"))
       }
-      eventDescription{
-          performClick()
-          assert(hasText("Describe the event"))
+      eventDescription {
+        performClick()
+        assert(hasText("Describe the event"))
       }
-      eventStartDate{
-          performClick()
-          assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+      eventStartDate {
+        performClick()
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
       }
-      eventEndDate{
-          performClick()
-          assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+      eventEndDate {
+        performClick()
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
       }
-      eventTimeStart{
-          performClick()
-          assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      eventTimeStart {
+        performClick()
+        assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
-      eventTimeEnd{
-          performClick()
-          assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      eventTimeEnd {
+        performClick()
+        assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
-      //todo: LOCATION not handled yet
+      // todo: LOCATION not handled yet
       /*
       eventLocation{
         performClick()
         assert(hasText("Enter an address"))
       }*/
-      eventMaxAttendees{
-          performClick()
-          assert(hasText("Max Attendees"))
+      eventMaxAttendees {
+        performClick()
+        assert(hasText("Max Attendees"))
       }
-      eventMinAttendees{
-          performClick()
-          assert(hasText("Min Attendees"))
+      eventMinAttendees {
+        performClick()
+        assert(hasText("Min Attendees"))
       }
-      eventInscriptionLimitDate{
-          performScrollTo()
-          performClick()
-          assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+      eventInscriptionLimitDate {
+        performScrollTo()
+        performClick()
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
       }
-      eventInscriptionLimitTime{
-          performScrollTo()
-          performClick()
-          assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      eventInscriptionLimitTime {
+        performScrollTo()
+        performClick()
+        assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
     }
   }
