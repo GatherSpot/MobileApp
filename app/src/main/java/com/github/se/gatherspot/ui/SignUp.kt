@@ -95,8 +95,8 @@ fun SignUp(nav: NavigationActions) {
 
   Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
     Column(
-        modifier = Modifier.padding(vertical = 80.dp, horizontal = 20.dp).testTag("signUpScreen"),
-        verticalArrangement = Arrangement.spacedBy(70.dp, Alignment.Top),
+        modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp).testTag("signUpScreen"),
+        verticalArrangement = Arrangement.spacedBy(60.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Row(
