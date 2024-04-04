@@ -1,6 +1,9 @@
 package com.github.se.gatherspot.authentification
 
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
@@ -16,13 +19,14 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
-  @get:Rule val composeTestRule = createAndroidComposeRule(MainActivity::class.java)
+  @get:Rule val composeTestRule = createComposeRule()
 
   // The IntentsTestRule simply calls Intents.init() before the @Test block
   // and Intents.release() after the @Test block is completed. IntentsTestRule
   // is deprecated, but it was MUCH faster than using IntentsRule in our tests
   @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUp() {
 
@@ -35,8 +39,10 @@ class SignUpTest : TestCase() {
       Espresso.closeSoftKeyboard()
       composeTestRule.waitForIdle()
       button { performClick() }
-      composeTestRule.waitForIdle()
-      //  verifDialog { performClick() } -> cannot see it ??? to be done
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verificationEmailSent"),
+        20000)
+      verifDialog.assertIsDisplayed()
+      verifDialog.performClick()
     }
   }
 }

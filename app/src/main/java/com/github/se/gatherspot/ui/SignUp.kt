@@ -16,9 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -53,6 +54,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUp(nav: NavigationActions) {
 
@@ -72,6 +74,7 @@ fun SignUp(nav: NavigationActions) {
       try {
         withContext(Dispatchers.IO) {
           val success = checkCredentials(email, password, t)
+          Log.d(TAG, "entered but o=you know hardddddddd")
           if (success) {
             MainActivity.uid = UserFirebaseConnection.getUID()
             val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
@@ -93,22 +96,29 @@ fun SignUp(nav: NavigationActions) {
     UserFirebaseConnection.usernameExists(username) { result -> isUsernameValid = !result }
   }
 
-  Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
+  Box(modifier = Modifier
+      .fillMaxSize()
+      .background(Color.LightGray)) {
     Column(
-        modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp).testTag("signUpScreen"),
+        modifier = Modifier
+            .padding(vertical = 50.dp, horizontal = 20.dp)
+            .testTag("signUpScreen"),
         verticalArrangement = Arrangement.spacedBy(60.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Row(
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
+          modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 10.dp)) {
             Icon(
                 painter = painterResource(R.drawable.backarrow),
                 contentDescription = "",
                 modifier =
-                    Modifier.clickable { nav.controller.navigate("auth") }
-                        .width(30.dp)
-                        .height(30.dp))
+                Modifier
+                    .clickable { nav.controller.navigate("auth") }
+                    .width(30.dp)
+                    .height(30.dp))
 
             Spacer(modifier = Modifier.width(80.dp))
 
@@ -202,27 +212,35 @@ fun SignUp(nav: NavigationActions) {
           enabled = isEmailValid(email) and isUsernameValid and isPasswordValid,
           onClick = { isClicked = true },
           colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-          modifier = Modifier.width(250.dp).testTag("validate")) {
+          modifier = Modifier
+              .width(250.dp)
+              .testTag("validate")) {
             Text("Sign Up", color = Color.White)
           }
 
       if (showDialog) {
-        AlertDialog(
-            modifier = Modifier.testTag("signupFailed"),
-            onDismissRequest = { showDialog = false },
-            buttons = {},
-            title = { Text("Signup Failed") },
-            text = { Text(t.value) })
+          AlertDialog(
+              modifier = Modifier.testTag("signUpFailed").clickable {
+                  showDialog = false
+              },
+              onDismissRequest = { showDialog = false  },
+              confirmButton = {},
+              title = { Text("Signup Failed")},
+              text = { Text(t.value) },
+          )
       }
+
       if (showDialogVerif) {
-        Log.d(TAG, "verification email sent")
         AlertDialog(
-            modifier = Modifier.testTag("verificationEmailSent"),
+            modifier = Modifier.testTag("verificationEmailSent").clickable {
+                showDialogVerif = false
+                nav.controller.navigate("setup")
+            },
             onDismissRequest = {
               showDialogVerif = false
               nav.controller.navigate("setup")
             },
-            buttons = {},
+            confirmButton = {},
             title = { Text("Verification Email Sent") },
             text = { Text("Please check your email to verify your account.") })
       }
