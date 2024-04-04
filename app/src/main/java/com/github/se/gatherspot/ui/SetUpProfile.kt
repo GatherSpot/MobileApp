@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ChipDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
@@ -32,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.UserFirebaseConnection
@@ -71,9 +69,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   }
 
   Column(
-      modifier = Modifier
-          .padding(horizontal = 20.dp, vertical = 30.dp)
-          .testTag("setUpProfile")) {
+      modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpProfile")) {
         Text(text = "Choose your interests", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
         LazyColumn {
@@ -89,11 +85,10 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             onClick = { isClicked = true },
             modifier =
-            Modifier
-                .testTag("saveButton")
-                .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(100.dp))
-                .padding(horizontal = 100.dp)
-                .wrapContentSize()) {
+                Modifier.testTag("saveButton")
+                    .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(100.dp))
+                    .padding(horizontal = 100.dp)
+                    .wrapContentSize()) {
               Text("Save", color = Color.Black, fontSize = 19.sp)
             }
         Text(text = emailText, color = Color.Red)
@@ -114,22 +109,22 @@ fun FilterChipCompose(interest: Category, interests: MutableSet<Category>) {
           interests.remove(interest)
         }
       },
-      label = { Text((interest.toString().lowercase().capitalize()), fontSize = 20.sp, color = Color.Black) },
+      label = {
+        Text((interest.toString().lowercase().capitalize()), fontSize = 20.sp, color = Color.Black)
+      },
       selected = selected,
-      leadingIcon =
-      {
-            if (selected) {
-                Icon(
-                    imageVector = Icons.Filled.Done,
-                    contentDescription = "Done icon",
-                    modifier = Modifier.size(FilterChipDefaults.IconSize))
-                }
-             else {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Add icon",
-                    modifier = Modifier.size(FilterChipDefaults.IconSize + 2.dp))
-            }
+      leadingIcon = {
+        if (selected) {
+          Icon(
+              imageVector = Icons.Filled.Done,
+              contentDescription = "Done icon",
+              modifier = Modifier.size(FilterChipDefaults.IconSize))
+        } else {
+          Icon(
+              imageVector = Icons.Filled.Add,
+              contentDescription = "Add icon",
+              modifier = Modifier.size(FilterChipDefaults.IconSize + 2.dp))
+        }
       },
   )
 }
