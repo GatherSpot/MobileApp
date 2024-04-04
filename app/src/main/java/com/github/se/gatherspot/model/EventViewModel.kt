@@ -99,13 +99,7 @@ class EventViewModel {
       timeLimitInscription: String
   ): Boolean {
     // test if the date is valid
-    val parsedEventStartDate =
-        try {
-          LocalDate.parse(
-              eventStartDate, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))
-        } catch (e: Exception) {
-          throw Exception("Invalid date format")
-        }
+    val parsedEventStartDate = validateDate(eventStartDate, "Invalid date format")
     // Check whether the start date is in the future
     if (parsedEventStartDate.isBefore(LocalDate.now())) {
       throw Exception("Event date must be in the future")
@@ -114,17 +108,11 @@ class EventViewModel {
     // Check if the end date is valid and after the start date
     var parsedEventEndDate: LocalDate? = parsedEventStartDate
     if (eventEndDate.isNotEmpty()) {
-      parsedEventEndDate =
-          try {
-            LocalDate.parse(
-                eventEndDate, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))
-          } catch (e: Exception) {
-            throw Exception("Invalid end date format")
-          }
+      parsedEventEndDate = validateDate(eventEndDate, "Invalid end date format")
       // If the end date is before the start date, throw an exception
       // If the end date = start date, it's valid, the event is on the same day
 
-      if (parsedEventEndDate!!.isBefore(parsedEventStartDate)) {
+      if (parsedEventEndDate.isBefore(parsedEventStartDate)) {
         throw Exception("Event end date must be after start date")
       }
     }
@@ -133,20 +121,8 @@ class EventViewModel {
     val isToday = parsedEventStartDate.isEqual(LocalDate.now())
 
     // test if the time is valid
-    val parsedEventTimeStart =
-        try {
-          LocalTime.parse(
-              eventTimeStart, DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT))
-        } catch (e: Exception) {
-          throw Exception("Invalid time format for start time")
-        }
-    val parsedEventTimeEnd =
-        try {
-          LocalTime.parse(
-              eventTimeEnd, DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT))
-        } catch (e: Exception) {
-          throw Exception("Invalid time format for end time")
-        }
+    val parsedEventTimeStart = validateTime(eventTimeStart, "Invalid time format for start time")
+    val parsedEventTimeEnd = validateTime(eventTimeEnd, "Invalid time format for end time")
     // Check if the end time is after the start time
     if (eventStartDate == eventEndDate && parsedEventTimeEnd.isBefore(parsedEventTimeStart)) {
       throw Exception("Event end time must be after start time")
@@ -161,23 +137,15 @@ class EventViewModel {
     var parsedMaxAttendees: Int? = null
     if (maxAttendees.isNotEmpty()) {
       parsedMaxAttendees =
-          try {
-            maxAttendees.toInt()
-          } catch (e: Exception) {
-            throw Exception("Invalid max attendees format, must be a number")
-          }
+          validateNumber(maxAttendees, "Invalid max attendees format, must be a number")
     }
 
     // test if the min attendees is valid
     var parsedMinAttendees: Int? = null
     if (minAttendees.isNotEmpty()) {
       parsedMinAttendees =
-          try {
-            minAttendees.toInt()
-          } catch (e: Exception) {
-            throw Exception("Invalid min attendees format, must be a number")
-          }
-      if (parsedMinAttendees!! > parsedMaxAttendees!!) {
+          validateNumber(minAttendees, "Invalid min attendees format, must be a number")
+      if (parsedMaxAttendees != null && parsedMinAttendees > parsedMaxAttendees) {
         throw Exception("Minimum attendees must be less than maximum attendees")
       }
     }
@@ -189,26 +157,20 @@ class EventViewModel {
     if (dateLimitInscription.isNotEmpty()) {
 
       parsedDateLimitInscription =
-          try {
-            LocalDate.parse(
-                dateLimitInscription,
-                DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))
-          } catch (e: Exception) {
-            throw Exception("Invalid inscription limit date format")
-          }
-      if (parsedDateLimitInscription!!.isAfter(parsedEventStartDate)) {
+          validateDate(dateLimitInscription, "Invalid inscription limit date format")
+      try {
+        LocalDate.parse(
+            dateLimitInscription, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))
+      } catch (e: Exception) {
+        throw Exception("Invalid inscription limit date format")
+      }
+      if (parsedDateLimitInscription.isAfter(parsedEventStartDate)) {
         throw Exception("Inscription limit date must be before event start date")
       }
       // If Limit time is not given, set it to 23:59
       parsedTimeLimitInscription =
           if (timeLimitInscription.isNotEmpty()) {
-            try {
-              LocalTime.parse(
-                  timeLimitInscription,
-                  DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT))
-            } catch (e: Exception) {
-              throw Exception("Invalid inscription limit time format")
-            }
+            validateTime(timeLimitInscription, "Invalid inscription limit time format")
           } else {
             LocalTime.of(23, 59)
           }
@@ -233,6 +195,30 @@ class EventViewModel {
         parsedTimeLimitInscription)
 
     return true
+  }
+
+  private fun validateDate(date: String, eMessage: String): LocalDate {
+    try {
+      return LocalDate.parse(date, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))
+    } catch (e: Exception) {
+      throw Exception(eMessage)
+    }
+  }
+
+  private fun validateTime(time: String, eMessage: String): LocalTime {
+    try {
+      return LocalTime.parse(time, DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT))
+    } catch (e: Exception) {
+      throw Exception(eMessage)
+    }
+  }
+
+  private fun validateNumber(number: String, eMessage: String): Int {
+    try {
+      return number.toInt()
+    } catch (e: Exception) {
+      throw Exception(eMessage)
+    }
   }
 
   suspend fun fetchLocationSuggestions(query: String): List<Location> {
