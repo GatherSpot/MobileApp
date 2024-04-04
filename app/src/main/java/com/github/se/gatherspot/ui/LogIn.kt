@@ -56,65 +56,54 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
   Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(40.dp, Alignment.CenterVertically),
-      modifier = Modifier
-          .background(color = Color.LightGray)
-          .testTag("loginScreen")) {
+      modifier = Modifier.background(color = Color.LightGray).testTag("loginScreen")) {
         Text(s.substring(0, range.coerceAtMost(s.length)), fontSize = 24.sp)
         Image(
             painter = painterResource(R.drawable.community),
             contentDescription = "",
-            modifier = Modifier
-                .width(200.dp)
-                .height(200.dp))
+            modifier = Modifier.width(200.dp).height(200.dp))
 
         AuthenticationButton(
             onClick = {
-                val providers = arrayListOf(AuthUI.IdpConfig.EmailBuilder().build())
-                val signInIntent =
-                    AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .setIsSmartLockEnabled(false)
-                        .build()
-                launcher.launch(signInIntent) },
+              val providers = arrayListOf(AuthUI.IdpConfig.EmailBuilder().build())
+              val signInIntent =
+                  AuthUI.getInstance()
+                      .createSignInIntentBuilder()
+                      .setAvailableProviders(providers)
+                      .setIsSmartLockEnabled(false)
+                      .build()
+              launcher.launch(signInIntent)
+            },
             testTag = "loginButton",
             content = "Sign in with Email",
-            width = WIDTH_LOG_IN
-      )
+            width = WIDTH_LOG_IN)
 
-      AuthenticationButton(
+        AuthenticationButton(
             onClick = { nav.controller.navigate("signup") },
             testTag = "signUpButton",
             content = "Sign Up",
-            width = WIDTH_SIGN_UP
-        )
+            width = WIDTH_SIGN_UP)
       }
 }
 
 @Composable
-fun AuthenticationButton(onClick: () -> Unit, testTag: String, content: String, width: Int){
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-        border = BorderStroke(1.dp, Color.LightGray),
-        modifier = Modifier
-            .width(width.dp)
-            .height(40.dp)
-            .testTag(testTag)
-    ) {
+fun AuthenticationButton(onClick: () -> Unit, testTag: String, content: String, width: Int) {
+  Button(
+      onClick = onClick,
+      colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+      border = BorderStroke(1.dp, Color.LightGray),
+      modifier = Modifier.width(width.dp).height(40.dp).testTag(testTag)) {
         Row {
-            Image(
-                painter = painterResource(id = R.drawable.ic_logo_google),
-                contentDescription = "Google Logo")
-            Spacer(modifier = Modifier.width(10.dp))
-            Image(
-                painter = painterResource(id = R.drawable.box),
-                contentDescription = "Email",
-                modifier = Modifier
-                    .width(20.dp)
-                    .height(20.dp))
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(content, color = Color.White)
+          Image(
+              painter = painterResource(id = R.drawable.ic_logo_google),
+              contentDescription = "Google Logo")
+          Spacer(modifier = Modifier.width(10.dp))
+          Image(
+              painter = painterResource(id = R.drawable.box),
+              contentDescription = "Email",
+              modifier = Modifier.width(20.dp).height(20.dp))
+          Spacer(modifier = Modifier.width(10.dp))
+          Text(content, color = Color.White)
         }
-    }
+      }
 }

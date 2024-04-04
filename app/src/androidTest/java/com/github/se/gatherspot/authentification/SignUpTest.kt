@@ -38,7 +38,7 @@ class SignUpTest : TestCase() {
       composeTestRule.waitForIdle()
       button { performClick() }
       composeTestRule.waitForIdle()
-    //  verifDialog { performClick() } -> cannot see it ??? to be done
+      //  verifDialog { performClick() } -> cannot see it ??? to be done
     }
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) { save.assertIsDisplayed() }
   }
