@@ -148,7 +148,7 @@ class EventViewModel {
           throw Exception("Invalid time format for end time")
         }
     // Check if the end time is after the start time
-    if (parsedEventTimeEnd.isBefore(parsedEventTimeStart)) {
+    if (eventStartDate == eventEndDate && parsedEventTimeEnd.isBefore(parsedEventTimeStart)) {
       throw Exception("Event end time must be after start time")
     }
 

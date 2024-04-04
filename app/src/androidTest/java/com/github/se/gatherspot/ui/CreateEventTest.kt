@@ -348,7 +348,7 @@ class CreateEventTest {
     }
 
     ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
-      // Check if the placeholders are displayed
+      // Check if the labels are displayed
       eventTitle.assert(hasText("Event Title*"))
       eventDescription.assert(hasText("Description*"))
       eventStartDate.assert(hasText("Start Date of the event*"))
@@ -361,7 +361,7 @@ class CreateEventTest {
       eventInscriptionLimitDate.assert(hasText("Inscription Limit Date"))
       eventInscriptionLimitTime.assert(hasText("Inscription Limit Time"))
 
-      // Check if the labels are displayed when clicked
+      // Check if the placeholders are displayed when clicked
       eventTitle {
         performClick()
         assert(hasText("Give a name to the event"))

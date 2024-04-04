@@ -301,4 +301,25 @@ class EventViewModelTest {
           "Inscription limit time must be before event start time on the same day", e.message)
     }
   }
+  @Test
+  fun validateEventData_withEndTimeBeforeStartTime_returnsFalse() {
+    // validate data parse strings
+    try {
+      val result =
+          eventViewModel.validateEvent(
+              "Test Event",
+              "This is a test event",
+              Location(0.0, 0.0, "Test Location"),
+              "10/04/2026",
+              "10/04/2026",
+              "12:00",
+              "10:00",
+              "100",
+              "10",
+              "10/04/2026",
+              "09:00")
+    } catch (e: Exception) {
+      Assert.assertEquals("Event end time must be after start time", e.message)
+    }
+  }
 }
