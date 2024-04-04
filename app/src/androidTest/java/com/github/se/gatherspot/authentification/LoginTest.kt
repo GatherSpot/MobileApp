@@ -7,6 +7,7 @@ import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.screens.LoginScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,10 +20,16 @@ class LoginTest : TestCase() {
   // and Intents.release() after the @Test block is completed. IntentsTestRule
   // is deprecated, but it was MUCH faster than using IntentsRule in our tests
   @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
+  private lateinit var loginScreen: LoginScreen
+
+  @Before
+  fun setup() {
+    ComposeScreen.onComposeScreen<LoginScreen>(composeTestRule) { loginScreen = this }
+  }
 
   @Test
-  fun buttonsAreCorrectlyDisplayed() {
-    ComposeScreen.onComposeScreen<LoginScreen>(composeTestRule) {
+  fun buttonsAreCorrectlyDisplayedAndFunctional() {
+    loginScreen.apply {
       // Test the UI elements
       loginButton {
         assertIsDisplayed()
@@ -32,16 +39,8 @@ class LoginTest : TestCase() {
         assertIsDisplayed()
         assertHasClickAction()
       }
-    }
-  }
 
-  @Test
-  fun signInReturnsValidActivityResult() {
-    ComposeScreen.onComposeScreen<LoginScreen>(composeTestRule) {
-      loginButton {
-        assertIsDisplayed()
-        performClick()
-      }
+      loginButton { performClick() }
     }
   }
 }
