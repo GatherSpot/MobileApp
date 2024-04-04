@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.authentification
 
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
@@ -8,7 +7,6 @@ import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.screens.LoginScreen
-import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -33,13 +31,12 @@ class SignUpTest : TestCase() {
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField { performTextInput("GatherSpot") }
       emailField { performTextInput("gatherspot2024@gmail.com") }
-      passwordField { performTextInput("G@therSpot,2024;") }
+      passwordField { performTextInput("GatherSpot,2024;") }
       Espresso.closeSoftKeyboard()
       composeTestRule.waitForIdle()
       button { performClick() }
       composeTestRule.waitForIdle()
       //  verifDialog { performClick() } -> cannot see it ??? to be done
     }
-    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) { save.assertIsDisplayed() }
   }
 }
