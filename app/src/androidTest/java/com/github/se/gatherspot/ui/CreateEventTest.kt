@@ -37,17 +37,77 @@ class CreateEventTest {
       topBar { assertExists() }
       backButton { assertExists() }
       formColumn { assertExists() }
-      eventTitle { assertExists() }
-      eventDescription { assertExists() }
-      eventStartDate { assertExists() }
-      eventEndDate { assertExists() }
-      eventTimeStart { assertExists() }
-      eventTimeEnd { assertExists() }
-      eventLocation { assertExists() }
-      eventMaxAttendees { assertExists() }
-      eventMinAttendees { assertExists() }
-      eventInscriptionLimitDate { assertExists() }
-      eventInscriptionLimitTime { assertExists() }
+      eventTitle {
+        assertExists()
+        // Label exists
+        assert(hasText("Event Title*"))
+        performClick()
+        // Placeholder exists
+        assert(hasText("Give a name to the event"))
+      }
+      eventDescription {
+        assertExists()
+        assert(hasText("Description*"))
+        performClick()
+        assert(hasText("Describe the event"))
+      }
+      eventStartDate {
+        assertExists()
+        assert(hasText("Start Date of the event*"))
+        performClick()
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+      }
+      eventEndDate {
+        assertExists()
+        assert(hasText("End date of the event"))
+        performClick()
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+      }
+      eventTimeStart {
+        assertExists()
+        assert(hasText("Start time*"))
+        performClick()
+        assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      }
+      eventTimeEnd {
+        assertExists()
+        assert(hasText("End time*"))
+        performClick()
+        assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      }
+      eventLocation {
+        assertExists()
+        assert(hasText("Location"))
+        performClick()
+        // TODO: Location not done yet
+        // assert(hasText("Enter an address"))
+      }
+      eventMaxAttendees {
+        assertExists()
+        assert(hasText("Max Attendees"))
+        performClick()
+        assert(hasText("Max Attendees"))
+      }
+      eventMinAttendees {
+        assertExists()
+        assert(hasText("Min Attendees"))
+        performClick()
+        assert(hasText("Min Attendees"))
+      }
+      eventInscriptionLimitDate {
+        assertExists()
+        performScrollTo()
+        assert(hasText("Inscription Limit Date"))
+        performClick()
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+      }
+      eventInscriptionLimitTime {
+        assertExists()
+        performScrollTo()
+        assert(hasText("Inscription Limit Time"))
+        performClick()
+        assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      }
       eventSaveButton { assertExists() }
 
       alertBox { assertDoesNotExist() }

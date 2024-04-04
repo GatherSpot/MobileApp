@@ -108,7 +108,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Event Title*") },
-                placeholder = { Text(text = "Give a name to the event") })
+                placeholder = { Text("Give a name to the event") })
             // Description
             OutlinedTextField(
                 modifier =
