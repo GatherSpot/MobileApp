@@ -139,7 +139,7 @@ class EventFirebaseConnection {
      * @param timeString: The time string to map
      * @return The LocalTime object
      */
-    private fun mapTimeStringToTime(timeString: String): LocalTime? {
+    fun mapTimeStringToTime(timeString: String): LocalTime? {
       return when (timeString) {
         "null" -> null
         else ->
@@ -156,7 +156,7 @@ class EventFirebaseConnection {
      * @param dateString: The date string to map
      * @return The LocalDate object
      */
-    private fun mapDateStringToDate(dateString: String): LocalDate? {
+    fun mapDateStringToDate(dateString: String): LocalDate? {
       return when (dateString) {
         "null" -> null
         else ->

@@ -5,6 +5,8 @@ plugins {
     id("com.google.gms.google-services")
     id("jacoco")
     id("org.sonarqube") version "4.4.1.3373"
+    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+
 }
 sonar{
     properties {
@@ -20,6 +22,15 @@ sonar{
         property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
     }
 
+}
+secrets {
+    // Optionally specify a different file name containing your secrets.
+    // The plugin defaults to "local.properties"
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.defaults.properties"
 }
 
 android {

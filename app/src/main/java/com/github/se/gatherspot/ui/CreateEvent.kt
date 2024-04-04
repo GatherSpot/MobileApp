@@ -73,7 +73,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
   var showErrorDialog by remember { mutableStateOf(false) }
   var errorMessage: String = ""
 
-  // For now, the location is not handled
+  // TODO: For now, the location is not handled
   location = Location(0.0, 0.0, "Test Location")
 
   Scaffold(
@@ -206,9 +206,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
             // Button to create the event
             Button(
                 onClick = {
-                  var isDataValid = false
                   try {
-                    isDataValid =
                         eventViewModel.validateEvent(
                             title.text,
                             description.text,

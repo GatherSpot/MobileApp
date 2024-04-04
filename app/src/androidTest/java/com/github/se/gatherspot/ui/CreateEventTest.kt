@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventViewModel
 import com.github.se.gatherspot.screens.CreateEventScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -234,6 +235,7 @@ class CreateEventTest {
       eventEndDate.performTextInput("12/05/2026")
       eventTimeStart.performTextInput("10:00")
       eventTimeEnd.performTextInput("12:00")
+      // TODO: This for when we can implement the locations dropwdown
       // eventLocation.performTextInput("Test Location")
       eventMaxAttendees.performTextInput("toto")
       eventMinAttendees.performTextInput("titi")
@@ -334,6 +336,80 @@ class CreateEventTest {
       eventMinAttendees.assert(hasText("Min Attendees"))
       eventInscriptionLimitDate.assert(hasText("Inscription Limit Date"))
       eventInscriptionLimitTime.assert(hasText("Inscription Limit Time"))
+    }
+  }
+
+  @Test
+  fun verifyPlaceHolderAndLabel(){
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventViewModel = EventViewModel()
+      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+    }
+
+    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule){
+      // Check if the placeholders are displayed
+      eventTitle.assert(hasText("Event Title*"))
+      eventDescription.assert(hasText("Description*"))
+      eventStartDate.assert(hasText("Start Date of the event*"))
+      eventEndDate.assert(hasText("End date of the event"))
+      eventTimeStart.assert(hasText("Start time*"))
+      eventTimeEnd.assert(hasText("End time*"))
+      eventLocation.assert(hasText("Location"))
+      eventMaxAttendees.assert(hasText("Max Attendees"))
+      eventMinAttendees.assert(hasText("Min Attendees"))
+      eventInscriptionLimitDate.assert(hasText("Inscription Limit Date"))
+      eventInscriptionLimitTime.assert(hasText("Inscription Limit Time"))
+
+      //Check if the labels are displayed when clicked
+      eventTitle{
+        performClick()
+        assert(hasText("Give a name to the event"))
+      }
+      eventDescription{
+          performClick()
+          assert(hasText("Describe the event"))
+      }
+      eventStartDate{
+          performClick()
+          assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+      }
+      eventEndDate{
+          performClick()
+          assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+      }
+      eventTimeStart{
+          performClick()
+          assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      }
+      eventTimeEnd{
+          performClick()
+          assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      }
+      //todo: LOCATION not handled yet
+      /*
+      eventLocation{
+        performClick()
+        assert(hasText("Enter an address"))
+      }*/
+      eventMaxAttendees{
+          performClick()
+          assert(hasText("Max Attendees"))
+      }
+      eventMinAttendees{
+          performClick()
+          assert(hasText("Min Attendees"))
+      }
+      eventInscriptionLimitDate{
+          performScrollTo()
+          performClick()
+          assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+      }
+      eventInscriptionLimitTime{
+          performScrollTo()
+          performClick()
+          assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      }
     }
   }
 }
