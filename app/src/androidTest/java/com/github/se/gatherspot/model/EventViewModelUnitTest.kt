@@ -323,4 +323,49 @@ class EventViewModelTest {
       Assert.assertEquals("Event end time must be after start time", e.message)
     }
   }
+
+  @Test
+  fun validateDate_withValidDate_returnsLocalDate() {
+    val date = eventViewModel.validateDate("12/04/2026", "Invalid date format")
+    Assert.assertEquals(LocalDate.of(2026, 4, 12), date)
+  }
+
+  @Test
+  fun validateDate_withInvalidDate_returnsException() {
+    try {
+      val date = eventViewModel.validateDate("12042026", "Invalid date format")
+    } catch (e: Exception) {
+      Assert.assertEquals("Invalid date format", e.message)
+    }
+  }
+
+  @Test
+  fun validateTime_withValidTime_returnsLocalTime() {
+    val time = eventViewModel.validateTime("10:00", "Invalid time format")
+    Assert.assertEquals(LocalTime.of(10, 0), time)
+  }
+
+  @Test
+  fun validateTime_withInvalidTime_returnsException() {
+    try {
+      val time = eventViewModel.validateTime("1000", "Invalid time format")
+    } catch (e: Exception) {
+      Assert.assertEquals("Invalid time format", e.message)
+    }
+  }
+
+  @Test
+  fun validateNumber_withValidNumber_returnsInt() {
+    val number = eventViewModel.validateNumber("100", "Invalid number format")
+    Assert.assertEquals(100, number)
+  }
+
+  @Test
+  fun validateNumber_withInvalidNumber_returnsException() {
+    try {
+      val number = eventViewModel.validateNumber("one", "Invalid number format")
+    } catch (e: Exception) {
+      Assert.assertEquals("Invalid number format", e.message)
+    }
+  }
 }

@@ -197,7 +197,7 @@ class EventViewModel {
     return true
   }
 
-  private fun validateDate(date: String, eMessage: String): LocalDate {
+  fun validateDate(date: String, eMessage: String): LocalDate {
     try {
       return LocalDate.parse(date, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))
     } catch (e: Exception) {
@@ -205,7 +205,7 @@ class EventViewModel {
     }
   }
 
-  private fun validateTime(time: String, eMessage: String): LocalTime {
+  fun validateTime(time: String, eMessage: String): LocalTime {
     try {
       return LocalTime.parse(time, DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT))
     } catch (e: Exception) {
@@ -213,7 +213,7 @@ class EventViewModel {
     }
   }
 
-  private fun validateNumber(number: String, eMessage: String): Int {
+  fun validateNumber(number: String, eMessage: String): Int {
     try {
       return number.toInt()
     } catch (e: Exception) {
