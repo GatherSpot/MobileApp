@@ -2,8 +2,10 @@ package com.github.se.gatherspot.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.UserFirebaseConnection
@@ -72,26 +73,37 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
       modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpProfile")) {
         Text(text = "Choose your interests", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
-        LazyColumn {
+        LazyColumn(Modifier.weight(1f)) {
           items(allCategories) { interest ->
             FilterChipCompose(interest, interests)
             Spacer(modifier = Modifier.height(2.dp))
           }
         }
 
-        Text("You can change your interests at any time in your profile")
-        Spacer(modifier = Modifier.height(40.dp))
-        Button(
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-            onClick = { isClicked = true },
-            modifier =
-                Modifier.testTag("saveButton")
-                    .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(100.dp))
-                    .padding(horizontal = 100.dp)
-                    .wrapContentSize()) {
-              Text("Save", color = Color.Black, fontSize = 19.sp)
-            }
-        Text(text = emailText, color = Color.Red)
+        Column {
+          Spacer(modifier = Modifier.height(20.dp))
+          Text("You can change your interests at any time in your profile")
+          Spacer(modifier = Modifier.height(20.dp))
+          Button(
+              colors = ButtonDefaults.buttonColors(Color.Transparent),
+              onClick = { isClicked = true },
+              modifier =
+                  Modifier.testTag("saveButton")
+                      .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
+                      .wrapContentSize()) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = androidx.compose.ui.Alignment.Center) {
+                      Text("Save", color = Color.Black, fontSize = 22.sp)
+                    }
+              }
+          Spacer(modifier = Modifier.height(3.dp))
+          Box(
+              modifier = Modifier.fillMaxWidth(),
+              contentAlignment = androidx.compose.ui.Alignment.Center) {
+                Text(text = emailText, color = Color.Red)
+              }
+        }
       }
 }
 

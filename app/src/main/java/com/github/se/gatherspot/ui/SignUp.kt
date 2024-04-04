@@ -96,29 +96,22 @@ fun SignUp(nav: NavigationActions) {
     UserFirebaseConnection.usernameExists(username) { result -> isUsernameValid = !result }
   }
 
-  Box(modifier = Modifier
-      .fillMaxSize()
-      .background(Color.LightGray)) {
+  Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
     Column(
-        modifier = Modifier
-            .padding(vertical = 50.dp, horizontal = 20.dp)
-            .testTag("signUpScreen"),
+        modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp).testTag("signUpScreen"),
         verticalArrangement = Arrangement.spacedBy(60.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Row(
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 10.dp)) {
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
             Icon(
                 painter = painterResource(R.drawable.backarrow),
                 contentDescription = "",
                 modifier =
-                Modifier
-                    .clickable { nav.controller.navigate("auth") }
-                    .width(30.dp)
-                    .height(30.dp))
+                    Modifier.clickable { nav.controller.navigate("auth") }
+                        .width(30.dp)
+                        .height(30.dp))
 
             Spacer(modifier = Modifier.width(80.dp))
 
@@ -212,30 +205,27 @@ fun SignUp(nav: NavigationActions) {
           enabled = isEmailValid(email) and isUsernameValid and isPasswordValid,
           onClick = { isClicked = true },
           colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-          modifier = Modifier
-              .width(250.dp)
-              .testTag("validate")) {
+          modifier = Modifier.width(250.dp).testTag("validate")) {
             Text("Sign Up", color = Color.White)
           }
 
       if (showDialog) {
-          AlertDialog(
-              modifier = Modifier.testTag("signUpFailed").clickable {
-                  showDialog = false
-              },
-              onDismissRequest = { showDialog = false  },
-              confirmButton = {},
-              title = { Text("Signup Failed")},
-              text = { Text(t.value) },
-          )
+        AlertDialog(
+            modifier = Modifier.testTag("signUpFailed").clickable { showDialog = false },
+            onDismissRequest = { showDialog = false },
+            confirmButton = {},
+            title = { Text("Signup Failed") },
+            text = { Text(t.value) },
+        )
       }
 
       if (showDialogVerif) {
         AlertDialog(
-            modifier = Modifier.testTag("verificationEmailSent").clickable {
-                showDialogVerif = false
-                nav.controller.navigate("setup")
-            },
+            modifier =
+                Modifier.testTag("verificationEmailSent").clickable {
+                  showDialogVerif = false
+                  nav.controller.navigate("setup")
+                },
             onDismissRequest = {
               showDialogVerif = false
               nav.controller.navigate("setup")

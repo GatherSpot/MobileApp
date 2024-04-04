@@ -2,7 +2,6 @@ package com.github.se.gatherspot.authentification
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
@@ -39,8 +38,7 @@ class SignUpTest : TestCase() {
       Espresso.closeSoftKeyboard()
       composeTestRule.waitForIdle()
       button { performClick() }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verificationEmailSent"),
-        20000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verificationEmailSent"), 20000)
       verifDialog.assertIsDisplayed()
       verifDialog.performClick()
     }
