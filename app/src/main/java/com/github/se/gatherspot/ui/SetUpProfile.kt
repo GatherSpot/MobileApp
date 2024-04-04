@@ -69,42 +69,41 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
     }
   }
 
-  Column(
-      modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpProfile")) {
-        Text(text = "Choose your interests", fontSize = 30.sp)
-        Spacer(modifier = Modifier.height(30.dp))
-        LazyColumn(Modifier.weight(1f)) {
-          items(allCategories) { interest ->
-            FilterChipCompose(interest, interests)
-            Spacer(modifier = Modifier.height(2.dp))
-          }
-        }
-
-        Column {
-          Spacer(modifier = Modifier.height(20.dp))
-          Text("You can change your interests at any time in your profile")
-          Spacer(modifier = Modifier.height(20.dp))
-          Button(
-              colors = ButtonDefaults.buttonColors(Color.Transparent),
-              onClick = { isClicked = true },
-              modifier =
-                  Modifier.testTag("saveButton")
-                      .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
-                      .wrapContentSize()) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = androidx.compose.ui.Alignment.Center) {
-                      Text("Save", color = Color.Black, fontSize = 22.sp)
-                    }
-              }
-          Spacer(modifier = Modifier.height(3.dp))
-          Box(
-              modifier = Modifier.fillMaxWidth(),
-              contentAlignment = androidx.compose.ui.Alignment.Center) {
-                Text(text = emailText, color = Color.Red)
-              }
-        }
+  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpScreen")) {
+    Text(text = "Choose your interests", fontSize = 30.sp)
+    Spacer(modifier = Modifier.height(30.dp))
+    LazyColumn(Modifier.weight(1f)) {
+      items(allCategories) { interest ->
+        FilterChipCompose(interest, interests)
+        Spacer(modifier = Modifier.height(2.dp))
       }
+    }
+
+    Column {
+      Spacer(modifier = Modifier.height(20.dp))
+      Text("You can change your interests at any time in your profile")
+      Spacer(modifier = Modifier.height(20.dp))
+      Button(
+          colors = ButtonDefaults.buttonColors(Color.Transparent),
+          onClick = { isClicked = true },
+          modifier =
+              Modifier.testTag("saveButton")
+                  .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
+                  .wrapContentSize()) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = androidx.compose.ui.Alignment.Center) {
+                  Text("Save", color = Color.Black, fontSize = 22.sp)
+                }
+          }
+      Spacer(modifier = Modifier.height(3.dp))
+      Box(
+          modifier = Modifier.fillMaxWidth(),
+          contentAlignment = androidx.compose.ui.Alignment.Center) {
+            Text(text = emailText, color = Color.Red, modifier = Modifier.testTag("verifEmailText"))
+          }
+    }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

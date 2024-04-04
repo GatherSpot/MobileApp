@@ -230,7 +230,11 @@ fun SignUp(nav: NavigationActions) {
               showDialogVerif = false
               nav.controller.navigate("setup")
             },
-            confirmButton = {},
+            confirmButton = {
+              Button(onClick = { showDialog = false }, modifier = Modifier.testTag("ok")) {
+                Text("OK")
+              }
+            },
             title = { Text("Verification Email Sent") },
             text = { Text("Please check your email to verify your account.") })
       }

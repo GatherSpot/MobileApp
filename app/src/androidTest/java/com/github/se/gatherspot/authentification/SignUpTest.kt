@@ -8,7 +8,9 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
+import com.github.se.gatherspot.UserFirebaseConnection
 import com.github.se.gatherspot.screens.LoginScreen
+import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -38,9 +40,17 @@ class SignUpTest : TestCase() {
       Espresso.closeSoftKeyboard()
       composeTestRule.waitForIdle()
       button { performClick() }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verificationEmailSent"), 20000)
-      verifDialog.assertIsDisplayed()
-      verifDialog.performClick()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("ok"), 20000)
+      ok { performClick() }
     }
+    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
+      composeTestRule.waitForIdle()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("saveButton"), 20000)
+      save { performClick() }
+      emailText.assertIsDisplayed()
+    }
+
+    val uid = UserFirebaseConnection.getUID()
+    UserFirebaseConnection.deleteUser(uid)
   }
 }
