@@ -14,7 +14,7 @@ fun LogIn(nav: NavigationActions) {
   // Gmail / Tequila
   Column {
     Button(
-    onClick = { nav.controller.navigate("home") },
-      modifier = Modifier.semantics { contentDescription = "login" }
-  ) {} }
+        onClick = { nav.controller.navigate("home") },
+        modifier = Modifier.semantics { contentDescription = "login" }) {}
+  }
 }

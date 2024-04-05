@@ -16,7 +16,7 @@ import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.Events
 import com.github.se.gatherspot.ui.LogIn
 import com.github.se.gatherspot.ui.Map
-import com.github.se.gatherspot.ui.Profile
+import com.github.se.gatherspot.ui.profile.Profile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
