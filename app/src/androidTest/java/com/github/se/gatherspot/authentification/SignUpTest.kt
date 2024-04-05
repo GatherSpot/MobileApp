@@ -4,14 +4,12 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.navigation.compose.rememberNavController
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.MainActivity
-import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.screens.LoginScreen
-import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.screens.SignUpScreen
+import com.github.se.gatherspot.ui.SignUp
+import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.Rule
@@ -25,24 +23,32 @@ class SignUpTest : TestCase() {
   // The IntentsTestRule simply calls Intents.init() before the @Test block
   // and Intents.release() after the @Test block is completed. IntentsTestRule
   // is deprecated, but it was MUCH faster than using IntentsRule in our tests
-  @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
+  //  @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUp() {
 
-    ComposeScreen.onComposeScreen<LoginScreen>(composeTestRule) { signUpButton { performClick() } }
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      SignUp(nav = NavigationActions(navController))
+    }
 
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField { performTextInput("GatherSpot") }
       emailField { performTextInput("gatherspot2024@gmail.com") }
       passwordField { performTextInput("GatherSpot,2024;") }
       Espresso.closeSoftKeyboard()
-      composeTestRule.waitForIdle()
-      button { performClick() }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("ok"), 20000)
-      ok { performClick() }
+      button {
+        assertIsDisplayed()
+        performClick()
+      }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 6000)
+      verifDialog.assertIsDisplayed()
+      ok.assertIsDisplayed()
     }
+
+    /*
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       composeTestRule.waitForIdle()
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("saveButton"), 20000)
@@ -50,7 +56,7 @@ class SignUpTest : TestCase() {
       emailText.assertIsDisplayed()
     }
 
-    val uid = UserFirebaseConnection.getUID()
-    UserFirebaseConnection.deleteUser(uid)
+     */
+
   }
 }

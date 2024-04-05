@@ -81,7 +81,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
 
     Column {
       Spacer(modifier = Modifier.height(20.dp))
-      Text("You can change your interests at any time in your profile")
+      Text("You can change your interests at any time in your profile settings")
       Spacer(modifier = Modifier.height(20.dp))
       Button(
           colors = ButtonDefaults.buttonColors(Color.Transparent),

@@ -19,7 +19,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -54,7 +53,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUp(nav: NavigationActions) {
 
@@ -74,7 +72,6 @@ fun SignUp(nav: NavigationActions) {
       try {
         withContext(Dispatchers.IO) {
           val success = checkCredentials(email, password, t)
-          Log.d(TAG, "entered but o=you know hardddddddd")
           if (success) {
             MainActivity.uid = UserFirebaseConnection.getUID()
             val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
@@ -96,9 +93,9 @@ fun SignUp(nav: NavigationActions) {
     UserFirebaseConnection.usernameExists(username) { result -> isUsernameValid = !result }
   }
 
-  Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
+  Box(modifier = Modifier.fillMaxSize().background(Color.White).testTag("signUpScreen")) {
     Column(
-        modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp).testTag("signUpScreen"),
+        modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(60.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -113,9 +110,9 @@ fun SignUp(nav: NavigationActions) {
                         .width(30.dp)
                         .height(30.dp))
 
-            Spacer(modifier = Modifier.width(80.dp))
+            Spacer(modifier = Modifier.width(90.dp))
 
-            Text("Sign Up", fontSize = 32.sp, lineHeight = 32.sp, color = Color.Black)
+            Text("Sign Up", fontSize = 30.sp, lineHeight = 32.sp, color = Color.Black)
           }
 
       Column(
@@ -222,18 +219,25 @@ fun SignUp(nav: NavigationActions) {
       if (showDialogVerif) {
         AlertDialog(
             modifier =
-                Modifier.testTag("verificationEmailSent").clickable {
+                Modifier.testTag("verification").clickable {
                   showDialogVerif = false
                   nav.controller.navigate("setup")
+                  Log.d(TAG, "was pressed")
                 },
             onDismissRequest = {
               showDialogVerif = false
               nav.controller.navigate("setup")
             },
             confirmButton = {
-              Button(onClick = { showDialog = false }, modifier = Modifier.testTag("ok")) {
-                Text("OK")
-              }
+              Button(
+                  onClick = {
+                    showDialogVerif = false
+                    nav.controller.navigate("setup")
+                  },
+                  modifier = Modifier.testTag("okButton"),
+                  colors = ButtonDefaults.buttonColors(containerColor = Color(217, 217, 217))) {
+                    Text("Ok", color = Color.Black)
+                  }
             },
             title = { Text("Verification Email Sent") },
             text = { Text("Please check your email to verify your account.") })

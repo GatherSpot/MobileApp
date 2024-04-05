@@ -1,12 +1,12 @@
 package com.github.se.gatherspot.model
 
 enum class Category {
+  MUSIC,
   SPORT,
   ARTS,
+  DANCE,
   GAMES,
   CONCERT,
-  MUSIC,
-  DANCE,
   BASKETBALL,
   FOOTBALL,
   GAMING,
