@@ -5,6 +5,7 @@ import com.github.se.gatherspot.model.Category
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
@@ -46,9 +47,13 @@ class UserFirebaseConnection {
     }
 
     fun deleteUser(uid: String) {
+      Log.d(TAG, "Deleting user with uid: $uid")
       Firebase.firestore.collection(USERS).document(uid).delete().addOnFailureListener { exception
         ->
         Log.e(TAG, "Error deleting Event", exception)
+      }
+      Firebase.auth.currentUser?.delete()?.addOnFailureListener { exception ->
+        Log.e(TAG, "Error deleting User", exception)
       }
     }
 

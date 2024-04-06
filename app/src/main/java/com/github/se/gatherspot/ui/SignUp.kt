@@ -228,17 +228,7 @@ fun SignUp(nav: NavigationActions) {
               showDialogVerif = false
               nav.controller.navigate("setup")
             },
-            confirmButton = {
-              Button(
-                  onClick = {
-                    showDialogVerif = false
-                    nav.controller.navigate("setup")
-                  },
-                  modifier = Modifier.testTag("okButton"),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color(217, 217, 217))) {
-                    Text("Ok", color = Color.Black)
-                  }
-            },
+            confirmButton = {},
             title = { Text("Verification Email Sent") },
             text = { Text("Please check your email to verify your account.") })
       }
