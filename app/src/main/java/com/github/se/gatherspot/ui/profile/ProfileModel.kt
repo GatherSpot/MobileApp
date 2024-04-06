@@ -18,20 +18,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.data.Profile
 
 @Composable
 fun BioField(edit: Boolean, bio: String, updateBio: (String) -> Unit) {
@@ -56,7 +52,7 @@ fun UsernameField(edit: Boolean, username: String, updateUsername: (String) -> U
         value = username,
         onValueChange = { updateUsername(it) })
 }
-
+//this is a bit clunky, it changes the button type if edit is changed, might need rework into two screens to clean this behavior
 @Composable
 fun Buttons(edit: Boolean, toggleEdit: () -> Unit, cancel: () -> Unit, save: () -> Unit) {
     if (edit) {
@@ -104,79 +100,49 @@ fun ProfileImage(edit: Boolean, imageUri: String) {
             Image(
                 painter = painter,
                 contentDescription = "Profile Image",
-                modifier = Modifier.clickable { /*TODO: select image*/},
+                modifier = Modifier.clickable { /*select image*/},
                 contentScale = ContentScale.Crop)
         }
         if (edit) Text(text = "Change profile picture")
     }
 }
-
+/**
+ * This is used to show someone's own profile, and it is editable
+ * @param viewModel the view model that holds the profile data
+ */
 @Composable
-fun EditableProfileScreen(getProfile: ()-> Profile, saveProfile: (String, String, String) -> Unit) {
-    var edit: Boolean by remember { mutableStateOf(false) }
-    val profile = getProfile()
-    // Note: we need duplicate states because we need to keep the original values when the user
-    // cancels
-    var username: String by remember { mutableStateOf(profile.getUserName()) }
-    var bio: String by remember { mutableStateOf(profile.getBio()) }
-    var imageUri: String by remember { mutableStateOf(profile.getImage()) }
-    // helper functions to update states
-
-    fun cancelProfile() {
-        username = profile.getUserName()
-        bio = profile.getBio()
-        imageUri = profile.getImage()
-    }
-    val toggleEdit = { edit = !edit }
-    val updateUsername = { it: String -> username = sanitizeUsername(it) }
-    val updateBio = { it: String -> bio = sanitizeBio(it) }
+fun OwnProfile(viewModel: OwnProfileViewModel) {
+    //syntactic sugar for the view model values with sane defaults, that way the rest of code looks nice
+    val edit by viewModel.edit.observeAsState(initial = false)
+    val username by viewModel.username.observeAsState(initial = "")
+    val bio by viewModel.bio.observeAsState(initial = "")
+    val imageUri by viewModel.image.observeAsState(initial = "")
+    val cancelProfile = { viewModel.cancel() }
+    val saveProfile = { viewModel.save() }
+    val updateUsername = { s: String -> viewModel.updateUsername(s) }
+    val updateBio = { s: String -> viewModel.updateBio(s) }
+    val toggleEdit = { viewModel.toggleEdit() }
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-        Buttons(edit, toggleEdit, { cancelProfile() }, { saveProfile(username, bio, imageUri) })
+        Buttons(edit, toggleEdit, cancelProfile, saveProfile)
         ProfileImage(edit, imageUri)
         UsernameField(edit, username, updateUsername)
-        BioField(edit, bio, updateBio)
+        BioField(edit, bio,updateBio)
     }
 }
+/**
+ * This is used to show someone else's profile, and it is not editable
+ * @param viewModel a view model that holds the profile to show
+ */
 @Composable
-fun ProfileScreen(getProfile: ()->Profile) {
-    val profile = getProfile()
+fun ProfileScreen(viewModel: ProfileViewModel) {
     val edit = false
-    val username = profile.getUserName()
-    val bio = profile.getBio()
-    val imageUri = profile.getImage()
+    val username = viewModel.username
+    val bio = viewModel.bio
+    val imageUri = viewModel.image
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(edit, imageUri)
         UsernameField(edit, username) {}
         BioField(edit, bio) {}
     }
-}
-@Preview
-@Composable
-fun ProfileScreenPreview() {
-    ProfileScreen {
-        Profile(
-            "John Doe",
-            "Leafy greens enjoyer, haskell enthousiast",
-            ""
-        )
-    }
-}
-@Preview
-@Composable
-fun EditableProfileScreenPreview() {
-    var profile = Profile(
-        "John Doe",
-        "Leafy greens enjoyer, haskell enthousiast",
-        ""
-    )
-
-    val changeProfile: (String, String, String) -> Unit = { newUsername, newBio, newImageUri ->
-        profile = Profile(newUsername, newBio, newImageUri)
-    }
-
-    EditableProfileScreen(
-        { profile },
-        changeProfile
-    )
 }

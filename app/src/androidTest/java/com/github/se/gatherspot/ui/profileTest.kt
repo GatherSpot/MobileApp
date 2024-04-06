@@ -8,7 +8,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.data.Profile
-import com.github.se.gatherspot.ui.profile.EditableProfileScreen
+import com.github.se.gatherspot.ui.profile.OwnProfile
 import com.github.se.gatherspot.ui.profile.ProfileScreen
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +30,7 @@ class ProfileInstrumentedTest {
   @Test
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
-      EditableProfileScreen (getProfile, saveProfile)
+      OwnProfile (getProfile, saveProfile)
     }
 //    // inject a dummyLogin or this will not work
 //    composeTestRule.onNodeWithContentDescription("login").performClick()
