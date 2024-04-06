@@ -85,7 +85,7 @@ class EventViewModel {
    * @return true if the data is valid
    * @throws Exception if the data is not valid
    */
-  fun validateEvent(
+  fun validateAndCreateEvent(
       title: String,
       description: String,
       location: Location,

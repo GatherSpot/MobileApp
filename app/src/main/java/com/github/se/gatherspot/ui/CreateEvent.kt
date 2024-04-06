@@ -34,7 +34,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventViewModel
 import com.github.se.gatherspot.model.location.Location
@@ -166,7 +168,13 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-
+                  // Min attendees
+                  OutlinedTextField(
+                      modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputMinAttendees"),
+                      value = minAttendees,
+                      onValueChange = { minAttendees = it },
+                      label = { Text("Min Attendees") },
+                      placeholder = { Text("Min Attendees") })
                   // Max attendees
                   OutlinedTextField(
                       modifier =
@@ -175,13 +183,6 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                       onValueChange = { maxAttendees = it },
                       label = { Text("Max Attendees") },
                       placeholder = { Text("Max Attendees") })
-                  // Min attendees
-                  OutlinedTextField(
-                      modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputMinAttendees"),
-                      value = minAttendees,
-                      onValueChange = { minAttendees = it },
-                      label = { Text("Min Attendees") },
-                      placeholder = { Text("Min Attendees") })
                 }
 
             // Inscription limit date
@@ -207,7 +208,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
             Button(
                 onClick = {
                   try {
-                    eventViewModel.validateEvent(
+                    eventViewModel.validateAndCreateEvent(
                         title.text,
                         description.text,
                         location!!,
@@ -254,4 +255,10 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
               dismissButton = {})
         }
       }
+}
+
+@Preview
+@Composable
+fun CreateEventPreview() {
+  CreateEvent(NavigationActions(rememberNavController()), EventViewModel())
 }

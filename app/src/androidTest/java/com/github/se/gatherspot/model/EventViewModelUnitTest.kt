@@ -43,7 +43,7 @@ class EventViewModelTest {
   fun validateEventData_withValidData_returnsTrue() {
     // validate data parse strings
     val result =
-        eventViewModel.validateEvent(
+        eventViewModel.validateAndCreateEvent(
             "Test Event2",
             "This is a test event",
             Location(0.0, 0.0, "Test Location"),
@@ -64,7 +64,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event3",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -86,7 +86,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event4",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -108,7 +108,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -130,7 +130,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event5",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -152,7 +152,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event6",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -174,7 +174,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -196,7 +196,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -218,7 +218,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -240,7 +240,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -262,7 +262,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -284,7 +284,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -307,7 +307,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateEvent(
+          eventViewModel.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
