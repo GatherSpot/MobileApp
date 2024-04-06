@@ -82,17 +82,17 @@ class CreateEventTest {
         // TODO: Location not done yet
         // assert(hasText("Enter an address"))
       }
-      eventMaxAttendees {
-        assertExists()
-        assert(hasText("Max Attendees"))
-        performClick()
-        assert(hasText("Max Attendees"))
-      }
       eventMinAttendees {
         assertExists()
         assert(hasText("Min Attendees"))
         performClick()
         assert(hasText("Min Attendees"))
+      }
+      eventMaxAttendees {
+        assertExists()
+        assert(hasText("Max Attendees"))
+        performClick()
+        assert(hasText("Max Attendees"))
       }
       eventInscriptionLimitDate {
         assertExists()
