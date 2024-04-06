@@ -9,7 +9,9 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.data.Profile
 import com.github.se.gatherspot.ui.profile.OwnProfile
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.profile.ProfileScreen
+import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,7 +32,7 @@ class ProfileInstrumentedTest {
   @Test
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
-      OwnProfile (getProfile, saveProfile)
+      OwnProfile (OwnProfileViewModel())
     }
 //    // inject a dummyLogin or this will not work
 //    composeTestRule.onNodeWithContentDescription("login").performClick()
@@ -65,7 +67,7 @@ class ProfileInstrumentedTest {
   @Test
   fun profileScreenTest(){
     composeTestRule.setContent {
-      ProfileScreen(getProfile)
+      ProfileScreen(ProfileViewModel(Profile("John Doe", "I am not a bot", "")))
     }
     composeTestRule.onNodeWithContentDescription("username").assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
@@ -73,5 +75,8 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("cancel").assertDoesNotExist()
     composeTestRule.onNodeWithContentDescription("save").assertDoesNotExist()
     composeTestRule.onNodeWithContentDescription("edit").assertDoesNotExist()
+    // check if everything is there
+    composeTestRule.onNodeWithContentDescription("username").assert(hasText("John Doe"))
+    composeTestRule.onNodeWithContentDescription("bio").assert(hasText("I am not a bot"))
   }
 }

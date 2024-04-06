@@ -53,7 +53,6 @@ class ProfileTest {
   }
 
   @Test
-  // TODO : add image when we have one to make this a trivial case
   fun testProfileConstructor() {
     val profile = Profile("John", "Doe", "")
     assertEquals("John", profile.getUserName())
