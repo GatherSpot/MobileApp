@@ -54,35 +54,48 @@ enum class Interests {
         private val children = parents.toList().groupBy({it.second}, {it.first})
 
 
-        fun color(selection: BitSet, interest: Interests) : Color{
+        private fun color(selection: BitSet, interest: Interests) : Color{
             if (hasInterest(selection, interest)){
                 return Pink40
             }
             return unselected
         }
 
-        // This function creates a new BitSet to store interests
+        /* This function creates a new BitSet to store interests
+
+         */
         fun newBitset(): BitSet{
             val bitset = BitSet(Interests.entries.size)
             bitset.clear()
             return bitset
         }
 
-        // This function checks if a particular interest is present in the BitSet
+        /* This function checks if a particular interest is present in the BitSet
+
+         */
         fun hasInterest(bitset: BitSet, interest: Interests): Boolean{
             return bitset.get(interest.ordinal)
         }
 
-        // This function adds a particular interest to the BitSet without adding parent interest
+        /* This function adds a particular interest to the BitSet without adding parent interest
+
+         */
         fun addInterest(bitset: BitSet, interest: Interests){
             bitset.set(interest.ordinal)
         }
 
-        // This function removes a particular interest to the BitSet without adding parent interest
+        /* This function removes a particular interest to the BitSet without adding parent interest
+         */
         fun removeInterest(bitset: BitSet, interest: Interests){
             bitset.clear(interest.ordinal)
         }
 
+        /*
+        This function returns a list of interests present in the BitSet
+        */
+        fun listInterests(bitset: BitSet) : List<Interests>{
+            return entries.filter({hasInterest(bitset, it)})
+        }
 
         /* This function adds recursively the parent interest of a particular interest to the BitSet
         This function is used at event creation
@@ -167,8 +180,11 @@ enum class Interests {
 
 
 
+        /*
+        This function is used to display the button to select a particular interest
+         */
         @Composable
-        fun DisplayInterestSelector(selection: MutableState<BitSet>, interest: Interests, flip : (BitSet, Interests) -> Unit){
+        private fun DisplayInterestSelector(selection: MutableState<BitSet>, interest: Interests, flip : (BitSet, Interests) -> Unit){
             Text(
                 modifier = Modifier
                     .padding(16.dp)
@@ -187,9 +203,12 @@ enum class Interests {
                 text = interest.toString(),
             )
         }
-        // This function is used to select interests of a user or event
+        /* This function is used to select interests of a user or event
+            This function is private because different logic is used for profile and event
+            Outside of this file, the user should use SelectProfileInterests or SelectEventInterests
+         */
         @Composable
-        fun SelectInterestsScreen(selection: MutableState<BitSet>, flip: (BitSet, Interests) -> Unit){
+        private fun SelectInterestsScreen(selection: MutableState<BitSet>, flip: (BitSet, Interests) -> Unit){
             Column {
                 for (i in 0..entries.size-3 step 3) {
                     Row{
@@ -210,6 +229,9 @@ enum class Interests {
 
         }
 
+        /*
+        This function is used to select interests of a user
+         */
         @Composable
         fun SelectProfileInterests(selection: MutableState<BitSet>){
 
@@ -217,6 +239,10 @@ enum class Interests {
 
         }
 
+        /*
+        This function is used to select interests of an event
+
+         */
         @Composable
         fun SelectEventInterests(selection: MutableState<BitSet>){
 

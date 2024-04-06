@@ -85,6 +85,25 @@ class InterestsUnitTest {
     }
 
     @Test
+    fun listInterests_isCorrect(){
+        val bitSet = BitSet(Interests.entries.size)
+        bitSet.clear()
+        bitSet.set(0)
+        bitSet.set(3)
+        bitSet.set(4)
+        bitSet.set(6)
+        bitSet.set(8)
+
+        val list = Interests.listInterests(bitSet)
+        assertEquals(5, list.size)
+        assertTrue(list.contains(Interests.entries[0]))
+        assertTrue(list.contains(Interests.entries[3]))
+        assertTrue(list.contains(Interests.entries[4]))
+        assertTrue(list.contains(Interests.entries[6]))
+        assertTrue(list.contains(Interests.entries[8]))
+    }
+
+    @Test
     fun addParentInterest_isCorrect(){
         var bitSet = Interests.newBitset()
         Interests.addParentInterest(bitSet, Interests.BASKETBALL)
