@@ -129,10 +129,16 @@ class CreateEventTest {
     ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
       // Check if every element are displayed
 
-      topBar { assertIsDisplayed() }
-      backButton { assertIsDisplayed() }
-      eventTitle { assertIsDisplayed() }
-      eventDescription { assertIsDisplayed() }
+      topBar {
+        assertIsDisplayed() }
+      backButton {
+        assertIsDisplayed() }
+      eventTitle {
+        performScrollTo()
+        assertIsDisplayed() }
+      eventDescription {
+        performScrollTo()
+        assertIsDisplayed() }
       eventStartDate {
         performScrollTo()
         assertIsDisplayed()
