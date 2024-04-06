@@ -28,5 +28,3 @@ abstract class DataType<T> {
     return Gson().fromJson(json, type)
   }
 }
-
-

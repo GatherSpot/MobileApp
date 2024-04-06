@@ -23,21 +23,21 @@ import org.junit.runner.RunWith
 class ProfileInstrumentedTest {
   // to start the main activity
   private var profile = Profile("John Doe", "I am not a bot", "")
-  private val getProfile = {profile}
-  private val saveProfile = { username: String, bio: String, imageUri: String -> profile = Profile(username, bio, imageUri)}
+  private val getProfile = { profile }
+  private val saveProfile = { username: String, bio: String, imageUri: String ->
+    profile = Profile(username, bio, imageUri)
+  }
 
   @get:Rule val composeTestRule = createComposeRule()
-  //for usefull documentation on testing compose
+  // for usefull documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @Test
   fun editableProfileScreenTest() {
-    composeTestRule.setContent {
-      OwnProfile (OwnProfileViewModel())
-    }
-//    // inject a dummyLogin or this will not work
-//    composeTestRule.onNodeWithContentDescription("login").performClick()
-//    // click on the profile button
-//    composeTestRule.onNodeWithText("Profile").performClick()
+    composeTestRule.setContent { OwnProfile(OwnProfileViewModel()) }
+    //    // inject a dummyLogin or this will not work
+    //    composeTestRule.onNodeWithContentDescription("login").performClick()
+    //    // click on the profile button
+    //    composeTestRule.onNodeWithText("Profile").performClick()
     // check if everything is there
     composeTestRule
         .onNodeWithContentDescription("username")
@@ -64,12 +64,15 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("save").performClick()
     composeTestRule.onNodeWithContentDescription("bio").assert(hasText("I like trains"))
   }
+
   @Test
-  fun profileScreenTest(){
+  fun profileScreenTest() {
     composeTestRule.setContent {
       ProfileScreen(ProfileViewModel(Profile("John Doe", "I am not a bot", "")))
     }
-    composeTestRule.onNodeWithContentDescription("username").assertExists("username field not found")
+    composeTestRule
+        .onNodeWithContentDescription("username")
+        .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
     // check buttons that should not be there yet are not here
     composeTestRule.onNodeWithContentDescription("cancel").assertDoesNotExist()

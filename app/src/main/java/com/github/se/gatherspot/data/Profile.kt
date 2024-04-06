@@ -7,7 +7,7 @@ package com.github.se.gatherspot.data
  * @param _image link of the profile picture of the user
  */
 class Profile(private var _userName: String, private var _bio: String, private var _image: String) :
-  DataType<Profile>() {
+    DataType<Profile>() {
   /** Profile data object Creates a empty profile. */
   constructor() : this("", "", "")
   /**

@@ -20,6 +20,6 @@ fun Profile(nav: NavigationActions) {
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
       }) { paddingValues ->
         OwnProfile(OwnProfileViewModel())
-      Log.d(ContentValues.TAG, paddingValues.toString())
+        Log.d(ContentValues.TAG, paddingValues.toString())
       }
 }
