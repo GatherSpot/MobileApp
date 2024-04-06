@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.ui
+package com.github.se.gatherspot.model
 
 
 import androidx.compose.runtime.Composable

@@ -11,8 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import com.github.se.gatherspot.interest.Interests
-import com.github.se.gatherspot.interest.Interests.Companion.newBitset
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Interests.Companion.newBitset
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS

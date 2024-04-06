@@ -1,6 +1,6 @@
 package com.github.se.gatherspot
 
-import com.github.se.gatherspot.interest.Interests
+import com.github.se.gatherspot.model.Interests
 import org.junit.Assert.*
 import org.junit.Test
 import java.util.BitSet

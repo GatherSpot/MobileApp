@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.interest
+package com.github.se.gatherspot.model
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
