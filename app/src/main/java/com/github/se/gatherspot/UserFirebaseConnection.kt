@@ -52,10 +52,13 @@ class UserFirebaseConnection {
         ->
         Log.e(TAG, "Error deleting Event", exception)
       }
-      Firebase.auth.currentUser?.delete()?.addOnFailureListener { exception ->
-        Log.e(TAG, "Error deleting User", exception)
-      }
     }
+
+      fun deleteCurrentUser() {
+          Firebase.auth.currentUser?.delete()?.addOnFailureListener { exception ->
+              Log.e(TAG, "Error deleting User", exception)
+          }
+      }
 
     suspend fun fetchUser(uid: String): User? = suspendCancellableCoroutine { continuation ->
       Firebase.firestore

@@ -76,6 +76,40 @@ class SignUpTest : TestCase() {
       verifDialog.performClick()
 
       UserFirebaseConnection.deleteUser(MainActivity.uid)
+      UserFirebaseConnection.deleteCurrentUser()
+    }
+  }
+
+  @Test
+  fun testError() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      NavHost(navController = navController, startDestination = "auth") {
+        navigation(startDestination = "signup", route = "auth") {
+          composable("signup") { SignUp(NavigationActions(navController)) }
+        }
+        navigation(startDestination = "events", route = "home") {
+          composable("setup") { SetUpProfile(NavigationActions(navController), MainActivity.uid) }
+        }
+      }
+    }
+
+    ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
+      usernameField {
+        performTextInput("test")
+        assertExists()
+        assertIsDisplayed()
+      }
+      emailField {
+        performTextInput("test")
+        assertExists()
+        assertIsDisplayed()
+      }
+      passwordField {
+        performTextInput("test")
+        assertExists()
+        assertIsDisplayed()
+      }
     }
   }
 }
