@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.ui.theme.Pink40
 import com.github.se.gatherspot.ui.theme.drawPill
@@ -199,7 +200,8 @@ enum class Interests {
                             color = color(selection.value, interest),
                             size = Size(width = this.size.width, this.size.height)
                         )
-                    },
+                    }
+                    .testTag(interest.toString()),
                 text = interest.toString(),
             )
         }
@@ -210,6 +212,7 @@ enum class Interests {
         @Composable
         private fun SelectInterestsScreen(selection: MutableState<BitSet>, flip: (BitSet, Interests) -> Unit){
             Column {
+                Modifier.testTag("selectInterestsScreen")
                 for (i in 0..entries.size-3 step 3) {
                     Row{
                         DisplayInterestSelector(selection, entries.get(i), flip)
