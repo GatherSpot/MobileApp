@@ -34,7 +34,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventViewModel
 import com.github.se.gatherspot.model.location.Location
@@ -254,4 +256,10 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
               dismissButton = {})
         }
       }
+}
+
+@Preview
+@Composable
+fun CreateEventPreview() {
+  CreateEvent(NavigationActions(rememberNavController()), EventViewModel())
 }
