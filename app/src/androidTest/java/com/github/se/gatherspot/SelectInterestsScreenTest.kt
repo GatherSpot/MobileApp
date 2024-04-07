@@ -20,5 +20,11 @@ class SelectInterestsTest{
     @get:Rule val composeTestRule = createComposeRule()
 
     @Test
-    fun
+    fun butonsAreDisplayed(){
+        composeTestRule.setContent {
+            SelectInterestsScreen()
+        }
+        composeTestRule.onNodeWithText("Select Interests").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Done").assertIsDisplayed()
+    }
 }
