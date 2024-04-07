@@ -14,7 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 
-@RunWith(AndroidJUnit4::AndroidJUnit4::)
+@RunWith(AndroidJUnit4::class)
 class SelectInterestsTest : TestCase(){
     @get:Rule val composeTestRule = createComposeRule()
 
