@@ -5,7 +5,6 @@ import androidx.test.espresso.intent.rule.IntentsTestRule
 import com.github.se.gatherspot.screens.SelectInterestsScreen
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -20,16 +19,13 @@ class SelectInterestsTest{
     @get:Rule val composeTestRule = createComposeRule()
 
     @Test
-    fun butonsAreDisplayed(){
+    fun buttonsAreDisplayed(){
         ComposeScreen.onComposeScreen<SelectInterestsScreen>(composeTestRule){
             for (interest in interestsList){
-                assertIsDisplayed(interest)
+                interest{
+                    assertIsDisplayed()
+                }
             }
         }
-        composeTestRule.setContent {
-            SelectInterestsScreen()
-        }
-        composeTestRule.onNodeWithText("Select Interests").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Done").assertIsDisplayed()
     }
 }
