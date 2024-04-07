@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.hasTestTag
@@ -129,45 +130,50 @@ class CreateEventTest {
     ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
       // Check if every element are displayed
 
-      topBar { assertIsDisplayed() }
-      backButton { assertIsDisplayed() }
+      topBar {
+        Log.w("CreateEventTest", "topBar")
+        assertIsDisplayed()
+      }
+      backButton {
+        Log.w("CreateEventTest", "backButton")
+        assertIsDisplayed()
+      }
       eventTitle {
-        performScrollTo()
+        Log.w("CreateEventTest", "eventTitle")
         assertIsDisplayed()
       }
       eventDescription {
-        performScrollTo()
+        Log.w("CreateEventTest", "eventDescription")
         assertIsDisplayed()
       }
       eventStartDate {
-        performScrollTo()
+        Log.w("CreateEventTest", "eventStartDate")
         assertIsDisplayed()
       }
       eventEndDate {
-        performScrollTo()
+        Log.w("CreateEventTest", "eventEndDate")
         assertIsDisplayed()
       }
       eventTimeStart {
-        performScrollTo()
+        Log.w("CreateEventTest", "eventTimeStart")
         assertIsDisplayed()
       }
       eventTimeEnd {
-        performScrollTo()
+        Log.w("CreateEventTest", "eventTimeEnd")
         assertIsDisplayed()
       }
       eventLocation {
-        performScrollTo()
+        Log.w("CreateEventTest", "eventLocation")
         assertIsDisplayed()
       }
       eventMaxAttendees {
-        performScrollTo()
+        Log.w("CreateEventTest", "eventMaxAttendees")
         assertIsDisplayed()
       }
       eventMinAttendees {
-        performScrollTo()
+        Log.w("CreateEventTest", "eventMinAttendees")
         assertIsDisplayed()
       }
-      /*
       // scroll the screen to see the rest of the fields
       eventInscriptionLimitDate {
         performScrollTo()
@@ -181,7 +187,7 @@ class CreateEventTest {
         performScrollTo()
         assertIsDisplayed()
         assertIsNotEnabled()
-      }*/
+      }
 
       // Check if the alert box is not displayed
       alertBox { assertDoesNotExist() }
