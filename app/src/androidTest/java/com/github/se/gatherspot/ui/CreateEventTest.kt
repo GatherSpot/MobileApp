@@ -137,9 +137,15 @@ class CreateEventTest {
       eventEndDate { assertIsDisplayed() }
       eventTimeStart { assertIsDisplayed() }
       eventTimeEnd { assertIsDisplayed() }
-      eventMinAttendees { assertIsDisplayed() }
-      eventMaxAttendees { assertIsDisplayed() }
       eventLocation {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventMinAttendees {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventMaxAttendees {
         performScrollTo()
         assertIsDisplayed()
       }

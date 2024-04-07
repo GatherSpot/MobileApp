@@ -170,7 +170,8 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                   // Min attendees
                   OutlinedTextField(
-                      modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputMinAttendees"),
+                      modifier =
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
                       value = minAttendees,
                       onValueChange = { minAttendees = it },
                       label = { Text("Min Attendees") },
