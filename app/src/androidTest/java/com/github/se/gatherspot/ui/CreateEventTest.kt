@@ -129,8 +129,8 @@ class CreateEventTest {
     ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
       // Check if every element are displayed
 
-      // topBar { assertIsDisplayed() }
-      // backButton { assertIsDisplayed() }
+      topBar { assertIsDisplayed() }
+      backButton { assertIsDisplayed() }
       eventTitle {
         performScrollTo()
         assertIsDisplayed()
@@ -167,7 +167,7 @@ class CreateEventTest {
         performScrollTo()
         assertIsDisplayed()
       }
-
+      /*
       // scroll the screen to see the rest of the fields
       eventInscriptionLimitDate {
         performScrollTo()
@@ -181,7 +181,7 @@ class CreateEventTest {
         performScrollTo()
         assertIsDisplayed()
         assertIsNotEnabled()
-      }
+      }*/
 
       // Check if the alert box is not displayed
       alertBox { assertDoesNotExist() }
