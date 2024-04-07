@@ -72,6 +72,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
 
   var showErrorDialog by remember { mutableStateOf(false) }
   var errorMessage: String = ""
+  var locationName by remember { mutableStateOf("") }
 
   // TODO: For now, the location is not handled
   location = Location(0.0, 0.0, "Test Location")
@@ -157,8 +158,8 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
             OutlinedTextField(
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputLocation"),
                 // Do a query to get a location from text input
-                value = TextFieldValue(location?.toString() ?: ""),
-                onValueChange = {},
+                value = locationName,
+                onValueChange = { locationName = it },
                 label = { Text("Location") },
                 placeholder = { Text("Enter an address") })
             // TODO : Handle location fetching from text input,

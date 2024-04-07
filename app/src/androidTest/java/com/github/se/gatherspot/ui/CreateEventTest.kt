@@ -79,8 +79,7 @@ class CreateEventTest {
         assertExists()
         assert(hasText("Location"))
         performClick()
-        // TODO: Location not done yet
-        // assert(hasText("Enter an address"))
+        assert(hasText("Enter an address"))
       }
       eventMinAttendees {
         assertExists()
@@ -236,7 +235,7 @@ class CreateEventTest {
       eventEndDate.performTextInput("12/05/2026")
       eventTimeStart.performTextInput("10:00")
       eventTimeEnd.performTextInput("12:00")
-      // eventLocation.performTextInput("Test Location")
+      eventLocation.performTextInput("Test Location")
       eventMaxAttendees.performTextInput("100")
       eventMinAttendees.performTextInput("10")
       eventInscriptionLimitDate.performTextInput("10/04/2025")
@@ -248,7 +247,7 @@ class CreateEventTest {
       eventEndDate.assert(hasText("12/05/2026"))
       eventTimeStart.assert(hasText("10:00"))
       eventTimeEnd.assert(hasText("12:00"))
-      // eventLocation.assert(hasText("Test Location"))
+      eventLocation.assert(hasText("Test Location"))
       eventMaxAttendees.assert(hasText("100"))
       eventMinAttendees.assert(hasText("10"))
       eventInscriptionLimitDate.assert(hasText("10/04/2025"))
@@ -309,8 +308,7 @@ class CreateEventTest {
       eventEndDate.performTextInput("12/05/2026")
       eventTimeStart.performTextInput("10:00")
       eventTimeEnd.performTextInput("12:00")
-      // TODO: This for when we can implement the locations dropwdown
-      // eventLocation.performTextInput("Test Location")
+      eventLocation.performTextInput("Test Location")
       eventMaxAttendees.performTextInput("toto")
       eventMinAttendees.performTextInput("titi")
       eventInscriptionLimitDate.performTextInput("10/04/2025")
@@ -460,12 +458,10 @@ class CreateEventTest {
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
-      // todo: LOCATION not handled yet
-      /*
-      eventLocation{
+      eventLocation {
         performClick()
         assert(hasText("Enter an address"))
-      }*/
+      }
       eventMaxAttendees {
         performClick()
         assert(hasText("Max Attendees"))
