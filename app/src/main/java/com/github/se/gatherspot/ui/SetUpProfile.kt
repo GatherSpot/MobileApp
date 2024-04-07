@@ -2,6 +2,7 @@ package com.github.se.gatherspot.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -58,7 +59,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
     if (isClicked) {
       withContext(Dispatchers.Main) {
         auth.currentUser?.reload()?.await()
-        isEmailVerified = auth.currentUser!!.isEmailVerified
+        isEmailVerified = auth.currentUser?.isEmailVerified ?: false
         if (isEmailVerified) {
           UserFirebaseConnection.updateUserInterests(uid, Profile(interests))
           nav.controller.navigate("profile")
@@ -72,9 +73,9 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpScreen")) {
     Text(text = "Choose your interests", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
-    LazyColumn(Modifier.weight(1f)) {
+    LazyColumn(Modifier.weight(1f).testTag("lazyColumn")) {
       items(allCategories) { interest ->
-        FilterChipCompose(interest, interests)
+        FilterChipCompose(interest, interests, Modifier.testTag(interest.toString()))
         Spacer(modifier = Modifier.height(2.dp))
       }
     }
@@ -87,7 +88,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
           colors = ButtonDefaults.buttonColors(Color.Transparent),
           onClick = { isClicked = true },
           modifier =
-              Modifier.testTag("saveButton")
+              Modifier.testTag("saveButton").clickable { isClicked = true }
                   .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
                   .wrapContentSize()) {
             Box(
@@ -100,7 +101,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
       Box(
           modifier = Modifier.fillMaxWidth(),
           contentAlignment = androidx.compose.ui.Alignment.Center) {
-            Text(text = emailText, color = Color.Red, modifier = Modifier.testTag("verifEmailText"))
+            Text(text = emailText, color = Color.Red, modifier = Modifier.testTag("emailText"))
           }
     }
   }
@@ -108,7 +109,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterChipCompose(interest: Category, interests: MutableSet<Category>) {
+fun FilterChipCompose(interest: Category, interests: MutableSet<Category>, modifier: Modifier) {
   var selected by remember { mutableStateOf(false) }
 
   FilterChip(
@@ -137,5 +138,6 @@ fun FilterChipCompose(interest: Category, interests: MutableSet<Category>) {
               modifier = Modifier.size(FilterChipDefaults.IconSize + 2.dp))
         }
       },
+        modifier = modifier
   )
 }

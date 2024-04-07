@@ -81,7 +81,7 @@ class SignUpTest : TestCase() {
   }
 
   @Test
-  fun testError() {
+  fun signUpError() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
