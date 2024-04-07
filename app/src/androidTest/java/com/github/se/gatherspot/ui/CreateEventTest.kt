@@ -75,12 +75,6 @@ class CreateEventTest {
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
-      eventLocation {
-        assertExists()
-        assert(hasText("Location"))
-        performClick()
-        assert(hasText("Enter an address"))
-      }
       eventMinAttendees {
         assertExists()
         assert(hasText("Min Attendees"))
@@ -92,6 +86,13 @@ class CreateEventTest {
         assert(hasText("Max Attendees"))
         performClick()
         assert(hasText("Max Attendees"))
+      }
+      eventLocation {
+        assertExists()
+        performScrollTo()
+        assert(hasText("Location"))
+        performClick()
+        assert(hasText("Enter an address"))
       }
       eventInscriptionLimitDate {
         assertExists()
@@ -136,15 +137,9 @@ class CreateEventTest {
       eventEndDate { assertIsDisplayed() }
       eventTimeStart { assertIsDisplayed() }
       eventTimeEnd { assertIsDisplayed() }
+      eventMinAttendees { assertIsDisplayed() }
+      eventMaxAttendees { assertIsDisplayed() }
       eventLocation {
-        performScrollTo()
-        assertIsDisplayed()
-      }
-      eventMinAttendees {
-        performScrollTo()
-        assertIsDisplayed()
-      }
-      eventMaxAttendees {
         performScrollTo()
         assertIsDisplayed()
       }
