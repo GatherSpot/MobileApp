@@ -13,7 +13,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 public class SelectInterestsTest : TestCase() {
-@get:Rule val composeTestRule = createAndroidComposeRule<SelectInterestsScreen>()
+@get:Rule val composeTestRule = createComposeRule()
 @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
 
 @Test
