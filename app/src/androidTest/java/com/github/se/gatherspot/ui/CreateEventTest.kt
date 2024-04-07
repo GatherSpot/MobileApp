@@ -1,11 +1,14 @@
 package com.github.se.gatherspot.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EventFirebaseConnection
@@ -362,30 +365,6 @@ class CreateEventTest {
   }
 
   @Test
-  fun testVerifyLabelContent() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
-    }
-
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
-      // Check if the labels are displayed
-      eventTitle.assert(hasText("Event Title*"))
-      eventDescription.assert(hasText("Description*"))
-      eventStartDate.assert(hasText("Start Date of the event*"))
-      eventEndDate.assert(hasText("End date of the event"))
-      eventTimeStart.assert(hasText("Start time*"))
-      eventTimeEnd.assert(hasText("End time*"))
-      // eventLocation.assert(hasText("Event Location"))
-      eventMaxAttendees.assert(hasText("Max Attendees"))
-      eventMinAttendees.assert(hasText("Min Attendees"))
-      eventInscriptionLimitDate.assert(hasText("Inscription Limit Date"))
-      eventInscriptionLimitTime.assert(hasText("Inscription Limit Time"))
-    }
-  }
-
-  @Test
   fun verifyPlaceHolderAndLabel() {
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -409,49 +388,67 @@ class CreateEventTest {
 
       // Check if the placeholders are displayed when clicked
       eventTitle {
+        composeTestRule.onNodeWithText("Event Title*").assertIsDisplayed()
         performClick()
         assert(hasText("Give a name to the event"))
+        composeTestRule.onNodeWithText("Give a name to the event").assertIsDisplayed()
       }
       eventDescription {
+        composeTestRule.onNodeWithText("Description*").assertIsDisplayed()
         performClick()
         assert(hasText("Describe the event"))
+        composeTestRule.onNodeWithText("Describe the event").assertIsDisplayed()
       }
       eventStartDate {
+        composeTestRule.onNodeWithText("Start Date of the event*").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT))
       }
       eventEndDate {
+        composeTestRule.onNodeWithText("End date of the event").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT))
       }
       eventTimeStart {
+        composeTestRule.onNodeWithText("Start time*").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventTimeEnd {
+        composeTestRule.onNodeWithText("End time*").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventLocation {
         performScrollTo()
+        composeTestRule.onNodeWithText("Location").assertIsDisplayed()
         performClick()
         assert(hasText("Enter an address"))
+        composeTestRule.onNodeWithText("Enter an address").assertIsDisplayed()
       }
       eventMaxAttendees {
+        performScrollTo()
+        composeTestRule.onNodeWithText("Max Attendees").assertIsDisplayed()
         performClick()
         assert(hasText("Max Attendees"))
+        composeTestRule.onNodeWithText("Max Attendees").assertIsDisplayed()
       }
       eventMinAttendees {
+        performScrollTo()
+        composeTestRule.onNodeWithText("Min Attendees").assertIsDisplayed()
         performClick()
         assert(hasText("Min Attendees"))
+        composeTestRule.onNodeWithText("Min Attendees").assertIsDisplayed()
       }
       eventInscriptionLimitDate {
         performScrollTo()
+        composeTestRule.onNodeWithText("Inscription Limit Date").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT))
       }
       eventInscriptionLimitTime {
         performScrollTo()
+        composeTestRule.onNodeWithText("Inscription Limit Time").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
