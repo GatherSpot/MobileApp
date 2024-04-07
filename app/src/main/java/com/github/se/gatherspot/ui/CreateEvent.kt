@@ -164,7 +164,6 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
                 onValueChange = { locationName = it },
                 label = { Text("Location") },
                 placeholder = { Text("Enter an address") })
-            // TODO : Handle location fetching from text input,
 
             Row(
                 modifier = Modifier.fillMaxWidth(),

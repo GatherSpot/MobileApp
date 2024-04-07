@@ -323,7 +323,7 @@ class CreateEventTest {
       eventEndDate.performTextInput("12/05/2026")
       eventTimeStart.performTextInput("10:00")
       eventTimeEnd.performTextInput("12:00")
-      // eventLocation.performTextInput("Test Location")
+      eventLocation.performTextInput("Test Location")
       eventMaxAttendees.performTextInput("100")
       eventMinAttendees.performTextInput("10")
       eventInscriptionLimitDate.performTextInput("10/04/2025")
@@ -432,6 +432,7 @@ class CreateEventTest {
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventLocation {
+        performScrollTo()
         performClick()
         assert(hasText("Enter an address"))
       }
