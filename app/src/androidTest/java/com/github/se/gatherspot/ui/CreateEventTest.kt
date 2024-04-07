@@ -128,18 +128,42 @@ class CreateEventTest {
 
     ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
       // Check if every element are displayed
-
-      topBar { assertIsDisplayed() }
-      backButton { assertIsDisplayed() }
-      eventTitle { assertIsDisplayed() }
-      eventDescription { assertIsDisplayed() }
-      eventStartDate { assertIsDisplayed() }
-      eventEndDate { assertIsDisplayed() }
-      eventTimeStart { assertIsDisplayed() }
-      eventTimeEnd { assertIsDisplayed() }
-      eventLocation { assertIsDisplayed() }
-      eventMaxAttendees { assertIsDisplayed() }
-      eventMinAttendees { assertIsDisplayed() }
+      eventScaffold{
+        println("eventScaffold")
+        assertIsDisplayed() }
+      topBar {
+        println("topBar")
+        assertIsDisplayed() }
+      backButton {
+        println("backButton")
+        assertIsDisplayed() }
+      eventTitle {
+        println("eventTitle")
+        assertIsDisplayed() }
+      eventDescription {
+        println("eventDescription")
+        assertIsDisplayed() }
+      eventStartDate {
+        println("eventStartDate")
+        assertIsDisplayed() }
+      eventEndDate {
+        println("eventEndDate")
+        assertIsDisplayed() }
+      eventTimeStart {
+        println("eventTimeStart")
+        assertIsDisplayed() }
+      eventTimeEnd {
+        println("eventTimeEnd")
+        assertIsDisplayed() }
+      eventLocation {
+        println("eventLocation")
+        assertIsDisplayed() }
+      eventMinAttendees {
+        println("eventMinAttendees")
+        assertIsDisplayed() }
+      eventMaxAttendees {
+        println("eventMaxAttendees")
+        assertIsDisplayed() }
       // scroll the screen to see the rest of the fields
       eventInscriptionLimitDate {
         performScrollTo()

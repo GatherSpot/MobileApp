@@ -22,8 +22,8 @@ class CreateEventScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val eventTimeStart: KNode = onNode { hasTestTag("inputTimeStartEvent") }
   val eventTimeEnd: KNode = onNode { hasTestTag("inputTimeEndEvent") }
   val eventLocation: KNode = onNode { hasTestTag("inputLocation") }
-  val eventMaxAttendees: KNode = onNode { hasTestTag("inputMaxAttendees") }
   val eventMinAttendees: KNode = onNode { hasTestTag("inputMinAttendees") }
+  val eventMaxAttendees: KNode = onNode { hasTestTag("inputMaxAttendees") }
   val eventInscriptionLimitDate: KNode = onNode { hasTestTag("inputInscriptionLimitDate") }
   val eventInscriptionLimitTime: KNode = onNode { hasTestTag("inputInscriptionLimitTime") }
   val eventSaveButton: KNode = onNode { hasTestTag("createEventButton") }
