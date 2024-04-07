@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.hasTestTag
@@ -130,50 +129,17 @@ class CreateEventTest {
     ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
       // Check if every element are displayed
 
-      topBar {
-        Log.w("CreateEventTest", "topBar")
-        assertIsDisplayed()
-      }
-      backButton {
-        Log.w("CreateEventTest", "backButton")
-        assertIsDisplayed()
-      }
-      eventTitle {
-        Log.w("CreateEventTest", "eventTitle")
-        assertIsDisplayed()
-      }
-      eventDescription {
-        Log.w("CreateEventTest", "eventDescription")
-        assertIsDisplayed()
-      }
-      eventStartDate {
-        Log.w("CreateEventTest", "eventStartDate")
-        assertIsDisplayed()
-      }
-      eventEndDate {
-        Log.w("CreateEventTest", "eventEndDate")
-        assertIsDisplayed()
-      }
-      eventTimeStart {
-        Log.w("CreateEventTest", "eventTimeStart")
-        assertIsDisplayed()
-      }
-      eventTimeEnd {
-        Log.w("CreateEventTest", "eventTimeEnd")
-        assertIsDisplayed()
-      }
-      eventLocation {
-        Log.w("CreateEventTest", "eventLocation")
-        assertIsDisplayed()
-      }
-      eventMaxAttendees {
-        Log.w("CreateEventTest", "eventMaxAttendees")
-        assertIsDisplayed()
-      }
-      eventMinAttendees {
-        Log.w("CreateEventTest", "eventMinAttendees")
-        assertIsDisplayed()
-      }
+      topBar { assertIsDisplayed() }
+      backButton { assertIsDisplayed() }
+      eventTitle { assertIsDisplayed() }
+      eventDescription { assertIsDisplayed() }
+      eventStartDate { assertIsDisplayed() }
+      eventEndDate { assertIsDisplayed() }
+      eventTimeStart { assertIsDisplayed() }
+      eventTimeEnd { assertIsDisplayed() }
+      eventLocation { assertIsDisplayed() }
+      eventMaxAttendees { assertIsDisplayed() }
+      eventMinAttendees { assertIsDisplayed() }
       // scroll the screen to see the rest of the fields
       eventInscriptionLimitDate {
         performScrollTo()
