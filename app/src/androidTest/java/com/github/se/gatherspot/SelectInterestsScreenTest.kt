@@ -21,6 +21,9 @@ class SelectInterestsTest{
 
     @Test
     fun butonsAreDisplayed(){
+        ComposeScreen.onComposeScreen<SelectInterestsScreen>(composeTestRule){
+
+        }
         composeTestRule.setContent {
             SelectInterestsScreen()
         }
