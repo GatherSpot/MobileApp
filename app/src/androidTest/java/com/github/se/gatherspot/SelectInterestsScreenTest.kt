@@ -22,7 +22,9 @@ class SelectInterestsTest{
     @Test
     fun butonsAreDisplayed(){
         ComposeScreen.onComposeScreen<SelectInterestsScreen>(composeTestRule){
-
+            for (interest in interestsList){
+                assertIsDisplayed(interest)
+            }
         }
         composeTestRule.setContent {
             SelectInterestsScreen()
