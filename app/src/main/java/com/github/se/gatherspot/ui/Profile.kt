@@ -2,7 +2,6 @@
 
 package com.github.se.gatherspot.ui
 
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,5 +30,3 @@ fun Profile(nav: NavigationActions) {
         Log.d(ContentValues.TAG, paddingValues.toString())
       }
 }
-
-
