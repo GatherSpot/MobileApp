@@ -1,6 +1,6 @@
 package com.github.se.gatherspot.model
 
-enum class Category {
+enum class Interests {
   MUSIC,
   SPORT,
   ARTS,

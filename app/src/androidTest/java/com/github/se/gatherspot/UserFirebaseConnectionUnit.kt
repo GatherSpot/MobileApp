@@ -1,6 +1,6 @@
 package com.github.se.gatherspot
 
-import com.github.se.gatherspot.model.Category
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import kotlinx.coroutines.async
@@ -63,11 +63,11 @@ class UserFirebaseConnectionUnit {
     val user = User(uid, username, email, password, Profile(emptySet()))
     UserFirebaseConnection.addUser(user)
     UserFirebaseConnection.updateUserInterests(
-        uid, Profile(setOf(Category.ARTS, Category.BASKETBALL)))
+        uid, Profile(setOf(Interests.ARTS, Interests.BASKETBALL)))
     var userFetched: User? = null
     async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
-    assertTrue(userFetched!!.profile.interests.contains(Category.ARTS))
-    assertTrue(userFetched!!.profile.interests.contains(Category.BASKETBALL))
+    assertTrue(userFetched!!.profile.interests.contains(Interests.ARTS))
+    assertTrue(userFetched!!.profile.interests.contains(Interests.BASKETBALL))
     UserFirebaseConnection.deleteUser(uid)
   }
 }

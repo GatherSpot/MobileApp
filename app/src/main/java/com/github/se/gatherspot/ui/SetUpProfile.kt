@@ -36,7 +36,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.model.Category
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
@@ -52,8 +52,8 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   var isEmailVerified by remember { mutableStateOf(false) }
   var emailText by remember { mutableStateOf("") }
   var isClicked by remember { mutableStateOf(false) }
-  val allCategories = enumValues<Category>().toList()
-  var interests by remember { mutableStateOf(mutableSetOf<Category>()) }
+  val allCategories = enumValues<Interests>().toList()
+  var interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
 
   LaunchedEffect(isClicked, interests) {
     if (isClicked) {
@@ -88,7 +88,8 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
           colors = ButtonDefaults.buttonColors(Color.Transparent),
           onClick = { isClicked = true },
           modifier =
-              Modifier.testTag("saveButton").clickable { isClicked = true }
+              Modifier.testTag("saveButton")
+                  .clickable { isClicked = true }
                   .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
                   .wrapContentSize()) {
             Box(
@@ -109,7 +110,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterChipCompose(interest: Category, interests: MutableSet<Category>, modifier: Modifier) {
+fun FilterChipCompose(interest: Interests, interests: MutableSet<Interests>, modifier: Modifier) {
   var selected by remember { mutableStateOf(false) }
 
   FilterChip(
@@ -138,6 +139,5 @@ fun FilterChipCompose(interest: Category, interests: MutableSet<Category>, modif
               modifier = Modifier.size(FilterChipDefaults.IconSize + 2.dp))
         }
       },
-        modifier = modifier
-  )
+      modifier = modifier)
 }

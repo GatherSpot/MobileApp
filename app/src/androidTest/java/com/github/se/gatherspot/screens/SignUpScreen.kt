@@ -16,10 +16,7 @@ class SignUpScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val button: KNode = onNode { hasTestTag("validate") }
   val dialog: KNode = onNode { hasTestTag("signUpFailed") }
   val verifDialog: KNode = onNode { hasTestTag("verification") }
-    val badUsername: KNode = onNode { hasTestTag("badUsername") }
-    val badEmail: KNode = onNode { hasTestTag("badEmail") }
-    val badPassword: KNode = onNode { hasTestTag("badPassword") }
-
-
-
+  val badUsername: KNode = onNode { hasTestTag("badUsername") }
+  val badEmail: KNode = onNode { hasTestTag("badEmail") }
+  val badPassword: KNode = onNode { hasTestTag("badPassword") }
 }

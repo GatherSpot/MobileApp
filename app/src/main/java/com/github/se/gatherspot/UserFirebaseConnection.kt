@@ -1,7 +1,7 @@
 package com.github.se.gatherspot
 
 import android.util.Log
-import com.github.se.gatherspot.model.Category
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import com.google.firebase.Firebase
@@ -54,11 +54,11 @@ class UserFirebaseConnection {
       }
     }
 
-      fun deleteCurrentUser() {
-          Firebase.auth.currentUser?.delete()?.addOnFailureListener { exception ->
-              Log.e(TAG, "Error deleting User", exception)
-          }
+    fun deleteCurrentUser() {
+      Firebase.auth.currentUser?.delete()?.addOnFailureListener { exception ->
+        Log.e(TAG, "Error deleting User", exception)
       }
+    }
 
     suspend fun fetchUser(uid: String): User? = suspendCancellableCoroutine { continuation ->
       Firebase.firestore
@@ -93,7 +93,7 @@ class UserFirebaseConnection {
           username,
           email,
           password,
-          Profile(interests.map { s -> Category.valueOf(s) }.toSet()))
+          Profile(interests.map { s -> Interests.valueOf(s) }.toSet()))
     }
 
     fun usernameExists(username: String, onComplete: (Boolean) -> Unit) {
@@ -128,21 +128,19 @@ class UserFirebaseConnection {
           .addOnFailureListener { e -> Log.w(TAG, "Error for interests", e) }
     }
 
-      fun getUserInterests(uid: String): Set<Category> {
-          var ret = emptySet<Category>()
-            Firebase.firestore
-                .collection(USERS)
-                .document(uid)
-                .get()
-                .addOnSuccessListener { document ->
-                    if (document != null) {
-                        ret = (document.get("profile.interests") as ArrayList<Category>).toSet()
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.d(TAG, "get failed with ", exception)
-                }
-            return ret
-      }
+    fun getUserInterests(uid: String): Set<Interests> {
+      var ret = emptySet<Interests>()
+      Firebase.firestore
+          .collection(USERS)
+          .document(uid)
+          .get()
+          .addOnSuccessListener { document ->
+            if (document != null) {
+              ret = (document.get("profile.interests") as ArrayList<Interests>).toSet()
+            }
+          }
+          .addOnFailureListener { exception -> Log.d(TAG, "get failed with ", exception) }
+      return ret
+    }
   }
 }

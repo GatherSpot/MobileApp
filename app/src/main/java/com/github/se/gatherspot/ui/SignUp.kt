@@ -130,7 +130,10 @@ fun SignUp(nav: NavigationActions) {
             } else if (isUsernameValid) {
               Text(text = "Username is valid", color = Color.Blue)
             } else {
-              Text(text = "Username is already in use", color = Color.Red, modifier = Modifier.testTag("badUsername"))
+              Text(
+                  text = "Username is already in use",
+                  color = Color.Red,
+                  modifier = Modifier.testTag("badUsername"))
             }
           }
 
@@ -150,7 +153,10 @@ fun SignUp(nav: NavigationActions) {
             } else if (isEmailValid(email)) {
               Text(text = "Email is valid", color = Color.Blue)
             } else {
-              Text(text = "Email is not valid", color = Color.Red, modifier = Modifier.testTag("badEmail"))
+              Text(
+                  text = "Email is not valid",
+                  color = Color.Red,
+                  modifier = Modifier.testTag("badEmail"))
             }
           }
 
@@ -194,7 +200,10 @@ fun SignUp(nav: NavigationActions) {
             } else if (isPasswordValid) {
               Text(text = "Password is valid", color = Color.Blue)
             } else {
-              Text(text = "Password is not valid", color = Color.Red, modifier = Modifier.testTag("badPassword"))
+              Text(
+                  text = "Password is not valid",
+                  color = Color.Red,
+                  modifier = Modifier.testTag("badPassword"))
             }
           }
 
