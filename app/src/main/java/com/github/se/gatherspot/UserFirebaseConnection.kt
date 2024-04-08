@@ -76,7 +76,7 @@ class UserFirebaseConnection {
       val password = d.getString("password")!!
 
       val map = d.data!!
-      val profile = map["profile"] as HashMap<*, *>
+      //val profile = map["profile"] as HashMap<*, *>
       //      val interests = profile["interests"] as List<String>
 
       return User(uid, username, email, password)

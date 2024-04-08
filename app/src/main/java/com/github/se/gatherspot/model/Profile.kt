@@ -12,7 +12,7 @@ class Profile(
     private var _userName: String,
     private var _bio: String,
     private var _image: String,
-    private val _uid: String
+    private var _uid: String
 ) {
 
   var userName: String = _userName
