@@ -133,7 +133,7 @@ fun OwnProfile(viewModel: OwnProfileViewModel) {
   }
 }
 /**
- * This is used to show someone else's profile, and it is not editable.
+ * This is used to show someone else's profile, and it is not editable
  *
  * @param viewModel a view model that holds the profile to show
  */
