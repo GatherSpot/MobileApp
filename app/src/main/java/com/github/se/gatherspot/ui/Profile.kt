@@ -1,7 +1,11 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.github.se.gatherspot.ui
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.util.Log
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
@@ -27,3 +31,5 @@ fun Profile(nav: NavigationActions) {
         Log.d(ContentValues.TAG, paddingValues.toString())
       }
 }
+
+

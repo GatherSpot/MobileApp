@@ -240,22 +240,23 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
           }
         }
         if (showErrorDialog) {
-          AlertDialog(
-              modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { showErrorDialog = false },
-              icon = { Icon(Icons.Default.Warning, contentDescription = null) },
-              title = { Text("Error on the event creation") },
-              text = { Text(modifier = Modifier.testTag("errorMessage"), text = errorMessage) },
-              confirmButton = {
-                Button(
-                    onClick = { showErrorDialog = false },
-                    modifier = Modifier.testTag("alertButton")) {
-                      Text("OK")
-                    }
-              },
-              dismissButton = {})
+          Alert("Error on the event creation", errorMessage) { showErrorDialog = false }
         }
       }
+}
+
+@Composable
+fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
+  AlertDialog(
+      modifier = Modifier.testTag("alertBox"),
+      onDismissRequest = onDismiss,
+      icon = { Icon(Icons.Default.Warning, contentDescription = null) },
+      title = { Text(errorTitle) },
+      text = { Text(modifier = Modifier.testTag("errorMessage"), text = errorMessage) },
+      confirmButton = {
+        Button(onClick = onDismiss, modifier = Modifier.testTag("alertButton")) { Text("OK") }
+      },
+      dismissButton = {})
 }
 
 @Preview
