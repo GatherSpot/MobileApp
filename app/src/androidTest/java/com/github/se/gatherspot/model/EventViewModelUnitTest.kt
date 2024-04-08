@@ -8,41 +8,11 @@ import org.junit.Test
 class EventViewModelTest {
   val eventViewModel = EventViewModel()
 
-  @Test
-  fun createEvent_withValidData_returnsEvent() {
-    val event =
-        eventViewModel.createEvent(
-            "Test Event1",
-            "This is a test event",
-            Location(0.0, 0.0, "Test Location"),
-            LocalDate.now().plusDays(1),
-            LocalDate.now().plusDays(2),
-            LocalTime.of(10, 0),
-            LocalTime.of(12, 0),
-            100,
-            10,
-            LocalDate.now().plusDays(1),
-            LocalTime.of(9, 0))
-    Assert.assertEquals("Test Event1", event.title)
-    Assert.assertEquals("This is a test event", event.description)
-    Assert.assertEquals(0.0, event.location?.latitude)
-    Assert.assertEquals(0.0, event.location?.longitude)
-    Assert.assertEquals("Test Location", event.location?.name)
-    Assert.assertEquals(LocalDate.now().plusDays(1), event.eventStartDate)
-    Assert.assertEquals(LocalDate.now().plusDays(2), event.eventEndDate)
-    Assert.assertEquals(LocalTime.of(10, 0), event.timeBeginning)
-    Assert.assertEquals(LocalTime.of(12, 0), event.timeEnding)
-    Assert.assertEquals(100, event.attendanceMaxCapacity)
-    Assert.assertEquals(10, event.attendanceMinCapacity)
-    Assert.assertEquals(LocalDate.now().plusDays(1), event.inscriptionLimitDate)
-    Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
-  }
-
   // Write tests for validateParseEventData
   @Test
-  fun validateEventData_withValidData_returnsTrue() {
+  fun validateEventData_withValidData_returnsValidEvent() {
     // validate data parse strings
-    val result =
+    val event =
         eventViewModel.validateAndCreateEvent(
             "Test Event2",
             "This is a test event",
@@ -56,7 +26,19 @@ class EventViewModelTest {
             "10/04/2025",
             "09:00")
 
-    Assert.assertTrue(result)
+    Assert.assertEquals("Test Event2", event.title)
+    Assert.assertEquals("This is a test event", event.description)
+    Assert.assertEquals(0.0, event.location?.latitude)
+    Assert.assertEquals(0.0, event.location?.longitude)
+    Assert.assertEquals("Test Location", event.location?.name)
+    Assert.assertEquals(LocalDate.of(2026, 4, 12), event.eventStartDate)
+    Assert.assertEquals(LocalDate.of(2026, 5, 12), event.eventEndDate)
+    Assert.assertEquals(LocalTime.of(10, 0), event.timeBeginning)
+    Assert.assertEquals(LocalTime.of(12, 0), event.timeEnding)
+    Assert.assertEquals(100, event.attendanceMaxCapacity)
+    Assert.assertEquals(10, event.attendanceMinCapacity)
+    Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
+    Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
   }
 
   @Test

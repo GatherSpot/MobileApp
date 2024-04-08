@@ -26,7 +26,7 @@ class EventViewModel {
    * @param timeLimitInscription: The last time to register for the event
    * @return The event created
    */
-  fun createEvent(
+  private fun createEvent(
       title: String,
       description: String,
       location: Location,
@@ -97,7 +97,7 @@ class EventViewModel {
       minAttendees: String,
       dateLimitInscription: String,
       timeLimitInscription: String
-  ): Boolean {
+  ): Event {
     // test if the date is valid
     val parsedEventStartDate = validateDate(eventStartDate, "Invalid date format")
     // Check whether the start date is in the future
@@ -181,7 +181,7 @@ class EventViewModel {
     }
 
     // If all the data is valid, call createEvent function
-    createEvent(
+    return createEvent(
         title,
         description,
         location,
@@ -193,8 +193,6 @@ class EventViewModel {
         parsedMinAttendees,
         parsedDateLimitInscription,
         parsedTimeLimitInscription)
-
-    return true
   }
 
   fun validateDate(date: String, eMessage: String): LocalDate {
