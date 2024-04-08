@@ -1,20 +1,5 @@
 package com.github.se.gatherspot.model
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
-import com.github.se.gatherspot.ui.theme.Pink40
-import com.github.se.gatherspot.ui.theme.drawPill
 import java.util.BitSet
 
 enum class Interests {
@@ -39,19 +24,12 @@ enum class Interests {
   // This companion object contains utility functions for working with Interests
   companion object {
 
-    private val unselected: Color = Color(0xFFFFFFFF)
 
     private val parents =
         mapOf(FOOTBALL to SPORT, BASKETBALL to SPORT, TENNIS to SPORT, BOWLING to LEISURE)
 
     private val children = parents.toList().groupBy({ it.second }, { it.first })
 
-    private fun color(selection: BitSet, interest: Interests): Color {
-      if (hasInterest(selection, interest)) {
-        return Pink40
-      }
-      return unselected
-    }
 
     /* This function creates a new BitSet to store interests
 
@@ -166,70 +144,6 @@ enum class Interests {
       }
     }
 
-    /*
-    This function is used to display the button to select a particular interest
-     */
-    @Composable
-    private fun DisplayInterestSelector(
-        selection: BitSet,
-        interest: Interests,
-        flip: (BitSet, Interests) -> Unit
-    ) {
-      Text(
-          modifier =
-              Modifier.padding(16.dp)
-                  .clickable(onClick = { flip(selection, interest) })
-                  .drawBehind {
-                    drawPill(
-                        drawScope = this,
-                        topLeft = Offset(0f, 0f),
-                        color = color(selection, interest),
-                        size = Size(width = this.size.width, this.size.height))
-                  }
-                  .testTag(interest.toString()),
-          text = interest.toString(),
-      )
-    }
-    /* This function is used to select interests of a user or event
-       This function is private because different logic is used for profile and event
-       Outside of this file, the user should use SelectProfileInterests or SelectEventInterests
-    */
-    @Composable
-    private fun SelectInterestsScreen(selection: BitSet, flip: (BitSet, Interests) -> Unit) {
-      Column {
-        Modifier.testTag("selectInterestsScreen")
-        for (i in 0..entries.size - 3 step 3) {
-          Row {
-            DisplayInterestSelector(selection, entries.get(i), flip)
-            DisplayInterestSelector(selection, entries.get(i + 1), flip)
-            DisplayInterestSelector(selection, entries.get(i + 2), flip)
-          }
-        }
-        Row {
-          for (i in entries.size - 2..entries.size - 1) {
-            DisplayInterestSelector(selection, entries[i], flip)
-          }
-        }
-      }
-    }
 
-    /*
-    This function is used to select interests of a user
-     */
-    @Composable
-    fun SelectProfileInterests(selection: BitSet) {
-
-      SelectInterestsScreen(selection, ::profileFlip)
-    }
-
-    /*
-    This function is used to select interests of an event
-
-     */
-    @Composable
-    fun SelectEventInterests(selection: BitSet) {
-
-      SelectInterestsScreen(selection, ::eventFlip)
-    }
   }
 }
