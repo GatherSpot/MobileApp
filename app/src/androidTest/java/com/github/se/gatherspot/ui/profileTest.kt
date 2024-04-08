@@ -25,12 +25,6 @@ import org.junit.runner.RunWith
 // adding a text is not enough, as we will probably change theses when internationalizing texts
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
-  // to start the main activity
-  private var profile = Profile("John Doe", "I am not a bot", "", "")
-  private val getProfile = { profile }
-  private val saveProfile = { username: String, bio: String, imageUri: String ->
-    profile = Profile(username, bio, imageUri, "")
-  }
 
   @get:Rule val composeTestRule = createComposeRule()
   // for useful documentation on testing compose
@@ -52,7 +46,6 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("save").assertExists()
     composeTestRule.onNodeWithContentDescription("edit").assertDoesNotExist()
     // modify text, press cancel, and verify it didn't change.
-    val defaultProfile = Profile()
     composeTestRule.onNodeWithContentDescription("username").performTextReplacement("Alex")
     composeTestRule.onNodeWithContentDescription("username").assert(hasText("Alex"))
     composeTestRule.onNodeWithContentDescription("cancel").performClick()
