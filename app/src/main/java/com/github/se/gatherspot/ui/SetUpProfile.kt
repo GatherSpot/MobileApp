@@ -53,7 +53,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   var emailText by remember { mutableStateOf("") }
   var isClicked by remember { mutableStateOf(false) }
   val allCategories = enumValues<Interests>().toList()
-  var interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
+  val interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
 
   LaunchedEffect(isClicked, interests) {
     if (isClicked) {
@@ -61,7 +61,6 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
         auth.currentUser?.reload()?.await()
         isEmailVerified = auth.currentUser?.isEmailVerified ?: false
         if (isEmailVerified) {
-          UserFirebaseConnection.updateUserInterests(uid, Profile(interests))
           nav.controller.navigate("profile")
         } else {
           emailText = "Please verify your email before continuing"

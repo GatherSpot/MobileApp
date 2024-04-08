@@ -39,7 +39,7 @@ class SetUpTest : TestCase() {
       }
     }
 
-    UserFirebaseConnection.addUser(User("test", "test", "test", "test", Profile(emptySet())))
+    UserFirebaseConnection.addUser(User("test", "test", "test", "test"))
 
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       lazyColumn {

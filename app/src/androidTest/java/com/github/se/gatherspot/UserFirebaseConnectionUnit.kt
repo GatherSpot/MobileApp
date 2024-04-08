@@ -39,7 +39,7 @@ class UserFirebaseConnectionUnit {
     val username = "Test"
     val email = "random"
     val password = "random"
-    val user = User(uid, username, email, password, Profile(emptySet()))
+    val user = User(uid, username, email, password)
     UserFirebaseConnection.addUser(user)
     var userFetched: User? = null
     async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
@@ -47,27 +47,9 @@ class UserFirebaseConnectionUnit {
     assertEquals(uid, userFetched!!.uid)
     assertEquals(username, userFetched!!.username)
     assertEquals(password, userFetched!!.password)
-    assertTrue(userFetched!!.profile.interests.isEmpty())
 
     UserFirebaseConnection.deleteUser(uid)
     async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
     assertNull(userFetched)
-  }
-
-  @Test
-  fun testUpdateUserInterests() = runTest {
-    val uid = UserFirebaseConnection.getUID()
-    val username = "Test"
-    val email = "random"
-    val password = "random"
-    val user = User(uid, username, email, password, Profile(emptySet()))
-    UserFirebaseConnection.addUser(user)
-    UserFirebaseConnection.updateUserInterests(
-        uid, Profile(setOf(Interests.ARTS, Interests.BASKETBALL)))
-    var userFetched: User? = null
-    async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
-    assertTrue(userFetched!!.profile.interests.contains(Interests.ARTS))
-    assertTrue(userFetched!!.profile.interests.contains(Interests.BASKETBALL))
-    UserFirebaseConnection.deleteUser(uid)
   }
 }
