@@ -1,5 +1,9 @@
 package com.github.se.gatherspot.ui
 
+//    composeTestRule.onNodeWithContentDescription("login").performClick()
+//    // click on the profile button
+//    composeTestRule.onNodeWithText("Profile").performClick()
+// check if everything is there
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -13,11 +17,7 @@ import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.profile.ProfileScreen
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import org.junit.Rule
-import org.junit.Test    //    // inject a dummyLogin or this will not work
-    //    composeTestRule.onNodeWithContentDescription("login").performClick()
-    //    // click on the profile button
-    //    composeTestRule.onNodeWithText("Profile").performClick()
-    // check if everything is there
+import org.junit.Test //    // inject a dummyLogin or this will not work
 import org.junit.runner.RunWith
 
 // NOTE: For ui tests to work, and to make app accessible, please ADD CONTENT DESCRIPTION TO EVERY
@@ -26,10 +26,10 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
   // to start the main activity
-  private var profile = Profile("John Doe", "I am not a bot", "","")
+  private var profile = Profile("John Doe", "I am not a bot", "", "")
   private val getProfile = { profile }
   private val saveProfile = { username: String, bio: String, imageUri: String ->
-    profile = Profile(username, bio, imageUri,"")
+    profile = Profile(username, bio, imageUri, "")
   }
 
   @get:Rule val composeTestRule = createComposeRule()
@@ -67,7 +67,7 @@ class ProfileInstrumentedTest {
   @Test
   fun profileScreenTest() {
     composeTestRule.setContent {
-      ProfileScreen(ProfileViewModel(Profile("John Doe", "I am not a bot", "","")))
+      ProfileScreen(ProfileViewModel(Profile("John Doe", "I am not a bot", "", "")))
     }
     composeTestRule
         .onNodeWithContentDescription("username")

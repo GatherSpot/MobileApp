@@ -12,8 +12,8 @@ import com.github.se.gatherspot.ui.profile.OwnProfile
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 
 /**
- * This function is the one that should be called when navigating to the profile screen
- * from the bottom navigation bar.
+ * This function is the one that should be called when navigating to the profile screen from the
+ * bottom navigation bar.
  */
 @Composable
 fun Profile(nav: NavigationActions) {
@@ -32,5 +32,5 @@ fun Profile(nav: NavigationActions) {
 @Composable
 @Preview
 fun ProfilePreview() {
-    OwnProfile(OwnProfileViewModel())
+  OwnProfile(OwnProfileViewModel())
 }

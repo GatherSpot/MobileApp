@@ -11,7 +11,6 @@ import androidx.navigation.navigation
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile

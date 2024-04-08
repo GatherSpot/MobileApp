@@ -35,9 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.gatherspot.UserFirebaseConnection
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers

@@ -1,7 +1,5 @@
 package com.github.se.gatherspot
 
-import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest

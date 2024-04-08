@@ -25,7 +25,7 @@ class OwnProfileViewModel : ViewModel() {
     get() = _edit
 
   init {
-    _profile = Profile("John Doe", "I am not a bot", "","")
+    _profile = Profile("John Doe", "I am not a bot", "", "")
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
@@ -37,7 +37,7 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun save() {
-    _profile = Profile(_username.value ?: "", bio.value ?: "", image.value ?: "","")
+    _profile = Profile(_username.value ?: "", bio.value ?: "", image.value ?: "", "")
     // next: THIS NEEDS SANITIZATION
     ProfileFirebaseConnection().updateProfile(_profile)
   }
@@ -55,6 +55,7 @@ class OwnProfileViewModel : ViewModel() {
   fun updateBio(bio: String) {
     _bio.value = bio
   }
+
   fun updateProfileImage(image: String) {
     _image.value = image
   }
