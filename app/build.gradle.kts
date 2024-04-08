@@ -3,17 +3,30 @@ plugins {
     id ("org.jetbrains.kotlin.android")
     id("com.ncorti.ktfmt.gradle") version "0.16.0"
     id("com.google.gms.google-services")
+    id("jacoco")
     id("org.sonarqube") version "4.4.1.3373"
+    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+}
 
+secrets {
+    // Optionally specify a different file name containing your secrets.
+    // The plugin defaults to "local.properties"
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.defaults.properties"
 }
 
 android {
     namespace = "com.github.se.gatherspot"
     compileSdk = 34
-
     packagingOptions {
         exclude("META-INF/LICENSE.md")
         exclude("META-INF/LICENSE-notice.md")
+    }
+    testCoverage {
+        jacocoVersion = "0.8.8"
     }
 
     defaultConfig {
@@ -150,14 +163,11 @@ dependencies {
     implementation("androidx.compose.material:material:1.1.1")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.navigation:navigation-compose:2.6.0-rc01")
-
     implementation("com.google.maps.android:maps-compose:4.3.0")
     implementation("com.google.maps.android:maps-compose-utils:4.3.0")
     implementation("com.google.firebase:firebase-database-ktx:20.3.0")
     implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation("com.google.android.play:core-ktx:1.7.0")
-
-
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -170,31 +180,39 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
     implementation("com.google.firebase:firebase-database-ktx:20.3.0")
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    //Used for uploading images
+    implementation ("com.google.firebase:firebase-storage:20.0.0")
+    implementation("androidx.fragment:fragment:1.5.5")
+    implementation("com.squareup.okhttp3:okhttp:3.10.0")
+
+
+    testImplementation("org.mockito:mockito-core:3.11.2")
+    testImplementation("org.mockito:mockito-inline:2.13.0")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
     testImplementation("junit:junit:4.13.2")
+
+    androidTestImplementation("org.mockito:mockito-core:3.11.2")
+    androidTestImplementation("org.mockito:mockito-inline:2.13.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
-
     androidTestImplementation("com.kaspersky.android-components:kaspresso:1.4.3")
     // Allure support
     androidTestImplementation("com.kaspersky.android-components:kaspresso-allure-support:1.4.3")
     // Jetpack Compose support
     androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.4.1")
-
-    implementation("androidx.fragment:fragment:1.5.5")
-
-    implementation("com.squareup.okhttp3:okhttp:3.10.0")
-
-    testImplementation("org.mockito:mockito-core:3.11.2")
-    testImplementation("org.mockito:mockito-inline:2.13.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-
-     */
-
-
+    androidTestImplementation("com.google.firebase:firebase-database-ktx:20.3.0")
+    androidTestImplementation("com.google.firebase:firebase-firestore:24.10.0")
+}
+tasks.withType<Test> {
+    // Configure Jacoco for each tests
+    configure<JacocoTaskExtension> {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
 }
 tasks.register("jacocoTestReport", JacocoReport::class) {
     mustRunAfter("testDebugUnitTest", "connectedDebugAndroidTest")
