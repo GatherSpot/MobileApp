@@ -24,12 +24,10 @@ enum class Interests {
   // This companion object contains utility functions for working with Interests
   companion object {
 
-
     private val parents =
         mapOf(FOOTBALL to SPORT, BASKETBALL to SPORT, TENNIS to SPORT, BOWLING to LEISURE)
 
     private val children = parents.toList().groupBy({ it.second }, { it.first })
-
 
     /* This function creates a new BitSet to store interests
 
@@ -143,7 +141,5 @@ enum class Interests {
         addInterest(bitset, interest)
       }
     }
-
-
   }
 }

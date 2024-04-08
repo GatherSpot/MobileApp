@@ -63,10 +63,10 @@ class UserFirebaseConnectionUnit {
     val user = User(uid, username, email, password, Profile(emptySet()))
     UserFirebaseConnection.addUser(user)
     UserFirebaseConnection.updateUserInterests(
-        uid, Profile(setOf(Interests.ARTS, Interests.BASKETBALL)))
+        uid, Profile(setOf(Interests.ART, Interests.BASKETBALL)))
     var userFetched: User? = null
     async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
-    assertTrue(userFetched!!.profile.interests.contains(Interests.ARTS))
+    assertTrue(userFetched!!.profile.interests.contains(Interests.ART))
     assertTrue(userFetched!!.profile.interests.contains(Interests.BASKETBALL))
     UserFirebaseConnection.deleteUser(uid)
   }

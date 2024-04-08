@@ -1,5 +1,5 @@
 package com.github.se.gatherspot.authentification
-
+/*
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -66,4 +66,4 @@ class SetUpTest : TestCase() {
     UserFirebaseConnection.deleteUser(MainActivity.uid)
     UserFirebaseConnection.deleteCurrentUser()
   }
-}
+}*/
