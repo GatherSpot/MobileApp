@@ -25,5 +25,3 @@ fun Profile(nav: NavigationActions) {
         Log.d(ContentValues.TAG, paddingValues.toString())
       }
 }
-
-
