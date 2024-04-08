@@ -14,63 +14,53 @@ import androidx.compose.runtime.MutableState
 import com.github.se.gatherspot.model.FormListener
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 class TopBarSaveCancelButton(
     val onSave: () -> Unit,
     val onCancel: () -> Unit,
     val title: @Composable () -> Unit,
-    val isUpToDate : MutableState<Boolean>
+    val isUpToDate: MutableState<Boolean>
 ) : FormListener {
 
-    @Composable
-    fun Display(){
-        if (isUpToDate.value) {
-            FormIsUptoDate()
-        } else {
-            FormIsEdited()
-        }
+  @Composable
+  fun Display() {
+    if (isUpToDate.value) {
+      FormIsUptoDate()
+    } else {
+      FormIsEdited()
     }
+  }
 
+  @Composable
+  fun FormIsEdited() {
+    // Top app bar with save and cancel buttons
 
+    CenterAlignedTopAppBar(
+        title = title,
+        navigationIcon = {
+          IconButton(
+              onClick = {
+                onCancel()
+                isUpToDate.value = true
+              }) {
+                Icon(
+                    imageVector = Icons.Filled.Clear,
+                    contentDescription = "Localized description",
+                )
+              }
+        },
+        actions = {
+          IconButton(
+              onClick = {
+                onSave()
+                isUpToDate.value = true
+              }) {
+                Icon(imageVector = Icons.Filled.Done, contentDescription = "Localized description")
+              }
+        })
+  }
 
-    @Composable
-    fun FormIsEdited() {
-        // Top app bar with save and cancel buttons
-
-
-        CenterAlignedTopAppBar(
-            title = title
-            ,
-            navigationIcon = {
-                IconButton(onClick = {
-                    onCancel()
-                    isUpToDate.value = true }) {
-                    Icon(
-                        imageVector = Icons.Filled.Clear,
-                        contentDescription = "Localized description",
-                    )
-                }
-            },
-            actions = {
-                IconButton(onClick = { onSave()
-                    isUpToDate.value = true}) {
-                    Icon(
-                        imageVector = Icons.Filled.Done,
-                        contentDescription = "Localized description"
-                    )
-                }
-            }
-        )
-    }
-
-    @Composable
-    fun FormIsUptoDate(
-    ) {
-        CenterAlignedTopAppBar(
-            title = title
-
-        )
-
-    }
-
+  @Composable
+  fun FormIsUptoDate() {
+    CenterAlignedTopAppBar(title = title)
+  }
 }
