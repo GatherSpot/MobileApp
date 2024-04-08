@@ -1,6 +1,5 @@
 package com.github.se.gatherspot
 
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import com.github.se.gatherspot.screens.SelectInterestsScreen
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4

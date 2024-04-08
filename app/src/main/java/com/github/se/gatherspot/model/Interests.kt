@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -95,7 +94,7 @@ enum class Interests {
         This function returns a list of interests present in the BitSet
         */
         fun listInterests(bitset: BitSet) : List<Interests>{
-            return entries.filter({hasInterest(bitset, it)})
+            return entries.filter { hasInterest(bitset, it) }
         }
 
         /* This function adds recursively the parent interest of a particular interest to the BitSet
@@ -140,13 +139,10 @@ enum class Interests {
         This is to give more importance to the last act of unsubscribing to sport. "I don't want sport" = no sport at all, of any kind
 
          */
-        fun removeChildrenInterest(bitset: BitSet, interest: Interests){
-            val children = children[interest]
-            if (children != null){
-                children.forEach { child ->
-                    removeChildrenInterest(bitset, child)
-                    removeInterest(bitset, child)
-                }
+        fun removeChildrenInterest(bitset: BitSet, interest: Interests) {
+            this.children[interest]?.forEach { child ->
+                removeChildrenInterest(bitset, child)
+                removeInterest(bitset, child)
             }
         }
 
@@ -155,7 +151,7 @@ enum class Interests {
             Behaviour of the bitset when the value for the interest interest is flipped
             in the context of a profile
         */
-        fun profileFlip(bitset: BitSet, interest: Interests){
+        private fun profileFlip(bitset: BitSet, interest: Interests){
             if (hasInterest(bitset, interest)){
                 removeChildrenInterest(bitset, interest)
                 removeInterest(bitset,interest)
@@ -169,7 +165,7 @@ enum class Interests {
             Behaviour of the bitset when the value for the interest interest is flipped
             in the context of a profile
         */
-        fun eventFlip(bitset: BitSet, interest: Interests){
+        private fun eventFlip(bitset: BitSet, interest: Interests){
             if (hasInterest(bitset, interest)){
                 removeChildrenInterest(bitset, interest)
                 removeInterest(bitset,interest)
@@ -185,19 +181,19 @@ enum class Interests {
         This function is used to display the button to select a particular interest
          */
         @Composable
-        private fun DisplayInterestSelector(selection: MutableState<BitSet>, interest: Interests, flip : (BitSet, Interests) -> Unit){
+        private fun DisplayInterestSelector(selection: BitSet, interest: Interests, flip: (BitSet, Interests) -> Unit){
             Text(
                 modifier = Modifier
                     .padding(16.dp)
                     .clickable(onClick = {
-                        flip(selection.value, interest)
+                        flip(selection, interest)
                     })
                     .drawBehind {
 
                         drawPill(
                             drawScope = this,
                             topLeft = Offset(0f, 0f),
-                            color = color(selection.value, interest),
+                            color = color(selection, interest),
                             size = Size(width = this.size.width, this.size.height)
                         )
                     }
@@ -210,7 +206,7 @@ enum class Interests {
             Outside of this file, the user should use SelectProfileInterests or SelectEventInterests
          */
         @Composable
-        private fun SelectInterestsScreen(selection: MutableState<BitSet>, flip: (BitSet, Interests) -> Unit){
+        private fun SelectInterestsScreen(selection: BitSet, flip: (BitSet, Interests) -> Unit){
             Column {
                 Modifier.testTag("selectInterestsScreen")
                 for (i in 0..entries.size-3 step 3) {
@@ -224,7 +220,7 @@ enum class Interests {
                 }
                 Row {
                     for (i in entries.size-2..entries.size-1){
-                        DisplayInterestSelector(selection, entries.get(i), flip)
+                        DisplayInterestSelector(selection, entries[i], flip)
                     }
                 }
             }
@@ -236,7 +232,7 @@ enum class Interests {
         This function is used to select interests of a user
          */
         @Composable
-        fun SelectProfileInterests(selection: MutableState<BitSet>){
+        fun SelectProfileInterests(selection: BitSet){
 
             SelectInterestsScreen(selection , ::profileFlip)
 
@@ -247,7 +243,7 @@ enum class Interests {
 
          */
         @Composable
-        fun SelectEventInterests(selection: MutableState<BitSet>){
+        fun SelectEventInterests(selection: BitSet){
 
             SelectInterestsScreen(selection , ::eventFlip)
 
