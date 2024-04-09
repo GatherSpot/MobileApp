@@ -1,5 +1,5 @@
 package com.github.se.gatherspot.authentification
-/*
+
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -80,6 +80,7 @@ class SignUpTest : TestCase() {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUpError() {
     composeTestRule.setContent {
@@ -110,6 +111,38 @@ class SignUpTest : TestCase() {
         assertExists()
         assertIsDisplayed()
       }
+      Espresso.closeSoftKeyboard()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badUsername"), 6000)
+      badUsername.assertIsDisplayed()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badEmail"), 1000)
+      badEmail.assertIsDisplayed()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badPassword"), 1000)
+      badPassword.assertIsDisplayed()
     }
   }
-}*/
+
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun emailAlreadyInUse() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      NavHost(navController = navController, startDestination = "auth") {
+        navigation(startDestination = "signup", route = "auth") {
+          composable("signup") { SignUp(NavigationActions(navController)) }
+        }
+        navigation(startDestination = "events", route = "home") {
+          composable("setup") { SetUpProfile(NavigationActions(navController), MainActivity.uid) }
+        }
+      }
+    }
+
+    ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
+      usernameField { performTextInput("otherTest") }
+      emailField { performTextInput("test@test.com") }
+      passwordField { performTextInput("Test,2024;") }
+      button { performClick() }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("signUpFailed"), 6000)
+      dialog { assertIsDisplayed() }
+    }
+  }
+}

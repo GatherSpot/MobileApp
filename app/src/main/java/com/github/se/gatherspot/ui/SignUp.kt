@@ -68,25 +68,24 @@ fun SignUp(nav: NavigationActions) {
   val t = remember { mutableStateOf("") }
 
   LaunchedEffect(isClicked) {
-    if (isClicked) {
-      try {
-        withContext(Dispatchers.IO) {
-          val success = checkCredentials(email, password, t)
-          if (success) {
-            MainActivity.uid = UserFirebaseConnection.getUID()
-            val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
-            UserFirebaseConnection.addUser(newUser)
-            FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
-            showDialogVerif = true
-          } else {
-            showDialog = true
-            isClicked = false
+    if (isClicked)
+        try {
+          withContext(Dispatchers.IO) {
+            val success = checkCredentials(email, password, t)
+            if (success) {
+              MainActivity.uid = UserFirebaseConnection.getUID()
+              val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
+              UserFirebaseConnection.addUser(newUser)
+              FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
+              showDialogVerif = true
+            } else {
+              showDialog = true
+              isClicked = false
+            }
           }
+        } catch (e: Exception) {
+          Log.d(TAG, e.toString())
         }
-      } catch (e: Exception) {
-        Log.d(TAG, e.toString())
-      }
-    }
   }
 
   LaunchedEffect(key1 = username) {
@@ -211,7 +210,7 @@ fun SignUp(nav: NavigationActions) {
           enabled = isEmailValid(email) and isUsernameValid and isPasswordValid,
           onClick = { isClicked = true },
           colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-          modifier = Modifier.width(250.dp).testTag("validate")) {
+          modifier = Modifier.width(250.dp).testTag("validate").clickable { isClicked = true }) {
             Text("Sign Up", color = Color.White)
           }
 
@@ -231,7 +230,6 @@ fun SignUp(nav: NavigationActions) {
                 Modifier.testTag("verification").clickable {
                   showDialogVerif = false
                   nav.controller.navigate("setup")
-                  Log.d(TAG, "was pressed")
                 },
             onDismissRequest = {
               showDialogVerif = false

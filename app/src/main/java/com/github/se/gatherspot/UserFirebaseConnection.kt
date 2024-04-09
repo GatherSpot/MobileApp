@@ -127,20 +127,5 @@ class UserFirebaseConnection {
           .addOnSuccessListener { Log.d(TAG, "Interests sucessfully added!") }
           .addOnFailureListener { e -> Log.w(TAG, "Error for interests", e) }
     }
-
-    fun getUserInterests(uid: String): Set<Interests> {
-      var ret = emptySet<Interests>()
-      Firebase.firestore
-          .collection(USERS)
-          .document(uid)
-          .get()
-          .addOnSuccessListener { document ->
-            if (document != null) {
-              ret = (document.get("profile.interests") as ArrayList<Interests>).toSet()
-            }
-          }
-          .addOnFailureListener { exception -> Log.d(TAG, "get failed with ", exception) }
-      return ret
-    }
   }
 }

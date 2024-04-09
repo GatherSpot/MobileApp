@@ -53,7 +53,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   var emailText by remember { mutableStateOf("") }
   var isClicked by remember { mutableStateOf(false) }
   val allCategories = enumValues<Interests>().toList()
-  var interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
+  val interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
 
   LaunchedEffect(isClicked, interests) {
     if (isClicked) {

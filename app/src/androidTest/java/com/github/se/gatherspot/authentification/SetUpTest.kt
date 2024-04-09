@@ -1,5 +1,5 @@
 package com.github.se.gatherspot.authentification
-/*
+
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -50,7 +50,8 @@ class SetUpTest : TestCase() {
         category {
           assertExists()
           assertIsDisplayed()
-          performClick()
+          performClick() // Select the category
+          performClick() // Deselect the category
           performGesture { swipeUp() }
         }
       }
@@ -62,8 +63,10 @@ class SetUpTest : TestCase() {
 
       composeTestRule.waitUntilAtLeastOneExists(
           hasText("Please verify your email before continuing"))
+      emailText.assertIsDisplayed()
     }
+
     UserFirebaseConnection.deleteUser(MainActivity.uid)
     UserFirebaseConnection.deleteCurrentUser()
   }
-}*/
+}
