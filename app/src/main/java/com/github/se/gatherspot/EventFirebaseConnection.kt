@@ -7,6 +7,7 @@ import com.github.se.gatherspot.model.location.Location
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import java.time.LocalDate
 import java.time.LocalTime
@@ -14,6 +15,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection {
@@ -22,6 +24,7 @@ class EventFirebaseConnection {
     private const val EVENTS = "events" // Collection name for events
     const val DATE_FORMAT = "dd/MM/yyyy"
     const val TIME_FORMAT = "H:mm"
+    var offset: DocumentSnapshot? = null
 
     /**
      * Creates a unique new identifier This function can be used for both Event IDs and User IDs
@@ -29,10 +32,43 @@ class EventFirebaseConnection {
      * @return A unique identifier
      */
     fun getNewEventID(): String {
-      return FirebaseDatabase.getInstance().getReference().child(EVENTS).push().key!!
+        return FirebaseDatabase.getInstance().getReference().child(EVENTS).push().key!!
     }
 
-    /**
+   /**
+    * Fetch the next number events stating from the offset
+    * @param number: the number of events to fetch
+    * @return list of events
+    */
+    suspend fun fetchNextEvents(number: Long): MutableList<Event> {
+        val querySnapshot: QuerySnapshot = if(offset == null){
+            Firebase.firestore.collection(EVENTS).orderBy("eventID").limit(number).get().await()
+        } else{
+            Log.d(TAG, offset!!.data.toString())
+            Firebase.firestore.collection(EVENTS).orderBy("eventID")
+                .startAfter(offset!!.get("eventID")).limit(number).get().await()
+        }
+
+       if(querySnapshot.documents.isNotEmpty()){
+           offset = querySnapshot.documents.last()
+       }
+
+        val listOfMaps = querySnapshot.documents.map{ it.data!! }
+        val listOfEvents = mutableListOf<Event>()
+
+        listOfMaps.forEach { map ->
+            val uid = map["eventID"] as String
+            val event = fetchEvent(uid)
+            event?.let { listOfEvents.add(it) }
+        }
+
+        return listOfEvents
+    }
+
+
+
+
+      /**
      * Fetches an event from the database
      *
      * @param eventID: the unique identifier of the event
