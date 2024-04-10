@@ -99,7 +99,7 @@ jobs:
           target: google_apis
           arch: x86_64
           force-avd-creation: false
-          emulator-options: -no-snapshot-save
+          emulator-options: -no-snapshot-save -no-window
           disable-animations: false
           script: ./gradlew connectedCheck --build-cache --info
 
