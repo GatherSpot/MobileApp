@@ -18,6 +18,7 @@ import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,6 +26,12 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SetUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
+
+  @After
+  fun cleanUp() {
+    UserFirebaseConnection.deleteUser(MainActivity.uid)
+    UserFirebaseConnection.deleteCurrentUser()
+  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -66,8 +73,5 @@ class SetUpTest : TestCase() {
           hasText("Please verify your email before continuing"))
       emailText.assertIsDisplayed()
     }
-
-    UserFirebaseConnection.deleteUser(MainActivity.uid)
-    UserFirebaseConnection.deleteCurrentUser()
   }
 }

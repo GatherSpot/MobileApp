@@ -17,6 +17,7 @@ import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,6 +30,12 @@ class SignUpTest : TestCase() {
   // and Intents.release() after the @Test block is completed. IntentsTestRule
   // is deprecated, but it was MUCH faster than using IntentsRule in our tests
   //  @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
+
+  @After
+  fun cleanUp() {
+    UserFirebaseConnection.deleteUser(MainActivity.uid)
+    UserFirebaseConnection.deleteCurrentUser()
+  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -74,9 +81,6 @@ class SignUpTest : TestCase() {
       verifDialog.assertExists()
       verifDialog.assertIsDisplayed()
       verifDialog.performClick()
-
-      UserFirebaseConnection.deleteUser(MainActivity.uid)
-      UserFirebaseConnection.deleteCurrentUser()
     }
   }
 
