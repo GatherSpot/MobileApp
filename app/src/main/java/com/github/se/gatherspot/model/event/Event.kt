@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.model.event
 
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageBitmapConfig
 import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
 import java.time.LocalTime
@@ -48,6 +49,6 @@ data class Event(
     val registeredUsers: List<String>? = emptyList(),
     val finalAttendees: List<String>? = emptyList(),
     // Find a way to upload image
-    val images: ImageBitmap? = null, // TODO find default image
+    var images: ImageBitmap? = ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image
     val globalRating: Int?
 )

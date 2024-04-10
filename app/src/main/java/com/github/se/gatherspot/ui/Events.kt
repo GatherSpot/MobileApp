@@ -1,7 +1,9 @@
 package com.github.se.gatherspot.ui
 
 import android.content.ContentValues.TAG
+import android.graphics.ColorSpace
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -36,10 +39,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.Event
@@ -48,6 +54,7 @@ import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import kotlinx.coroutines.delay
+import java.time.format.DateTimeFormatter
 import androidx.compose.ui.unit.dp as dp
 
 
@@ -57,18 +64,40 @@ import androidx.compose.ui.unit.dp as dp
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
     val state = viewModel.uiState.collectAsState()
     var previousScrollPosition by remember { mutableIntStateOf(0) }
+    var loading by remember { mutableStateOf(false) }
+    var fetched by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically){
-            Text(text = "Filter events", fontSize = 20.sp)
-            Spacer(modifier = Modifier.width(10.dp))
-            Icon(imageVector = Icons.Filled.Menu, contentDescription = null,
-                modifier = Modifier.clickable {})
-        } },
+        topBar = {
+            Column{
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Filter events", fontSize = 18.sp)
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Icon(imageVector = Icons.Filled.Menu, contentDescription = null,
+                        modifier = Modifier.clickable {})
+                    Spacer(modifier = Modifier.width(80.dp))
+                    Text(text = "Create an event", fontSize = 18.sp)
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Icon(imageVector = Icons.Default.Add, contentDescription = null,
+                        modifier = Modifier.clickable {
+                            //TODO go to CreateEvent composable
+                        })
+                }
+
+                if(loading) {
+                    Text("Loading new events ... Keep scrolling")
+                }
+                if(fetched){
+                    Text("Fetched new events")
+                }
+            }
+        },
         bottomBar = {
             BottomNavigationMenu(
                 onTabSelect = { tld -> nav.navigateTo(tld) },
@@ -90,6 +119,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                         }
 
                         LaunchedEffect(lazyState.isScrollInProgress){
+                            loading = false
+                            fetched = false
                             val isAtBottom =
                                 (lazyState.firstVisibleItemIndex + viewModel.PAGESIZE)  >=
                                         events.size
@@ -98,13 +129,17 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                                 currentScrollPosition >= previousScrollPosition && currentScrollPosition > 0
                             previousScrollPosition = currentScrollPosition
                             if (lazyState.isScrollInProgress && isAtBottom && downwards) {
+                                loading = true
                                 delay(1000)
                                 viewModel.fetchNext()
+                                fetched = true
                             }
                         }
                     }
 
                 }
+
+
     }
 }
 
@@ -112,7 +147,6 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 fun Empty(){
     Row(modifier = Modifier.padding(vertical = 40.dp)) {
         Text(text = "Loading...", color = Color.Black)
-     //   Text(text ="Create One !", color = Color.Blue, modifier = Modifier.clickable {})
     }
 }
 
@@ -122,34 +156,53 @@ fun EventRow(event: Event, navigation: NavigationActions){
         modifier =
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
-            .clickable {
-                navigation.controller.navigate("")
-            },
+            .padding(vertical = 16.dp, horizontal = 10.dp)
+        //    .clickable {
+                // TODO: manage navigation
+                //  navigation.controller.navigate("")
+         //   },
+                ,
         verticalAlignment = Alignment.CenterVertically) {
+
+        Column(modifier = Modifier.weight(1f)){
+            Image(bitmap = event.images ?: ImageBitmap(120, 120, config = ImageBitmapConfig.Rgb565), contentDescription = null)
+        }
+
         Column(modifier = Modifier
             .weight(1f)
-            .padding(end = 16.dp)) {
-            Text(text = event.eventStartDate.toString(), fontWeight = FontWeight.Bold, fontSize = 12.sp)
-            Text(text = event.eventEndDate.toString(), fontWeight = FontWeight.Bold, fontSize = 12.sp)
-            Text(text = event.title, fontSize = 16.sp)
+            .padding(end = 1.dp)
+            ) {
+            Text(text = "Start date: ${event.eventStartDate?.
+                format(DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))}",
+                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp)
+            Text(text = "End date: ${event.eventEndDate?.
+                format(DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))}",
+                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp)
+            Text(text = event.title, fontSize = 14.sp)
         }
-        Column(horizontalAlignment = Alignment.End) {
+
+
+        Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 when (event.eventStatus) {
-                    EventStatus.CREATED -> Text("Planned", color = Color(0xFF00668A), fontSize = 13.sp)
-                    EventStatus.ON_GOING -> Text("On going", color = Color(255, 165, 0))
-                    EventStatus.DRAFT -> Text("Draft", color = Color(0xFF1FC959))
-                    EventStatus.COMPLETED -> Text("Completed", color = Color.Gray)
+                    EventStatus.CREATED -> Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
+                    EventStatus.ON_GOING -> Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
+                    EventStatus.DRAFT -> Text("Draft", color = Color(0xFF1FC959), fontSize = 14.sp)
+                    EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
                 }
                 Icon(
-                    painter = painterResource(R.drawable.backarrow),
+                    painter = painterResource(R.drawable.arrow_right),
                     contentDescription = null,
                     modifier = Modifier
                         .width(24.dp)
-                        .height(24.dp))
+                        .height(24.dp)
+                        .clickable {  })
+
+
             }
         }
     }
-    Divider(color = Color.Gray, thickness = 1.dp)
+    Divider(color = Color.Black, thickness = 1.dp)
 }
