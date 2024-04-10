@@ -1,19 +1,19 @@
-import com.github.se.gatherspot.model.EventViewModel
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
 import java.time.LocalTime
 import org.junit.Assert
 import org.junit.Test
 
-class EventViewModelTest {
-  val eventViewModel = EventViewModel()
+class EventUtilsTest {
+  val eventUtils = EventUtils()
 
   // Write tests for validateParseEventData
   @Test
   fun validateEventData_withValidData_returnsValidEvent() {
     // validate data parse strings
     val event =
-        eventViewModel.validateAndCreateEvent(
+        eventUtils.validateAndCreateEvent(
             "Test Event2",
             "This is a test event",
             Location(0.0, 0.0, "Test Location"),
@@ -46,7 +46,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event3",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -68,7 +68,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event4",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -90,7 +90,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -112,7 +112,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event5",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -134,7 +134,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event6",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -156,7 +156,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -178,7 +178,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -200,7 +200,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -222,7 +222,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -244,7 +244,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -266,7 +266,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -289,7 +289,7 @@ class EventViewModelTest {
     // validate data parse strings
     try {
       val result =
-          eventViewModel.validateAndCreateEvent(
+          eventUtils.validateAndCreateEvent(
               "Test Event",
               "This is a test event",
               Location(0.0, 0.0, "Test Location"),
@@ -308,14 +308,14 @@ class EventViewModelTest {
 
   @Test
   fun validateDate_withValidDate_returnsLocalDate() {
-    val date = eventViewModel.validateDate("12/04/2026", "Invalid date format")
+    val date = eventUtils.validateDate("12/04/2026", "Invalid date format")
     Assert.assertEquals(LocalDate.of(2026, 4, 12), date)
   }
 
   @Test
   fun validateDate_withInvalidDate_returnsException() {
     try {
-      val date = eventViewModel.validateDate("12042026", "Invalid date format")
+      val date = eventUtils.validateDate("12042026", "Invalid date format")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid date format", e.message)
     }
@@ -323,14 +323,14 @@ class EventViewModelTest {
 
   @Test
   fun validateTime_withValidTime_returnsLocalTime() {
-    val time = eventViewModel.validateTime("10:00", "Invalid time format")
+    val time = eventUtils.validateTime("10:00", "Invalid time format")
     Assert.assertEquals(LocalTime.of(10, 0), time)
   }
 
   @Test
   fun validateTime_withInvalidTime_returnsException() {
     try {
-      val time = eventViewModel.validateTime("1000", "Invalid time format")
+      val time = eventUtils.validateTime("1000", "Invalid time format")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid time format", e.message)
     }
@@ -338,14 +338,14 @@ class EventViewModelTest {
 
   @Test
   fun validateNumber_withValidNumber_returnsInt() {
-    val number = eventViewModel.validateNumber("100", "Invalid number format")
+    val number = eventUtils.validateNumber("100", "Invalid number format")
     Assert.assertEquals(100, number)
   }
 
   @Test
   fun validateNumber_withInvalidNumber_returnsException() {
     try {
-      val number = eventViewModel.validateNumber("one", "Invalid number format")
+      val number = eventUtils.validateNumber("one", "Invalid number format")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid number format", e.message)
     }

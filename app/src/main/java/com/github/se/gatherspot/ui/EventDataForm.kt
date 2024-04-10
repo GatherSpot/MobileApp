@@ -19,8 +19,6 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -33,7 +31,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +42,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.model.EventViewModel
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
@@ -78,7 +75,7 @@ fun ScrollableContent(content: @Composable () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDataForm(
-    eventViewModel: EventViewModel,
+    eventUtils: EventUtils,
     nav: NavigationActions,
     eventAction: EventAction,
     event : Event? = null,
@@ -290,7 +287,7 @@ fun EventDataForm(
             Button(
                 onClick = {
                   try {
-                    eventViewModel.validateAndCreateEvent(
+                    eventUtils.validateAndCreateEvent(
                         title.text,
                         description.text,
                         location!!,

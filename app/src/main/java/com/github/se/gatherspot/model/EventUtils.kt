@@ -1,18 +1,14 @@
 package com.github.se.gatherspot.model
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.EventFirebaseConnection.Companion.fetchEvent
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.launch
 
-class EventViewModel : ViewModel() {
+class EventUtils {
 
   /**
    * Create an event from verified data
