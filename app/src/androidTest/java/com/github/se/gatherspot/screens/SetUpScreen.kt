@@ -13,6 +13,9 @@ class SetUpScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val save: KNode = onNode { hasTestTag("saveButton") }
   val lazyColumn: KNode = onNode { hasTestTag("lazyColumn") }
   val allCategories: Set<KNode> =
-      enumValues<Interests>().toList().map { category -> onNode { hasTestTag(category.toString()) } }.toSet()
+      enumValues<Interests>()
+          .toList()
+          .map { category -> onNode { hasTestTag(category.toString()) } }
+          .toSet()
   val emailText: KNode = onNode { hasTestTag("emailText") }
 }
