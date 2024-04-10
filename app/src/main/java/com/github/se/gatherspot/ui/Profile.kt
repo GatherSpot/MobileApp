@@ -2,31 +2,43 @@
 
 package com.github.se.gatherspot.ui
 
-import android.content.ContentValues
-import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
-import com.github.se.gatherspot.ui.profile.OwnProfile
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
+import com.github.se.gatherspot.ui.profile.ProfileView
+import com.github.se.gatherspot.ui.profile.ProfileViewModel
 
 /**
  * This function is the one that should be called when navigating to the profile screen from the
  * bottom navigation bar.
  */
 @Composable
-fun Profile(nav: NavigationActions) {
-  Scaffold(
-      bottomBar = {
-        BottomNavigationMenu(
-            onTabSelect = { tld -> nav.navigateTo(tld) },
-            tabList = TOP_LEVEL_DESTINATIONS,
-            selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
-      }) { paddingValues ->
-        OwnProfile(OwnProfileViewModel())
-        Log.d(ContentValues.TAG, paddingValues.toString())
-      }
+fun Profile(nav: NavigationActions, viewModel: OwnProfileViewModel) {
+  // This new navController will navigate between seeing profile and editing profile
+  val navController = rememberNavController()
+  NavHost(navController, startDestination = "view") {
+    composable("view") { ProfileView().ViewOwnProfile(nav, viewModel, navController) }
+    composable("edit") { ProfileView().EditOwnProfile(nav, viewModel, navController) }
+  }
+}
+
+// Those preview should show you all the functions you can call when it comes to profiles
+@Preview
+@Composable
+fun ViewOwnProfilePreview() {
+  val navController = rememberNavController()
+  Profile(NavigationActions(navController), OwnProfileViewModel())
+}
+
+@Preview
+@Composable
+fun ViewProfilePreview() {
+  val profile = Profile("John Doe", "I am not a bot", "", "")
+  ProfileView().ProfileScreen(ProfileViewModel(profile))
 }

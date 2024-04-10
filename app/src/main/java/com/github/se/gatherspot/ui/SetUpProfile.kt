@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -31,8 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
@@ -40,7 +41,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-@SuppressLint("MutableCollectionMutableState")
+@Preview
+@Composable
+fun SetUpProfilePreview() {
+  val nav = rememberNavController()
+  SetUpProfile(NavigationActions(nav), "uid")
+}
+
 @Composable
 fun SetUpProfile(nav: NavigationActions, uid: String) {
 
