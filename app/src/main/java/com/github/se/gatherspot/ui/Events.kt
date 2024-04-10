@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp as dp
@@ -57,28 +58,34 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
   var fetched by remember { mutableStateOf(false) }
 
   Scaffold(
+      modifier = Modifier.testTag("EventsScreen"),
       topBar = {
         Column {
           Row(
               modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
               horizontalArrangement = Arrangement.Center,
               verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Filter events", fontSize = 18.sp)
+                Text(
+                    text = "Filter events", fontSize = 18.sp, modifier = Modifier.testTag("filter"))
                 Spacer(modifier = Modifier.width(10.dp))
                 Icon(
                     imageVector = Icons.Filled.Menu,
                     contentDescription = null,
-                    modifier = Modifier.clickable {})
+                    modifier = Modifier.clickable {}.testTag("filterMenu"))
                 Spacer(modifier = Modifier.width(80.dp))
-                Text(text = "Create an event", fontSize = 18.sp)
+                Text(
+                    text = "Create an event",
+                    fontSize = 18.sp,
+                    modifier = Modifier.testTag("create"))
                 Spacer(modifier = Modifier.width(10.dp))
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
                     modifier =
                         Modifier.clickable {
-                          // TODO go to CreateEvent composable
-                        })
+                              // TODO go to CreateEvent composable
+                            }
+                            .testTag("createMenu"))
               }
 
           if (loading) {
@@ -100,9 +107,11 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
         when {
           events.isEmpty() -> Empty()
           else -> {
-            LazyColumn(state = lazyState, modifier = Modifier.padding(paddingValues)) {
-              items(events) { event -> EventRow(event, nav) }
-            }
+            LazyColumn(
+                state = lazyState,
+                modifier = Modifier.padding(paddingValues).testTag("eventsList")) {
+                  items(events) { event -> EventRow(event, nav) }
+                }
 
             LaunchedEffect(lazyState.isScrollInProgress) {
               loading = false
@@ -126,7 +135,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
 @Composable
 fun Empty() {
-  Row(modifier = Modifier.padding(vertical = 40.dp)) {
+  Row(modifier = Modifier.padding(vertical = 40.dp).testTag("empty")) {
     Text(text = "Loading...", color = Color.Black)
   }
 }
