@@ -41,18 +41,6 @@ class SetUpTest : TestCase() {
     UserFirebaseConnection.addUser(User("test", "test", "test", "test"))
 
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
-      lazyColumn {
-        assertExists()
-        assertIsDisplayed()
-      }
-      for (category in allCategories) {
-        category {
-          assertExists()
-          assertIsDisplayed()
-          performClick()
-          performGesture { swipeUp() }
-        }
-      }
       save {
         assertExists()
         assertIsDisplayed()
