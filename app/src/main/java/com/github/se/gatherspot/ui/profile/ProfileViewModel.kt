@@ -21,19 +21,12 @@ class OwnProfileViewModel : ViewModel() {
   val image: LiveData<String>
     get() = _image
 
-  val edit: LiveData<Boolean>
-    get() = _edit
-
   init {
     _profile = Profile("John Doe", "I am not a bot", "", "")
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
     _edit.value = false
-  }
-
-  fun toggleEdit() {
-    _edit.value = !_edit.value!!
   }
 
   fun save() {

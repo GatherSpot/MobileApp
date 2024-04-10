@@ -104,6 +104,29 @@ class ProfileView {
         })
   }
 
+  /**
+   * This is the view that will be shown when the user is creating their own profile.
+   *
+   * @param viewModel the view model that holds the profile data
+   * @param onActionDone a lambda that will be called when the user is done creating their profile,
+   *   letting the parent know when to continue its task
+   */
+  @Composable
+  fun CreateOwnProfile(viewModel: OwnProfileViewModel, onActionDone: () -> Unit) {
+    Scaffold(
+        topBar = {
+          val save = {
+            viewModel.save()
+            onActionDone()
+          }
+          TopBarWithSaveButton(save)
+        },
+        content = { paddingValues: PaddingValues ->
+          EditOwnProfileContent(viewModel)
+          Log.d(ContentValues.TAG, paddingValues.toString())
+        })
+  }
+
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   private fun TopBarWithEditButton(onEditClick: () -> Unit) {
@@ -120,6 +143,13 @@ class ProfileView {
           Button(onClick = onCancelClick) { Text("Cancel") }
           Button(onClick = onSaveClick) { Text("Save") }
         })
+  }
+
+  @OptIn(ExperimentalMaterial3Api::class)
+  @Composable
+  private fun TopBarWithSaveButton(onSaveClick: () -> Unit) {
+    TopAppBar(
+        title = { Text("Profile") }, actions = { Button(onClick = onSaveClick) { Text("Save") } })
   }
 
   @Composable
@@ -207,9 +237,6 @@ class ProfileView {
     val username by viewModel.username.observeAsState(initial = "")
     val bio by viewModel.bio.observeAsState(initial = "")
     val imageUri by viewModel.image.observeAsState(initial = "")
-    val updateUsername = { s: String -> viewModel.updateUsername(s) }
-    val updateBio = { s: String -> viewModel.updateBio(s) }
-    val updateImageUri = { s: String -> viewModel.updateProfileImage(s) }
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       ShowProfileImage(imageUri)
       ShowUsernameField(username)
@@ -241,7 +268,6 @@ class ProfileView {
    */
   @Composable
   fun ProfileScreen(viewModel: ProfileViewModel) {
-    val edit = false
     val username = viewModel.username
     val bio = viewModel.bio
     val imageUri = viewModel.image
