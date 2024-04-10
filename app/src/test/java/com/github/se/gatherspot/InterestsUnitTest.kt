@@ -190,10 +190,10 @@ class InterestsUnitTest {
 
 
     var string = "NETWORKING"
-    string =  string  +";" + "BASKETBALL"
-    string = string + ";" + "BOARD_GAMES"
-    string = string + ";" + "ROLE_PLAY"
-    string = string + ";" + "TRAVEL"
+    string = "$string;BASKETBALL"
+    string = "$string;BOARD_GAMES"
+    string = "$string;ROLE_PLAY"
+    string = "$string;TRAVEL"
 
 
     val res = Interests.fromString(string)
