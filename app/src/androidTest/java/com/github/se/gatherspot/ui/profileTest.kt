@@ -10,7 +10,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.model.Profile
@@ -38,16 +37,20 @@ class ProfileInstrumentedTest {
       Profile(NavigationActions(navController), OwnProfileViewModel())
     }
     // check if things are here :
-    composeTestRule.onNodeWithContentDescription("username").assertExists("username field not found")
+    composeTestRule
+        .onNodeWithContentDescription("username")
+        .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
-    composeTestRule.onNodeWithContentDescription("edit").assertExists("edit button not found")i
+    composeTestRule.onNodeWithContentDescription("edit").assertExists("edit button not found")
     // check buttons that should not be there yet are not here yet
     composeTestRule.onNodeWithContentDescription("cancel").assertDoesNotExist()
     composeTestRule.onNodeWithContentDescription("save").assertDoesNotExist()
     // press edit button
     composeTestRule.onNodeWithContentDescription("edit").performClick()
     // check if things are here :
-    composeTestRule.onNodeWithContentDescription("username").assertExists("username field not found")
+    composeTestRule
+        .onNodeWithContentDescription("username")
+        .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
     composeTestRule.onNodeWithContentDescription("cancel").assertExists()
     composeTestRule.onNodeWithContentDescription("save").assertExists()
@@ -70,12 +73,14 @@ class ProfileInstrumentedTest {
       ProfileView().ProfileScreen(ProfileViewModel(Profile("John Doe", "I am not a bot", "", "12")))
     }
     // check if things are here :
-    composeTestRule.onNodeWithContentDescription("username").assertExists("username field not found")
+    composeTestRule
+        .onNodeWithContentDescription("username")
+        .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
     composeTestRule.onNodeWithContentDescription("profile image").assertExists("image not found")
     // check if fields are filled properly
     composeTestRule.onNodeWithContentDescription("username").assert(hasText("John Doe"))
     composeTestRule.onNodeWithContentDescription("bio").assert(hasText("I am not a bot"))
-    //next: check image
+    // next: check image
   }
 }
