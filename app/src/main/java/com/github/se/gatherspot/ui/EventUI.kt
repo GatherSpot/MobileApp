@@ -37,17 +37,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -237,44 +233,4 @@ fun ProfileIndicator(profile: Profile) {
         Spacer(modifier = Modifier.width(4.dp))
         Text(text = profile.userName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
       }
-}
-
-@Preview
-@Composable
-fun EventUIPreview() {
-  EventUI(
-      Event(
-          eventID = "1",
-          title = "Event Title",
-          description =
-              "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-          organizer =
-              Profile(
-                  interests =
-                      listOf(
-                          Interests.BASKETBALL,
-                          Interests.FOOTBALL,
-                          Interests.BOWLING,
-                          Interests.CHESS),
-                  userName = "Elias"),
-          attendanceMaxCapacity = 100,
-          attendanceMinCapacity = 10,
-          categories =
-              listOf(
-                  Interests.BASKETBALL,
-                  Interests.FOOTBALL,
-                  Interests.CHESS,
-                  Interests.BOWLING,
-                  Interests.NETWORKING),
-          eventEndDate = LocalDate.now().plusDays(5),
-          eventStartDate = LocalDate.now().plusDays(4),
-          globalRating = 4,
-          inscriptionLimitDate = LocalDate.now().plusDays(1),
-          inscriptionLimitTime = LocalTime.of(23, 59),
-          location = null,
-          registeredUsers = null,
-          timeBeginning = LocalTime.of(13, 0),
-          timeEnding = LocalTime.of(16, 0),
-      ),
-      NavigationActions(rememberNavController()))
 }
