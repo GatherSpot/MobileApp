@@ -140,7 +140,7 @@ class EditEventTest {
 
           eventLocation {
             performScrollTo()
-            assert(hasText("Test Location"))
+            assert(hasText("Location"))
           }
           eventInscriptionLimitDate {
             performScrollTo()

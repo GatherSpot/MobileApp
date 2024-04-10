@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.ui
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +50,11 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
 private val WIDTH = 300.dp
@@ -73,6 +81,7 @@ fun ScrollableContent(content: @Composable () -> Unit) {
   }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDataForm(
@@ -98,6 +107,11 @@ fun EventDataForm(
   var errorMessage = ""
   var locationName by remember { mutableStateOf("") }
   var categories: MutableList<Interests> = remember { mutableStateListOf() }
+  // Flow for query text input
+  val queryText = MutableStateFlow("")
+  var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
+
+
 
   if (eventAction == EventAction.EDIT) {
     event!!
@@ -115,6 +129,23 @@ fun EventDataForm(
     inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.format(dateFormatter) ?: "")
     inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
   }
+
+    // Coroutine scope for launching coroutines
+    val coroutineScope = rememberCoroutineScope()
+
+
+
+    // Coroutine to handle location search based on query text
+//    coroutineScope.launch {
+//        queryText.collectLatest { query ->
+//            // Debounce logic: wait for 300 milliseconds after the last text change
+//            delay(300)
+//            if (query.isNotEmpty()) {
+//                suggestions = eventUtils.fetchLocationSuggestions(query)
+//
+//            }
+//        }
+//    }
 
   Scaffold(
       modifier = Modifier.testTag("EventDataFormScreen"),
@@ -217,16 +248,54 @@ fun EventDataForm(
                       placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
                 }
             // Location
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputLocation"),
-                // Do a query to get a location from text input
-                value = locationName,
-                onValueChange = { locationName = it },
-                label = { Text("Location") },
-                placeholder = { Text("Enter an address") })
+              var isDropdownExpanded by remember { mutableStateOf(false) }
+              var searchJob by remember { mutableStateOf<Job?>(null) }
+            ExposedDropdownMenuBox(
+                modifier = Modifier.testTag("locationDropDownMenuBox"),
+                expanded = isDropdownExpanded,
+                onExpandedChange = { isDropdownExpanded = it }) {
+
+              OutlinedTextField(
+                  modifier = Modifier
+                      .menuAnchor()
+                      .width(WIDTH)
+                      .height(HEIGHT)
+                      .testTag("inputLocation"),
+                      // Do a query to get a location from text input
+                      value = locationName,
+                      onValueChange = {newValue ->
+                          locationName = newValue
+                          //Give focus to the element
+                          searchJob?.cancel()
+                          searchJob = coroutineScope.launch {
+                              // Debounce logic: wait for 300 milliseconds after the last text change
+                              delay(300)
+                              Log.e("EventDataForm", "Querying for $newValue")
+                              suggestions = eventUtils.fetchLocationSuggestions(newValue)
+                              Log.e("EventDataForm", "Suggestions: $suggestions")
+                          }
+                      },
+                      label = { Text("Location") },
+                      placeholder = { Text("Enter an address") })
+
+                ExposedDropdownMenu(
+                    expanded = isDropdownExpanded && suggestions.isNotEmpty(),
+                    onDismissRequest = { isDropdownExpanded = false }) {
+                    suggestions.forEach { suggestion ->
+                        Log.e("EventDataForm", "Suggestion: ${suggestion.name}")
+                        DropdownMenuItem(
+                            modifier = Modifier.testTag(suggestion.name + "MenuItem"),
+                            text = { Text(suggestion.name) },
+                            onClick = {
+                                location = suggestion
+                                locationName = suggestion.name
+                                isDropdownExpanded = false
+                            })
+                    }
+                }
+
+
+            }
 
             // Categories
             InterestSelector(Interests.entries, categories)
@@ -301,8 +370,6 @@ fun EventDataForm(
                         inscriptionLimitDate.text,
                         inscriptionLimitTime.text)
                   } catch (e: Exception) {
-                    // Display error message
-                    //Log.e("EventDataForm", e.message!!)
                     errorMessage = e.message.toString()
                     showErrorDialog = true
                   }

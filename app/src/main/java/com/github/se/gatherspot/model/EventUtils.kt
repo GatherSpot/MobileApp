@@ -17,8 +17,6 @@ private const val ELEMENTS_TO_DISPLAY = 5
 
 class EventUtils {
 
-
-
     /**
      * Create an event from verified data
      *
@@ -276,7 +274,7 @@ class EventUtils {
 
                     val responseBody = response.body?.string() ?: return@use emptyList<Location>()
                     val jsonArray = JSONArray(responseBody)
-                    for (i in 0 until jsonArray.length()) {
+                    for (i in 0 until minOf(jsonArray.length(), ELEMENTS_TO_DISPLAY)){
                         val jsonObject = jsonArray.getJSONObject(i)
                         val displayName = jsonObject.getString("display_name")
                         val latitude = jsonObject.getDouble("lat")

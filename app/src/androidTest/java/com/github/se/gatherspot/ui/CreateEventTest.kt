@@ -454,4 +454,26 @@ class CreateEventTest {
       }
     }
   }
+
+  //Location test
+    @Test
+    fun testLocationQueryResult(){
+        composeTestRule.setContent {
+            val navController = rememberNavController()
+            val eventUtils = EventUtils()
+            CreateEvent(nav = NavigationActions(navController), eventUtils)
+        }
+
+        ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+            eventLocation {
+                performClick()
+                performTextInput("ecole polytechnique federale")
+            }
+          //inputLocationProposal { performClick() }
+            eventLocation {
+                assert(hasText("École Polytechnique Fédérale de Lausanne"))
+            }
+        }
+    }
+
 }
