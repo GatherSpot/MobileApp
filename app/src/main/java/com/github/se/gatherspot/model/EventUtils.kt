@@ -29,7 +29,7 @@ class EventUtils {
   private fun createEvent(
       title: String,
       description: String,
-      location: Location,
+      location: Location?,
       eventStartDate: LocalDate,
       eventEndDate: LocalDate?,
       eventTimeStart: LocalTime,
@@ -90,17 +90,16 @@ class EventUtils {
   fun validateAndCreateEvent(
       title: String,
       description: String,
-      location: Location,
+      location: Location?,
       eventStartDate: String,
       eventEndDate: String,
       eventTimeStart: String,
       eventTimeEnd: String,
-      categories : List<Interests>?,
+      categories: List<Interests>?,
       maxAttendees: String,
       minAttendees: String,
       dateLimitInscription: String,
       timeLimitInscription: String
-
   ): Event {
     // test if the date is valid
     val parsedEventStartDate = validateDate(eventStartDate, "Invalid date format")

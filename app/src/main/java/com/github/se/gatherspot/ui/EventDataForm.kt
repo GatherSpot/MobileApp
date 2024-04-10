@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,9 +67,7 @@ private val MESSAGES = arrayOf(CREATE_SPECIFIC_MESSAGES, EDIT_SPECIFIC_MESSAGES)
 @Composable
 fun ScrollableContent(content: @Composable () -> Unit) {
   Box(modifier = Modifier.fillMaxSize()) {
-    Column(modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .padding(16.dp)) { content() }
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) { content() }
   }
 }
 
@@ -78,7 +77,7 @@ fun EventDataForm(
     eventUtils: EventUtils,
     nav: NavigationActions,
     eventAction: EventAction,
-    event : Event? = null
+    event: Event? = null
 ) {
   // State of the event
   var title by remember { mutableStateOf(TextFieldValue("")) }
@@ -94,27 +93,24 @@ fun EventDataForm(
   var inscriptionLimitTime by remember { mutableStateOf(TextFieldValue("")) }
 
   var showErrorDialog by remember { mutableStateOf(false) }
-  var errorMessage: String = ""
+  var errorMessage = ""
   var locationName by remember { mutableStateOf("") }
-  var categories :  MutableList<Interests> = remember { mutableStateListOf() }
+  var categories: MutableList<Interests> = remember { mutableStateListOf() }
 
-    if (eventAction == EventAction.EDIT) {
-        event!!
-        title = TextFieldValue(event.title)
-        description = TextFieldValue(event.description!!)
-        location = event.location
-        eventStartDate = TextFieldValue(event.eventStartDate.toString())
-        eventEndDate = TextFieldValue(event.eventEndDate?.toString() ?: "")
-        eventTimeStart = TextFieldValue(event.timeBeginning.toString())
-        eventTimeEnd = TextFieldValue(event.timeEnding.toString())
-        maxAttendees = TextFieldValue(event.attendanceMaxCapacity?.toString() ?: "")
-        minAttendees = TextFieldValue(event.attendanceMinCapacity.toString())
-        inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.toString() ?:
-        "")
-        inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.toString() ?:
-        "")
-
-     }
+  if (eventAction == EventAction.EDIT) {
+    event!!
+    title = TextFieldValue(event.title)
+    description = TextFieldValue(event.description!!)
+    location = event.location
+    eventStartDate = TextFieldValue(event.eventStartDate.toString())
+    eventEndDate = TextFieldValue(event.eventEndDate?.toString() ?: "")
+    eventTimeStart = TextFieldValue(event.timeBeginning.toString())
+    eventTimeEnd = TextFieldValue(event.timeEnding.toString())
+    maxAttendees = TextFieldValue(event.attendanceMaxCapacity?.toString() ?: "")
+    minAttendees = TextFieldValue(event.attendanceMinCapacity.toString())
+    inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.toString() ?: "")
+    inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.toString() ?: "")
+  }
 
   Scaffold(
       modifier = Modifier.testTag("EventDataFormScreen"),
@@ -139,20 +135,14 @@ fun EventDataForm(
           // Create event form
           Column(
               modifier =
-              Modifier
-                  .padding(innerPadding)
-                  .padding(horizontal = 28.dp)
-                  .testTag("formColumn"),
+                  Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
               verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
               horizontalAlignment = Alignment.CenterHorizontally,
           ) {
             Text(text = "Fields with * are required", modifier = Modifier.testTag("requiredFields"))
             // Title
             OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputTitle"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputTitle"),
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Event Title*") },
@@ -160,30 +150,21 @@ fun EventDataForm(
             // Description
             OutlinedTextField(
                 modifier =
-                Modifier
-                    .width(WIDTH)
-                    .height(DESCRIPTION_HEIGHT)
-                    .testTag("inputDescription"),
+                    Modifier.width(WIDTH).height(DESCRIPTION_HEIGHT).testTag("inputDescription"),
                 value = description,
                 onValueChange = { description = it },
                 label = { Text("Description*") },
                 placeholder = { Text("Describe the event") })
             // Start Date
             OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputStartDateEvent"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputStartDateEvent"),
                 value = eventStartDate,
                 onValueChange = { eventStartDate = it },
                 label = { Text("Start Date of the event*") },
                 placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
             // End Date
             OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputEndDateEvent"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
                 value = eventEndDate,
                 onValueChange = { eventEndDate = it },
                 label = { Text("End date of the event") },
@@ -195,10 +176,7 @@ fun EventDataForm(
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputTimeStartEvent"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeStartEvent"),
                       value = eventTimeStart,
                       onValueChange = { eventTimeStart = it },
                       label = { Text("Start time*") },
@@ -207,10 +185,7 @@ fun EventDataForm(
                   // Time End
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputTimeEndEvent"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeEndEvent"),
                       value = eventTimeEnd,
                       onValueChange = { eventTimeEnd = it },
                       label = { Text("End time*") },
@@ -218,10 +193,7 @@ fun EventDataForm(
                 }
             // Location
             OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputLocation"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputLocation"),
                 // Do a query to get a location from text input
                 value = locationName,
                 onValueChange = { locationName = it },
@@ -237,10 +209,7 @@ fun EventDataForm(
                   // Min attendees
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputMinAttendees"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
                       value = minAttendees,
                       onValueChange = { minAttendees = it },
                       label = { Text("Min Attendees") },
@@ -248,10 +217,7 @@ fun EventDataForm(
                   // Max attendees
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputMaxAttendees"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
                       value = maxAttendees,
                       onValueChange = { maxAttendees = it },
                       label = { Text("Max Attendees") },
@@ -261,10 +227,7 @@ fun EventDataForm(
             // Inscription limit date
             OutlinedTextField(
                 modifier =
-                Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputInscriptionLimitDate"),
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
                 label = { Text("Inscription Limit Date") },
@@ -272,10 +235,7 @@ fun EventDataForm(
             // Inscription limit time
             OutlinedTextField(
                 modifier =
-                Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputInscriptionLimitTime"),
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
                 value = inscriptionLimitTime,
                 onValueChange = { inscriptionLimitTime = it },
                 label = { Text("Inscription Limit Time") },
@@ -290,7 +250,7 @@ fun EventDataForm(
                     eventUtils.validateAndCreateEvent(
                         title.text,
                         description.text,
-                        location!!,
+                        location,
                         eventStartDate.text,
                         eventEndDate.text,
                         eventTimeStart.text,
@@ -302,14 +262,12 @@ fun EventDataForm(
                         inscriptionLimitTime.text)
                   } catch (e: Exception) {
                     // Display error message
+                    //Log.e("EventDataForm", e.message!!)
                     errorMessage = e.message.toString()
                     showErrorDialog = true
                   }
                 },
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("createEventButton"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
                 enabled =
                     (title.text != "") &&
                         (description.text != "") &&
@@ -329,86 +287,53 @@ fun EventDataForm(
       }
 }
 
-/**
- * Composable function that displays a dropdown menu to select the interests
-
- */
-
+/** Composable function that displays a dropdown menu to select the interests */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InterestSelector(interests: List<Interests>, categories: MutableList<Interests>) {
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
+  var isExpanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox(
-        modifier = Modifier.testTag("interestSelector"),
-        expanded = isExpanded,
-        onExpandedChange = { isExpanded = it }
-    ) {
+  ExposedDropdownMenuBox(
+      modifier = Modifier.testTag("interestSelector"),
+      expanded = isExpanded,
+      onExpandedChange = { isExpanded = it }) {
         TextField(
             value = categories.joinToString(", "),
             onValueChange = {},
             readOnly = true,
-            placeholder = {
-                Text(text = "Select categories")
-            },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
-            },
+            placeholder = { Text(text = "Select categories") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            modifier = Modifier
-                .menuAnchor()
-                .width(WIDTH)
-                .height(HEIGHT)
-
-        )
+            modifier = Modifier.menuAnchor().width(WIDTH).height(HEIGHT))
 
         ExposedDropdownMenu(
             modifier = Modifier.testTag("exposedDropdownMenu"),
             expanded = isExpanded,
-            onDismissRequest = { isExpanded = false }
-        ) {
-            interests.forEach { interest ->
+            onDismissRequest = { isExpanded = false }) {
+              interests.forEach { interest ->
                 AnimatedContent(
                     targetState = categories.contains(interest),
-                    label = "Animate the selected item"
-                ) { isSelected ->
-                    if (isSelected) {
+                    label = "Animate the selected item") { isSelected ->
+                      if (isSelected) {
                         DropdownMenuItem(
-                            text = {
-                                Text(text = interest.name)
-                            },
-                            onClick = {
-                                categories.remove(interest)
-                            },
+                            text = { Text(text = interest.name) },
+                            onClick = { categories.remove(interest) },
                             leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Rounded.Check,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    } else {
+                              Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
+                            })
+                      } else {
                         DropdownMenuItem(
-                            text = {
-                                Text(text = interest.name)
-                            },
-                            onClick = {
-                                categories.add(interest)
-                            },
+                            text = { Text(text = interest.name) },
+                            onClick = { categories.add(interest) },
                         )
+                      }
                     }
-                }
+              }
             }
-        }
-    }
-
+      }
 }
 
-/**
- * Composable function that displays an alert dialog with an error message
- */
+/** Composable function that displays an alert dialog with an error message */
 @Composable
 fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
   AlertDialog(
@@ -416,7 +341,7 @@ fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
       onDismissRequest = onDismiss,
       icon = { Icon(Icons.Default.Warning, contentDescription = null) },
       title = { Text(errorTitle) },
-      text = { Text(modifier = Modifier.testTag("errorMessage"), text = errorMessage) },
+      text = { Text(modifier = Modifier.testTag("errorMessageIdentifier"), text = errorMessage) },
       confirmButton = {
         Button(onClick = onDismiss, modifier = Modifier.testTag("alertButton")) { Text("OK") }
       },

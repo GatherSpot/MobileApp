@@ -32,6 +32,6 @@ class EventDataFormScreen(semanticsProvider: SemanticsNodeInteractionsProvider) 
   val eventSaveButton: KNode = onNode { hasTestTag("createEventButton") }
 
   val alertBox: KNode = onNode { hasTestTag("alertBox") }
-  val alertBoxText: KNode = onNode { hasTestTag("errorMessage") }
+  val alertBoxText: KNode = onNode { hasTestTag("errorMessageIdentifier") }
   val alertBoxButton: KNode = onNode { hasTestTag("alertButton") }
 }

@@ -300,6 +300,7 @@ class CreateEventTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
 
       alertBox.assertIsDisplayed()
+      //alertBoxText.assertIsDisplayed()
       alertBoxText.assertTextContains("Invalid max attendees format, must be a number")
       // Click the OK button
       alertBoxButton.performClick()
