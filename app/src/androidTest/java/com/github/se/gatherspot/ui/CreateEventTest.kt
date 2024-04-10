@@ -8,12 +8,11 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performScrollTo
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventViewModel
-import com.github.se.gatherspot.screens.CreateEventScreen
+import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.Rule
@@ -24,7 +23,7 @@ import org.junit.runner.RunWith
 class CreateEventTest {
   @get:Rule val composeTestRule = createComposeRule()
 
-  // Restructured to use CreateEventScreen
+  // Restructured to use EventDataFormScreen
   @Test
   fun testIsEverythingExist() {
     composeTestRule.setContent {
@@ -34,7 +33,7 @@ class CreateEventTest {
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if every element are displayed
       eventScaffold { assertExists() }
       topBar { assertExists() }
@@ -129,7 +128,7 @@ class CreateEventTest {
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if every element are displayed
       eventScaffold { assertIsDisplayed() }
       topBar { assertIsDisplayed() }
@@ -171,7 +170,7 @@ class CreateEventTest {
       alertBox { assertDoesNotExist() }
     }
   }
-  // Restructured to use CreateEventScreen
+  // Restructured to use EventDataFormScreen
   @Test
   fun testMinimalData() {
     composeTestRule.setContent {
@@ -181,7 +180,7 @@ class CreateEventTest {
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if the button is disabled
       eventSaveButton { assertIsNotEnabled() }
       // Fill the form with minimal data
@@ -204,7 +203,7 @@ class CreateEventTest {
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Fill every field
       eventTitle.performTextInput("Test Event")
       eventDescription.performTextInput("This is a test event")
@@ -240,7 +239,7 @@ class CreateEventTest {
 
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if the button is disabled
       eventSaveButton.assertIsNotEnabled()
       // Fill every field
@@ -277,7 +276,7 @@ class CreateEventTest {
 
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Fill every field
       eventTitle.performTextInput("Test Event")
       eventDescription.performTextInput("This is a test event")
@@ -319,7 +318,7 @@ class CreateEventTest {
 
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Fill every field
       eventTitle.performTextInput("Test Event")
       eventDescription.performTextInput("This is a test event")
@@ -372,7 +371,7 @@ class CreateEventTest {
       CreateEvent(nav = NavigationActions(navController), eventViewModel)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if the labels are displayed
       eventTitle.assert(hasText("Event Title*"))
       eventDescription.assert(hasText("Description*"))

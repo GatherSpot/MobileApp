@@ -4,13 +4,13 @@ import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.github.kakaocup.compose.node.element.KNode
 
-class CreateEventScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
-    ComposeScreen<CreateEventScreen>(
+class EventDataFormScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
+    ComposeScreen<EventDataFormScreen>(
         semanticsProvider = semanticsProvider,
-        viewBuilderAction = { hasTestTag("CreateEventScreen") }) {
+        viewBuilderAction = { hasTestTag("EventDataFormScreen") }) {
 
   // Structural elements of the UI
-  val eventScaffold: KNode = onNode { hasTestTag("CreateEventScreen") }
+  val eventScaffold: KNode = onNode { hasTestTag("EventDataFormScreen") }
   val topBar: KNode = onNode { hasTestTag("createEventTitle") }
   val backButton: KNode = onNode { hasTestTag("goBackButton") }
   val formColumn: KNode = onNode { hasTestTag("formColumn") }

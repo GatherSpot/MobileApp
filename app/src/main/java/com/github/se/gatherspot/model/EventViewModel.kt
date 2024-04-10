@@ -7,14 +7,12 @@ import com.github.se.gatherspot.EventFirebaseConnection.Companion.fetchEvent
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.launch
 
 class EventViewModel : ViewModel() {
-
 
   /**
    * Create an event from verified data
@@ -201,30 +199,19 @@ class EventViewModel : ViewModel() {
         parsedTimeLimitInscription)
   }
 
-    /**
-     * Fetch an event from the database and return an event object
-     *
-     *
-     * @param eventID: The unique identifier of the event
-     * @return The event fetched
-     */
-    suspend fun fetchEvent(eventID: String): Event {
-        var fetchedEvent : Event? = null
-        viewModelScope.launch {
-            fetchedEvent = EventFirebaseConnection.fetchEvent(eventID)
-        }.join()
-
-        return fetchedEvent!!
-    }
+  /**
+   * Fetch an event from the database and return an event object
+   *
+   * @param eventID: The unique identifier of the event
+   * @return The event fetched
+   */
 
 
-    /**
-     * Once an event is edited, fetch the event from the database, update the modified fields,
-     * get the unmodified data and update the event in the database
-     */
-    fun editEvent(eventID: String, newEvent: Event){
-
-  }
+  /**
+   * Once an event is edited, fetch the event from the database, update the modified fields, get the
+   * unmodified data and update the event in the database
+   */
+  fun editEvent(eventID: String, newEvent: Event) {}
 
   fun validateDate(date: String, eMessage: String): LocalDate {
     try {
