@@ -84,7 +84,8 @@ class AllTest : TestCase() {
         assertExists()
         assertIsDisplayed()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag(enumValues<Interests>().toList()[0].toString()))
+      composeTestRule.waitUntilAtLeastOneExists(
+          hasTestTag(enumValues<Interests>().toList()[0].toString()))
       for (category in allCategories) {
         category {
           assertIsDisplayed()

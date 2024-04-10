@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.authentification
 
-import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -30,9 +29,8 @@ import org.junit.runner.RunWith
 class SetUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
 
-
   @After
-    fun cleanUp() {
+  fun cleanUp() {
     try {
       UserFirebaseConnection.deleteUser(MainActivity.uid)
       UserFirebaseConnection.deleteCurrentUser()
@@ -61,7 +59,8 @@ class SetUpTest : TestCase() {
         assertExists()
         assertIsDisplayed()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag(enumValues<Interests>().toList()[0].toString()))
+      composeTestRule.waitUntilAtLeastOneExists(
+          hasTestTag(enumValues<Interests>().toList()[0].toString()))
       for (category in allCategories) {
         category {
           assertIsDisplayed()
