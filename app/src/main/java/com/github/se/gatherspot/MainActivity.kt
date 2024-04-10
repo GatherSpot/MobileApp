@@ -44,8 +44,7 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(
             FirebaseAuthUIActivityResultContract(),
         ) { res ->
-          val ret = this.onSignInResult(res, navController)
-          // see
+          this.onSignInResult(res, navController)
         }
 
     setContent {
