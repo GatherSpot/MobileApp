@@ -131,7 +131,8 @@ class ProfileView {
   @Composable
   private fun TopBarWithEditButton(onEditClick: () -> Unit) {
     TopAppBar(
-        title = { Text("Profile") }, actions = { Button(onClick = onEditClick) { Text("Edit") } })
+        title = { Text("Profile") }, actions = { Button(onClick = onEditClick, modifier = Modifier.semantics { contentDescription = "edit" }
+      ) { Text("Edit") } })
   }
 
   @OptIn(ExperimentalMaterial3Api::class)
@@ -140,8 +141,10 @@ class ProfileView {
     TopAppBar(
         title = { Text("Profile") },
         actions = {
-          Button(onClick = onCancelClick) { Text("Cancel") }
-          Button(onClick = onSaveClick) { Text("Save") }
+          Button(onClick = onCancelClick, modifier = Modifier.semantics { contentDescription = "cancel" }
+          ) { Text("Cancel") }
+          Button(onClick = onSaveClick, modifier = Modifier.semantics { contentDescription = "save" }
+          ) { Text("Save") }
         })
   }
 
@@ -207,7 +210,7 @@ class ProfileView {
           Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
             Image(
                 painter = painter,
-                contentDescription = "Profile Image",
+                contentDescription = "profile image",
                 contentScale = ContentScale.Crop)
           }
         }
@@ -222,7 +225,7 @@ class ProfileView {
           Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
             Image(
                 painter = painter,
-                contentDescription = "Profile Image",
+                contentDescription = "profile image",
                 modifier = Modifier.clickable { /*select image*/},
                 contentScale = ContentScale.Crop)
           }
