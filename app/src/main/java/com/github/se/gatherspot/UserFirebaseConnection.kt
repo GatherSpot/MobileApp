@@ -86,14 +86,9 @@ class UserFirebaseConnection {
 
       val map = d.data!!
       val profile = map["profile"] as HashMap<*, *>
-      val interests = profile["interests"] as List<String>
+      val interests = profile["interests"] as List<Interests>
 
-      return User(
-          uid,
-          username,
-          email,
-          password,
-          Profile(interests.map { s -> Interests.valueOf(s) }.toSet()))
+      return User(uid, username, email, password, Profile(interests, username))
     }
 
     fun usernameExists(username: String, onComplete: (Boolean) -> Unit) {

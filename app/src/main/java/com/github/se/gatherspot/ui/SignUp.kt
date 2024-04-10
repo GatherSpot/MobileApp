@@ -74,7 +74,8 @@ fun SignUp(nav: NavigationActions) {
           val success = checkCredentials(email, password, t)
           if (success) {
             MainActivity.uid = UserFirebaseConnection.getUID()
-            val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
+            val newUser =
+                User(MainActivity.uid, username, email, password, Profile(emptyList(), ""))
             UserFirebaseConnection.addUser(newUser)
             FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
             showDialogVerif = true

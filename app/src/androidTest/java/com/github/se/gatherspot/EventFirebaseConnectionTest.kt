@@ -1,5 +1,6 @@
 package com.github.se.gatherspot
 
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -61,7 +62,7 @@ class EventFirebaseConnectionTest {
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
-            categories = listOf("Test Category"),
+            categories = listOf(Interests.CHESS),
             registeredUsers = emptyList(),
             finalAttendees = emptyList(),
             images = null,
@@ -145,7 +146,7 @@ class EventFirebaseConnectionTest {
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
-            categories = listOf("Test Category"),
+            categories = listOf(Interests.CHESS),
             registeredUsers = emptyList(),
             finalAttendees = emptyList(),
             images = null,
@@ -179,7 +180,7 @@ class EventFirebaseConnectionTest {
             inscriptionLimitDate = null,
             inscriptionLimitTime = null,
             eventStatus = EventStatus.CREATED,
-            categories = listOf("Test Category"),
+            categories = listOf(Interests.CHESS),
             registeredUsers = emptyList(),
             finalAttendees = emptyList(),
             images = null,

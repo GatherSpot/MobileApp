@@ -1,6 +1,8 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -104,9 +106,9 @@ class EventFirebaseConnection {
             "COMPLETED" -> EventStatus.COMPLETED
             else -> EventStatus.DRAFT
           }
-      val categories = document.get("categories") as List<String>
-      val registeredUsers = document.get("finalAttendee") as List<String>
-      val finalAttendee = document.get("finalAttendee") as List<String>
+      val categories = document.get("categories") as List<Interests>
+      val registeredUsers = document.get("finalAttendee") as List<Profile>
+      val finalAttendee = document.get("finalAttendee") as List<Profile>
       val images = null // TODO: Retrieve images from database
       val globalRating =
           when (val rating = document.getString("globalRating")!!) {
@@ -131,7 +133,10 @@ class EventFirebaseConnection {
           registeredUsers = registeredUsers,
           finalAttendees = finalAttendee,
           images = images,
-          globalRating = globalRating)
+          globalRating = globalRating,
+          // TODO: Add organizer
+          organizer = Profile(interests = categories, userName = "Organizer"),
+      )
     }
     /**
      * Maps a string to a LocalTime object
