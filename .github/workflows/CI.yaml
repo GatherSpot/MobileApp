@@ -99,9 +99,9 @@ jobs:
           target: google_apis
           arch: x86_64
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window
-          disable-animations: false
-          script: ./gradlew connectedCheck --build-cache --info
+          emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: ./gradlew connectedCheck --parallel --build-cache --info
 
       # This step generates the coverage report which will be uploaded to sonar
       - name: Generate Coverage Report
