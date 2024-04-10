@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
@@ -74,7 +73,7 @@ fun SignUp(nav: NavigationActions) {
           val success = checkCredentials(email, password, t)
           if (success) {
             MainActivity.uid = UserFirebaseConnection.getUID()
-            val newUser = User(MainActivity.uid, username, email, password, Profile(emptySet()))
+            val newUser = User(MainActivity.uid, username, email, password)
             UserFirebaseConnection.addUser(newUser)
             FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
             showDialogVerif = true
