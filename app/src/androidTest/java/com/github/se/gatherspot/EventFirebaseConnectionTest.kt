@@ -3,10 +3,14 @@ package com.github.se.gatherspot
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration
 import kotlinx.coroutines.async
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -114,6 +118,28 @@ class EventFirebaseConnectionTest {
     val event = EventFirebaseConnection.fetchEvent("nonexistent")
     assertEquals(event, null)
   }
+
+  @Test
+  fun fetchNextReturnsDistinctEvents() =
+      runTest(timeout = Duration.parse("20s")) {
+        val numberOfEvents =
+            Firebase.firestore
+                .collection(EventFirebaseConnection.EVENTS)
+                .get()
+                .await()
+                .documents
+                .size
+        val round = numberOfEvents / 2
+        val listOfEvents1 = EventFirebaseConnection.fetchNextEvents(round.toLong())
+        assertEquals(round, listOfEvents1.size)
+        val listOfEvents2 = EventFirebaseConnection.fetchNextEvents(round.toLong())
+        assertEquals(round, listOfEvents2.size)
+        for (i in 0 until round) {
+          for (j in 0 until round) {
+            assertNotEquals(listOfEvents1[i].eventID, listOfEvents2[j].eventID)
+          }
+        }
+      }
 
   @Test
   fun deleteEvent() = runTest {

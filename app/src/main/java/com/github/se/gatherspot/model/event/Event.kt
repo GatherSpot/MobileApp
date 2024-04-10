@@ -49,6 +49,7 @@ data class Event(
     val registeredUsers: List<String>? = emptyList(),
     val finalAttendees: List<String>? = emptyList(),
     // Find a way to upload image
-    var images: ImageBitmap? = ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image
+    var images: ImageBitmap? =
+        ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image
     val globalRating: Int?
 )
