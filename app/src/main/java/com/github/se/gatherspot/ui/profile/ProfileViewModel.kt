@@ -11,7 +11,6 @@ class OwnProfileViewModel : ViewModel() {
   private val _username = MutableLiveData<String>()
   private val _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
-  private val _edit = MutableLiveData<Boolean>()
   val username: LiveData<String>
     get() = _username
 
@@ -26,7 +25,6 @@ class OwnProfileViewModel : ViewModel() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
-    _edit.value = false
   }
 
   fun save() {
@@ -52,6 +50,8 @@ class OwnProfileViewModel : ViewModel() {
   fun updateProfileImage(image: String) {
     _image.value = image
   }
+
+  fun edit() {}
 }
 
 class ProfileViewModel(profile: Profile) {

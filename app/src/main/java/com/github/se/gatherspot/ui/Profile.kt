@@ -31,15 +31,9 @@ fun Profile(nav: NavigationActions, viewModel: OwnProfileViewModel) {
 // Those preview should show you all the functions you can call when it comes to profiles
 @Preview
 @Composable
-fun ViewOwnProfilePreview() {
+fun ProfilePreview() {
   val navController = rememberNavController()
   Profile(NavigationActions(navController), OwnProfileViewModel())
-}
-
-@Preview
-@Composable
-fun CreateOwnProfilePreview() {
-  ProfileView().CreateOwnProfile(OwnProfileViewModel()) {}
 }
 
 @Preview
