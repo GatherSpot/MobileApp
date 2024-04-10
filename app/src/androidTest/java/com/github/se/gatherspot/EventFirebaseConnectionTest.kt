@@ -103,7 +103,7 @@ class EventFirebaseConnectionTest {
         resultEvent!!.inscriptionLimitTime,
         LocalTime.parse("09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)))
     assertEquals(resultEvent!!.eventStatus, EventStatus.DRAFT)
-    assertEquals(resultEvent!!.categories, listOf("Test Category"))
+    assertEquals(resultEvent!!.categories, listOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.images, null)
@@ -203,7 +203,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.inscriptionLimitDate, null)
     assertEquals(resultEvent!!.inscriptionLimitTime, null)
     assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
-    assertEquals(resultEvent!!.categories, listOf("Test Category"))
+    assertEquals(resultEvent!!.categories, listOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.images, null)

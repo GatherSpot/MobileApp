@@ -86,7 +86,8 @@ class UserFirebaseConnection {
 
       val map = d.data!!
       val profile = map["profile"] as HashMap<*, *>
-      val interests = profile["interests"] as List<Interests>
+      val interestsString = profile["interests"] as List<String>
+      val interests = interestsString.map { Interests.valueOf(it) }
 
       return User(uid, username, email, password, Profile(interests, username))
     }

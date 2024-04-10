@@ -106,7 +106,8 @@ class EventFirebaseConnection {
             "COMPLETED" -> EventStatus.COMPLETED
             else -> EventStatus.DRAFT
           }
-      val categories = document.get("categories") as List<Interests>
+      val categoriesList = document.get("categories") as List<String>
+      val categories = categoriesList.map { Interests.valueOf(it) }
       val registeredUsers = document.get("finalAttendee") as List<Profile>
       val finalAttendee = document.get("finalAttendee") as List<Profile>
       val images = null // TODO: Retrieve images from database
