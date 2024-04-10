@@ -165,7 +165,7 @@
       <command value="gradle app:createDebugAndroidTestCoverageReport" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.AndroidProjects [ktfmtFormat]">
+  <component name="RunManager" selected="Android Instrumented Tests.SetUpTest">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
       <module name="GatherSpot.app.main" />
       <option name="DEPLOY" value="true" />
@@ -465,9 +465,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.AndroidProjects [ktfmtFormat]" />
         <item itemvalue="Android Instrumented Tests.SetUpTest" />
         <item itemvalue="Android Instrumented Tests.AllTest" />
+        <item itemvalue="Gradle.AndroidProjects [ktfmtFormat]" />
         <item itemvalue="Android Instrumented Tests.buttonsAreCorrectlyDisplayedAndFunctional()" />
         <item itemvalue="Gradle.AndroidProjects [app:createDebugAndroidTestCoverageReport]" />
       </list>
