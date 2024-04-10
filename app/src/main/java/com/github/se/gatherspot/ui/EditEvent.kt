@@ -18,37 +18,3 @@ import java.time.format.DateTimeFormatter
 fun EditEvent(nav: NavigationActions, eventUtils: EventUtils, event: Event) {
   EventDataForm(eventUtils = eventUtils, nav = nav, eventAction = EventAction.EDIT, event = event)
 }
-
-@Preview
-@Composable
-fun EditEventPreview() {
-  val testEvent =
-      Event(
-          eventID = "testID",
-          title = "Test Event",
-          description = "This is a test event",
-          location = Location(0.0, 0.0, "Test Location"),
-          eventStartDate =
-              LocalDate.parse(
-                  "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
-          eventEndDate =
-              LocalDate.parse(
-                  "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
-          timeBeginning =
-              LocalTime.parse(
-                  "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          timeEnding =
-              LocalTime.parse(
-                  "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          attendanceMaxCapacity = 100,
-          attendanceMinCapacity = 10,
-          inscriptionLimitDate =
-              LocalDate.parse(
-                  "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
-          inscriptionLimitTime =
-              LocalTime.parse(
-                  "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          eventStatus = EventStatus.CREATED,
-          globalRating = null)
-  EditEvent(NavigationActions(rememberNavController()), EventUtils(), testEvent)
-}

@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +47,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import java.time.format.DateTimeFormatter
 
 private val WIDTH = 300.dp
 private val WIDTH_2ELEM = 150.dp
@@ -67,7 +67,9 @@ private val MESSAGES = arrayOf(CREATE_SPECIFIC_MESSAGES, EDIT_SPECIFIC_MESSAGES)
 @Composable
 fun ScrollableContent(content: @Composable () -> Unit) {
   Box(modifier = Modifier.fillMaxSize()) {
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) { content() }
+    Column(modifier = Modifier
+        .verticalScroll(rememberScrollState())
+        .padding(16.dp)) { content() }
   }
 }
 
@@ -99,17 +101,19 @@ fun EventDataForm(
 
   if (eventAction == EventAction.EDIT) {
     event!!
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     title = TextFieldValue(event.title)
     description = TextFieldValue(event.description!!)
     location = event.location
-    eventStartDate = TextFieldValue(event.eventStartDate.toString())
-    eventEndDate = TextFieldValue(event.eventEndDate?.toString() ?: "")
-    eventTimeStart = TextFieldValue(event.timeBeginning.toString())
-    eventTimeEnd = TextFieldValue(event.timeEnding.toString())
+    eventStartDate = TextFieldValue(event.eventStartDate!!.format(dateFormatter) ?: "")
+    eventEndDate = TextFieldValue(event.eventEndDate?.format(dateFormatter) ?: "")
+    eventTimeStart = TextFieldValue(event.timeBeginning!!.format(timeFormatter) ?: "")
+    eventTimeEnd = TextFieldValue(event.timeEnding!!.format(timeFormatter) ?: "")
     maxAttendees = TextFieldValue(event.attendanceMaxCapacity?.toString() ?: "")
     minAttendees = TextFieldValue(event.attendanceMinCapacity.toString())
-    inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.toString() ?: "")
-    inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.toString() ?: "")
+    inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.format(dateFormatter) ?: "")
+    inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
   }
 
   Scaffold(
@@ -135,14 +139,20 @@ fun EventDataForm(
           // Create event form
           Column(
               modifier =
-                  Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
+              Modifier
+                  .padding(innerPadding)
+                  .padding(horizontal = 28.dp)
+                  .testTag("formColumn"),
               verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
               horizontalAlignment = Alignment.CenterHorizontally,
           ) {
             Text(text = "Fields with * are required", modifier = Modifier.testTag("requiredFields"))
             // Title
             OutlinedTextField(
-                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputTitle"),
+                modifier = Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("inputTitle"),
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Event Title*") },
@@ -150,21 +160,30 @@ fun EventDataForm(
             // Description
             OutlinedTextField(
                 modifier =
-                    Modifier.width(WIDTH).height(DESCRIPTION_HEIGHT).testTag("inputDescription"),
+                Modifier
+                    .width(WIDTH)
+                    .height(DESCRIPTION_HEIGHT)
+                    .testTag("inputDescription"),
                 value = description,
                 onValueChange = { description = it },
                 label = { Text("Description*") },
                 placeholder = { Text("Describe the event") })
             // Start Date
             OutlinedTextField(
-                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputStartDateEvent"),
+                modifier = Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("inputStartDateEvent"),
                 value = eventStartDate,
                 onValueChange = { eventStartDate = it },
                 label = { Text("Start Date of the event*") },
                 placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
             // End Date
             OutlinedTextField(
-                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
+                modifier = Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("inputEndDateEvent"),
                 value = eventEndDate,
                 onValueChange = { eventEndDate = it },
                 label = { Text("End date of the event") },
@@ -176,7 +195,10 @@ fun EventDataForm(
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeStartEvent"),
+                      Modifier
+                          .width(WIDTH_2ELEM)
+                          .height(HEIGHT)
+                          .testTag("inputTimeStartEvent"),
                       value = eventTimeStart,
                       onValueChange = { eventTimeStart = it },
                       label = { Text("Start time*") },
@@ -185,7 +207,10 @@ fun EventDataForm(
                   // Time End
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeEndEvent"),
+                      Modifier
+                          .width(WIDTH_2ELEM)
+                          .height(HEIGHT)
+                          .testTag("inputTimeEndEvent"),
                       value = eventTimeEnd,
                       onValueChange = { eventTimeEnd = it },
                       label = { Text("End time*") },
@@ -193,7 +218,10 @@ fun EventDataForm(
                 }
             // Location
             OutlinedTextField(
-                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputLocation"),
+                modifier = Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("inputLocation"),
                 // Do a query to get a location from text input
                 value = locationName,
                 onValueChange = { locationName = it },
@@ -209,7 +237,10 @@ fun EventDataForm(
                   // Min attendees
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
+                      Modifier
+                          .width(WIDTH_2ELEM)
+                          .height(HEIGHT)
+                          .testTag("inputMinAttendees"),
                       value = minAttendees,
                       onValueChange = { minAttendees = it },
                       label = { Text("Min Attendees") },
@@ -217,7 +248,10 @@ fun EventDataForm(
                   // Max attendees
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
+                      Modifier
+                          .width(WIDTH_2ELEM)
+                          .height(HEIGHT)
+                          .testTag("inputMaxAttendees"),
                       value = maxAttendees,
                       onValueChange = { maxAttendees = it },
                       label = { Text("Max Attendees") },
@@ -227,7 +261,10 @@ fun EventDataForm(
             // Inscription limit date
             OutlinedTextField(
                 modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
+                Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("inputInscriptionLimitDate"),
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
                 label = { Text("Inscription Limit Date") },
@@ -235,7 +272,10 @@ fun EventDataForm(
             // Inscription limit time
             OutlinedTextField(
                 modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
+                Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("inputInscriptionLimitTime"),
                 value = inscriptionLimitTime,
                 onValueChange = { inscriptionLimitTime = it },
                 label = { Text("Inscription Limit Time") },
@@ -267,7 +307,10 @@ fun EventDataForm(
                     showErrorDialog = true
                   }
                 },
-                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
+                modifier = Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("createEventButton"),
                 enabled =
                     (title.text != "") &&
                         (description.text != "") &&
@@ -304,7 +347,10 @@ fun InterestSelector(interests: List<Interests>, categories: MutableList<Interes
             placeholder = { Text(text = "Select categories") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            modifier = Modifier.menuAnchor().width(WIDTH).height(HEIGHT))
+            modifier = Modifier
+                .menuAnchor()
+                .width(WIDTH)
+                .height(HEIGHT))
 
         ExposedDropdownMenu(
             modifier = Modifier.testTag("exposedDropdownMenu"),
