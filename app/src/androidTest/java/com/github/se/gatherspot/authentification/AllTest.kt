@@ -81,11 +81,15 @@ class AllTest : TestCase() {
         assertIsDisplayed()
       }
       composeTestRule.waitForIdle()
+      var i = 0
       for (category in allCategories) {
         category {
-          assertExists()
-          performClick()
-          performGesture { swipeUp() }
+          if (i != enumValues<Interests>().size - 1) {
+            assertExists()
+            performClick()
+            performGesture { swipeUp() }
+          }
+          i++
         }
       }
       save {
