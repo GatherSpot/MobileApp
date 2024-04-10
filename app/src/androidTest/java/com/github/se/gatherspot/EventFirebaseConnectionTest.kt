@@ -1,5 +1,6 @@
 package com.github.se.gatherspot
 
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -61,7 +62,7 @@ class EventFirebaseConnectionTest {
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
-            categories = listOf("Test Category"),
+            categories = listOf(Interests.ART),
             registeredUsers = emptyList(),
             finalAttendees = emptyList(),
             images = null,
@@ -145,7 +146,7 @@ class EventFirebaseConnectionTest {
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
-            categories = listOf("Test Category"),
+            categories = listOf(Interests.ART),
             registeredUsers = emptyList(),
             finalAttendees = emptyList(),
             images = null,
@@ -179,7 +180,7 @@ class EventFirebaseConnectionTest {
             inscriptionLimitDate = null,
             inscriptionLimitTime = null,
             eventStatus = EventStatus.CREATED,
-            categories = listOf("Test Category"),
+            categories = listOf(Interests.ART),
             registeredUsers = emptyList(),
             finalAttendees = emptyList(),
             images = null,
@@ -202,7 +203,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.inscriptionLimitDate, null)
     assertEquals(resultEvent!!.inscriptionLimitTime, null)
     assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
-    assertEquals(resultEvent!!.categories, listOf("Test Category"))
+    assertEquals(resultEvent!!.categories, listOf(Interests.ART))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.images, null)

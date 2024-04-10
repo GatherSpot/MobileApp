@@ -78,8 +78,7 @@ fun EventDataForm(
     eventUtils: EventUtils,
     nav: NavigationActions,
     eventAction: EventAction,
-    event : Event? = null,
-    onSubmit: () -> Unit
+    event : Event? = null
 ) {
   // State of the event
   var title by remember { mutableStateOf(TextFieldValue("")) }
@@ -118,7 +117,7 @@ fun EventDataForm(
      }
 
   Scaffold(
-      modifier = Modifier.testTag("CreateEventScreen"),
+      modifier = Modifier.testTag("EventDataFormScreen"),
       topBar = {
         MediumTopAppBar(
             title = {
@@ -228,6 +227,7 @@ fun EventDataForm(
                 onValueChange = { locationName = it },
                 label = { Text("Location") },
                 placeholder = { Text("Enter an address") })
+
             // Categories
             InterestSelector(Interests.entries, categories)
 
@@ -295,6 +295,7 @@ fun EventDataForm(
                         eventEndDate.text,
                         eventTimeStart.text,
                         eventTimeEnd.text,
+                        categories.toList(),
                         maxAttendees.text,
                         minAttendees.text,
                         inscriptionLimitDate.text,
@@ -341,6 +342,7 @@ fun InterestSelector(interests: List<Interests>, categories: MutableList<Interes
     }
 
     ExposedDropdownMenuBox(
+        modifier = Modifier.testTag("interestSelector"),
         expanded = isExpanded,
         onExpandedChange = { isExpanded = it }
     ) {
@@ -355,10 +357,15 @@ fun InterestSelector(interests: List<Interests>, categories: MutableList<Interes
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
             },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            modifier = Modifier.menuAnchor()
+            modifier = Modifier
+                .menuAnchor()
+                .width(WIDTH)
+                .height(HEIGHT)
+
         )
 
         ExposedDropdownMenu(
+            modifier = Modifier.testTag("exposedDropdownMenu"),
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false }
         ) {

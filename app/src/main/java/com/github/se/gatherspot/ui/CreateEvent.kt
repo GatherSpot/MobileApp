@@ -13,7 +13,7 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateEvent(nav: NavigationActions, eventUtils: EventUtils) {
-  EventDataForm(eventUtils = eventUtils, nav = nav, eventAction = EventAction.CREATE) {}
+  EventDataForm(eventUtils = eventUtils, nav = nav, eventAction = EventAction.CREATE)
 }
 
 @Preview

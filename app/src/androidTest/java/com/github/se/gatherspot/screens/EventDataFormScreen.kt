@@ -21,6 +21,9 @@ class EventDataFormScreen(semanticsProvider: SemanticsNodeInteractionsProvider) 
   val eventEndDate: KNode = onNode { hasTestTag("inputEndDateEvent") }
   val eventTimeStart: KNode = onNode { hasTestTag("inputTimeStartEvent") }
   val eventTimeEnd: KNode = onNode { hasTestTag("inputTimeEndEvent") }
+
+  val dropDownCategoriesBox: KNode = onNode { hasTestTag("interestSelector") }
+  val dropDownCategories: KNode = onNode { hasTestTag("exposedDropdownMenu") }
   val eventMinAttendees: KNode = onNode { hasTestTag("inputMinAttendees") }
   val eventMaxAttendees: KNode = onNode { hasTestTag("inputMaxAttendees") }
   val eventLocation: KNode = onNode { hasTestTag("inputLocation") }

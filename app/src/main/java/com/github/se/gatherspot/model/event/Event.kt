@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.model.event
 
 import androidx.compose.ui.graphics.ImageBitmap
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
 import java.time.LocalTime
@@ -41,9 +42,7 @@ data class Event(
     val inscriptionLimitDate: LocalDate?,
     val inscriptionLimitTime: LocalTime?,
     val eventStatus: EventStatus = EventStatus.DRAFT,
-    // TODO : List of Categories, but for now before the implementation of category class just use
-    // String
-    val categories: List<String>? = emptyList(),
+    val categories: List<Interests>? = emptyList(),
     // List of the IDs of the users who registered for the event
     val registeredUsers: List<String>? = emptyList(),
     val finalAttendees: List<String>? = emptyList(),

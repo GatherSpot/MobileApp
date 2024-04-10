@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 /** Composable function that give the GUI to edit an event */
 @Composable
 fun EditEvent(nav: NavigationActions, eventUtils: EventUtils, event: Event) {
-  EventDataForm(eventUtils = eventUtils, nav = nav, eventAction = EventAction.EDIT, event = event) {}
+  EventDataForm(eventUtils = eventUtils, nav = nav, eventAction = EventAction.EDIT, event = event)
 }
 
 @Preview

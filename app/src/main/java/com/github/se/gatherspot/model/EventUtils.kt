@@ -34,6 +34,7 @@ class EventUtils {
       eventEndDate: LocalDate?,
       eventTimeStart: LocalTime,
       eventTimeEnd: LocalTime,
+      categories: List<Interests>?,
       maxAttendees: Int?,
       minAttendees: Int?,
       dateLimitInscription: LocalDate?,
@@ -58,6 +59,7 @@ class EventUtils {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
+            categories = categories,
             eventStatus = EventStatus.CREATED)
 
     // Add the event to the database
@@ -93,10 +95,12 @@ class EventUtils {
       eventEndDate: String,
       eventTimeStart: String,
       eventTimeEnd: String,
+      categories : List<Interests>?,
       maxAttendees: String,
       minAttendees: String,
       dateLimitInscription: String,
       timeLimitInscription: String
+
   ): Event {
     // test if the date is valid
     val parsedEventStartDate = validateDate(eventStartDate, "Invalid date format")
@@ -189,6 +193,7 @@ class EventUtils {
         parsedEventEndDate,
         parsedEventTimeStart,
         parsedEventTimeEnd,
+        categories,
         parsedMaxAttendees,
         parsedMinAttendees,
         parsedDateLimitInscription,
