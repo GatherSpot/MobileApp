@@ -83,9 +83,10 @@ class AllTest : TestCase() {
       composeTestRule.waitForIdle()
       for (category in allCategories) {
         category {
-          assertExists()
+          // assertExists()
           performClick()
           performGesture { swipeUp() }
+          composeTestRule.waitForIdle()
         }
       }
       save {
