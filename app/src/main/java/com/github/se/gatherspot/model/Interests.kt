@@ -25,7 +25,7 @@ enum class Interests {
   companion object {
 
     private val parents =
-        mapOf(FOOTBALL to SPORT, BASKETBALL to SPORT, TENNIS to SPORT, BOWLING to LEISURE)
+      mapOf(FOOTBALL to SPORT, BASKETBALL to SPORT, TENNIS to SPORT, BOWLING to LEISURE)
 
     private val children = parents.toList().groupBy({ it.second }, { it.first })
 
@@ -140,6 +140,24 @@ enum class Interests {
         addParentInterest(bitset, interest)
         addInterest(bitset, interest)
       }
+    }
+
+    fun toString(bitset: BitSet) : String{
+      return listInterests(bitset).fold(""){acc, interest -> acc + ";" + interest.toString()}
+    }
+
+    fun fromString(string : String) : Set<Interests>{
+      if (string == "")
+        return hashSetOf()
+      val res : HashSet<Interests> = hashSetOf()
+      string.split(";").forEach{
+        try {
+          res.add(Interests.valueOf(it))
+        } catch(e : IllegalArgumentException){
+
+        }
+      }
+      return res
     }
   }
 }

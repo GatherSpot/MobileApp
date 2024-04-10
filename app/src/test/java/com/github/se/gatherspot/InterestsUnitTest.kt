@@ -154,4 +154,59 @@ class InterestsUnitTest {
     assertTrue(bitSet[Interests.TENNIS.ordinal])
     assertFalse(bitSet[Interests.BOWLING.ordinal])
   }
+
+  @Test
+  fun toString_isCorrect(){
+    var bitset = Interests.newBitset()
+    Interests.addInterest(bitset,Interests.NETWORKING)
+    Interests.addInterest(bitset,Interests.BASKETBALL)
+    Interests.addInterest(bitset, Interests.BOARD_GAMES)
+    Interests.addInterest(bitset, Interests.ROLE_PLAY)
+    Interests.addInterest(bitset, Interests.TRAVEL)
+    var res = Interests.toString(bitset)
+    assertTrue(res.contains("NETWORKING"))
+    assertTrue(res.contains("BASKETBALL"))
+    assertTrue(res.contains("BOARD_GAMES"))
+    assertTrue(res.contains("ROLE_PLAY"))
+    assertTrue(res.contains("TRAVEL"))
+
+    bitset = Interests.newBitset()
+    Interests.addInterest(bitset,Interests.SPORT)
+    Interests.addInterest(bitset,Interests.TECHNOLOGY)
+    Interests.addInterest(bitset, Interests.BOARD_GAMES)
+    Interests.addInterest(bitset, Interests.ROLE_PLAY)
+    Interests.addInterest(bitset, Interests.ART)
+    res = Interests.toString(bitset)
+    assertTrue(res.contains("SPORT"))
+    assertTrue(res.contains("TECHNOLOGY"))
+    assertTrue(res.contains("BOARD_GAMES"))
+    assertTrue(res.contains("ROLE_PLAY"))
+    assertTrue(res.contains("ART"))
+
+  }
+
+  @Test
+  fun fromString_isCorrect(){
+
+
+    var string = "NETWORKING"
+    string =  string  +";" + "BASKETBALL"
+    string = string + ";" + "BOARD_GAMES"
+    string = string + ";" + "ROLE_PLAY"
+    string = string + ";" + "TRAVEL"
+
+
+    val res = Interests.fromString(string)
+    assertTrue(res.contains(Interests.NETWORKING))
+    assertTrue(res.contains(Interests.BASKETBALL))
+    assertTrue(res.contains(Interests.BOARD_GAMES))
+    assertTrue(res.contains(Interests.ROLE_PLAY))
+    assertTrue(res.contains(Interests.TRAVEL))
+
+
+
+
+
+  }
+
 }
