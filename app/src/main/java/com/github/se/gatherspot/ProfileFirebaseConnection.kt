@@ -18,7 +18,7 @@ class ProfileFirebaseConnection {
     const val TAG = "ProfileFirebase"
 
     /**
-     * Returns the UID of the current profile which is also the UID of the current User
+     * Returns the UID of the current profile (which is by definition the UID of the current User)
      */
     fun getUID(): String {
       return UserFirebaseConnection.getUID()
@@ -75,7 +75,9 @@ class ProfileFirebaseConnection {
     }
 
     /**
-     *
+     * fetches a profile from firestore
+     *  @param uid the uid of the profile
+     * @return the profile
      */
     suspend fun fetchProfile(uid: String): Profile? = suspendCancellableCoroutine { continuation ->
       Firebase.firestore
@@ -92,6 +94,11 @@ class ProfileFirebaseConnection {
         }
     }
 
+    /**
+     * parses the document of a profile to construct a profile
+     * @param d the document snapshot
+     * @return the Profile
+     */
     private fun getProfileFromDocument(d: DocumentSnapshot): Profile? {
       if (d.getString("uid") == null) {
         return null
@@ -110,7 +117,7 @@ class ProfileFirebaseConnection {
     }
 
     /**
-     *
+     *  Checks wether there is a profile with that username
      *
      * /!!!!!!\ This implementation asssumes that the User userName and the Profile userName are the same
      * Completely false otherwise
