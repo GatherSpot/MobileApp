@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 
 class OwnProfileViewModel : ViewModel() {
@@ -11,6 +12,7 @@ class OwnProfileViewModel : ViewModel() {
   private val _username = MutableLiveData<String>()
   private val _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
+  private val _interests = MutableLiveData<Set<Interests>>()
   val username: LiveData<String>
     get() = _username
 
@@ -20,17 +22,20 @@ class OwnProfileViewModel : ViewModel() {
   val image: LiveData<String>
     get() = _image
 
+  val interests: LiveData<Set<Interests>>
+    get() = _interests
+
   init {
-    _profile = Profile("John Doe", "I am not a bot", "", "")
+    _profile = Profile("John Doe", "I am not a bot", "", "", hashSetOf())
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
   }
 
   fun save() {
-    _profile = Profile(_username.value ?: "", bio.value ?: "", image.value ?: "", "")
+    _profile = Profile(username.value ?: "", bio.value ?: "", image.value ?: "", "", interests.value)
     // next: THIS NEEDS SANITIZATION
-    ProfileFirebaseConnection().updateProfile(_profile)
+    ProfileFirebaseConnection.addProfile(_profile)
   }
 
   fun cancel() {
@@ -52,7 +57,10 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun edit() {}
+
+
 }
+
 
 class ProfileViewModel(profile: Profile) {
   val username: String = profile.userName
