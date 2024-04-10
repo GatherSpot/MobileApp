@@ -39,7 +39,7 @@ fun ViewOwnProfilePreview() {
 @Preview
 @Composable
 fun CreateOwnProfilePreview() {
-  ProfileView().CreateOwnProfile(OwnProfileViewModel())
+  ProfileView().CreateOwnProfile(OwnProfileViewModel()) {}
 }
 
 @Preview
