@@ -18,7 +18,6 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,16 +31,6 @@ class AllTest : TestCase() {
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
   @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
-
-  @After
-  fun cleanUp() {
-    try {
-      UserFirebaseConnection.deleteUser(MainActivity.uid)
-      UserFirebaseConnection.deleteCurrentUser()
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -84,9 +73,9 @@ class AllTest : TestCase() {
         assertExists()
         assertIsDisplayed()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag(enumValues<Interests>().toList()[0].toString()))
       for (category in allCategories) {
         category {
+          assertExists()
           assertIsDisplayed()
           performClick()
           performGesture { swipeUp() }
@@ -112,5 +101,7 @@ class AllTest : TestCase() {
           }
           .await()
     }
+    UserFirebaseConnection.deleteUser(MainActivity.uid)
+    UserFirebaseConnection.deleteCurrentUser()
   }
 }

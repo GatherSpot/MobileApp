@@ -22,9 +22,8 @@ android {
     namespace = "com.github.se.gatherspot"
     compileSdk = 34
     packagingOptions {
-        resources {
-            excludes += setOf("META-INF/LICENSE.md", "META-INF/LICENSE-notice.md")
-        }
+        exclude("META-INF/LICENSE.md")
+        exclude("META-INF/LICENSE-notice.md")
     }
     testCoverage {
         jacocoVersion = "0.8.8"

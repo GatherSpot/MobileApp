@@ -1,8 +1,6 @@
 package com.github.se.gatherspot.authentification
 
-import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.swipeUp
@@ -13,7 +11,6 @@ import androidx.navigation.navigation
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.screens.SetUpScreen
@@ -21,7 +18,6 @@ import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,17 +25,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SetUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
-
-
-  @After
-    fun cleanUp() {
-    try {
-      UserFirebaseConnection.deleteUser(MainActivity.uid)
-      UserFirebaseConnection.deleteCurrentUser()
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -61,9 +46,9 @@ class SetUpTest : TestCase() {
         assertExists()
         assertIsDisplayed()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag(enumValues<Interests>().toList()[0].toString()))
       for (category in allCategories) {
         category {
+          assertExists()
           assertIsDisplayed()
           performClick() // Select the category
           performClick() // Deselect the category
@@ -80,5 +65,8 @@ class SetUpTest : TestCase() {
           hasText("Please verify your email before continuing"))
       emailText.assertIsDisplayed()
     }
+
+    UserFirebaseConnection.deleteUser(MainActivity.uid)
+    UserFirebaseConnection.deleteCurrentUser()
   }
 }
