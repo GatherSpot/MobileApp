@@ -15,6 +15,7 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.delay
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -469,7 +470,9 @@ class CreateEventTest {
                 performClick()
                 performTextInput("ecole polytechnique federale")
             }
-          //inputLocationProposal { performClick() }
+          // wait for the location proposition to appear
+
+          locationProposition { performClick() }
             eventLocation {
                 assert(hasText("École Polytechnique Fédérale de Lausanne"))
             }

@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.model
 
+import android.util.Log
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -271,6 +272,7 @@ class EventUtils {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                    Log.e("Response", response.body?.string() ?: "")
 
                     val responseBody = response.body?.string() ?: return@use emptyList<Location>()
                     val jsonArray = JSONArray(responseBody)

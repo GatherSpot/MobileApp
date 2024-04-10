@@ -111,13 +111,15 @@ fun EventDataForm(
   val queryText = MutableStateFlow("")
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
 
+    // Coroutine scope for launching coroutines
+    val coroutineScope = rememberCoroutineScope()
 
 
   if (eventAction == EventAction.EDIT) {
     event!!
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    title = TextFieldValue(event.title)
+    title = TextFieldValue(event.title!!)
     description = TextFieldValue(event.description!!)
     location = event.location
     eventStartDate = TextFieldValue(event.eventStartDate!!.format(dateFormatter) ?: "")
@@ -129,23 +131,6 @@ fun EventDataForm(
     inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.format(dateFormatter) ?: "")
     inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
   }
-
-    // Coroutine scope for launching coroutines
-    val coroutineScope = rememberCoroutineScope()
-
-
-
-    // Coroutine to handle location search based on query text
-//    coroutineScope.launch {
-//        queryText.collectLatest { query ->
-//            // Debounce logic: wait for 300 milliseconds after the last text change
-//            delay(300)
-//            if (query.isNotEmpty()) {
-//                suggestions = eventUtils.fetchLocationSuggestions(query)
-//
-//            }
-//        }
-//    }
 
   Scaffold(
       modifier = Modifier.testTag("EventDataFormScreen"),
@@ -266,6 +251,7 @@ fun EventDataForm(
                       onValueChange = {newValue ->
                           locationName = newValue
                           //Give focus to the element
+                          isDropdownExpanded = true
                           searchJob?.cancel()
                           searchJob = coroutineScope.launch {
                               // Debounce logic: wait for 300 milliseconds after the last text change

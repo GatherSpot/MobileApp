@@ -27,6 +27,8 @@ class EventDataFormScreen(semanticsProvider: SemanticsNodeInteractionsProvider) 
   val eventMinAttendees: KNode = onNode { hasTestTag("inputMinAttendees") }
   val eventMaxAttendees: KNode = onNode { hasTestTag("inputMaxAttendees") }
   val eventLocation: KNode = onNode { hasTestTag("inputLocation") }
+  val eventLocationDropdownMenu: KNode = onNode { hasTestTag("locationDropDownMenuBox") }
+  val locationProposition : KNode = eventLocationDropdownMenu.child { hasClickAction() }
   val eventInscriptionLimitDate: KNode = onNode { hasTestTag("inputInscriptionLimitDate") }
   val eventInscriptionLimitTime: KNode = onNode { hasTestTag("inputInscriptionLimitTime") }
   val eventSaveButton: KNode = onNode { hasTestTag("createEventButton") }
