@@ -3,7 +3,6 @@ package com.github.se.gatherspot.authentification
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,7 +10,6 @@ import androidx.navigation.navigation
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
@@ -39,21 +37,9 @@ class SetUpTest : TestCase() {
       }
     }
 
-    UserFirebaseConnection.addUser(User("test", "test", "test", "test", Profile(emptySet())))
+    UserFirebaseConnection.addUser(User("test", "test", "test", "test"))
 
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
-      lazyColumn {
-        assertExists()
-        assertIsDisplayed()
-      }
-      for (category in allCategories) {
-        category {
-          assertExists()
-          assertIsDisplayed()
-          performClick()
-          performGesture { swipeUp() }
-        }
-      }
       save {
         assertExists()
         assertIsDisplayed()

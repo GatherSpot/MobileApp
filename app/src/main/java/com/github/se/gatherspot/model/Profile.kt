@@ -22,4 +22,5 @@ class Profile(
   var interests: Set<Interests> = _interests
 
   constructor() : this("", "", "", "", emptySet())
+
 }
