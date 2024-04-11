@@ -419,13 +419,7 @@ class CreateEventTest {
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
-      eventLocation {
-        performScrollTo()
-        composeTestRule.onNodeWithText("Location").assertIsDisplayed()
-        performClick()
-        assert(hasText("Enter an address"))
-        composeTestRule.onNodeWithText("Enter an address").assertIsDisplayed()
-      }
+
       eventMaxAttendees {
         performScrollTo()
         composeTestRule.onNodeWithText("Max Attendees").assertIsDisplayed()
@@ -452,6 +446,13 @@ class CreateEventTest {
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
+      eventLocation {
+        performScrollTo()
+        composeTestRule.onNodeWithText("Location").assertIsDisplayed()
+        performClick()
+        assert(hasText("Enter an address"))
+        composeTestRule.onNodeWithText("Enter an address").assertIsDisplayed()
+      }
     }
   }
 
@@ -476,9 +477,9 @@ class CreateEventTest {
       eventLocation {
         assert(
             hasText(
-                "École Polytechnique Fédérale de Lausanne, Route Cantonale," +
-                    " Quartier Sorge, Ecublens, District de l'Ouest lausannois, Vaud, 1025," +
-                    " Schweiz/Suisse/Svizzera/Svizra"))
+                "École Polytechnique Fédérale de Lausanne, Chemin des Codoz, Quartier Lac," +
+                    " Saint-Sulpice, District de l'Ouest lausannois, Vaud, 1025, " +
+                    "Schweiz/Suisse/Svizzera/Svizra"))
       }
     }
   }
