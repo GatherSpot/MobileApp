@@ -1,8 +1,6 @@
 package com.github.se.gatherspot
 
 import android.util.Log
-import com.github.se.gatherspot.ProfileFirebaseConnection.Companion.addDefaultProfile
-import com.github.se.gatherspot.ProfileFirebaseConnection.Companion.deleteProfile
 import com.github.se.gatherspot.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -41,7 +39,7 @@ class UserFirebaseConnection {
 
       // document du User
       fun deleteUserDoc(uid: String) {
-          deleteProfile(uid)
+          //deleteProfile(uid)
           Log.d(TAG, "Deleting user with uid: $uid")
           Firebase.firestore.collection(USERS).document(uid).delete().addOnFailureListener { exception
             ->

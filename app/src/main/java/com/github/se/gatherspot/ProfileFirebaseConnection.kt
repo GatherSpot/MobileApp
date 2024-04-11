@@ -16,15 +16,9 @@ class ProfileFirebaseConnection {
 
   companion object {
 
-    private const val PROFILE = "profiles"
+    const val PROFILES = "profiles"
     private const val TAG = "ProfileFirebase"
 
-    /**
-     * Returns the UID of the current profile (which is by definition the UID of the current User)
-     */
-    fun getUID(): String {
-      return UserFirebaseConnection.getUID()
-    }
 
     /**
      * Adds a default profile to match the user
@@ -43,8 +37,8 @@ class ProfileFirebaseConnection {
      *
      * /!\ This method can override the userName without checking for uniqueness of userName therefore it is made private
      */
-    private fun addProfile(profile: Profile) {
-      //Own non computed fields
+    //TODO Make private once it works consistently
+    fun addProfile(profile: Profile) {
       val bitSet = Interests.newBitset()
       profile.interests.forEach { Interests.addInterest(bitSet, it) }
       val interestsString: String = Interests.toString(bitSet)
@@ -58,11 +52,13 @@ class ProfileFirebaseConnection {
         )
 
       Firebase.firestore
-        .collection(PROFILE)
+        .collection(PROFILES)
         .document(profile.uid)
         .set(profileMap)
-        .addOnSuccessListener { Log.d(TAG, "Profile successfully added!") }
-        .addOnFailureListener { e -> Log.w(TAG, "Error creating Profile", e) }
+        .addOnSuccessListener { Log.d(TAG, "Profile successfully added!")
+          println("Profile successfully added \n\n\n")}
+        .addOnFailureListener { e -> Log.w(TAG, "Error creating Profile", e)
+          println("Profile failed to be added\n\n\n")}
     }
 
     /**
@@ -77,10 +73,10 @@ class ProfileFirebaseConnection {
         return false
       var res = true
       Firebase.firestore
-        .collection(PROFILE)
+        .collection(PROFILES)
         .get()
         .addOnSuccessListener { result ->
-          for (document in result) {
+          for (document in result.documents) {
             if (document.get("userName") == userName) {
               res = false
             }
@@ -126,21 +122,12 @@ class ProfileFirebaseConnection {
      */
     fun deleteProfile(uid: String) {
       Log.d(TAG, "Deleting profile with uid: $uid")
-      Firebase.firestore.collection(PROFILE).document(uid).delete().addOnFailureListener { exception
+      Firebase.firestore.collection(PROFILES).document(uid).delete().addOnFailureListener { exception
         ->
         Log.e(TAG, "Error deleting Profile", exception)
       }
     }
 
-    /**
-     * deletes the current Profile from the database
-     *
-     * should only be called by UserFirebaseConnection
-     * Due to the intimate link between profile and Users, only one of the two Firebase Connection should add both
-     */
-    fun deleteCurrentProfile() {
-      deleteProfile(getUID())
-    }
 
     /**
      * fetches a profile from firestore
@@ -149,7 +136,7 @@ class ProfileFirebaseConnection {
      */
     suspend fun fetchProfile(uid: String): Profile? = suspendCancellableCoroutine { continuation ->
       Firebase.firestore
-        .collection(PROFILE)
+        .collection(PROFILES)
         .document(uid)
         .get()
         .addOnSuccessListener { doc ->
@@ -180,15 +167,15 @@ class ProfileFirebaseConnection {
 
       val uid = d.getString("uid")!!
       val userName = d.getString("userName")!!
-      val bio = d.getString("bio")!!
-      val image = d.getString("image")!!
-      val interests = Interests.fromString(d.getString("interests")!!)
+      val bio = d.getString("bio")
+      val image = d.getString("image")
+      val interests = Interests.fromString(d.getString("interests")?:"")
 
 
       // val profile = map["profile"] as HashMap<*, *>
       //      val interests = profile["interests"] as List<String>
 
-      return Profile(uid, userName, bio, image, interests)
+      return Profile(uid, userName, bio?:"", image?:"", interests)
     }
 
 
