@@ -210,7 +210,7 @@ fun SignUp(nav: NavigationActions) {
           enabled = isEmailValid(email) and isUsernameValid and isPasswordValid,
           onClick = { isClicked = true },
           colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-          modifier = Modifier.width(250.dp).testTag("validate")) {
+          modifier = Modifier.width(250.dp).testTag("validate").clickable { isClicked = true }) {
             Text("Sign Up", color = Color.White)
           }
 
@@ -230,7 +230,6 @@ fun SignUp(nav: NavigationActions) {
                 Modifier.testTag("verification").clickable {
                   showDialogVerif = false
                   nav.controller.navigate("setup")
-                  Log.d(TAG, "was pressed")
                 },
             onDismissRequest = {
               showDialogVerif = false

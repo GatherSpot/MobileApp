@@ -1,6 +1,7 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -103,31 +104,15 @@ class UserFirebaseConnection {
           .addOnFailureListener { onComplete(true) }
     }
 
-    //    fun updateUserInterests(uid: String, profile: Profile) {
-    //      val hm: HashMap<String, Any?> = hashMapOf("profile.interests" to
-    // profile.interests.toList())
-    //
-    //      Firebase.firestore
-    //          .collection(USERS)
-    //          .document(uid)
-    //          .update(hm)
-    //          .addOnSuccessListener { Log.d(TAG, "Interests sucessfully added!") }
-    //          .addOnFailureListener { e -> Log.w(TAG, "Error for interests", e) }
-    //    }
+    fun updateUserInterests(uid: String, interests: List<Interests>) {
+      val hm: HashMap<String, Any?> = hashMapOf("profile.interests" to interests)
 
-    //    fun getUserInterests(uid: String): Set<Interests> {
-    //      var ret = emptySet<Interests>()
-    //      Firebase.firestore
-    //          .collection(USERS)
-    //          .document(uid)
-    //          .get()
-    //          .addOnSuccessListener { document ->
-    //            if (document != null) {
-    //              ret = (document.get("profile.interests") as ArrayList<Interests>).toSet()
-    //            }
-    //          }
-    //          .addOnFailureListener { exception -> Log.d(TAG, "get failed with ", exception) }
-    //      return ret
-    //    }
+      Firebase.firestore
+          .collection(USERS)
+          .document(uid)
+          .update(hm)
+          .addOnSuccessListener { Log.d(TAG, "Interests sucessfully added!") }
+          .addOnFailureListener { e -> Log.w(TAG, "Error for interests", e) }
+    }
   }
 }

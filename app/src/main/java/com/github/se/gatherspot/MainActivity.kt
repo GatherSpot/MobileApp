@@ -32,9 +32,9 @@ import com.google.firebase.auth.FirebaseAuth
 class MainActivity : ComponentActivity() {
   companion object {
     lateinit var uid: String
+    lateinit var signInLauncher: ActivityResultLauncher<Intent>
   }
 
-  private lateinit var signInLauncher: ActivityResultLauncher<Intent>
   private lateinit var navController: NavHostController
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +45,7 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(
             FirebaseAuthUIActivityResultContract(),
         ) { res ->
-          val ret = this.onSignInResult(res, navController)
-          // see
+          this.onSignInResult(res, navController)
         }
 
     setContent {

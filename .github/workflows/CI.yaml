@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - 38-add-tests-for-loginsign-up-classes
 
   pull_request:
     types:
@@ -98,7 +99,7 @@ jobs:
           target: google_apis
           arch: x86_64
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: ./gradlew connectedCheck --parallel --build-cache --info
 
