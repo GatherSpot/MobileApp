@@ -34,19 +34,17 @@ class UserFirebaseConnectionUnit {
   @Test
   fun testAddUserAndDelete() = runTest {
     val uid = UserFirebaseConnection.getUID()
-    val username = "Test"
     val email = "random"
     val password = "random"
-    val user = User(uid, username, email, password)
+    val user = User(uid, email, password)
     UserFirebaseConnection.addUser(user)
     var userFetched: User? = null
     async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
     assertNotNull(userFetched)
     assertEquals(uid, userFetched!!.uid)
-    assertEquals(username, userFetched!!.username)
     assertEquals(password, userFetched!!.password)
 
-    UserFirebaseConnection.deleteUser(uid)
+    UserFirebaseConnection.deleteUserDoc(uid)
     async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
     assertNull(userFetched)
   }
