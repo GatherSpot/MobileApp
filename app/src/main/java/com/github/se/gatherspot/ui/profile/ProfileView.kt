@@ -181,6 +181,7 @@ class ProfileView {
       ProfileImage(imageUri, {}, false)
       UsernameField(username, {}, false)
       BioField(bio, {}, false)
+      InterestsView().ShowInterests(viewModel)
     }
   }
 
@@ -201,6 +202,7 @@ class ProfileView {
       ProfileImage(imageUri, updateImageUri, true)
       UsernameField(username, updateUsername, true)
       BioField(bio, updateBio, true)
+      InterestsView().EditInterests(viewModel)
     }
   }
 

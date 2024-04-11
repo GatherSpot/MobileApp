@@ -4,13 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import java.util.BitSet
 
 class OwnProfileViewModel : ViewModel() {
   private var _profile: Profile
   private val _username = MutableLiveData<String>()
   private val _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
+  private val _interests = MutableLiveData<BitSet?>(null)
   val username: LiveData<String>
     get() = _username
 
@@ -19,16 +25,18 @@ class OwnProfileViewModel : ViewModel() {
 
   val image: LiveData<String>
     get() = _image
-
+  val interests: LiveData<BitSet?>
+    get() = _interests
   init {
-    _profile = Profile("John Doe", "I am not a bot", "", "")
+    _profile = ProfileFirebaseConnection().fetchProfile(FirebaseAuth.getInstance().currentUser!!.uid)
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
+    _interests.value = _profile.interests
   }
 
   fun save() {
-    _profile = Profile(_username.value ?: "", bio.value ?: "", image.value ?: "", "")
+    _profile = Profile(_username.value ?: "", bio.value ?: "", image.value ?: "", _interests.value?: Interests.newBitset(), "")
     // next: THIS NEEDS SANITIZATION
     ProfileFirebaseConnection().updateProfile(_profile)
   }
@@ -37,6 +45,7 @@ class OwnProfileViewModel : ViewModel() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
+    _interests.value = _profile.interests
   }
 
   fun updateUsername(userName: String) {
@@ -51,7 +60,13 @@ class OwnProfileViewModel : ViewModel() {
     _image.value = image
   }
 
-  fun edit() {}
+  fun swapBit(ordinal: Int) {
+    println("Swapping bit $ordinal")
+    val newInterests = _interests.value?.clone() as BitSet
+    newInterests.flip(ordinal)
+    _interests.value = newInterests
+    println("New bitset: ${_interests.value}")
+  }
 }
 
 class ProfileViewModel(profile: Profile) {

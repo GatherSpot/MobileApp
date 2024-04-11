@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
@@ -70,7 +71,7 @@ class ProfileInstrumentedTest {
   @Test
   fun profileScreenTest() {
     composeTestRule.setContent {
-      ProfileView().ProfileScreen(ProfileViewModel(Profile("John Doe", "I am not a bot", "", "12")))
+      ProfileView().ProfileScreen(ProfileViewModel(Profile("John Doe", "I am not a bot", "", Interests.newBitset(), "12")))
     }
     // check if things are here :
     composeTestRule
