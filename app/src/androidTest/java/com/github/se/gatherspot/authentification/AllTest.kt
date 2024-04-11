@@ -3,7 +3,8 @@ package com.github.se.gatherspot.authentification
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performScrollToNode
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -82,18 +83,15 @@ class AllTest : TestCase() {
       }
       composeTestRule.waitForIdle()
 
-      // Little hack to make the test pass
-      // It seems that the CI is not able to scroll the list to the end
-      // No idea why this is needed for CI but not locally
-      var i = 0
+      var c = 0
       for (category in allCategories) {
         category {
-          if (i < enumValues<Interests>().size - 1) {
-            assertExists()
-            performClick()
-            performGesture { swipeUp() }
-          }
-          i++
+          composeTestRule
+              .onNodeWithTag("lazyColumn")
+              .performScrollToNode(hasTestTag(enumValues<Interests>().toList()[c].toString()))
+          assertExists()
+          performClick()
+          c++
         }
       }
 

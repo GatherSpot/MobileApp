@@ -1,9 +1,11 @@
 package com.github.se.gatherspot.authentification
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,8 +13,7 @@ import androidx.navigation.navigation
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.model.Profile
-import com.github.se.gatherspot.model.User
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -46,8 +47,6 @@ class SetUpTest : TestCase() {
       }
     }
 
-    UserFirebaseConnection.addUser(User("test", "test", "test", "test", Profile(emptySet())))
-
     composeTestRule.waitForIdle()
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       lazyColumn {
@@ -55,12 +54,16 @@ class SetUpTest : TestCase() {
         assertIsDisplayed()
       }
       composeTestRule.waitForIdle()
+      var c = 0
       for (category in allCategories) {
         category {
+          composeTestRule
+              .onNodeWithTag("lazyColumn")
+              .performScrollToNode(hasTestTag(enumValues<Interests>().toList()[c].toString()))
           assertExists()
           performClick() // Select the category
           performClick() // Deselect the category
-          performGesture { swipeUp() }
+          c++
         }
       }
       save {

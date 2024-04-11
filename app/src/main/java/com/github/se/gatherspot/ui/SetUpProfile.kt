@@ -123,7 +123,10 @@ fun FilterChipCompose(interest: Interests, interests: MutableSet<Interests>, mod
         }
       },
       label = {
-        Text((interest.toString().lowercase().capitalize()), fontSize = 20.sp, color = Color.Black)
+        Text(
+            (interest.toString().lowercase().replaceFirstChar { c -> c.uppercase() }),
+            fontSize = 20.sp,
+            color = Color.Black)
       },
       selected = selected,
       leadingIcon = {
