@@ -3,7 +3,9 @@ package com.github.se.gatherspot
 import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.model.Profile.Companion.defaultProfile
 import com.github.se.gatherspot.model.User
+import com.github.se.gatherspot.ui.isEmailValid
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
@@ -14,8 +16,8 @@ class ProfileFirebaseConnection {
 
   companion object {
 
-    const val PROFILE = "profiles"
-    const val TAG = "ProfileFirebase"
+    private const val PROFILE = "profiles"
+    private const val TAG = "ProfileFirebase"
 
     /**
      * Returns the UID of the current profile (which is by definition the UID of the current User)
@@ -25,16 +27,27 @@ class ProfileFirebaseConnection {
     }
 
     /**
-     * adds a Profile to the database
+     * Adds a default profile to match the user
+     * @param user the user to which the profile is linked
+     * @return the profile that was added
+     */
+    fun addDefaultProfile(user: User): Profile {
+      val res = defaultProfile(user)
+      addProfile(res)
+      return res
+    }
+
+    /**
+     * adds or edits a Profile to the database
      * @param profile the profile to be added
      *
-     * /!\ Due to the intimate link between profile and Users, only one of the two Firebase Connection should add both
+     * /!\ This method can override the userName without checking for uniqueness of userName therefore it is made private
      */
-    fun addProfile(profile: Profile) {
+    private fun addProfile(profile: Profile) {
       //Own non computed fields
       val bitSet = Interests.newBitset()
-      profile.interests.forEach{Interests.addInterest(bitSet, it)}
-      val interestsString : String = Interests.toString(bitSet)
+      profile.interests.forEach { Interests.addInterest(bitSet, it) }
+      val interestsString: String = Interests.toString(bitSet)
       val profileMap: HashMap<String, Any?> =
         hashMapOf(
           "uid" to profile.uid,
@@ -53,9 +66,63 @@ class ProfileFirebaseConnection {
     }
 
     /**
+     * Checks whether a userName is already present in Profile collection
+     * @param userName the string to check
+     * @return True if the userName is not found in the collection false otherwise
+     */
+    fun userNameIsAvailable(userName: String): Boolean {
+      if (userName == "")
+        return false
+      if (isEmailValid(userName))
+        return false
+      var res = true
+      Firebase.firestore
+        .collection(PROFILE)
+        .get()
+        .addOnSuccessListener { result ->
+          for (document in result) {
+            if (document.get("userName") == userName) {
+              res = false
+            }
+          }
+        }
+      return res
+    }
+
+    /**
+     * Function that allows to edit the username of the profile with uid uid
+     * @param uid
+     * @param userName
+     *
+     * if the username is not available nothing happens
+     * if there is no profile with matching uid a new profile will be created
+     */
+    suspend fun editUserName(uid: String, userName: String) {
+      if (userNameIsAvailable(userName)) {
+        val profile = fetchProfile(uid)
+        if (profile != null) {
+          profile.userName = userName
+          addProfile(profile)
+        } else {
+          addProfile(Profile(uid, userName, "", "", hashSetOf()))
+        }
+      }
+    }
+
+    /**
+     * function that edits a profile fields except for userName
+     * @param profile the profile with uid of document and field values of document except for username that will be ignored
+     */
+    suspend fun editProfile(profile: Profile) {
+      val username: String = fetchProfile(profile.uid)?.userName ?: profile.userName
+      profile.userName = username
+      addProfile(profile)
+    }
+
+    /**
      * deletes a Profile from the database
      *
-     * /!\ Due to the intimate link between profile and Users, only one of the two Firebase Connection should add both
+     * Due to the intimate link between profile and Users, deleteUser calls this function
      */
     fun deleteProfile(uid: String) {
       Log.d(TAG, "Deleting profile with uid: $uid")
@@ -68,7 +135,8 @@ class ProfileFirebaseConnection {
     /**
      * deletes the current Profile from the database
      *
-     * /!\ Due to the intimate link between profile and Users, only one of the two Firebase Connection should add both
+     * should only be called by UserFirebaseConnection
+     * Due to the intimate link between profile and Users, only one of the two Firebase Connection should add both
      */
     fun deleteCurrentProfile() {
       deleteProfile(getUID())
@@ -103,6 +171,13 @@ class ProfileFirebaseConnection {
       if (d.getString("uid") == null) {
         return null
       }
+      if (d.getString("userName") == null) {
+        return null
+      }
+      if (d.getString("userName") == "") {
+        return null
+      }
+
       val uid = d.getString("uid")!!
       val userName = d.getString("userName")!!
       val bio = d.getString("bio")!!
@@ -116,69 +191,7 @@ class ProfileFirebaseConnection {
       return Profile(uid, userName, bio, image, interests)
     }
 
-    /**
-     *  Checks wether there is a profile with that username
-     *
-     * /!!!!!!\ This implementation asssumes that the User userName and the Profile userName are the same
-     * Completely false otherwise
-     */
-    fun usernameExists(userName: String, onComplete: (Boolean) -> Unit) {
-
-      UserFirebaseConnection.usernameExists(userName, onComplete)
-    }
-
 
   }
-
-
-
-
-
-  /*
-  Unnecessary as the addProfile is simultaneously an update method
-  This is a symbolic distinction to reflect the fact that the field shared between profile and User should not be changed frivilously
-  It checks that the shared fields are the same before calling addProfile
-  If not (At the moment, check comments) it does NOT go through
-   */
-  suspend fun updateProfile(profile: Profile) {
-    val user : User? = UserFirebaseConnection.fetchUser(profile.uid)
-    if (user == null){ // user does not exist, somthing went really wrong
-      Log.e(TAG, "Error updating the Profile with uid: "+ profile.uid + " profile has no user")
-      return
-    }
-    if (profile.uid == user.uid && profile.userName == user.username){
-      addProfile(profile)
-
-    } else {
-
-
-      // Update both OR reject the update altogether
-
-      //Update both
-      //Update shared field to match that of profile
-
-      /*
-      UserFirebaseConnection.addUser(User(profile.uid, profile.userName, user.email, user.password))
-      addProfile(profile)
-      */
-
-
-      //Update shared field to match that of User
-      /*
-      addProfile (Profile(user.uid, user.username, profile.bio, profile.image, profile.interests))
-      */
-
-
-      //Reject
-      Log.e(TAG, "uid and userName should not be changed here, Update rejected")
-
-    }
-
-
-  }
-
-
-
 }
-
 

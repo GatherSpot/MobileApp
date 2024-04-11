@@ -1,6 +1,8 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.ProfileFirebaseConnection.Companion.addDefaultProfile
+import com.github.se.gatherspot.ProfileFirebaseConnection.Companion.deleteProfile
 import com.github.se.gatherspot.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -24,7 +26,6 @@ class UserFirebaseConnection {
       val userMap: HashMap<String, Any?> =
           hashMapOf(
               "uid" to user.uid,
-              "username" to user.username,
               "email" to user.email,
               "password" to user.password,
           )
@@ -37,15 +38,20 @@ class UserFirebaseConnection {
           .addOnFailureListener { e -> Log.w(TAG, "Error creating user", e) }
     }
 
-    fun deleteUser(uid: String) {
-      Log.d(TAG, "Deleting user with uid: $uid")
-      Firebase.firestore.collection(USERS).document(uid).delete().addOnFailureListener { exception
-        ->
-        Log.e(TAG, "Error deleting Event", exception)
-      }
-    }
 
-    fun deleteCurrentUser() {
+      // document du User
+      fun deleteUserDoc(uid: String) {
+          deleteProfile(uid)
+          Log.d(TAG, "Deleting user with uid: $uid")
+          Firebase.firestore.collection(USERS).document(uid).delete().addOnFailureListener { exception
+            ->
+            Log.e(TAG, "Error deleting Event", exception)
+          }
+      }
+
+
+      // authentification info
+      fun deleteCurrentUserAuth() {
       Firebase.auth.currentUser?.delete()?.addOnFailureListener { exception ->
         Log.e(TAG, "Error deleting User", exception)
       }
@@ -71,63 +77,13 @@ class UserFirebaseConnection {
         return null
       }
       val uid = d.getString("uid")!!
-      val username = d.getString("username")!!
       val email = d.getString("email")!!
       val password = d.getString("password")!!
 
-      val map = d.data!!
-      // val profile = map["profile"] as HashMap<*, *>
-      //      val interests = profile["interests"] as List<String>
 
-      return User(uid, username, email, password)
+      return User(uid, email, password)
     }
 
-    fun usernameExists(username: String, onComplete: (Boolean) -> Unit) {
 
-      var res = false
-      Firebase.firestore
-          .collection(USERS)
-          .get()
-          .addOnSuccessListener { result ->
-            for (document in result) {
-              if (document.get("username") == username) {
-                Log.d(TAG, "LOL")
-                res = true
-              }
-              if (res) {
-                break
-              }
-            }
-            onComplete(res)
-          }
-          .addOnFailureListener { onComplete(true) }
-    }
-
-    //    fun updateUserInterests(uid: String, profile: Profile) {
-    //      val hm: HashMap<String, Any?> = hashMapOf("profile.interests" to
-    // profile.interests.toList())
-    //
-    //      Firebase.firestore
-    //          .collection(USERS)
-    //          .document(uid)
-    //          .update(hm)
-    //          .addOnSuccessListener { Log.d(TAG, "Interests sucessfully added!") }
-    //          .addOnFailureListener { e -> Log.w(TAG, "Error for interests", e) }
-    //    }
-
-    //    fun getUserInterests(uid: String): Set<Interests> {
-    //      var ret = emptySet<Interests>()
-    //      Firebase.firestore
-    //          .collection(USERS)
-    //          .document(uid)
-    //          .get()
-    //          .addOnSuccessListener { document ->
-    //            if (document != null) {
-    //              ret = (document.get("profile.interests") as ArrayList<Interests>).toSet()
-    //            }
-    //          }
-    //          .addOnFailureListener { exception -> Log.d(TAG, "get failed with ", exception) }
-    //      return ret
-    //    }
   }
 }

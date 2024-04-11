@@ -27,4 +27,9 @@ class Profile(
 
 
     constructor() : this("", "", "", "", hashSetOf())
+    companion object {
+        fun defaultProfile(user: User) : Profile{
+            return Profile(user.uid, user.email, "", "", hashSetOf())
+        }
+    }
 }
