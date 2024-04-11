@@ -2,6 +2,7 @@ package com.github.se.gatherspot.model.event
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
 import java.time.LocalTime
@@ -22,6 +23,7 @@ import java.time.LocalTime
  * @param inscriptionLimitDate: The last date to register for the event (optional)
  * @param eventStatus: The status of the event (draft, created, ongoing, completed)
  * @param categories: List of category labels of the event
+ * @param organizer: Profile of the organizer
  * @param registeredUsers: The list of users who registered for the event
  * @param finalAttendees: The list of users who attended the event
  * @param images: The images uploaded for the event
@@ -42,10 +44,11 @@ data class Event(
     val inscriptionLimitDate: LocalDate?,
     val inscriptionLimitTime: LocalTime?,
     val eventStatus: EventStatus = EventStatus.DRAFT,
-    val categories: List<Interests>? = emptyList(),
+    val categories: Set<Interests>? = emptySet(),
     // List of the IDs of the users who registered for the event
-    val registeredUsers: List<String>? = emptyList(),
-    val finalAttendees: List<String>? = emptyList(),
+    val organizer: Profile = Profile("", "", "", "", emptySet()),
+    val registeredUsers: List<Profile>? = emptyList(),
+    val finalAttendees: List<Profile>? = emptyList(),
     // Find a way to upload image
     val images: ImageBitmap? = null, // TODO find default image
     val globalRating: Int?

@@ -68,7 +68,7 @@ class EventUtils {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
-            categories = categories,
+            categories = categories?.toSet(),
             eventStatus = EventStatus.CREATED)
 
     // Add the event to the database
@@ -193,7 +193,6 @@ class EventUtils {
         throw Exception("Inscription limit time must be before event start time on the same day")
       }
     }
-
     // If all the data is valid and eventAction = CREATE, call createEvent function
     if (eventAction == EventAction.CREATE) {
       return createEvent(
@@ -257,7 +256,7 @@ class EventUtils {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = oldEvent.globalRating,
-            categories = categories,
+            categories = categories?.toSet(),
             registeredUsers = oldEvent.registeredUsers,
             images = oldEvent.images,
             eventStatus = EventStatus.CREATED,
