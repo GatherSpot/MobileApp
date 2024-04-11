@@ -11,8 +11,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.model.EventViewModel
-import com.github.se.gatherspot.screens.CreateEventScreen
+import com.github.se.gatherspot.model.EventUtils
+import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.Rule
@@ -23,17 +23,17 @@ import org.junit.runner.RunWith
 class CreateEventTest {
   @get:Rule val composeTestRule = createComposeRule()
 
-  // Restructured to use CreateEventScreen
+  // Restructured to use EventDataFormScreen
   @Test
   fun testIsEverythingExist() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
+      val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if every element are displayed
       eventScaffold { assertExists() }
       topBar { assertExists() }
@@ -108,6 +108,7 @@ class CreateEventTest {
         performScrollTo()
         assert(hasText("Inscription Limit Time"))
         performClick()
+        performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventSaveButton { assertExists() }
@@ -123,12 +124,12 @@ class CreateEventTest {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
+      val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if every element are displayed
       eventScaffold { assertIsDisplayed() }
       topBar { assertIsDisplayed() }
@@ -170,17 +171,17 @@ class CreateEventTest {
       alertBox { assertDoesNotExist() }
     }
   }
-  // Restructured to use CreateEventScreen
+  // Restructured to use EventDataFormScreen
   @Test
   fun testMinimalData() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
+      val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if the button is disabled
       eventSaveButton { assertIsNotEnabled() }
       // Fill the form with minimal data
@@ -198,12 +199,12 @@ class CreateEventTest {
   fun testIfChangesAreSaved() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
+      val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Fill every field
       eventTitle.performTextInput("Test Event")
       eventDescription.performTextInput("This is a test event")
@@ -235,11 +236,11 @@ class CreateEventTest {
   fun testButtonIsOnlyEnabledAtTheRightMoment() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
+      val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if the button is disabled
       eventSaveButton.assertIsNotEnabled()
       // Fill every field
@@ -272,11 +273,11 @@ class CreateEventTest {
   fun testDialogBoxDisplayedWhenErrorsAreRaised() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
+      val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Fill every field
       eventTitle.performTextInput("Test Event")
       eventDescription.performTextInput("This is a test event")
@@ -300,6 +301,7 @@ class CreateEventTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
 
       alertBox.assertIsDisplayed()
+      // alertBoxText.assertIsDisplayed()
       alertBoxText.assertTextContains("Invalid max attendees format, must be a number")
       // Click the OK button
       alertBoxButton.performClick()
@@ -314,11 +316,11 @@ class CreateEventTest {
   fun testDialogBoxErrorDate() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
+      val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Fill every field
       eventTitle.performTextInput("Test Event")
       eventDescription.performTextInput("This is a test event")
@@ -355,8 +357,8 @@ class CreateEventTest {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+      val eventUtils = EventUtils()
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
 
     // Check if the location field is enabled for text input
@@ -367,11 +369,11 @@ class CreateEventTest {
   fun verifyPlaceHolderAndLabel() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventViewModel = EventViewModel()
-      CreateEvent(nav = NavigationActions(navController), eventViewModel)
+      val eventUtils = EventUtils()
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
 
-    ComposeScreen.onComposeScreen<CreateEventScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if the labels are displayed
       eventTitle.assert(hasText("Event Title*"))
       eventDescription.assert(hasText("Description*"))
@@ -418,13 +420,7 @@ class CreateEventTest {
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
-      eventLocation {
-        performScrollTo()
-        composeTestRule.onNodeWithText("Location").assertIsDisplayed()
-        performClick()
-        assert(hasText("Enter an address"))
-        composeTestRule.onNodeWithText("Enter an address").assertIsDisplayed()
-      }
+
       eventMaxAttendees {
         performScrollTo()
         composeTestRule.onNodeWithText("Max Attendees").assertIsDisplayed()
@@ -450,6 +446,37 @@ class CreateEventTest {
         composeTestRule.onNodeWithText("Inscription Limit Time").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
+      }
+      eventLocation {
+        performScrollTo()
+        composeTestRule.onNodeWithText("Location").assertIsDisplayed()
+        performClick()
+        assert(hasText("Enter an address"))
+        composeTestRule.onNodeWithText("Enter an address").assertIsDisplayed()
+      }
+    }
+  }
+
+  // Location test
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun testLocationQueryResult() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventUtils = EventUtils()
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
+    }
+
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+      eventLocation {
+        performClick()
+        performTextInput("ecole polytechnique federale")
+      }
+      // wait for the location proposition to appear
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
+      locationProposition { performClick() }
+      eventLocation {
+        assertTextContains("École Polytechnique Fédérale de Lausanne", substring = true)
       }
     }
   }

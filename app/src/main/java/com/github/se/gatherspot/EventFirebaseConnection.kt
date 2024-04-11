@@ -1,6 +1,8 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -104,9 +106,10 @@ class EventFirebaseConnection {
             "COMPLETED" -> EventStatus.COMPLETED
             else -> EventStatus.DRAFT
           }
-      val categories = document.get("categories") as List<String>
-      val registeredUsers = document.get("finalAttendee") as List<String>
-      val finalAttendee = document.get("finalAttendee") as List<String>
+      val categoriesList = document.get("categories") as List<String>
+      val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
+      val registeredUsers = document.get("finalAttendee") as List<Profile>
+      val finalAttendee = document.get("finalAttendee") as List<Profile>
       val images = null // TODO: Retrieve images from database
       val globalRating =
           when (val rating = document.getString("globalRating")!!) {
@@ -131,7 +134,9 @@ class EventFirebaseConnection {
           registeredUsers = registeredUsers,
           finalAttendees = finalAttendee,
           images = images,
-          globalRating = globalRating)
+          globalRating = globalRating,
+          // TODO: Add organizer
+          organizer = Profile("null", "null", "null", "null", emptySet()))
     }
     /**
      * Maps a string to a LocalTime object
@@ -231,7 +236,7 @@ class EventFirebaseConnection {
                     else ->
                         event.inscriptionLimitTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   },
-              "categories" to event.categories,
+              "categories" to event.categories?.toList(),
               "registeredUsers" to event.registeredUsers,
               "finalAttendee" to event.finalAttendees,
               "globalRating" to
