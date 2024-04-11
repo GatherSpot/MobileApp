@@ -457,6 +457,7 @@ class CreateEventTest {
   }
 
   //Location test
+    @OptIn(ExperimentalTestApi::class)
     @Test
     fun testLocationQueryResult(){
         composeTestRule.setContent {
@@ -471,10 +472,12 @@ class CreateEventTest {
                 performTextInput("ecole polytechnique federale")
             }
           // wait for the location proposition to appear
-
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
           locationProposition { performClick() }
             eventLocation {
-                assert(hasText("École Polytechnique Fédérale de Lausanne"))
+                assert(hasText("École Polytechnique Fédérale de Lausanne, Route Cantonale," +
+                        " Quartier Sorge, Ecublens, District de l'Ouest lausannois, Vaud, 1025," +
+                        " Schweiz/Suisse/Svizzera/Svizra"))
             }
         }
     }

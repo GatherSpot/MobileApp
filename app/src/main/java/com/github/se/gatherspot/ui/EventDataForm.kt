@@ -269,7 +269,7 @@ fun EventDataForm(
                     suggestions.forEach { suggestion ->
                         Log.e("EventDataForm", "Suggestion: ${suggestion.name}")
                         DropdownMenuItem(
-                            modifier = Modifier.testTag(suggestion.name + "MenuItem"),
+                            modifier = Modifier.testTag("MenuItem"),
                             text = { Text(suggestion.name) },
                             onClick = {
                                 location = suggestion
