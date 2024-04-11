@@ -15,7 +15,6 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.delay
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -301,7 +300,7 @@ class CreateEventTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
 
       alertBox.assertIsDisplayed()
-      //alertBoxText.assertIsDisplayed()
+      // alertBoxText.assertIsDisplayed()
       alertBoxText.assertTextContains("Invalid max attendees format, must be a number")
       // Click the OK button
       alertBoxButton.performClick()
@@ -456,30 +455,31 @@ class CreateEventTest {
     }
   }
 
-  //Location test
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun testLocationQueryResult(){
-        composeTestRule.setContent {
-            val navController = rememberNavController()
-            val eventUtils = EventUtils()
-            CreateEvent(nav = NavigationActions(navController), eventUtils)
-        }
-
-        ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-            eventLocation {
-                performClick()
-                performTextInput("ecole polytechnique federale")
-            }
-          // wait for the location proposition to appear
-          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
-          locationProposition { performClick() }
-            eventLocation {
-                assert(hasText("École Polytechnique Fédérale de Lausanne, Route Cantonale," +
-                        " Quartier Sorge, Ecublens, District de l'Ouest lausannois, Vaud, 1025," +
-                        " Schweiz/Suisse/Svizzera/Svizra"))
-            }
-        }
+  // Location test
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun testLocationQueryResult() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventUtils = EventUtils()
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
     }
 
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+      eventLocation {
+        performClick()
+        performTextInput("ecole polytechnique federale")
+      }
+      // wait for the location proposition to appear
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
+      locationProposition { performClick() }
+      eventLocation {
+        assert(
+            hasText(
+                "École Polytechnique Fédérale de Lausanne, Route Cantonale," +
+                    " Quartier Sorge, Ecublens, District de l'Ouest lausannois, Vaud, 1025," +
+                    " Schweiz/Suisse/Svizzera/Svizra"))
+      }
+    }
+  }
 }

@@ -50,11 +50,11 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.time.format.DateTimeFormatter
 
 private val WIDTH = 300.dp
 private val WIDTH_2ELEM = 150.dp
@@ -74,9 +74,7 @@ private val MESSAGES = arrayOf(CREATE_SPECIFIC_MESSAGES, EDIT_SPECIFIC_MESSAGES)
 @Composable
 fun ScrollableContent(content: @Composable () -> Unit) {
   Box(modifier = Modifier.fillMaxSize()) {
-    Column(modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .padding(16.dp)) { content() }
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) { content() }
   }
 }
 
@@ -110,9 +108,8 @@ fun EventDataForm(
   val queryText = MutableStateFlow("")
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
 
-    // Coroutine scope for launching coroutines
-    val coroutineScope = rememberCoroutineScope()
-
+  // Coroutine scope for launching coroutines
+  val coroutineScope = rememberCoroutineScope()
 
   if (eventAction == EventAction.EDIT) {
     event!!
@@ -154,20 +151,14 @@ fun EventDataForm(
           // Create event form
           Column(
               modifier =
-              Modifier
-                  .padding(innerPadding)
-                  .padding(horizontal = 28.dp)
-                  .testTag("formColumn"),
+                  Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
               verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
               horizontalAlignment = Alignment.CenterHorizontally,
           ) {
             Text(text = "Fields with * are required", modifier = Modifier.testTag("requiredFields"))
             // Title
             OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputTitle"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputTitle"),
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Event Title*") },
@@ -175,30 +166,21 @@ fun EventDataForm(
             // Description
             OutlinedTextField(
                 modifier =
-                Modifier
-                    .width(WIDTH)
-                    .height(DESCRIPTION_HEIGHT)
-                    .testTag("inputDescription"),
+                    Modifier.width(WIDTH).height(DESCRIPTION_HEIGHT).testTag("inputDescription"),
                 value = description,
                 onValueChange = { description = it },
                 label = { Text("Description*") },
                 placeholder = { Text("Describe the event") })
             // Start Date
             OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputStartDateEvent"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputStartDateEvent"),
                 value = eventStartDate,
                 onValueChange = { eventStartDate = it },
                 label = { Text("Start Date of the event*") },
                 placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
             // End Date
             OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputEndDateEvent"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
                 value = eventEndDate,
                 onValueChange = { eventEndDate = it },
                 label = { Text("End date of the event") },
@@ -210,10 +192,7 @@ fun EventDataForm(
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputTimeStartEvent"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeStartEvent"),
                       value = eventTimeStart,
                       onValueChange = { eventTimeStart = it },
                       label = { Text("Start time*") },
@@ -222,10 +201,7 @@ fun EventDataForm(
                   // Time End
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputTimeEndEvent"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeEndEvent"),
                       value = eventTimeEnd,
                       onValueChange = { eventTimeEnd = it },
                       label = { Text("End time*") },
@@ -238,49 +214,48 @@ fun EventDataForm(
                 modifier = Modifier.testTag("locationDropDownMenuBox"),
                 expanded = isDropdownExpanded,
                 onExpandedChange = { isDropdownExpanded = it }) {
-
-              OutlinedTextField(
-                  modifier = Modifier
-                      .menuAnchor()
-                      .width(WIDTH)
-                      .height(HEIGHT)
-                      .testTag("inputLocation"),
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.menuAnchor()
+                              .width(WIDTH)
+                              .height(HEIGHT)
+                              .testTag("inputLocation"),
                       // Do a query to get a location from text input
                       value = locationName,
-                      onValueChange = {newValue ->
-                          locationName = newValue
-                          //Give focus to the element
-                          isDropdownExpanded = true
-                          searchJob?.cancel()
-                          searchJob = coroutineScope.launch {
-                              // Debounce logic: wait for 300 milliseconds after the last text change
+                      onValueChange = { newValue ->
+                        locationName = newValue
+                        // Give focus to the element
+                        isDropdownExpanded = true
+                        searchJob?.cancel()
+                        searchJob =
+                            coroutineScope.launch {
+                              // Debounce logic: wait for 300 milliseconds after the last text
+                              // change
                               delay(300)
                               Log.e("EventDataForm", "Querying for $newValue")
                               suggestions = eventUtils.fetchLocationSuggestions(newValue)
                               Log.e("EventDataForm", "Suggestions: $suggestions")
-                          }
+                            }
                       },
                       label = { Text("Location") },
                       placeholder = { Text("Enter an address") })
 
-                ExposedDropdownMenu(
-                    expanded = isDropdownExpanded && suggestions.isNotEmpty(),
-                    onDismissRequest = { isDropdownExpanded = false }) {
-                    suggestions.forEach { suggestion ->
-                        Log.e("EventDataForm", "Suggestion: ${suggestion.name}")
-                        DropdownMenuItem(
-                            modifier = Modifier.testTag("MenuItem"),
-                            text = { Text(suggestion.name) },
-                            onClick = {
+                  ExposedDropdownMenu(
+                      expanded = isDropdownExpanded && suggestions.isNotEmpty(),
+                      onDismissRequest = { isDropdownExpanded = false }) {
+                        suggestions.forEach { suggestion ->
+                          Log.e("EventDataForm", "Suggestion: ${suggestion.name}")
+                          DropdownMenuItem(
+                              modifier = Modifier.testTag("MenuItem"),
+                              text = { Text(suggestion.name) },
+                              onClick = {
                                 location = suggestion
                                 locationName = suggestion.name
                                 isDropdownExpanded = false
-                            })
-                    }
+                              })
+                        }
+                      }
                 }
-
-
-            }
 
             // Categories
             InterestSelector(Interests.entries, categories)
@@ -291,10 +266,7 @@ fun EventDataForm(
                   // Min attendees
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputMinAttendees"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
                       value = minAttendees,
                       onValueChange = { minAttendees = it },
                       label = { Text("Min Attendees") },
@@ -302,10 +274,7 @@ fun EventDataForm(
                   // Max attendees
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputMaxAttendees"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
                       value = maxAttendees,
                       onValueChange = { maxAttendees = it },
                       label = { Text("Max Attendees") },
@@ -315,10 +284,7 @@ fun EventDataForm(
             // Inscription limit date
             OutlinedTextField(
                 modifier =
-                Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputInscriptionLimitDate"),
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
                 label = { Text("Inscription Limit Date") },
@@ -326,10 +292,7 @@ fun EventDataForm(
             // Inscription limit time
             OutlinedTextField(
                 modifier =
-                Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputInscriptionLimitTime"),
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
                 value = inscriptionLimitTime,
                 onValueChange = { inscriptionLimitTime = it },
                 label = { Text("Inscription Limit Time") },
@@ -341,7 +304,7 @@ fun EventDataForm(
             Button(
                 onClick = {
                   try {
-                      //give the event if update
+                    // give the event if update
                     eventUtils.validateAndCreateOrUpdateEvent(
                         title.text,
                         description.text,
@@ -356,17 +319,13 @@ fun EventDataForm(
                         inscriptionLimitDate.text,
                         inscriptionLimitTime.text,
                         eventAction,
-                        event
-                    )
+                        event)
                   } catch (e: Exception) {
                     errorMessage = e.message.toString()
                     showErrorDialog = true
                   }
                 },
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("createEventButton"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
                 enabled =
                     (title.text != "") &&
                         (description.text != "") &&
@@ -403,10 +362,7 @@ fun InterestSelector(interests: List<Interests>, categories: MutableList<Interes
             placeholder = { Text(text = "Select categories") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            modifier = Modifier
-                .menuAnchor()
-                .width(WIDTH)
-                .height(HEIGHT))
+            modifier = Modifier.menuAnchor().width(WIDTH).height(HEIGHT))
 
         ExposedDropdownMenu(
             modifier = Modifier.testTag("exposedDropdownMenu"),
