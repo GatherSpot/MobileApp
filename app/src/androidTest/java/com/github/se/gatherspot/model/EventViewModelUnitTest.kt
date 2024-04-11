@@ -1,4 +1,4 @@
-import com.github.se.gatherspot.model.EventViewModel
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.location.Location
 import java.time.LocalDate
 import java.time.LocalTime
@@ -6,7 +6,7 @@ import org.junit.Assert
 import org.junit.Test
 
 class EventViewModelTest {
-  val eventViewModel = EventViewModel()
+  val eventViewModel = EventUtils()
 
   // Write tests for validateParseEventData
   @Test

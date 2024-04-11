@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.model.EventViewModel
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
@@ -59,7 +59,7 @@ fun ScrollableContent(content: @Composable () -> Unit) {
 /** Composable function that gives the GUI to create an event */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateEvent(nav: NavigationActions, eventViewModel: EventViewModel) {
+fun CreateEvent(nav: NavigationActions, eventViewModel: EventUtils) {
   var title by remember { mutableStateOf(TextFieldValue("")) }
   var description by remember { mutableStateOf(TextFieldValue("")) }
   var location by remember { mutableStateOf<Location?>(null) }
@@ -262,5 +262,5 @@ fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
 @Preview
 @Composable
 fun CreateEventPreview() {
-  CreateEvent(NavigationActions(rememberNavController()), EventViewModel())
+  CreateEvent(NavigationActions(rememberNavController()), EventUtils())
 }

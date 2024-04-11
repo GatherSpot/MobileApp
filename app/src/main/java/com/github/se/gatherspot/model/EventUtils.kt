@@ -8,7 +8,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class EventViewModel {
+class EventUtils {
 
   /**
    * Create an event from verified data
@@ -58,8 +58,7 @@ class EventViewModel {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
-            eventStatus = EventStatus.CREATED
-        )
+            eventStatus = EventStatus.CREATED)
 
     // Add the event to the database
     EventFirebaseConnection.addNewEvent(event)
