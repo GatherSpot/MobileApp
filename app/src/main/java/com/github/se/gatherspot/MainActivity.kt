@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.ui.Chat
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.Events
@@ -61,7 +62,7 @@ class MainActivity : ComponentActivity() {
             }
 
             navigation(startDestination = "events", route = "home") {
-              composable("events") { Events(NavigationActions(navController)) }
+              composable("events") { Events(EventsViewModel(), NavigationActions(navController)) }
 
               composable("map") { Map(NavigationActions(navController)) }
 
