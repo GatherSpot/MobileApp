@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,9 +60,10 @@ class ProfileView {
               tabList = TOP_LEVEL_DESTINATIONS,
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
-        content = { paddingValues: PaddingValues ->
+      content = { paddingValues: PaddingValues ->
           ViewOwnProfileContent(viewModel, navController)
           Log.d(ContentValues.TAG, paddingValues.toString())
+
         })
   }
 
@@ -84,7 +86,7 @@ class ProfileView {
               tabList = TOP_LEVEL_DESTINATIONS,
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
-        content = { paddingValues: PaddingValues ->
+      content = { paddingValues: PaddingValues ->
           EditOwnProfileContent(viewModel, navController)
           Log.d(ContentValues.TAG, paddingValues.toString())
         })
@@ -176,14 +178,17 @@ class ProfileView {
     val username by viewModel.username.observeAsState(initial = "")
     val bio by viewModel.bio.observeAsState(initial = "")
     val imageUri by viewModel.image.observeAsState(initial = "")
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+    Column {
       EditButton(navController)
-      ProfileImage(imageUri, {}, false)
-      UsernameField(username, {}, false)
-      BioField(bio, {}, false)
-      InterestsView().ShowInterests(viewModel)
+      Column(modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState())) {
+        ProfileImage(imageUri, {}, false)
+        UsernameField(username, {}, false)
+        BioField(bio, {}, false)
+        InterestsView().ShowInterests(viewModel)
+        Spacer(modifier = Modifier.height(56.dp))
+        }
+      }
     }
-  }
 
   @Composable
   private fun EditOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
@@ -197,12 +202,15 @@ class ProfileView {
     val updateImageUri = { s: String -> viewModel.updateProfileImage(s) }
     val save = { viewModel.save() }
     val cancel = { viewModel.cancel() }
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+    Column {
       SaveCancelButtons(save, cancel, navController)
-      ProfileImage(imageUri, updateImageUri, true)
-      UsernameField(username, updateUsername, true)
-      BioField(bio, updateBio, true)
-      InterestsView().EditInterests(viewModel)
+      Column(modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState())) {
+        ProfileImage(imageUri, updateImageUri, true)
+        UsernameField(username, updateUsername, true)
+        BioField(bio, updateBio, true)
+        InterestsView().EditInterests(viewModel)
+        Spacer(modifier = Modifier.height(56.dp))
+      }
     }
   }
 
