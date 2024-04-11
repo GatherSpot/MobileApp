@@ -53,7 +53,6 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
@@ -233,8 +232,8 @@ fun EventDataForm(
                       placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
                 }
             // Location
-              var isDropdownExpanded by remember { mutableStateOf(false) }
-              var searchJob by remember { mutableStateOf<Job?>(null) }
+            var isDropdownExpanded by remember { mutableStateOf(false) }
+            var searchJob by remember { mutableStateOf<Job?>(null) }
             ExposedDropdownMenuBox(
                 modifier = Modifier.testTag("locationDropDownMenuBox"),
                 expanded = isDropdownExpanded,
@@ -342,7 +341,8 @@ fun EventDataForm(
             Button(
                 onClick = {
                   try {
-                    eventUtils.validateAndCreateEvent(
+                      //give the event if update
+                    eventUtils.validateAndCreateOrUpdateEvent(
                         title.text,
                         description.text,
                         location,
@@ -354,7 +354,10 @@ fun EventDataForm(
                         maxAttendees.text,
                         minAttendees.text,
                         inscriptionLimitDate.text,
-                        inscriptionLimitTime.text)
+                        inscriptionLimitTime.text,
+                        eventAction,
+                        event
+                    )
                   } catch (e: Exception) {
                     errorMessage = e.message.toString()
                     showErrorDialog = true

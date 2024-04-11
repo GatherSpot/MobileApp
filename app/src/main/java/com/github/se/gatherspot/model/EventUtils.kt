@@ -5,6 +5,7 @@ import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.ui.EventAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -17,6 +18,7 @@ import java.time.format.DateTimeFormatter
 private const val ELEMENTS_TO_DISPLAY = 5
 
 class EventUtils {
+
 
     /**
      * Create an event from verified data
@@ -79,7 +81,7 @@ class EventUtils {
 
     /**
      * Check if the data entered by the user is valid. Parse the data and check if it is in the
-     * correct format, then call createEvent function. If the eventCreation is successful, return
+     * correct format, then call createEvent or updateEvent function. If the eventCreation is successful, return
      * true. All the parameters are strings, as they are taken from the user input.
      *
      * @param title: The title of the event
@@ -93,10 +95,11 @@ class EventUtils {
      * @param minAttendees: The minimum number of attendees
      * @param dateLimitInscription: The last date to register for the event
      * @param timeLimitInscription: The last time to register for the event
+     *
      * @return true if the data is valid
      * @throws Exception if the data is not valid
      */
-    fun validateAndCreateEvent(
+    fun validateAndCreateOrUpdateEvent(
         title: String,
         description: String,
         location: Location?,
@@ -108,7 +111,9 @@ class EventUtils {
         maxAttendees: String,
         minAttendees: String,
         dateLimitInscription: String,
-        timeLimitInscription: String
+        timeLimitInscription: String,
+        eventAction : EventAction,
+        event: Event? = null
     ): Event {
         // test if the date is valid
         val parsedEventStartDate = validateDate(eventStartDate, "Invalid date format")
@@ -196,36 +201,83 @@ class EventUtils {
             }
         }
 
-        // If all the data is valid, call createEvent function
-        return createEvent(
+        // If all the data is valid and eventAction = CREATE, call createEvent function
+        if (eventAction == EventAction.CREATE) {
+            return createEvent(
+                title,
+                description,
+                location,
+                parsedEventStartDate,
+                parsedEventEndDate,
+                parsedEventTimeStart,
+                parsedEventTimeEnd,
+                categories,
+                parsedMaxAttendees,
+                parsedMinAttendees,
+                parsedDateLimitInscription,
+                parsedTimeLimitInscription
+            )
+        }else{
+            return editEvent(
+                title,
+                description,
+                location,
+                parsedEventStartDate,
+                parsedEventEndDate,
+                parsedEventTimeStart,
+                parsedEventTimeEnd,
+                categories,
+                parsedMaxAttendees,
+                parsedMinAttendees,
+                parsedDateLimitInscription,
+                parsedTimeLimitInscription,
+                event!!
+            )
+        }
+    }
+
+
+
+
+    private fun editEvent( title: String,
+                   description: String,
+                   location: Location?,
+                   eventStartDate: LocalDate,
+                   eventEndDate: LocalDate?,
+                   eventTimeStart: LocalTime,
+                   eventTimeEnd: LocalTime,
+                   categories: List<Interests>?,
+                   maxAttendees: Int?,
+                   minAttendees: Int?,
+                   dateLimitInscription: LocalDate?,
+                   timeLimitInscription: LocalTime?,
+                   oldEvent: Event
+    ): Event {
+        val event = Event(
+            oldEvent.eventID,
             title,
             description,
             location,
-            parsedEventStartDate,
-            parsedEventEndDate,
-            parsedEventTimeStart,
-            parsedEventTimeEnd,
-            categories,
-            parsedMaxAttendees,
-            parsedMinAttendees,
-            parsedDateLimitInscription,
-            parsedTimeLimitInscription
+            eventStartDate,
+            eventEndDate,
+            eventTimeStart,
+            eventTimeEnd,
+            maxAttendees,
+            attendanceMinCapacity = minAttendees ?: 0,
+            dateLimitInscription,
+            timeLimitInscription,
+            globalRating = oldEvent.globalRating,
+            categories = categories,
+            registeredUsers = oldEvent.registeredUsers,
+            images = oldEvent.images,
+
+            eventStatus = EventStatus.CREATED,
+
         )
+        // Add the event to the database
+        EventFirebaseConnection.addNewEvent(event)
+        return event
     }
-
-    /**
-     * Fetch an event from the database and return an event object
-     *
-     * @param eventID: The unique identifier of the event
-     * @return The event fetched
-     */
-
-
-    /**
-     * Once an event is edited, fetch the event from the database, update the modified fields, get the
-     * unmodified data and update the event in the database
-     */
-    fun editEvent(eventID: String, newEvent: Event) {}
 
     fun validateDate(date: String, eMessage: String): LocalDate {
         try {
@@ -272,18 +324,20 @@ class EventUtils {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                    Log.e("Response", response.body?.string() ?: "")
 
-                    val responseBody = response.body?.string() ?: return@use emptyList<Location>()
-                    val jsonArray = JSONArray(responseBody)
-                    for (i in 0 until minOf(jsonArray.length(), ELEMENTS_TO_DISPLAY)){
-                        val jsonObject = jsonArray.getJSONObject(i)
-                        val displayName = jsonObject.getString("display_name")
-                        val latitude = jsonObject.getDouble("lat")
-                        val longitude = jsonObject.getDouble("lon")
-                        suggestions.add(
-                            Location(latitude = latitude, longitude = longitude, name = displayName)
-                        )
+                    val responseBody = response.body?.string()
+                    responseBody?.let {
+                        val jsonArray = JSONArray(it)
+                        val elementsToDisplay = minOf(jsonArray.length(), ELEMENTS_TO_DISPLAY)
+                        for (i in 0 until elementsToDisplay) {
+                            val jsonObject = jsonArray.getJSONObject(i)
+                            val displayName = jsonObject.getString("display_name")
+                            val latitude = jsonObject.getDouble("lat")
+                            val longitude = jsonObject.getDouble("lon")
+                            suggestions.add(
+                                Location(latitude = latitude, longitude = longitude, name = displayName)
+                            )
+                        }
                     }
                 }
             } catch (e: Exception) {
