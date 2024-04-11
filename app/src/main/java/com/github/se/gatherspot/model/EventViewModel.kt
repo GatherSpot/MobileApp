@@ -58,7 +58,7 @@ class EventViewModel {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
-            eventStatus = EventStatus.CREATED,
+            eventStatus = EventStatus.CREATED
         )
 
     // Add the event to the database
