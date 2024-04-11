@@ -12,7 +12,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.screens.CreateEventScreen
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen

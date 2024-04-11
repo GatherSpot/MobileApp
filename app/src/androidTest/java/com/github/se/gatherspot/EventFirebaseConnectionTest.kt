@@ -1,6 +1,5 @@
 package com.github.se.gatherspot
 
-
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus

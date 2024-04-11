@@ -70,7 +70,9 @@ class ProfileInstrumentedTest {
   @Test
   fun profileScreenTest() {
     composeTestRule.setContent {
-      ProfileView().ProfileScreen(ProfileViewModel(Profile("John Doe", "I am not a bot", "", "12")))
+      ProfileView()
+          .ProfileScreen(
+              ProfileViewModel(Profile("John Doe", "I am not a bot", "", "12", emptySet())))
     }
     // check if things are here :
     composeTestRule

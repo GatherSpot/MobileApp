@@ -4,8 +4,6 @@ import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
-
-=======
 import com.github.se.gatherspot.ui.EventAction
 import java.io.IOException
 import java.time.LocalDate
@@ -70,7 +68,7 @@ class EventUtils {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
-            categories = categories.toSet(),
+            categories = categories?.toSet(),
             eventStatus = EventStatus.CREATED)
 
     // Add the event to the database
@@ -258,7 +256,7 @@ class EventUtils {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = oldEvent.globalRating,
-            categories = categories,
+            categories = categories?.toSet(),
             registeredUsers = oldEvent.registeredUsers,
             images = oldEvent.images,
             eventStatus = EventStatus.CREATED,
@@ -291,7 +289,6 @@ class EventUtils {
       throw Exception(eMessage)
     }
   }
-
 
   /** Fetch location suggestions from the OpenStreetMap API. Basic code to improve */
   suspend fun fetchLocationSuggestions(query: String): List<Location> =

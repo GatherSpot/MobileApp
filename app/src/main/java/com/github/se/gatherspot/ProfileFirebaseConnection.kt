@@ -10,7 +10,7 @@ class ProfileFirebaseConnection {
 
   fun fetchProfile(uid: String): Profile {
 
-    return Profile("John Doe", "I am not a bot", "", "")
+    return Profile()
   }
 
   fun updateProfile(profile: Profile) {}

@@ -39,6 +39,6 @@ fun ProfilePreview() {
 @Preview
 @Composable
 fun ViewProfilePreview() {
-  val profile = Profile("John Doe", "I am not a bot", "", "")
+  val profile = Profile("John Doe", "I am not a bot", "", "", emptySet())
   ProfileView().ProfileScreen(ProfileViewModel(profile))
 }
