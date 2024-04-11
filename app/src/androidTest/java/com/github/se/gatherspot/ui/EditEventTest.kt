@@ -64,15 +64,27 @@ class EditEventTest {
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventTitle.assertIsDisplayed()
       eventDescription.assertIsDisplayed()
-      eventStartDate.assertIsDisplayed()
-      eventEndDate.assertIsDisplayed()
-      eventTimeStart.assertIsDisplayed()
-      eventTimeEnd.assertIsDisplayed()
+      eventStartDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventEndDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventTimeStart {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventTimeEnd {
+        performScrollTo()
+        assertIsDisplayed()
+      }
       dropDownCategoriesBox {
         performClick()
         assertIsDisplayed()
       }
-      dropDownCategories.assertIsDisplayed()
+      dropDownCategories { assertIsDisplayed() }
       eventMinAttendees {
         performScrollTo()
         assertIsDisplayed()
@@ -116,6 +128,7 @@ class EditEventTest {
       eventTimeStart.assert(hasText("10:00"))
       eventTimeEnd.assert(hasText("12:00"))
       dropDownCategoriesBox {
+        performScrollTo()
         performClick()
         assertIsDisplayed()
       }
@@ -182,6 +195,7 @@ class EditEventTest {
       }
 
       dropDownCategoriesBox {
+        performScrollTo()
         performClick()
         assertIsDisplayed()
       }
