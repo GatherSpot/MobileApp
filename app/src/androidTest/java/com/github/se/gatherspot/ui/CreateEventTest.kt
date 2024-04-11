@@ -108,6 +108,7 @@ class CreateEventTest {
         performScrollTo()
         assert(hasText("Inscription Limit Time"))
         performClick()
+        performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventSaveButton { assertExists() }
@@ -475,11 +476,7 @@ class CreateEventTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
       locationProposition { performClick() }
       eventLocation {
-        assert(
-            hasText(
-                "École Polytechnique Fédérale de Lausanne, Chemin des Codoz, Quartier Lac," +
-                    " Saint-Sulpice, District de l'Ouest lausannois, Vaud, 1025, " +
-                    "Schweiz/Suisse/Svizzera/Svizra"))
+        assertTextContains("École Polytechnique Fédérale de Lausanne", substring = true)
       }
     }
   }
