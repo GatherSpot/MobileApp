@@ -107,7 +107,7 @@ class EventFirebaseConnection {
             else -> EventStatus.DRAFT
           }
       val categoriesList = document.get("categories") as List<String>
-      val categories = categoriesList.map { Interests.valueOf(it) }
+      val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
       val registeredUsers = document.get("finalAttendee") as List<Profile>
       val finalAttendee = document.get("finalAttendee") as List<Profile>
       val images = null // TODO: Retrieve images from database
@@ -136,8 +136,7 @@ class EventFirebaseConnection {
           images = images,
           globalRating = globalRating,
           // TODO: Add organizer
-          organizer = Profile(interests = categories, userName = "Organizer"),
-      )
+          organizer = Profile("null", "null", "null", "null", emptySet()))
     }
     /**
      * Maps a string to a LocalTime object
@@ -237,7 +236,7 @@ class EventFirebaseConnection {
                     else ->
                         event.inscriptionLimitTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   },
-              "categories" to event.categories,
+              "categories" to event.categories?.toList(),
               "registeredUsers" to event.registeredUsers,
               "finalAttendee" to event.finalAttendees,
               "globalRating" to

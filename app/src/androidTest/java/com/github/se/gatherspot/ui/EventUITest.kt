@@ -31,16 +31,18 @@ class EventUITest {
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
               organizer =
                   com.github.se.gatherspot.model.Profile(
-                      interests =
-                          listOf(
-                              Interests.BASKETBALL,
-                              Interests.FOOTBALL,
-                              Interests.BOWLING,
-                              Interests.CHESS),
-                      userName = "Elias"),
+                      "Elias",
+                      "Bio",
+                      "image",
+                      "uid",
+                      setOf(
+                          Interests.BASKETBALL,
+                          Interests.FOOTBALL,
+                          Interests.BOWLING,
+                          Interests.CHESS)),
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
-              categories = listOf(Interests.BASKETBALL),
+              categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.now().plusDays(5),
               eventStartDate = LocalDate.now().plusDays(4),
               globalRating = 4,
@@ -85,16 +87,18 @@ class EventUITest {
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
               organizer =
                   com.github.se.gatherspot.model.Profile(
-                      interests =
-                          listOf(
-                              Interests.BASKETBALL,
-                              Interests.FOOTBALL,
-                              Interests.BOWLING,
-                              Interests.CHESS),
-                      userName = "Elias"),
+                      "Elias",
+                      "Bio",
+                      "image",
+                      "uid",
+                      setOf(
+                          Interests.BASKETBALL,
+                          Interests.FOOTBALL,
+                          Interests.BOWLING,
+                          Interests.CHESS)),
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
-              categories = listOf(Interests.BASKETBALL),
+              categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.now().plusDays(5),
               eventStartDate = LocalDate.now().plusDays(4),
               globalRating = 4,
@@ -172,10 +176,18 @@ class EventUITest {
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
               organizer =
                   com.github.se.gatherspot.model.Profile(
-                      interests = listOf(Interests.BASKETBALL), userName = "Elias"),
+                      "Elias",
+                      "Bio",
+                      "image",
+                      "uid",
+                      setOf(
+                          Interests.BASKETBALL,
+                          Interests.FOOTBALL,
+                          Interests.BOWLING,
+                          Interests.CHESS)),
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
-              categories = listOf(Interests.BASKETBALL),
+              categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
               globalRating = 4,

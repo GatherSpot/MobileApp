@@ -39,7 +39,7 @@ class UserFirebaseConnectionUnit {
     val username = "Test"
     val email = "random"
     val password = "random"
-    val user = User(uid, username, email, password, Profile(emptyList(), ""))
+    val user = User(uid, username, email, password, Profile("", "", "", "", emptySet()))
     UserFirebaseConnection.addUser(user)
     var userFetched: User? = null
     async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
@@ -60,10 +60,10 @@ class UserFirebaseConnectionUnit {
     val username = "Test"
     val email = "random"
     val password = "random"
-    val user = User(uid, username, email, password, Profile(emptyList(), ""))
+    val user = User(uid, username, email, password, Profile("", "", "", "", emptySet()))
     UserFirebaseConnection.addUser(user)
     UserFirebaseConnection.updateUserInterests(
-        uid, Profile(listOf(Interests.ART, Interests.BASKETBALL), ""))
+        uid, Profile("", "", "", "", setOf(Interests.ART, Interests.BASKETBALL)))
     var userFetched: User? = null
     async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
     assertTrue(userFetched!!.profile.interests.contains(Interests.ART))

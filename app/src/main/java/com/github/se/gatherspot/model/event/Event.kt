@@ -43,9 +43,9 @@ data class Event(
     val inscriptionLimitDate: LocalDate?,
     val inscriptionLimitTime: LocalTime?,
     val eventStatus: EventStatus = EventStatus.DRAFT,
-    val categories: List<Interests>? = emptyList(),
+    val categories: Set<Interests>? = emptySet(),
     // List of the IDs of the users who registered for the event
-    val organizer: Profile = Profile(emptyList(), ""),
+    val organizer: Profile = Profile("", "", "", "", emptySet()),
     val registeredUsers: List<Profile>? = emptyList(),
     val finalAttendees: List<Profile>? = emptyList(),
     // Find a way to upload image
