@@ -20,79 +20,73 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.model.Interests
 
-
 public class InterestsView {
-    @Preview
-    @Composable
-    fun InterestsPreview() {
-        EditInterests(OwnProfileViewModel())
-    }
+  @Preview
+  @Composable
+  fun InterestsPreview() {
+    EditInterests(OwnProfileViewModel())
+  }
 
-    @OptIn(ExperimentalLayoutApi::class)
-    @Composable
-    fun EditInterests(viewModel: OwnProfileViewModel) {
-        val interestList = enumValues<Interests>().toList()
-        val bitset by viewModel.interests.observeAsState(Interests.newBitset())
-        val swapBit = viewModel::swapBit
-        FlowRow()
-        {
-            interestList.forEach { interest ->
-                EditableInterest(interest, bitset?.get(interest.ordinal) ?:false ) { ordinal -> swapBit(ordinal) }
-            }
+  @OptIn(ExperimentalLayoutApi::class)
+  @Composable
+  fun EditInterests(viewModel: OwnProfileViewModel) {
+    val interestList = enumValues<Interests>().toList()
+    val bitset by viewModel.interests.observeAsState(Interests.newBitset())
+    val swapBit = viewModel::swapBit
+    FlowRow() {
+      interestList.forEach { interest ->
+        EditableInterest(interest, bitset?.get(interest.ordinal) ?: false) { ordinal ->
+          swapBit(ordinal)
         }
+      }
     }
-    @OptIn(ExperimentalLayoutApi::class)
-    @Composable
-    fun ShowInterests(viewModel: OwnProfileViewModel) {
-        val interestList = enumValues<Interests>().toList()
-        val bitset by viewModel.interests.observeAsState(Interests.newBitset())
-        FlowRow()
-        {
-            interestList.forEach { interest ->
-                UneditableInterest(interest, bitset?.get(interest.ordinal) ?:false )
-            }
-        }
-    }
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    private fun EditableInterest(interest: Interests, selected: Boolean, onClick: (Int) -> Unit) {
+  }
 
-        FilterChip(
-            onClick = { onClick(interest.ordinal) },
-            label = {
-                Text(interest.name)
-            },
-            selected = selected,
-            leadingIcon = {
-                if (selected) {
-                    Icon(
-                        imageVector = Icons.Filled.Done,
-                        contentDescription = "Done icon",
-                        modifier = Modifier.size(FilterChipDefaults.IconSize)
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Add icon",
-                        modifier = Modifier.size(FilterChipDefaults.IconSize)
-                    )
-                }
-            },
-            modifier = Modifier.padding(horizontal = 4.dp)
-        )
+  @OptIn(ExperimentalLayoutApi::class)
+  @Composable
+  fun ShowInterests(viewModel: OwnProfileViewModel) {
+    val interestList = enumValues<Interests>().toList()
+    val bitset by viewModel.interests.observeAsState(Interests.newBitset())
+    FlowRow() {
+      interestList.forEach { interest ->
+        UneditableInterest(interest, bitset?.get(interest.ordinal) ?: false)
+      }
     }
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    private fun UneditableInterest(interest: Interests,selected: Boolean){
-        if (selected){
-        FilterChip(
-            onClick = {},
-            label = {
-                Text(interest.name)
-            },
-            selected = true,
-            modifier = Modifier.padding(horizontal = 4.dp)
-        )
-        }
+  }
+
+  @OptIn(ExperimentalMaterial3Api::class)
+  @Composable
+  private fun EditableInterest(interest: Interests, selected: Boolean, onClick: (Int) -> Unit) {
+
+    FilterChip(
+        onClick = { onClick(interest.ordinal) },
+        label = { Text(interest.name) },
+        selected = selected,
+        leadingIcon = {
+          if (selected) {
+            Icon(
+                imageVector = Icons.Filled.Done,
+                contentDescription = "Done icon",
+                modifier = Modifier.size(FilterChipDefaults.IconSize))
+          } else {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Add icon",
+                modifier = Modifier.size(FilterChipDefaults.IconSize))
+          }
+        },
+        modifier = Modifier.padding(horizontal = 4.dp))
+  }
+
+  @OptIn(ExperimentalMaterial3Api::class)
+  @Composable
+  private fun UneditableInterest(interest: Interests, selected: Boolean) {
+    if (selected) {
+      FilterChip(
+          onClick = {},
+          label = { Text(interest.name) },
+          selected = true,
+          modifier = Modifier.padding(horizontal = 4.dp))
     }
+  }
 }

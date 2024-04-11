@@ -60,10 +60,9 @@ class ProfileView {
               tabList = TOP_LEVEL_DESTINATIONS,
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
-      content = { paddingValues: PaddingValues ->
+        content = { paddingValues: PaddingValues ->
           ViewOwnProfileContent(viewModel, navController)
           Log.d(ContentValues.TAG, paddingValues.toString())
-
         })
   }
 
@@ -86,7 +85,7 @@ class ProfileView {
               tabList = TOP_LEVEL_DESTINATIONS,
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
-      content = { paddingValues: PaddingValues ->
+        content = { paddingValues: PaddingValues ->
           EditOwnProfileContent(viewModel, navController)
           Log.d(ContentValues.TAG, paddingValues.toString())
         })
@@ -186,9 +185,9 @@ class ProfileView {
         BioField(bio, {}, false)
         InterestsView().ShowInterests(viewModel)
         Spacer(modifier = Modifier.height(56.dp))
-        }
       }
     }
+  }
 
   @Composable
   private fun EditOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {

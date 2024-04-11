@@ -22,5 +22,6 @@ class Profile(
   var bio: String = _bio
   var image: String = _image
   var interests: BitSet = _interests
-  constructor() : this("", "", "", Interests.newBitset(),"")
+
+  constructor() : this("", "", "", Interests.newBitset(), "")
 }

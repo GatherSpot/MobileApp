@@ -7,8 +7,6 @@ import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import java.util.BitSet
 
 class OwnProfileViewModel : ViewModel() {
@@ -25,10 +23,13 @@ class OwnProfileViewModel : ViewModel() {
 
   val image: LiveData<String>
     get() = _image
+
   val interests: LiveData<BitSet?>
     get() = _interests
+
   init {
-    _profile = ProfileFirebaseConnection().fetchProfile(FirebaseAuth.getInstance().currentUser!!.uid)
+    _profile =
+        ProfileFirebaseConnection().fetchProfile(FirebaseAuth.getInstance().currentUser!!.uid)
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
@@ -36,7 +37,13 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun save() {
-    _profile = Profile(_username.value ?: "", bio.value ?: "", image.value ?: "", _interests.value?: Interests.newBitset(), "")
+    _profile =
+        Profile(
+            _username.value ?: "",
+            bio.value ?: "",
+            image.value ?: "",
+            _interests.value ?: Interests.newBitset(),
+            "")
     // next: THIS NEEDS SANITIZATION
     ProfileFirebaseConnection().updateProfile(_profile)
   }
