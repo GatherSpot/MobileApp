@@ -11,7 +11,6 @@ import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
@@ -104,7 +103,7 @@ class SignUpTest : TestCase() {
       }
     }
 
-    UserFirebaseConnection.addUser(User("test", "test", "test", "test", Profile(emptySet())))
+    UserFirebaseConnection.addUser(User("test", "test", "test", "test"))
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField {
         performTextInput("test")

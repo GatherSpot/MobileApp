@@ -1,6 +1,7 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -103,7 +104,6 @@ class UserFirebaseConnection {
           .addOnFailureListener { onComplete(true) }
     }
 
-
     fun updateUserInterests(uid: String, interests: List<Interests>) {
       val hm: HashMap<String, Any?> = hashMapOf("profile.interests" to interests)
 
@@ -114,6 +114,5 @@ class UserFirebaseConnection {
           .addOnSuccessListener { Log.d(TAG, "Interests sucessfully added!") }
           .addOnFailureListener { e -> Log.w(TAG, "Error for interests", e) }
     }
-
   }
 }

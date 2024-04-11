@@ -81,9 +81,11 @@ fun SignUp(nav: NavigationActions) {
             showDialog = true
             isClicked = false
           }
-        } catch (e: Exception) {
-          Log.d(TAG, e.toString())
         }
+      } catch (e: Exception) {
+        Log.d(TAG, e.toString())
+      }
+    }
   }
 
   LaunchedEffect(key1 = username) {

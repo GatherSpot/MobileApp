@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -34,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.UserFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
@@ -74,13 +77,12 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpScreen")) {
     Text(text = "Choose your interests", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
-     LazyColumn(Modifier.weight(1f).testTag("lazyColumn")) {
+    LazyColumn(Modifier.weight(1f).testTag("lazyColumn")) {
       items(allCategories) { interest ->
         FilterChipCompose(interest, interests, Modifier.testTag(interest.toString()))
         Spacer(modifier = Modifier.height(2.dp))
       }
-     }
-
+    }
 
     Column {
       Spacer(modifier = Modifier.height(20.dp))
