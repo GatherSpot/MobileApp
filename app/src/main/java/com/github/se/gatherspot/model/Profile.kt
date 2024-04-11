@@ -26,6 +26,7 @@ class Profile(
     var history : List<Event> = listOf()
 
 
+    constructor(uid: String, userName: String) : this(uid, userName, "","", hashSetOf() )
     constructor() : this("", "", "", "", hashSetOf())
     companion object {
         fun defaultProfile(user: User) : Profile{
