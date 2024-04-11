@@ -62,8 +62,14 @@ class EditEventTest {
 
     // Check that every field is displayed
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-      eventTitle.assertIsDisplayed()
-      eventDescription.assertIsDisplayed()
+      eventTitle {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventDescription {
+        performScrollTo()
+        assertIsDisplayed()
+      }
       eventStartDate {
         performScrollTo()
         assertIsDisplayed()
@@ -89,7 +95,10 @@ class EditEventTest {
         performScrollTo()
         assertIsDisplayed()
       }
-      eventMaxAttendees.assertIsDisplayed()
+      eventMaxAttendees {
+        performClick()
+        assertIsDisplayed()
+      }
 
       eventLocation {
         performScrollTo()
