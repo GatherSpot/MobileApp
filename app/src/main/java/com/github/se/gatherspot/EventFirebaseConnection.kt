@@ -1,6 +1,7 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -104,7 +105,7 @@ class EventFirebaseConnection {
             "COMPLETED" -> EventStatus.COMPLETED
             else -> EventStatus.DRAFT
           }
-      val categories = document.get("categories") as List<String>
+      val categories = document.get("categories") as List<Interests>
       val registeredUsers = document.get("finalAttendee") as List<String>
       val finalAttendee = document.get("finalAttendee") as List<String>
       val images = null // TODO: Retrieve images from database
