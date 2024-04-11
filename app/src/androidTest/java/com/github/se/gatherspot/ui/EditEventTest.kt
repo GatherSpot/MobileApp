@@ -87,16 +87,17 @@ class EditEventTest {
         assertIsDisplayed()
       }
       dropDownCategoriesBox {
+        performScrollTo()
         performClick()
         assertIsDisplayed()
       }
-      dropDownCategories { assertIsDisplayed() }
+
       eventMinAttendees {
         performScrollTo()
         assertIsDisplayed()
       }
       eventMaxAttendees {
-        performClick()
+        performScrollTo()
         assertIsDisplayed()
       }
 
