@@ -55,8 +55,8 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   val allCategories = enumValues<Interests>().toList()
   val interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
 
-  LaunchedEffect(isClicked, interests) {
-    if (isClicked) {
+  LaunchedEffect(isClicked) {
+
       withContext(Dispatchers.Main) {
         auth.currentUser?.reload()?.await()
         isEmailVerified = auth.currentUser?.isEmailVerified ?: false
@@ -65,7 +65,6 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
           nav.controller.navigate("profile")
         } else {
           emailText = "Please verify your email before continuing"
-        }
       }
     }
   }
@@ -86,10 +85,10 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
       Spacer(modifier = Modifier.height(20.dp))
       Button(
           colors = ButtonDefaults.buttonColors(Color.Transparent),
-          onClick = { isClicked = true },
+          onClick = { isClicked = !isClicked },
           modifier =
               Modifier.testTag("saveButton")
-                  .clickable { isClicked = true }
+                  .clickable { isClicked = !isClicked }
                   .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
                   .wrapContentSize()) {
             Box(
