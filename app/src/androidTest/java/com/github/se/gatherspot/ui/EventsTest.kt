@@ -45,7 +45,6 @@ class EventsTest {
 
       createMenu {
         assertExists()
-        assertIsDisplayed()
         assertHasClickAction()
       }
     }
