@@ -1,14 +1,46 @@
+import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import org.junit.Assert
 import org.junit.Test
 
 class EventUtilsTest {
-  val eventUtils = EventUtils()
+  private val testEvent =
+      Event(
+          eventID = "testID",
+          title = "Test Event",
+          description = "This is a test event",
+          location = Location(0.0, 0.0, "Test Location"),
+          eventStartDate =
+              LocalDate.parse(
+                  "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+          eventEndDate =
+              LocalDate.parse(
+                  "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+          timeBeginning =
+              LocalTime.parse(
+                  "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
+          timeEnding =
+              LocalTime.parse(
+                  "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
+          attendanceMaxCapacity = 100,
+          attendanceMinCapacity = 10,
+          inscriptionLimitDate =
+              LocalDate.parse(
+                  "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+          inscriptionLimitTime =
+              LocalTime.parse(
+                  "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
+          eventStatus = EventStatus.CREATED,
+          globalRating = null)
+  private val eventUtils = EventUtils()
 
   // Write tests for validateParseEventData
   @Test
@@ -29,6 +61,41 @@ class EventUtilsTest {
             "10/04/2025",
             "09:00",
             EventAction.CREATE)
+
+    Assert.assertEquals("Test Event2", event.title)
+    Assert.assertEquals("This is a test event", event.description)
+    Assert.assertEquals(0.0, event.location?.latitude)
+    Assert.assertEquals(0.0, event.location?.longitude)
+    Assert.assertEquals("Test Location", event.location?.name)
+    Assert.assertEquals(LocalDate.of(2026, 4, 12), event.eventStartDate)
+    Assert.assertEquals(LocalDate.of(2026, 5, 12), event.eventEndDate)
+    Assert.assertEquals(LocalTime.of(10, 0), event.timeBeginning)
+    Assert.assertEquals(LocalTime.of(12, 0), event.timeEnding)
+    Assert.assertEquals(100, event.attendanceMaxCapacity)
+    Assert.assertEquals(10, event.attendanceMinCapacity)
+    Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
+    Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
+  }
+
+  @Test
+  fun validateEventDataForUpdate_withValidData_returnsValidEvent() {
+    // validate data parse strings
+    val event =
+        eventUtils.validateAndCreateOrUpdateEvent(
+            "Test Event2",
+            "This is a test event",
+            Location(0.0, 0.0, "Test Location"),
+            "12/04/2026",
+            "12/05/2026",
+            "10:00",
+            "12:00",
+            listOf(Interests.ART, Interests.SPORT),
+            "100",
+            "10",
+            "10/04/2025",
+            "09:00",
+            EventAction.EDIT,
+            testEvent)
 
     Assert.assertEquals("Test Event2", event.title)
     Assert.assertEquals("This is a test event", event.description)
@@ -166,7 +233,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withInvalidMaxCapacity_returnsFalse() {
+  fun validateEventDataForUpdate_withInvalidMaxCapacity_returnsFalse() {
     // validate data parse strings
     try {
       val result =
@@ -183,7 +250,8 @@ class EventUtilsTest {
               "0",
               "10/04/2025",
               "09:00",
-              EventAction.CREATE)
+              EventAction.EDIT,
+              testEvent)
     } catch (e: Exception) {
       Assert.assertEquals("Invalid max attendees format, must be a number", e.message)
     }
