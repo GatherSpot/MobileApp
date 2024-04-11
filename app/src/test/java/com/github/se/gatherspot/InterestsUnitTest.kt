@@ -204,7 +204,38 @@ class InterestsUnitTest {
     assertTrue(res.contains(Interests.TRAVEL))
 
 
+  }
 
+  @Test
+  fun eventFlip_isCorrect(){
+    val bitset = Interests.newBitset()
+    Interests.eventFlip(bitset, Interests.FOOTBALL)
+
+    assertTrue(Interests.hasInterest(bitset, Interests.FOOTBALL))
+    assertTrue(Interests.hasInterest(bitset, Interests.SPORT))
+
+    Interests.eventFlip(bitset, Interests.SPORT)
+
+    assertFalse(Interests.hasInterest(bitset, Interests.FOOTBALL))
+    assertFalse(Interests.hasInterest(bitset, Interests.SPORT))
+
+  }
+
+  @Test
+  fun profileFlip_isCorrect(){
+    val bitset = Interests.newBitset()
+    Interests.profileFlip(bitset, Interests.SPORT)
+
+    assertTrue(Interests.hasInterest(bitset, Interests.FOOTBALL))
+    assertTrue(Interests.hasInterest(bitset, Interests.BASKETBALL))
+    assertTrue(Interests.hasInterest(bitset, Interests.SPORT))
+
+    Interests.profileFlip(bitset, Interests.SPORT)
+    Interests.profileFlip(bitset, Interests.BASKETBALL)
+
+    assertFalse(Interests.hasInterest(bitset, Interests.FOOTBALL))
+    assertFalse(Interests.hasInterest(bitset, Interests.SPORT))
+    assertTrue(Interests.hasInterest(bitset, Interests.BASKETBALL))
 
 
   }

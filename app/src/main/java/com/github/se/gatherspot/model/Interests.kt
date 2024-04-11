@@ -118,7 +118,7 @@ enum class Interests {
         Behaviour of the bitset when the value for the interest interest is flipped
         in the context of a profile
     */
-    private fun profileFlip(bitset: BitSet, interest: Interests) {
+    fun profileFlip(bitset: BitSet, interest: Interests) {
       if (hasInterest(bitset, interest)) {
         removeChildrenInterest(bitset, interest)
         removeInterest(bitset, interest)
@@ -132,7 +132,7 @@ enum class Interests {
         Behaviour of the bitset when the value for the interest interest is flipped
         in the context of a profile
     */
-    private fun eventFlip(bitset: BitSet, interest: Interests) {
+    fun eventFlip(bitset: BitSet, interest: Interests) {
       if (hasInterest(bitset, interest)) {
         removeChildrenInterest(bitset, interest)
         removeInterest(bitset, interest)
