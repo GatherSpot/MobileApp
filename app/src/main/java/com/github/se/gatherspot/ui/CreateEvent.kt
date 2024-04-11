@@ -59,7 +59,7 @@ fun ScrollableContent(content: @Composable () -> Unit) {
 /** Composable function that gives the GUI to create an event */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateEvent(nav: NavigationActions, eventViewModel: EventUtils) {
+fun CreateEvent(nav: NavigationActions, eventUtils: EventUtils) {
   var title by remember { mutableStateOf(TextFieldValue("")) }
   var description by remember { mutableStateOf(TextFieldValue("")) }
   var location by remember { mutableStateOf<Location?>(null) }
@@ -209,7 +209,7 @@ fun CreateEvent(nav: NavigationActions, eventViewModel: EventUtils) {
             Button(
                 onClick = {
                   try {
-                    eventViewModel.validateAndCreateEvent(
+                    eventUtils.validateAndCreateEvent(
                         title.text,
                         description.text,
                         location!!,
