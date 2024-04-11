@@ -109,7 +109,6 @@ class EditEventTest {
 
     // Check that every field is displayed
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-
       eventTitle.assert(hasText("Test Event"))
       eventDescription.assert(hasText("This is a test event"))
       eventStartDate.assert(hasText("12/04/2026"))
@@ -145,73 +144,74 @@ class EditEventTest {
       }
     }
   }
-    @Test
-    fun testEditEventFieldsAreEditable() {
-        composeTestRule.setContent {
-            val navController = rememberNavController()
 
-            EditEvent(
-                nav = NavigationActions(navController), eventUtils = EventUtils(), event = testEvent)
-        }
+  @Test
+  fun testEditEventFieldsAreEditable() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
 
-        // Check that every field is displayed
-        ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-            eventTitle{
-                performTextInput("")
-                performTextInput("New Test Event")
-            }
-            eventDescription{
-                performTextInput("")
-                performTextInput("This is a new test event")
-            }
-            eventStartDate{
-                performTextInput("")
-                performTextInput("12/04/2027")
-            }
-            eventEndDate{
-                performTextInput("")
-                performTextInput("12/05/2027")
-            }
-            eventTimeStart{
-                performTextInput("")
-                performTextInput("11:00")
-            }
-            eventTimeEnd{
-                performTextInput("")
-                performTextInput("13:00")
-            }
-
-            dropDownCategoriesBox {
-                performClick()
-                assertIsDisplayed()
-            }
-            dropDownCategories.assertIsDisplayed()
-            eventMinAttendees {
-                performScrollTo()
-                performTextInput("20")
-            }
-            eventMaxAttendees.performTextInput("200")
-
-            eventLocation {
-                performScrollTo()
-                performTextInput("")
-                performTextInput("ecole polytechnique fedreale")
-            }
-            eventInscriptionLimitDate {
-                performScrollTo()
-                performTextInput("")
-                performTextInput("10/04/2026")
-            }
-            eventInscriptionLimitTime {
-                performScrollTo()
-                performTextInput("")
-                performTextInput("13:00")
-            }
-            eventSaveButton {
-                performScrollTo()
-                assertIsDisplayed()
-                performClick()
-            }
-        }
+      EditEvent(
+          nav = NavigationActions(navController), eventUtils = EventUtils(), event = testEvent)
     }
+
+    // Check that every field is displayed
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+      eventTitle {
+        performTextInput("")
+        performTextInput("New Test Event")
+      }
+      eventDescription {
+        performTextInput("")
+        performTextInput("This is a new test event")
+      }
+      eventStartDate {
+        performTextInput("")
+        performTextInput("12/04/2027")
+      }
+      eventEndDate {
+        performTextInput("")
+        performTextInput("12/05/2027")
+      }
+      eventTimeStart {
+        performTextInput("")
+        performTextInput("11:00")
+      }
+      eventTimeEnd {
+        performTextInput("")
+        performTextInput("13:00")
+      }
+
+      dropDownCategoriesBox {
+        performClick()
+        assertIsDisplayed()
+      }
+      dropDownCategories.assertIsDisplayed()
+      eventMinAttendees {
+        performScrollTo()
+        performTextInput("20")
+      }
+      eventMaxAttendees.performTextInput("200")
+
+      eventLocation {
+        performScrollTo()
+        performTextInput("")
+        performTextInput("ecole polytechnique fedreale")
+      }
+      eventInscriptionLimitDate {
+        performScrollTo()
+        performTextInput("")
+        performTextInput("10/04/2026")
+      }
+      eventInscriptionLimitTime {
+        performScrollTo()
+        performTextInput("")
+        performTextInput("13:00")
+      }
+      eventSaveButton {
+        performScrollTo()
+        assertIsDisplayed()
+        performClick()
+      }
+    }
+  }
 }
