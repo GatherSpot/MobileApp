@@ -50,7 +50,7 @@ class EventsTest {
     }
   }
 
-  @OptIn(ExperimentalTestApi::class)
+  @OptIn(ExperimentalTestApi::class, ExperimentalTestApi::class)
   @Test
   fun testEventsAreDisplayedAndScrollable() {
     composeTestRule.setContent {

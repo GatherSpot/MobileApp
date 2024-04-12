@@ -26,7 +26,7 @@ class EventFirebaseConnection {
     const val EVENTS = "events" // Collection name for events
     const val DATE_FORMAT = "dd/MM/yyyy"
     const val TIME_FORMAT = "H:mm"
-    private var offset: DocumentSnapshot? = null
+    var offset: DocumentSnapshot? = null
 
     /**
      * Creates a unique new identifier This function can be used for both Event IDs and User IDs

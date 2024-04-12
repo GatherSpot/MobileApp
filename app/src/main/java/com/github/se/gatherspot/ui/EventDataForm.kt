@@ -115,7 +115,7 @@ fun EventDataForm(
     event!!
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    title = TextFieldValue(event.title!!)
+    title = TextFieldValue(event.title)
     description = TextFieldValue(event.description!!)
     location = event.location
     eventStartDate = TextFieldValue(event.eventStartDate!!.format(dateFormatter) ?: "")
@@ -323,6 +323,9 @@ fun EventDataForm(
                   } catch (e: Exception) {
                     errorMessage = e.message.toString()
                     showErrorDialog = true
+                  }
+                  if (!showErrorDialog) {
+                    nav.controller.navigate("events")
                   }
                 },
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
