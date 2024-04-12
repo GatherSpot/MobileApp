@@ -26,14 +26,16 @@ class OwnProfileViewModel : ViewModel() {
     get() = _interests
 
   init {
-    _profile = Profile("John Doe", "I am not a bot", "", "", hashSetOf())
+
+    _profile = Profile("John Doeuid", "John Doe", "I am not a bot", "", hashSetOf())
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
   }
 
   fun save() {
-    _profile = Profile(username.value ?: "", bio.value ?: "", image.value ?: "", "", interests.value)
+    _profile = Profile(_profile.uid, username.value ?: "", bio.value ?: "", image.value ?: "", interests.value)
+ 
     // next: THIS NEEDS SANITIZATION
     ProfileFirebaseConnection.addProfile(_profile)
   }

@@ -1,12 +1,15 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import java.time.LocalDate
 import java.time.LocalTime
@@ -14,14 +17,16 @@ import java.time.format.DateTimeFormatter
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection {
   companion object {
     private const val TAG = "FirebaseConnection" // Used for debugging/logs
-    private const val EVENTS = "events" // Collection name for events
+    const val EVENTS = "events" // Collection name for events
     const val DATE_FORMAT = "dd/MM/yyyy"
     const val TIME_FORMAT = "H:mm"
+    private var offset: DocumentSnapshot? = null
 
     /**
      * Creates a unique new identifier This function can be used for both Event IDs and User IDs
@@ -30,6 +35,42 @@ class EventFirebaseConnection {
      */
     fun getNewEventID(): String {
       return FirebaseDatabase.getInstance().getReference().child(EVENTS).push().key!!
+    }
+
+    /**
+     * Fetch the next number events stating from the offset
+     *
+     * @param number: the number of events to fetch
+     * @return list of events
+     */
+    suspend fun fetchNextEvents(number: Long): MutableList<Event> {
+      val querySnapshot: QuerySnapshot =
+          if (offset == null) {
+            Firebase.firestore.collection(EVENTS).orderBy("eventID").limit(number).get().await()
+          } else {
+            Firebase.firestore
+                .collection(EVENTS)
+                .orderBy("eventID")
+                .startAfter(offset!!.get("eventID"))
+                .limit(number)
+                .get()
+                .await()
+          }
+
+      if (querySnapshot.documents.isNotEmpty()) {
+        offset = querySnapshot.documents.last()
+      }
+
+      val listOfMaps = querySnapshot.documents.map { it.data!! }
+      val listOfEvents = mutableListOf<Event>()
+
+      listOfMaps.forEach { map ->
+        val uid = map["eventID"] as String
+        val event = fetchEvent(uid)
+        event?.let { listOfEvents.add(it) }
+      }
+
+      return listOfEvents
     }
 
     /**
@@ -104,9 +145,10 @@ class EventFirebaseConnection {
             "COMPLETED" -> EventStatus.COMPLETED
             else -> EventStatus.DRAFT
           }
-      val categories = document.get("categories") as List<String>
-      val registeredUsers = document.get("finalAttendee") as List<String>
-      val finalAttendee = document.get("finalAttendee") as List<String>
+      val categoriesList = document.get("categories") as List<String>
+      val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
+      val registeredUsers = document.get("finalAttendee") as List<Profile>
+      val finalAttendee = document.get("finalAttendee") as List<Profile>
       val images = null // TODO: Retrieve images from database
       val globalRating =
           when (val rating = document.getString("globalRating")!!) {
@@ -131,7 +173,9 @@ class EventFirebaseConnection {
           registeredUsers = registeredUsers,
           finalAttendees = finalAttendee,
           images = images,
-          globalRating = globalRating)
+          globalRating = globalRating,
+          // TODO: Add organizer
+          organizer = Profile("null", "null", "null", "null", emptySet()))
     }
     /**
      * Maps a string to a LocalTime object
@@ -231,7 +275,7 @@ class EventFirebaseConnection {
                     else ->
                         event.inscriptionLimitTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   },
-              "categories" to event.categories,
+              "categories" to event.categories?.toList(),
               "registeredUsers" to event.registeredUsers,
               "finalAttendee" to event.finalAttendees,
               "globalRating" to

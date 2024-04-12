@@ -1,12 +1,17 @@
 package com.github.se.gatherspot
 
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration
 import kotlinx.coroutines.async
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -61,7 +66,7 @@ class EventFirebaseConnectionTest {
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
-            categories = listOf("Test Category"),
+            categories = setOf(Interests.CHESS),
             registeredUsers = emptyList(),
             finalAttendees = emptyList(),
             images = null,
@@ -102,7 +107,7 @@ class EventFirebaseConnectionTest {
         resultEvent!!.inscriptionLimitTime,
         LocalTime.parse("09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)))
     assertEquals(resultEvent!!.eventStatus, EventStatus.DRAFT)
-    assertEquals(resultEvent!!.categories, listOf("Test Category"))
+    assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.images, null)
@@ -114,6 +119,28 @@ class EventFirebaseConnectionTest {
     val event = EventFirebaseConnection.fetchEvent("nonexistent")
     assertEquals(event, null)
   }
+
+  @Test
+  fun fetchNextReturnsDistinctEvents() =
+      runTest(timeout = Duration.parse("20s")) {
+        val numberOfEvents =
+            Firebase.firestore
+                .collection(EventFirebaseConnection.EVENTS)
+                .get()
+                .await()
+                .documents
+                .size
+        val round = numberOfEvents / 2
+        val listOfEvents1 = EventFirebaseConnection.fetchNextEvents(round.toLong())
+        assertEquals(round, listOfEvents1.size)
+        val listOfEvents2 = EventFirebaseConnection.fetchNextEvents(round.toLong())
+        assertEquals(round, listOfEvents2.size)
+        for (i in 0 until round) {
+          for (j in 0 until round) {
+            assertNotEquals(listOfEvents1[i].eventID, listOfEvents2[j].eventID)
+          }
+        }
+      }
 
   @Test
   fun deleteEvent() = runTest {
@@ -145,7 +172,7 @@ class EventFirebaseConnectionTest {
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
-            categories = listOf("Test Category"),
+            categories = setOf(Interests.CHESS),
             registeredUsers = emptyList(),
             finalAttendees = emptyList(),
             images = null,
@@ -179,7 +206,7 @@ class EventFirebaseConnectionTest {
             inscriptionLimitDate = null,
             inscriptionLimitTime = null,
             eventStatus = EventStatus.CREATED,
-            categories = listOf("Test Category"),
+            categories = setOf(Interests.CHESS),
             registeredUsers = emptyList(),
             finalAttendees = emptyList(),
             images = null,
@@ -202,7 +229,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.inscriptionLimitDate, null)
     assertEquals(resultEvent!!.inscriptionLimitTime, null)
     assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
-    assertEquals(resultEvent!!.categories, listOf("Test Category"))
+    assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.images, null)

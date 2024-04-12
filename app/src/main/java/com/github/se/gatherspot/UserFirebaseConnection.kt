@@ -1,6 +1,7 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth

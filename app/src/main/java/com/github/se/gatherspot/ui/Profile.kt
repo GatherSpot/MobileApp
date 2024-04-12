@@ -39,6 +39,7 @@ fun ProfilePreview() {
 @Preview
 @Composable
 fun ViewProfilePreview() {
-  val profile = Profile("John Doe", "I am not a bot", "", "", null)
+  val profile = Profile("uidJohnDoe", "JohnDoe", "I am not a bot", "", hashSetOf())
+
   ProfileView().ProfileScreen(ProfileViewModel(profile))
 }

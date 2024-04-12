@@ -20,6 +20,7 @@ class ProfileFirebaseConnection {
     private const val TAG = "ProfileFirebase"
 
 
+
     /**
      * Adds a default profile to match the user
      * @param user the user to which the profile is linked
@@ -148,6 +149,7 @@ class ProfileFirebaseConnection {
           continuation.resume(null)
         }
     }
+
 
     /**
      * parses the document of a profile to construct a profile

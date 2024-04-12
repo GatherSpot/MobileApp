@@ -7,7 +7,7 @@ package com.github.se.gatherspot.ui
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onsNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.navigation.compose.rememberNavController
@@ -70,7 +70,8 @@ class ProfileInstrumentedTest {
   @Test
   fun profileScreenTest() {
     composeTestRule.setContent {
-      ProfileView().ProfileScreen(ProfileViewModel(Profile("John Doe", "I am not a bot", "", "12", null)))
+      ProfileView().ProfileScreen(ProfileViewModel(Profile("uid", "John Doe ", "I am a bot", "", hashSetOf())))
+
     }
     // check if things are here :
     composeTestRule
