@@ -14,6 +14,8 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
+private const val ZOOM_DEFAULT = 15f
+
 @Composable
 fun GeoMap(
     userCoordinates: Location?,
@@ -44,7 +46,7 @@ fun GeoMap(
   }
 
   // default zoom level
-  var zoom = 15f
+  var zoom = ZOOM_DEFAULT
 
   // define the camera position and zoom so that all points are visible with the minimal zoom level
   val cameraPositionState = rememberCameraPositionState {
