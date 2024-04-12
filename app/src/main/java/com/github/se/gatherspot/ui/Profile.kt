@@ -40,7 +40,7 @@ fun ProfilePreview() {
 @Preview
 @Composable
 fun ViewProfilePreview() {
-  val set : Set<Interests> = setOf(Interests.BOWLING, Interests.CHESS)
+  val set: Set<Interests> = setOf(Interests.FOOTBALL, Interests.CHESS)
   val profile = Profile("John Doe", "I am not a bot", "", "", set)
   ProfileView().ProfileScreen(ProfileViewModel(profile))
 }

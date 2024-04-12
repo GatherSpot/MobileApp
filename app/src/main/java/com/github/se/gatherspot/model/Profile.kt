@@ -1,7 +1,5 @@
 package com.github.se.gatherspot.model
 
-import java.util.BitSet
-
 // NOTE : I will add interests once theses are pushed
 /**
  * Profile data object
