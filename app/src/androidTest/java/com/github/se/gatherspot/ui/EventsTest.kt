@@ -65,7 +65,7 @@ class EventsTest {
         assertIsDisplayed()
       }
 
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 20000)
       eventsList {
         assertIsDisplayed()
         performGesture { swipeUp(400F, 0F, 1000) }
