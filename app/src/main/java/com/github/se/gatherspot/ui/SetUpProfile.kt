@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,18 +32,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.UserFirebaseConnection
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-@SuppressLint("MutableCollectionMutableState")
+@Preview
+@Composable
+fun SetUpProfilePreview() {
+  val nav = rememberNavController()
+  SetUpProfile(NavigationActions(nav), "uid")
+}
+
 @Composable
 fun SetUpProfile(nav: NavigationActions, uid: String) {
 
@@ -53,19 +59,17 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   var emailText by remember { mutableStateOf("") }
   var isClicked by remember { mutableStateOf(false) }
   val allCategories = enumValues<Interests>().toList()
-  var interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
+  val interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
 
-  LaunchedEffect(isClicked, interests) {
-    if (isClicked) {
-      withContext(Dispatchers.Main) {
-        auth.currentUser?.reload()?.await()
-        isEmailVerified = auth.currentUser?.isEmailVerified ?: false
-        if (isEmailVerified) {
-          UserFirebaseConnection.updateUserInterests(uid, Profile(interests))
-          nav.controller.navigate("profile")
-        } else {
-          emailText = "Please verify your email before continuing"
-        }
+  LaunchedEffect(isClicked) {
+    withContext(Dispatchers.Main) {
+      auth.currentUser?.reload()?.await()
+      isEmailVerified = auth.currentUser?.isEmailVerified ?: false
+      if (isEmailVerified) {
+        UserFirebaseConnection.updateUserInterests(uid, interests.toList())
+        nav.controller.navigate("profile")
+      } else {
+        emailText = "Please verify your email before continuing"
       }
     }
   }
@@ -86,10 +90,10 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
       Spacer(modifier = Modifier.height(20.dp))
       Button(
           colors = ButtonDefaults.buttonColors(Color.Transparent),
-          onClick = { isClicked = true },
+          onClick = { isClicked = !isClicked },
           modifier =
               Modifier.testTag("saveButton")
-                  .clickable { isClicked = true }
+                  .clickable { isClicked = !isClicked }
                   .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
                   .wrapContentSize()) {
             Box(
@@ -123,7 +127,10 @@ fun FilterChipCompose(interest: Interests, interests: MutableSet<Interests>, mod
         }
       },
       label = {
-        Text((interest.toString().lowercase().capitalize()), fontSize = 20.sp, color = Color.Black)
+        Text(
+            (interest.toString().lowercase().replaceFirstChar { c -> c.uppercase() }),
+            fontSize = 20.sp,
+            color = Color.Black)
       },
       selected = selected,
       leadingIcon = {

@@ -26,15 +26,16 @@ import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
   companion object {
     lateinit var uid: String
+    lateinit var signInLauncher: ActivityResultLauncher<Intent>
   }
 
-  private lateinit var signInLauncher: ActivityResultLauncher<Intent>
   private lateinit var navController: NavHostController
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +46,7 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(
             FirebaseAuthUIActivityResultContract(),
         ) { res ->
-          val ret = this.onSignInResult(res, navController)
-          // see
+          this.onSignInResult(res, navController)
         }
 
     setContent {
@@ -70,7 +70,9 @@ class MainActivity : ComponentActivity() {
 
               composable("chat") { Chat(NavigationActions(navController)) }
 
-              composable("profile") { Profile(NavigationActions(navController)) }
+              composable("profile") {
+                Profile(NavigationActions(navController), OwnProfileViewModel())
+              }
 
               composable("setup") { SetUpProfile(NavigationActions(navController), uid) }
             }

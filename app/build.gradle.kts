@@ -29,6 +29,29 @@ android {
         jacocoVersion = "0.8.8"
     }
 
+    sonar {
+        properties {
+            property("sonar.projectKey", "GatherSpot_MobileApp")
+            property("sonar.projectName", "MobileApp")
+            property("sonar.organization", "gatherspot")
+            property("sonar.host.url", "https://sonarcloud.io")
+            // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
+            property(
+                "sonar.junit.reportPaths",
+                "${project.layout.buildDirectory.get()}/test-results/testDebugunitTest/"
+            )
+            // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will have to be changed too.
+            property(
+                "sonar.androidLint.reportPaths",
+                "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml"
+            )
+            // Paths to JaCoCo XML coverage report files.
+            property(
+                "sonar.coverage.jacoco.xmlReportPaths",
+                "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+            )
+        }
+    }
     defaultConfig {
         applicationId = "com.github.se.gatherspot"
         minSdk = 29
@@ -76,9 +99,9 @@ android {
 }
 
 dependencies {
-
-    // IMPLEMENTATION DEPENDENCIES
-
+    implementation("androidx.compose.runtime:runtime-livedata")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -241,6 +264,7 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
         include("outputs/code_coverage/debugAndroidTest/connected/*/coverage.ec")
     })
 }
+
 sonar{
     properties {
         property("sonar.projectKey", "GatherSpot_MobileApp")
@@ -256,3 +280,4 @@ sonar{
     }
 
 }
+
