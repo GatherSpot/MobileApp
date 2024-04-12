@@ -4,11 +4,20 @@ import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.ui.EventAction
+import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONArray
 
-class EventViewModel {
+private const val ELEMENTS_TO_DISPLAY = 5
+
+class EventUtils {
 
   /**
    * Create an event from verified data
@@ -29,11 +38,12 @@ class EventViewModel {
   private fun createEvent(
       title: String,
       description: String,
-      location: Location,
+      location: Location?,
       eventStartDate: LocalDate,
       eventEndDate: LocalDate?,
       eventTimeStart: LocalTime,
       eventTimeEnd: LocalTime,
+      categories: List<Interests>?,
       maxAttendees: Int?,
       minAttendees: Int?,
       dateLimitInscription: LocalDate?,
@@ -58,6 +68,7 @@ class EventViewModel {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
+            categories = categories?.toSet(),
             eventStatus = EventStatus.CREATED)
 
     // Add the event to the database
@@ -68,8 +79,8 @@ class EventViewModel {
 
   /**
    * Check if the data entered by the user is valid. Parse the data and check if it is in the
-   * correct format, then call createEvent function. If the eventCreation is successful, return
-   * true. All the parameters are strings, as they are taken from the user input.
+   * correct format, then call createEvent or updateEvent function. If the eventCreation is
+   * successful, return true. All the parameters are strings, as they are taken from the user input.
    *
    * @param title: The title of the event
    * @param description: A short description of the event
@@ -85,18 +96,21 @@ class EventViewModel {
    * @return true if the data is valid
    * @throws Exception if the data is not valid
    */
-  fun validateAndCreateEvent(
+  fun validateAndCreateOrUpdateEvent(
       title: String,
       description: String,
-      location: Location,
+      location: Location?,
       eventStartDate: String,
       eventEndDate: String,
       eventTimeStart: String,
       eventTimeEnd: String,
+      categories: List<Interests>?,
       maxAttendees: String,
       minAttendees: String,
       dateLimitInscription: String,
-      timeLimitInscription: String
+      timeLimitInscription: String,
+      eventAction: EventAction,
+      event: Event? = null
   ): Event {
     // test if the date is valid
     val parsedEventStartDate = validateDate(eventStartDate, "Invalid date format")
@@ -179,20 +193,77 @@ class EventViewModel {
         throw Exception("Inscription limit time must be before event start time on the same day")
       }
     }
+    // If all the data is valid and eventAction = CREATE, call createEvent function
+    if (eventAction == EventAction.CREATE) {
+      return createEvent(
+          title,
+          description,
+          location,
+          parsedEventStartDate,
+          parsedEventEndDate,
+          parsedEventTimeStart,
+          parsedEventTimeEnd,
+          categories,
+          parsedMaxAttendees,
+          parsedMinAttendees,
+          parsedDateLimitInscription,
+          parsedTimeLimitInscription)
+    } else {
+      return editEvent(
+          title,
+          description,
+          location,
+          parsedEventStartDate,
+          parsedEventEndDate,
+          parsedEventTimeStart,
+          parsedEventTimeEnd,
+          categories,
+          parsedMaxAttendees,
+          parsedMinAttendees,
+          parsedDateLimitInscription,
+          parsedTimeLimitInscription,
+          event!!)
+    }
+  }
 
-    // If all the data is valid, call createEvent function
-    return createEvent(
-        title,
-        description,
-        location,
-        parsedEventStartDate,
-        parsedEventEndDate,
-        parsedEventTimeStart,
-        parsedEventTimeEnd,
-        parsedMaxAttendees,
-        parsedMinAttendees,
-        parsedDateLimitInscription,
-        parsedTimeLimitInscription)
+  private fun editEvent(
+      title: String,
+      description: String,
+      location: Location?,
+      eventStartDate: LocalDate,
+      eventEndDate: LocalDate?,
+      eventTimeStart: LocalTime,
+      eventTimeEnd: LocalTime,
+      categories: List<Interests>?,
+      maxAttendees: Int?,
+      minAttendees: Int?,
+      dateLimitInscription: LocalDate?,
+      timeLimitInscription: LocalTime?,
+      oldEvent: Event
+  ): Event {
+    val event =
+        Event(
+            oldEvent.eventID,
+            title,
+            description,
+            location,
+            eventStartDate,
+            eventEndDate,
+            eventTimeStart,
+            eventTimeEnd,
+            maxAttendees,
+            attendanceMinCapacity = minAttendees ?: 0,
+            dateLimitInscription,
+            timeLimitInscription,
+            globalRating = oldEvent.globalRating,
+            categories = categories?.toSet(),
+            registeredUsers = oldEvent.registeredUsers,
+            images = oldEvent.images,
+            eventStatus = EventStatus.CREATED,
+        )
+    // Add the event to the database
+    EventFirebaseConnection.addNewEvent(event)
+    return event
   }
 
   fun validateDate(date: String, eMessage: String): LocalDate {
@@ -219,7 +290,37 @@ class EventViewModel {
     }
   }
 
-  suspend fun fetchLocationSuggestions(query: String): List<Location> {
-    return emptyList()
-  }
+  /** Fetch location suggestions from the OpenStreetMap API. Basic code to improve */
+  suspend fun fetchLocationSuggestions(query: String): List<Location> =
+      withContext(Dispatchers.IO) {
+        if (query.isEmpty()) return@withContext emptyList()
+
+        val client = OkHttpClient()
+        val requestUrl = "https://nominatim.openstreetmap.org/search?format=json&q=$query"
+        val request = Request.Builder().url(requestUrl).build()
+        val suggestions = mutableListOf<Location>()
+
+        try {
+          client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+            val responseBody = response.body?.string()
+            responseBody?.let {
+              val jsonArray = JSONArray(it)
+              val elementsToDisplay = minOf(jsonArray.length(), ELEMENTS_TO_DISPLAY)
+              for (i in 0 until elementsToDisplay) {
+                val jsonObject = jsonArray.getJSONObject(i)
+                val displayName = jsonObject.getString("display_name")
+                val latitude = jsonObject.getDouble("lat")
+                val longitude = jsonObject.getDouble("lon")
+                suggestions.add(
+                    Location(latitude = latitude, longitude = longitude, name = displayName))
+              }
+            }
+          }
+        } catch (e: Exception) {
+          e.printStackTrace()
+        }
+        return@withContext suggestions
+      }
 }
