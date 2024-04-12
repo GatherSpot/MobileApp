@@ -140,6 +140,7 @@ class EventFirebaseConnectionTest {
             assertNotEquals(listOfEvents1[i].eventID, listOfEvents2[j].eventID)
           }
         }
+        EventFirebaseConnection.offset = null
       }
 
   @Test
