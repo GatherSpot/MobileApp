@@ -183,7 +183,7 @@ class ProfileView {
         ProfileImage(imageUri, {}, false)
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
-        InterestsView().ShowInterests(viewModel)
+        viewModel.interests.value?.let { InterestsView().ShowInterests(it) }
         Spacer(modifier = Modifier.height(56.dp))
       }
     }
@@ -228,6 +228,7 @@ class ProfileView {
       ProfileImage(imageUri, {}, false)
       UsernameField(username, {}, false)
       BioField(bio, {}, false)
+      InterestsView().ShowInterests(viewModel.interests)
     }
   }
 }

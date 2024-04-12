@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.model.Interests
+import java.util.BitSet
 
 public class InterestsView {
   @Preview
@@ -44,12 +45,11 @@ public class InterestsView {
 
   @OptIn(ExperimentalLayoutApi::class)
   @Composable
-  fun ShowInterests(viewModel: OwnProfileViewModel) {
+  fun ShowInterests(bitset: BitSet) {
     val interestList = enumValues<Interests>().toList()
-    val bitset by viewModel.interests.observeAsState(Interests.newBitset())
     FlowRow() {
       interestList.forEach { interest ->
-        UneditableInterest(interest, bitset?.get(interest.ordinal) ?: false)
+        UneditableInterest(interest, bitset.get(interest.ordinal))
       }
     }
   }

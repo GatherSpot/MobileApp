@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
-import com.google.firebase.auth.FirebaseAuth
 import java.util.BitSet
 
 class OwnProfileViewModel : ViewModel() {
@@ -28,8 +27,7 @@ class OwnProfileViewModel : ViewModel() {
     get() = _interests
 
   init {
-    _profile =
-        ProfileFirebaseConnection().fetchProfile(FirebaseAuth.getInstance().currentUser!!.uid)
+    _profile = ProfileFirebaseConnection().getDummyProfile()
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
@@ -45,7 +43,7 @@ class OwnProfileViewModel : ViewModel() {
             _interests.value ?: Interests.newBitset(),
             "")
     // next: THIS NEEDS SANITIZATION
-    ProfileFirebaseConnection().updateProfile(_profile)
+    ProfileFirebaseConnection().updateDummyProfile(_profile)
   }
 
   fun cancel() {
@@ -80,4 +78,5 @@ class ProfileViewModel(profile: Profile) {
   val username: String = profile.userName
   val bio: String = profile.bio
   val image: String = profile.image
+  val interests: BitSet = profile.interests
 }
