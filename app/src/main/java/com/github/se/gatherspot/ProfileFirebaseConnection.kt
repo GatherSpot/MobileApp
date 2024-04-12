@@ -1,5 +1,6 @@
 package com.github.se.gatherspot
 
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 
 class ProfileFirebaseConnection {
@@ -14,4 +15,13 @@ class ProfileFirebaseConnection {
   }
 
   fun updateProfile(profile: Profile) {}
+  //THE NEXT THREE ARE USED FOR TESTS
+  private var dummyProfile = Profile("John Doe", "I like trains", "", "", emptySet<Interests>())
+  fun dummySave (profile: Profile) {
+    dummyProfile = profile
+  }
+  fun dummyFetch (): Profile {
+    return dummyProfile
+  }
+
 }
