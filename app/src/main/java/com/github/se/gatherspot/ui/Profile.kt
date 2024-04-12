@@ -40,9 +40,7 @@ fun ProfilePreview() {
 @Preview
 @Composable
 fun ViewProfilePreview() {
-  val bitSet = Interests.newBitset()
-  bitSet.flip(0)
-  bitSet.flip(3)
-  val profile = Profile("John Doe", "I am not a bot", "", "", bitSet)
+  val set : Set<Interests> = setOf(Interests.BOWLING, Interests.CHESS)
+  val profile = Profile("John Doe", "I am not a bot", "", "", set)
   ProfileView().ProfileScreen(ProfileViewModel(profile))
 }
