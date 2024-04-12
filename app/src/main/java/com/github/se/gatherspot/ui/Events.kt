@@ -46,6 +46,7 @@ import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
+import com.google.gson.Gson
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -82,9 +83,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
                     modifier =
-                        Modifier.clickable {
-                              // TODO go to CreateEvent composable
-                            }
+                        Modifier.clickable { nav.controller.navigate("createEvent") }
                             .testTag("createMenu"))
               }
 
@@ -143,12 +142,12 @@ fun Empty() {
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
   Row(
-      modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp)
-      //    .clickable {
-      // TODO: manage navigation
-      //  navigation.controller.navigate("")
-      //   },
-      ,
+      modifier =
+          Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
+            val gson = Gson()
+            val eventJson = gson.toJson(event)
+            navigation.controller.navigate("event/$eventJson")
+          },
       verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
           Image(
