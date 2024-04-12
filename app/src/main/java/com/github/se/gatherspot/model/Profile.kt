@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.model
 
+import java.util.BitSet
+
 // NOTE : I will add interests once theses are pushed
 /**
  * Profile data object
@@ -12,14 +14,14 @@ class Profile(
     private var _userName: String,
     private var _bio: String,
     private var _image: String,
-    private var _uid: String,
-    private var _interests: Set<Interests>
+    val _uid: String,
+    private var _interests: BitSet
 ) {
 
   var userName: String = _userName
   var bio: String = _bio
   var image: String = _image
-  var interests: Set<Interests> = _interests
+  var interests: BitSet = _interests
 
-  constructor() : this("", "", "", "", emptySet())
+  constructor() : this("", "", "", "", Interests.newBitset())
 }
