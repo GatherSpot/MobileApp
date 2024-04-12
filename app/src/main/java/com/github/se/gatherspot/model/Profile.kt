@@ -27,7 +27,7 @@ class Profile(
 
 
     constructor(uid: String, userName: String) : this(uid, userName, "","", hashSetOf() )
-    constructor() : this("", "", "", "", hashSetOf())
+    constructor(uid : String) : this(uid, "", "", "", hashSetOf())
     companion object {
         fun defaultProfile(user: User) : Profile{
             return Profile(user.uid, user.email, "", "", hashSetOf())
