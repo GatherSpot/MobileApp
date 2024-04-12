@@ -16,7 +16,7 @@ class ProfileFirebaseConnection {
 
   fun updateProfile(profile: Profile) {}
   //THE NEXT THREE ARE USED FOR TESTS
-  private var dummyProfile = Profile("John Doe", "I like trains", "", "", emptySet<Interests>())
+  private var dummyProfile = Profile("John Doe", "I like trains", "", "", emptySet())
   fun dummySave (profile: Profile) {
     dummyProfile = profile
   }
