@@ -43,6 +43,6 @@ fun ViewProfilePreview() {
   val bitSet = Interests.newBitset()
   bitSet.flip(0)
   bitSet.flip(3)
-  val profile = Profile("John Doe", "I am not a bot", "", bitSet, "")
+  val profile = Profile("John Doe", "I am not a bot", "", "", bitSet)
   ProfileView().ProfileScreen(ProfileViewModel(profile))
 }

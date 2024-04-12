@@ -14,8 +14,8 @@ class Profile(
     private var _userName: String,
     private var _bio: String,
     private var _image: String,
-    private var _interests: BitSet,
-    private var _uid: String
+    val _uid: String,
+    private var _interests: BitSet
 ) {
 
   var userName: String = _userName
@@ -23,5 +23,5 @@ class Profile(
   var image: String = _image
   var interests: BitSet = _interests
 
-  constructor() : this("", "", "", Interests.newBitset(), "")
+  constructor() : this("", "", "", "", Interests.newBitset())
 }

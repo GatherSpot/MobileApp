@@ -94,8 +94,6 @@ class ProfileInstrumentedTest {
           .ProfileScreen(
               ProfileViewModel(
                   Profile("John Doe", "I am not a bot", "", Interests.newBitset(), "12")))
-
-          
     }
     // check if things are here :
     composeTestRule
