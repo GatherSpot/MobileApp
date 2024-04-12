@@ -56,9 +56,9 @@ class ProfileFirebaseConnection {
         .document(profile.uid)
         .set(profileMap)
         .addOnSuccessListener { Log.d(TAG, "Profile successfully added!")
-          println("Profile successfully added \n\n\n")}
+          }
         .addOnFailureListener { e -> Log.w(TAG, "Error creating Profile", e)
-          println("Profile failed to be added\n\n\n")}
+          }
     }
 
     /**
