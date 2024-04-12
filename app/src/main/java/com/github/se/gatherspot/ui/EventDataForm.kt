@@ -324,7 +324,9 @@ fun EventDataForm(
                     errorMessage = e.message.toString()
                     showErrorDialog = true
                   }
-                  nav.controller.navigate("events")
+                  if (!showErrorDialog) {
+                    nav.controller.navigate("events")
+                  }
                 },
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
                 enabled =
