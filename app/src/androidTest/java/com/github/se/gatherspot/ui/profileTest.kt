@@ -86,6 +86,7 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("bio").assert(hasText("I am not a bot"))
     // next: check image
   }
+
   @Test
   fun interestsTest() {
     composeTestRule.setContent {
