@@ -16,9 +16,9 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun GeoMap(
-  userCoordinates: Location?,
-  interestsCoordinates: List<Location>,
-  mapViewModifier: Modifier = Modifier
+    userCoordinates: Location?,
+    interestsCoordinates: List<Location>,
+    mapViewModifier: Modifier = Modifier
 ) {
   // find the camera initial position (default is Rolex Learning Center at EPFL)
   var cameraCenter = LatLng(46.518567549767575, 6.568562923656716)
@@ -57,14 +57,17 @@ fun GeoMap(
         properties = MapProperties(mapType = MapType.HYBRID),
         modifier = mapViewModifier.testTag("Google Map")) {
           if (userCoordinates != null) {
-            Marker(state = MarkerState(position = LatLng(userCoordinates.latitude, userCoordinates.longitude)), title = "Your current position")
+            Marker(
+                state =
+                    MarkerState(
+                        position = LatLng(userCoordinates.latitude, userCoordinates.longitude)),
+                title = "Your current position")
           }
 
           for (interest in interestsCoordinates) {
-            Marker(state = MarkerState(
-              position = LatLng(interest.latitude, interest.longitude)),
-              title = interest.name
-            )
+            Marker(
+                state = MarkerState(position = LatLng(interest.latitude, interest.longitude)),
+                title = interest.name)
           }
         }
   }

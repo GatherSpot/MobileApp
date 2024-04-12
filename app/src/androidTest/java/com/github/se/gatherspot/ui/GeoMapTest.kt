@@ -13,49 +13,31 @@ import org.junit.Rule
 import org.junit.Test
 
 class GeoMapTest {
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @Test
-    fun isMapDisplayedTest() {
-        val userCoordinates = Location(46.518567549767575, 6.568562923656716, "")
-        val interestsCoordinates = emptyList<Location>()
-        val modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp)
-            .padding(4.dp)
+  @Test
+  fun isMapDisplayedTest() {
+    val userCoordinates = Location(46.518567549767575, 6.568562923656716, "")
+    val interestsCoordinates = emptyList<Location>()
+    val modifier = Modifier.fillMaxWidth().height(300.dp).padding(4.dp)
 
-        composeTestRule.setContent {
-            GeoMap(
-                userCoordinates = null,
-                interestsCoordinates
-            )
-        }
+    composeTestRule.setContent { GeoMap(userCoordinates = null, interestsCoordinates) }
 
-        composeTestRule.onNodeWithTag("Google Map").assertExists()
-    }
+    composeTestRule.onNodeWithTag("Google Map").assertExists()
+  }
 
-    @Test
-    fun areInterestDisplayed() {
-        val userCoordinates = LatLng(46.518567549767575, 6.568562923656716)
-        val interestCoordinates = listOf(
+  @Test
+  fun areInterestDisplayed() {
+    val userCoordinates = LatLng(46.518567549767575, 6.568562923656716)
+    val interestCoordinates =
+        listOf(
             Location(46.52464786510155, 6.575147894055152, "Vortex"),
             Location(46.51878838760822, 6.5619011030383, "IC BC"),
-            Location(46.523127173515185, 6.564655092362486, "swiss tech convention center")
-        )
-        val modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp)
-            .padding(4.dp)
+            Location(46.523127173515185, 6.564655092362486, "swiss tech convention center"))
+    val modifier = Modifier.fillMaxWidth().height(300.dp).padding(4.dp)
 
-        composeTestRule.setContent {
-            GeoMap(
-                userCoordinates = null,
-                interestCoordinates,
-                modifier
-            )
-        }
+    composeTestRule.setContent { GeoMap(userCoordinates = null, interestCoordinates, modifier) }
 
-        val map = composeTestRule.onNodeWithTag("Google Map")
-    }
+    val map = composeTestRule.onNodeWithTag("Google Map")
+  }
 }
