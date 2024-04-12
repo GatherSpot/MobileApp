@@ -130,7 +130,7 @@ class EventFirebaseConnectionTest {
                 .await()
                 .documents
                 .size
-        val round = numberOfEvents / 2
+        val round = 5
         val listOfEvents1 = EventFirebaseConnection.fetchNextEvents(round.toLong())
         assertEquals(round, listOfEvents1.size)
         val listOfEvents2 = EventFirebaseConnection.fetchNextEvents(round.toLong())
