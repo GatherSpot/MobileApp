@@ -3,7 +3,7 @@
 # Architecture diagram
 ![Architecture_diagram_M1](https://github.com/GatherSpot/MobileApp/assets/93264382/e9b98e11-dcb4-4f8d-9f35-573d6f5ce758)
 
-
+Link to the figma: https://www.figma.com/file/N3MjMS5SjebVXlsaScIG2y/MobileApp-UX?type=design&node-id=0-1&mode=design&t=HZkHSCDHw1zwsHL5-0
 # App Blurb
 
 Have you ever wanted to meet people in real life who share your intersts and hobbies? Look no further than the GatherSpot App.
@@ -99,5 +99,3 @@ Benoit Morawiec
 - verify that a user is part of a given university
 
 - include payment to share the event costs
-
-Link to figma : https://www.figma.com/files/project/207299293/Team-project?fuid=1342089692507679169
