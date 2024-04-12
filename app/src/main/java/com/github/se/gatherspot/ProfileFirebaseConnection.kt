@@ -10,8 +10,7 @@ class ProfileFirebaseConnection {
   fun deleteProfile(uid: String) {}
 
   fun fetchProfile(uid: String): Profile {
-
-    return Profile("John Doe", "I am not a bot", "", Interests.newBitset(), "")
+    return Profile()
   }
 
   fun updateProfile(profile: Profile) {}

@@ -43,7 +43,8 @@ class OwnProfileViewModel : ViewModel() {
             bio.value ?: "",
             image.value ?: "",
             _interests.value ?: Interests.newBitset(),
-            "")
+
+    _profile = Profile(_username.value ?: "", bio.value ?: "", image.value ?: "", "", emptySet())
     // next: THIS NEEDS SANITIZATION
     ProfileFirebaseConnection().updateProfile(_profile)
   }

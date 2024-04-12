@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.ui.Chat
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.Events
@@ -32,9 +33,9 @@ import com.google.firebase.auth.FirebaseAuth
 class MainActivity : ComponentActivity() {
   companion object {
     lateinit var uid: String
+    lateinit var signInLauncher: ActivityResultLauncher<Intent>
   }
 
-  private lateinit var signInLauncher: ActivityResultLauncher<Intent>
   private lateinit var navController: NavHostController
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +46,7 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(
             FirebaseAuthUIActivityResultContract(),
         ) { res ->
-          val ret = this.onSignInResult(res, navController)
-          // see
+          this.onSignInResult(res, navController)
         }
 
     setContent {
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
             }
 
             navigation(startDestination = "events", route = "home") {
-              composable("events") { Events(NavigationActions(navController)) }
+              composable("events") { Events(EventsViewModel(), NavigationActions(navController)) }
 
               composable("map") { Map(NavigationActions(navController)) }
 
