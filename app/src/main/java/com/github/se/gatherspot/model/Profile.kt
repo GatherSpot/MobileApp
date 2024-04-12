@@ -14,10 +14,22 @@ class Profile private constructor(
     private var _userName: String,
     private var _bio: String,
     private var _image: String,
-    private var _uid: String,
     private var _interests: Set<Interests>
 ) {
-  val firebase = ProfileFirebaseConnection()
+  var userName: String = _userName
+    get() = _userName
+    set(value) {
+      val regex = Regex("^[a-zA-Z_\\-\\s]*$")
+      if (!regex.matches(value))
+        throw IllegalArgumentException("Invalid username")
+      _userName = value
+    }
+  var bio: String = _bio
+    get() = _bio
+  var image: String = _image
+    get() = _image
+  var interests: Set<Interests> = _interests
+    get() = _interests
   companion object {
     /**
      * Factory method to fetch a profile given a certain UID
@@ -36,23 +48,15 @@ class Profile private constructor(
      * @return a profile object
      */
     fun emptyProfile(uid: String): Profile {
-      return Profile("", "", "", uid, emptySet())
+      return Profile("", "", "", emptySet())
     }
     /**
      * Factory method to create a dummy profile
-     * useful for testing
+     * useful for testing, might be removed later
      * @return a profile object
      */
     fun dummyProfile(): Profile {
-      return Profile("John Doe", "I am not a bot", "", "", emptySet())
+      return Profile("John Doe", "I am not a bot", "", emptySet())
     }
   }
-  var userName: String = _userName
-  var bio: String = _bio
-  var image: String = _image
-  var interests: Set<Interests> = _interests
-}
-fun test(){
-  val profile = Profile.fromUID("")
-
 }
