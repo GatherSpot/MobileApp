@@ -1,5 +1,9 @@
 # Software entreprise Project 2024: GatherSpot
 
+# Architecture diagram
+![Architecture_diagram_M1](https://github.com/GatherSpot/MobileApp/assets/93264382/e9b98e11-dcb4-4f8d-9f35-573d6f5ce758)
+
+
 # App Blurb
 
 Have you ever wanted to meet people in real life who share your intersts and hobbies? Look no further than the GatherSpot App.
