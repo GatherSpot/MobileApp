@@ -1,11 +1,15 @@
 package com.github.se.gatherspot.ui
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,8 +19,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
@@ -51,12 +61,19 @@ import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
 /** Composable that displays events * */
+
+// listOf("Your interests", "None")
 @Composable
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
+
   val state = viewModel.uiState.collectAsState()
   var previousScrollPosition by remember { mutableIntStateOf(0) }
   var loading by remember { mutableStateOf(false) }
   var fetched by remember { mutableStateOf(false) }
+  var showDropdownMenu by remember { mutableStateOf(false) }
+  val filters = enumValues<Interests>().toList()
+  var interestsSelected = mutableListOf<Interests>()
+  var fetch by remember { mutableStateOf(false) }
 
   Scaffold(
       modifier = Modifier.testTag("EventsScreen"),
@@ -69,11 +86,42 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                 Text(
                     text = "Filter events", fontSize = 18.sp, modifier = Modifier.testTag("filter"))
                 Spacer(modifier = Modifier.width(10.dp))
-                Icon(
-                    imageVector = Icons.Filled.Menu,
-                    contentDescription = null,
-                    modifier = Modifier.clickable {}.testTag("filterMenu"))
-                Spacer(modifier = Modifier.width(80.dp))
+                Box {
+                  Icon(
+                      imageVector = Icons.Filled.Menu,
+                      contentDescription = null,
+                      modifier =
+                          Modifier.clickable { showDropdownMenu = !showDropdownMenu }
+                              .testTag("filterMenu"))
+                  DropdownMenu(
+                      modifier = Modifier.height(300.dp),
+                      expanded = showDropdownMenu,
+                      onDismissRequest = {
+                        showDropdownMenu = false
+                        viewModel.filter(interestsSelected)
+                        interestsSelected = mutableListOf()
+                      }) {
+                        DropdownMenuItem(
+                            text = { Text("REMOVE FILTER") },
+                            onClick = {
+                              viewModel.removeFilter()
+                              showDropdownMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Filled.Clear, "clear") })
+
+                        filters.forEach { s -> StatefulDropdownItem(s, interestsSelected) }
+                      }
+                }
+                Spacer(modifier = Modifier.width(30.dp))
+                Icon(Icons.Filled.Refresh, "fetch", modifier = Modifier.clickable { fetch = true })
+                LaunchedEffect(fetch) {
+                  if (fetch) {
+                    Log.d(TAG, "entered")
+                    viewModel.fetchNext()
+                    fetch = false
+                  }
+                }
+                Spacer(modifier = Modifier.width(30.dp))
                 Text(
                     text = "Create an event",
                     fontSize = 18.sp,
@@ -103,8 +151,9 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
       }) { paddingValues ->
         val events = state.value.list
         val lazyState = rememberLazyListState()
+        Log.d(TAG, "size = " + events.size.toString())
         when {
-          events.isEmpty() -> Empty()
+          events.isEmpty() -> Empty(viewModel)
           else -> {
             LazyColumn(
                 state = lazyState,
@@ -130,13 +179,6 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
           }
         }
       }
-}
-
-@Composable
-fun Empty() {
-  Row(modifier = Modifier.padding(vertical = 40.dp).testTag("empty")) {
-    Text(text = "Loading...", color = Color.Black)
-  }
 }
 
 @Composable
@@ -187,4 +229,39 @@ fun EventRow(event: Event, navigation: NavigationActions) {
         }
       }
   Divider(color = Color.Black, thickness = 1.dp)
+}
+
+@Composable
+fun Empty(viewModel: EventsViewModel) {
+  Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+      Text("No events matched your query")
+      Text(
+          "Remove filter",
+          color = Color.Blue,
+          modifier = Modifier.clickable { viewModel.removeFilter() })
+    }
+  }
+}
+
+@Composable
+fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Interests>) {
+  var selected by remember { mutableStateOf(false) }
+
+  DropdownMenuItem(
+      text = { Text(interest.toString()) },
+      onClick = {
+        selected = !selected
+        if (selected) {
+          interestsSelected.add(interest)
+        } else {
+          interestsSelected.remove(interest)
+        }
+      },
+      leadingIcon = {
+        if (selected) {
+          Icon(Icons.Filled.Done, "")
+        }
+      },
+  )
 }
