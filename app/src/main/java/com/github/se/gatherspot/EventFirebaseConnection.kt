@@ -7,6 +7,7 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
@@ -175,7 +176,8 @@ class EventFirebaseConnection {
           images = images,
           globalRating = globalRating,
           // TODO: Add organizer
-          organizer = Profile("null", "null", "null", "null", emptySet()))
+          organizer = Profile.emptyProfile(Firebase.auth.currentUser!!.uid)
+      )
     }
     /**
      * Maps a string to a LocalTime object

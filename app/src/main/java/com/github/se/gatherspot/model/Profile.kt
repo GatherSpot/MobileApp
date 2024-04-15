@@ -1,6 +1,10 @@
 package com.github.se.gatherspot.model
 
+import androidx.compose.runtime.produceState
 import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 
 // NOTE : I will add interests once theses are pushed
 /**
@@ -16,20 +20,82 @@ class Profile private constructor(
     private var _image: String,
     private var _interests: Set<Interests>
 ) {
-  var userName: String = _userName
+  var userName: String
     get() = _userName
     set(value) {
       val regex = Regex("^[a-zA-Z_\\-\\s]*$")
+      if (value.isEmpty())
+        throw IllegalArgumentException("Username cannot be empty")
       if (!regex.matches(value))
-        throw IllegalArgumentException("Invalid username")
+        throw IllegalArgumentException("Username cannot contain special characters")
+      if (value.length > 20)
+        throw IllegalArgumentException("Username too long")
       _userName = value
     }
-  var bio: String = _bio
+  var bio: String
     get() = _bio
-  var image: String = _image
+    set(value) {
+      if (value.length > 100)
+        throw IllegalArgumentException("Bio too long")
+      _bio = value
+    }
+  var image: String
     get() = _image
-  var interests: Set<Interests> = _interests
+    set(value) = TODO()
+  var interests: Set<Interests>
     get() = _interests
+    set(value) { _interests = value }
+  fun addInterest(interest: Interests) {
+    _interests = _interests.plus(interest)
+  }
+  fun removeInterest(interest: Interests) {
+    _interests = _interests.minus(interest)
+  }
+  fun swapInterest(interest: Interests) {
+    if (_interests.contains(interest))
+      removeInterest(interest)
+    else
+      addInterest(interest)
+  }
+  fun save(userName: String, bio: String, image: String, interests: Set<Interests>) {
+    this.userName = userName
+    this.bio = bio
+    this.image = image
+    this._interests = interests
+    updateToFirebase()
+  }
+  fun toJson() : String {
+    val gson = Gson()
+    return gson.toJson(this)
+  }
+  fun fromJson(json: String) : Profile {
+    val gson = Gson()
+    return gson.fromJson(json, Profile::class.java)
+  }
+  //TODO : handle situation when there is no internet connection, or it is slow
+  //TODO : handle situation when there is no profile on firebase with such uid
+  private fun updateToFirebase(){
+    val database = FirebaseDatabase.getInstance()
+    val myRef = database.getReference("profiles")
+
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val json = this.toJson()
+
+    if (uid != null) {
+      myRef.child(uid).setValue(json)
+    }
+  }
+  private fun updateFromFirebase(uid : String){
+    val database = FirebaseDatabase.getInstance()
+    val myRef = database.getReference("profiles")
+    myRef.child(uid).get().addOnSuccessListener {
+      val profile = fromJson(it.value.toString())
+      _userName = profile.userName
+      _bio = profile.bio
+      _image = profile.image
+      _interests = profile.interests
+    }
+  }
   companion object {
     /**
      * Factory method to fetch a profile given a certain UID
@@ -39,7 +105,9 @@ class Profile private constructor(
     fun fromUID(uid: String): Profile {
       if(uid.isEmpty())
         throw IllegalArgumentException("UID cannot be empty")
-      return ProfileFirebaseConnection().fetchProfile(uid)
+      val profile = emptyProfile(uid)
+      profile.updateFromFirebase(uid)
+      return profile
     }
     /**
      * Factory method to create an empty profile
@@ -52,11 +120,11 @@ class Profile private constructor(
     }
     /**
      * Factory method to create a dummy profile
-     * useful for testing, might be removed later
+     * useful for testing and prototyping
      * @return a profile object
      */
     fun dummyProfile(): Profile {
-      return Profile("John Doe", "I am not a bot", "", emptySet())
+      return Profile("John Doe", "I am not a bot", "", setOf(Interests.FOOTBALL))
     }
   }
 }

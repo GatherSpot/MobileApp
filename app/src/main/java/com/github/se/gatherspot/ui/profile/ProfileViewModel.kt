@@ -21,14 +21,14 @@ class OwnProfileViewModel : ViewModel() {
     get() = _image
 
   init {
-    _profile = Profile("John Doe", "I am not a bot", "", "", emptySet())
+    _profile = Profile.dummyProfile()
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
   }
 
   fun save() {
-    _profile = Profile(_username.value ?: "", bio.value ?: "", image.value ?: "", "", emptySet())
+    _profile.save(_username.value ?: "", bio.value ?: "", image.value ?: "", emptySet())
     // next: THIS NEEDS SANITIZATION
     ProfileFirebaseConnection().updateProfile(_profile)
   }

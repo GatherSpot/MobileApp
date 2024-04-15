@@ -5,6 +5,8 @@ import androidx.compose.ui.graphics.ImageBitmapConfig
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.location.Location
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -47,7 +49,7 @@ data class Event(
     val eventStatus: EventStatus = EventStatus.DRAFT,
     val categories: Set<Interests>? = emptySet(),
     // List of the IDs of the users who registered for the event
-    val organizer: Profile = Profile("", "", "", "", emptySet()),
+    val organizer: Profile = Profile.emptyProfile(Firebase.auth.uid!!),
     val registeredUsers: List<Profile>? = emptyList(),
     val finalAttendees: List<Profile>? = emptyList(),
     // Find a way to upload image
