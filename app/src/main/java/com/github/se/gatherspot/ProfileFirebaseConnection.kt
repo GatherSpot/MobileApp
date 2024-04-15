@@ -19,7 +19,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface {
 
   fun fetchProfile(uid: String): Profile {
 
-    return Profile()
+    return TODO()
   }
 
   fun updateProfile(profile: Profile) {}

@@ -8,7 +8,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
@@ -40,7 +39,6 @@ fun ProfilePreview() {
 @Preview
 @Composable
 fun ViewProfilePreview() {
-  val set: Set<Interests> = setOf(Interests.FOOTBALL, Interests.CHESS)
-  val profile = Profile("John Doe", "I am not a bot", "", "", set)
+  val profile = Profile.dummyProfile()
   ProfileView().ProfileScreen(ProfileViewModel(profile))
 }
