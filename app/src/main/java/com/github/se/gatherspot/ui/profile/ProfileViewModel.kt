@@ -1,16 +1,21 @@
 package com.github.se.gatherspot.ui.profile
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 
+// Note : This warning is properly taken care of
+@SuppressLint("MutableCollectionMutableState")
 class OwnProfileViewModel : ViewModel() {
   private var _profile: Profile
   private val _username = MutableLiveData<String>()
   private val _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
+  private val _interests = MutableLiveData<Set<Interests>>()
   val username: LiveData<String>
     get() = _username
 
@@ -20,27 +25,38 @@ class OwnProfileViewModel : ViewModel() {
   val image: LiveData<String>
     get() = _image
 
+  val interests: LiveData<Set<Interests>>
+    get() = _interests
+
   init {
-    _profile = Profile("John Doe", "I am not a bot", "", "", emptySet())
+    _profile = ProfileFirebaseConnection().dummyFetch()
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
   }
 
   fun save() {
-    _profile = Profile(_username.value ?: "", bio.value ?: "", image.value ?: "", "", emptySet())
+    _profile =
+        Profile(
+            username.value ?: "",
+            bio.value ?: "",
+            image.value ?: "",
+            "",
+            interests.value ?: mutableSetOf())
     // next: THIS NEEDS SANITIZATION
-    ProfileFirebaseConnection().updateProfile(_profile)
+    ProfileFirebaseConnection().dummySave(_profile)
   }
 
   fun cancel() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
+    _interests.value = _profile.interests.toMutableSet()
   }
 
   fun updateUsername(userName: String) {
     _username.value = userName
+    println("Username: $userName")
   }
 
   fun updateBio(bio: String) {
@@ -51,11 +67,17 @@ class OwnProfileViewModel : ViewModel() {
     _image.value = image
   }
 
-  fun edit() {}
+  fun swapInterest(interest: Interests, selected: Boolean) {
+    val copy = interests.value?.toMutableSet() ?: mutableSetOf()
+    if (selected) copy.remove(interest) else copy.add(interest)
+    _interests.value = copy
+    println("Interests: $_interests")
+  }
 }
 
 class ProfileViewModel(profile: Profile) {
   val username: String = profile.userName
   val bio: String = profile.bio
   val image: String = profile.image
+  val interests: Set<Interests> = profile.interests
 }

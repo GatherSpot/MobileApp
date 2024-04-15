@@ -175,7 +175,7 @@ class EventFirebaseConnection {
           images = images,
           globalRating = globalRating,
           // TODO: Add organizer
-          organizer = Profile("null", "null", "null", "null", emptySet()))
+          organizer = Profile("null", "null", "null", "null", setOf()))
     }
     /**
      * Maps a string to a LocalTime object

@@ -12,7 +12,7 @@ class Profile(
     private var _userName: String,
     private var _bio: String,
     private var _image: String,
-    private var _uid: String,
+    val _uid: String,
     private var _interests: Set<Interests>
 ) {
 
@@ -21,5 +21,5 @@ class Profile(
   var image: String = _image
   var interests: Set<Interests> = _interests
 
-  constructor() : this("", "", "", "", emptySet())
+  constructor() : this("", "", "", "", setOf())
 }
