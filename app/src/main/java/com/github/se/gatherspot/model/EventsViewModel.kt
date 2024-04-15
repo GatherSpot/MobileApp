@@ -11,21 +11,21 @@ import kotlinx.coroutines.launch
 class EventsViewModel : ViewModel() {
 
   val PAGESIZE: Long = 9
-  private var _uiState = MutableStateFlow(UIState())
-  val uiState: StateFlow<UIState> = _uiState
+  private var _uiState = MutableStateFlow(EventsUIState())
+  val uiState: StateFlow<EventsUIState> = _uiState
 
   init {
     viewModelScope.launch {
       val events = EventFirebaseConnection.fetchNextEvents(PAGESIZE)
-      _uiState.value = UIState(events)
+      _uiState.value = EventsUIState(events)
     }
   }
 
   suspend fun fetchNext() {
     val nextEvents = EventFirebaseConnection.fetchNextEvents(PAGESIZE)
     val newEvents = _uiState.value.list.apply { addAll(nextEvents) }
-    _uiState.value = UIState(newEvents)
+    _uiState.value = EventsUIState(newEvents)
   }
 }
 
-data class UIState(val list: MutableList<Event> = mutableListOf())
+data class EventsUIState(val list: MutableList<Event> = mutableListOf())

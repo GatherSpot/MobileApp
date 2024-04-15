@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.github.se.gatherspot.model.ChatViewModel
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.Event
@@ -47,6 +48,7 @@ class MainActivity : ComponentActivity() {
 
     super.onCreate(savedInstanceState)
     val eventsViewModel = EventsViewModel()
+    val chatViewModel = ChatViewModel()
 
     signInLauncher =
         registerForActivityResult(
@@ -81,7 +83,7 @@ class MainActivity : ComponentActivity() {
 
               composable("community") { Community(NavigationActions(navController)) }
 
-              composable("chat") { Chat(NavigationActions(navController)) }
+              composable("chat") { Chat(chatViewModel, NavigationActions(navController)) }
 
               composable("profile") {
                 Profile(NavigationActions(navController), OwnProfileViewModel())

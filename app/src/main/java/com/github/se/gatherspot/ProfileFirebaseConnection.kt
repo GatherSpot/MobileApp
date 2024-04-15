@@ -4,14 +4,17 @@ import com.github.se.gatherspot.model.Profile
 
 class ProfileFirebaseConnection {
 
-  fun addProfile(profile: Profile) {}
+  companion object {
 
-  fun deleteProfile(uid: String) {}
+    fun addProfile(profile: Profile) {}
 
-  fun fetchProfile(uid: String): Profile {
+    fun deleteProfile(uid: String) {}
 
-    return Profile()
+    fun fetchProfile(uid: String): Profile {
+
+      return Profile()
+    }
+
+    fun updateProfile(profile: Profile) {}
   }
-
-  fun updateProfile(profile: Profile) {}
 }

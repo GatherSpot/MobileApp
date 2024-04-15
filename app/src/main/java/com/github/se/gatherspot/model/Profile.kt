@@ -20,6 +20,7 @@ class Profile(
   var bio: String = _bio
   var image: String = _image
   var interests: Set<Interests> = _interests
+  var chats: Set<ChatWithIndicator> = emptySet()
 
   constructor() : this("", "", "", "", emptySet())
 }

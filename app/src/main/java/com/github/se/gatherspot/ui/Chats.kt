@@ -1,22 +1,22 @@
 package com.github.se.gatherspot.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,8 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,53 +38,41 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.model.EventsViewModel
-import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventStatus
+import com.github.se.gatherspot.model.ChatViewModel
+import com.github.se.gatherspot.model.ChatWithIndicator
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.gson.Gson
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
-/** Composable that displays events * */
 @Composable
-fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
+fun Chat(viewModel: ChatViewModel, nav: NavigationActions) {
+
   val state = viewModel.uiState.collectAsState()
   var previousScrollPosition by remember { mutableIntStateOf(0) }
   var loading by remember { mutableStateOf(false) }
   var fetched by remember { mutableStateOf(false) }
-
   Scaffold(
-      modifier = Modifier.testTag("EventsScreen"),
       topBar = {
         Column {
           Row(
               modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
               horizontalArrangement = Arrangement.Center,
               verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Filter events", fontSize = 18.sp, modifier = Modifier.testTag("filter"))
-                Spacer(modifier = Modifier.width(10.dp))
-                Icon(
-                    imageVector = Icons.Filled.Menu,
-                    contentDescription = null,
-                    modifier = Modifier.clickable {}.testTag("filterMenu"))
-                Spacer(modifier = Modifier.width(80.dp))
-                Text(
-                    text = "Create an event",
-                    fontSize = 18.sp,
-                    modifier = Modifier.testTag("create"))
-                Spacer(modifier = Modifier.width(10.dp))
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    modifier =
-                        Modifier.clickable { nav.controller.navigate("createEvent") }
-                            .testTag("createMenu"))
+                ExtendedFloatingActionButton(
+                    onClick = { nav.controller.navigate("createChat") },
+                    icon = {
+                      Icon(
+                          imageVector = Icons.Default.Add,
+                          contentDescription = null,
+                          modifier = Modifier.testTag("createChat"))
+                    },
+                    text = {
+                      Text(text = "Chat", fontSize = 18.sp, modifier = Modifier.testTag("textChat"))
+                    },
+                    modifier = Modifier.size(50.dp))
               }
 
           if (loading) {
@@ -103,21 +89,26 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
             tabList = TOP_LEVEL_DESTINATIONS,
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
       }) { paddingValues ->
-        val events = state.value.list
+        val chats = state.value.list.toList()
         val lazyState = rememberLazyListState()
         when {
-          events.isEmpty() -> Empty()
+          chats.isEmpty() ->
+              Box(
+                  modifier = Modifier.fillMaxWidth().padding(paddingValues),
+                  contentAlignment = Alignment.TopStart) {
+                    Text(text = "Loading...", color = Color.Black)
+                  }
           else -> {
             LazyColumn(
                 state = lazyState,
-                modifier = Modifier.padding(paddingValues).testTag("eventsList")) {
-                  items(events) { event -> EventRow(event, nav) }
+                modifier = Modifier.padding(paddingValues).testTag("chatsList")) {
+                  items(chats) { chat -> ChatRow(chat, nav) }
                 }
 
             LaunchedEffect(lazyState.isScrollInProgress) {
               loading = false
               fetched = false
-              val isAtBottom = (lazyState.firstVisibleItemIndex + viewModel.PAGESIZE) >= events.size
+              val isAtBottom = (lazyState.firstVisibleItemIndex + viewModel.PAGESIZE) >= chats.size
               val currentScrollPosition = lazyState.firstVisibleItemScrollOffset
               val downwards =
                   currentScrollPosition >= previousScrollPosition && currentScrollPosition > 0
@@ -135,52 +126,51 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 }
 
 @Composable
-fun Empty() {
-
-  Row(modifier = Modifier.padding(vertical = 40.dp).testTag("empty")) {
-    Text(text = "Loading...", color = Color.Black)
-  }
-}
-
-@Composable
-fun EventRow(event: Event, navigation: NavigationActions) {
+fun ChatRow(chatWithIndicator: ChatWithIndicator, navigation: NavigationActions) {
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
             val gson = Gson()
-            val eventJson = gson.toJson(event)
-            navigation.controller.navigate("event/$eventJson")
+            val chatJson = gson.toJson(chatWithIndicator.chat)
+            navigation.controller.navigate("chat/$chatJson")
           },
       verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
-          Image(
-              bitmap = event.images ?: ImageBitmap(120, 120, config = ImageBitmapConfig.Rgb565),
-              contentDescription = null)
+          Icon(
+              painter = painterResource(R.drawable.chat),
+              contentDescription = null,
+              modifier = Modifier.size(24.dp))
         }
 
         Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
+          if (chatWithIndicator.chat.people.size > 2) {
+
+            Text(
+                text = "Chat between ${chatWithIndicator.chat.people.size} people",
+                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp)
+          } else {
+            Text(
+                text =
+                    "Chat between ${chatWithIndicator.chat.people[0].userName} and ${chatWithIndicator.chat.people[1].userName}",
+                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp)
+          }
           Text(
-              text =
-                  "Start date: ${event.eventStartDate?.
-                format(DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))}",
+              text = "Event: ${chatWithIndicator.chat.event.title}",
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
-          Text(
-              text =
-                  "End date: ${event.eventEndDate?.
-                format(DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))}",
-              fontWeight = FontWeight.Bold,
-              fontSize = 10.sp)
-          Text(text = event.title, fontSize = 14.sp)
         }
 
         Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
           Row(verticalAlignment = Alignment.CenterVertically) {
-            when (event.eventStatus) {
-              EventStatus.CREATED -> Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
-              EventStatus.ON_GOING -> Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
-              EventStatus.DRAFT -> Text("Draft", color = Color(0xFF1FC959), fontSize = 14.sp)
-              EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
+            when (chatWithIndicator.newMessage) {
+              0 -> Text("", color = Color(0xFF00668A), fontSize = 14.sp)
+              else ->
+                  Text(
+                      "${chatWithIndicator.newMessage} new messages",
+                      color = Color(255, 165, 0),
+                      fontSize = 14.sp)
             }
             Icon(
                 painter = painterResource(R.drawable.arrow_right),
@@ -194,6 +184,6 @@ fun EventRow(event: Event, navigation: NavigationActions) {
 
 @Preview
 @Composable
-fun PreviewEvents() {
-  Events(EventsViewModel(), NavigationActions(rememberNavController()))
+fun ChatPreview() {
+  Chat(ChatViewModel(), NavigationActions(rememberNavController()))
 }

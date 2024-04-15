@@ -1,6 +1,7 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Chat
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.User
 import com.google.firebase.Firebase
@@ -113,6 +114,16 @@ class UserFirebaseConnection {
           .update(hm)
           .addOnSuccessListener { Log.d(TAG, "Interests sucessfully added!") }
           .addOnFailureListener { e -> Log.w(TAG, "Error for interests", e) }
+    }
+
+    fun newUserChat(uid: String, chat: Chat) {
+      val hm: HashMap<String, Any?> = hashMapOf("profile.chats" to chat)
+      Firebase.firestore
+          .collection(USERS)
+          .document(uid)
+          .update(hm)
+          .addOnSuccessListener { Log.d(TAG, "Chat sucessfully added!") }
+          .addOnFailureListener { e -> Log.w(TAG, "Error for chat", e) }
     }
   }
 }
