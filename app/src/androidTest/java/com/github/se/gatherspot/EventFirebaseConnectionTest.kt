@@ -67,7 +67,7 @@ class EventFirebaseConnectionTest {
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
             categories = setOf(Interests.CHESS),
-            registeredUsers = emptyList(),
+            registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
             images = null,
             globalRating = null)
@@ -174,7 +174,7 @@ class EventFirebaseConnectionTest {
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
             eventStatus = EventStatus.DRAFT,
             categories = setOf(Interests.CHESS),
-            registeredUsers = emptyList(),
+            registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
             images = null,
             globalRating = null)
@@ -208,7 +208,7 @@ class EventFirebaseConnectionTest {
             inscriptionLimitTime = null,
             eventStatus = EventStatus.CREATED,
             categories = setOf(Interests.CHESS),
-            registeredUsers = emptyList(),
+            registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
             images = null,
             globalRating = null)

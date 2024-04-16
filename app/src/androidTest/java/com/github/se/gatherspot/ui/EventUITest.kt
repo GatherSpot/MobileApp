@@ -49,7 +49,6 @@ class EventUITest {
               inscriptionLimitDate = LocalDate.now().plusDays(1),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
-              registeredUsers = null,
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
@@ -105,7 +104,6 @@ class EventUITest {
               inscriptionLimitDate = LocalDate.now().plusDays(1),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
-              registeredUsers = null,
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
@@ -194,7 +192,7 @@ class EventUITest {
               inscriptionLimitDate = LocalDate.of(2024, 4, 11),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
-              registeredUsers = emptyList(),
+              registeredUsers = mutableListOf(),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )

@@ -147,7 +147,7 @@ class EventFirebaseConnection {
           }
       val categoriesList = document.get("categories") as List<String>
       val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
-      val registeredUsers = document.get("finalAttendee") as List<Profile>
+      val registeredUsers = document.get("finalAttendee") as MutableList<Profile>
       val finalAttendee = document.get("finalAttendee") as List<Profile>
       val images = null // TODO: Retrieve images from database
       val globalRating =
