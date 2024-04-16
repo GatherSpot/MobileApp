@@ -22,6 +22,7 @@ class Profile(
   var bio: String = _bio
   var image: String = _image
   var interests: Set<Interests> = _interests
+  val registeredEvents = mutableListOf<String>() // list of event ids
 
   constructor() : this("", "", "", "", setOf())
 }
