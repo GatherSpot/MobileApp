@@ -6,6 +6,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -52,7 +53,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController))
+      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
@@ -107,7 +108,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController))
+      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertIsDisplayed()
@@ -196,7 +197,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController))
+      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description {

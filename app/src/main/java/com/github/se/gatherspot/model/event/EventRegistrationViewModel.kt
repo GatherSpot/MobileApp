@@ -1,22 +1,24 @@
 package com.github.se.gatherspot.model.event
 
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.EventFirebaseConnection
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.ProfileFirebaseConnection
-import com.github.se.gatherspot.model.Profile
 import kotlinx.coroutines.launch
 
-class EventViewModel : ViewModel() {
+class EventRegistrationViewModel : ViewModel() {
   // LiveData for holding registration state
   private val _registrationState = MutableLiveData<RegistrationState>()
   val registrationState: LiveData<RegistrationState> = _registrationState
+  private val profile = ProfileFirebaseConnection().fetchProfile(MainActivity.uid)
+
+
 
   // Function to register for the event
-  fun registerForEvent(event: Event, profile: Profile) {
+  fun registerForEvent(event: Event) {
     // Perform registration logic here, such as making network requests
     viewModelScope.launch {
       // Simulate network request delay
@@ -26,6 +28,11 @@ class EventViewModel : ViewModel() {
             return@launch
 
           }
+        }
+        // Check if the user is already registered for the event
+        if (event.registeredUsers.contains(profile)) {
+          _registrationState.value = RegistrationState.Error("Already registered for this event")
+          return@launch
         }
         event.registeredUsers.add(profile)
         profile.registeredEvents.add(event.eventID)
@@ -37,9 +44,9 @@ class EventViewModel : ViewModel() {
         _registrationState.value = RegistrationState.Success
 
       }
-      _registrationState.value =
-          RegistrationState.Success // or RegistrationState.Error(errorMessage)
     }
+
+
 }
 
 

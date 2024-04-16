@@ -19,6 +19,7 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.ui.Chat
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
@@ -74,7 +75,11 @@ class MainActivity : ComponentActivity() {
                 val eventObject =
                     gson.fromJson(
                         backStackEntry.arguments?.getString("eventJson"), Event::class.java)
-                EventUI(event = eventObject!!, navActions = NavigationActions(navController))
+                EventUI(
+                  event = eventObject!!,
+                  navActions = NavigationActions(navController),
+                  viewModel = EventRegistrationViewModel()
+                )
               }
 
               composable("map") { Map(NavigationActions(navController)) }
