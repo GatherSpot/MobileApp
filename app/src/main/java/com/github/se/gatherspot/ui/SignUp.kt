@@ -65,6 +65,7 @@ fun SignUp(nav: NavigationActions) {
   var isClicked by remember { mutableStateOf(false) }
   var showDialogVerif by remember { mutableStateOf(false) }
   val t = remember { mutableStateOf("") }
+  val UserFirebaseConnection = UserFirebaseConnection()
 
   LaunchedEffect(isClicked) {
     if (isClicked) {
@@ -72,9 +73,9 @@ fun SignUp(nav: NavigationActions) {
         withContext(Dispatchers.IO) {
           val success = checkCredentials(email, password, t)
           if (success) {
-            MainActivity.uid = UserFirebaseConnection.getUID()
+            MainActivity.uid = UserFirebaseConnection.getID()
             val newUser = User(MainActivity.uid, username, email, password)
-            UserFirebaseConnection.addUser(newUser)
+            UserFirebaseConnection.add(newUser)
             FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
             showDialogVerif = true
           } else {
