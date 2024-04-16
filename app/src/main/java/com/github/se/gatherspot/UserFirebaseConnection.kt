@@ -12,8 +12,7 @@ class UserFirebaseConnection : FirebaseConnectionInterface {
 
   override val COLLECTION = FirebaseCollection.USERS.toString()
   override val TAG = "UserFirebase"
-
-  val USERS = FirebaseCollection.USERS.toString()
+  val USERS = FirebaseCollection.USERS.toString().lowercase()
 
   override fun getFromDocument(d: DocumentSnapshot): User? {
     if (d.getString("uid") == null) {
@@ -29,6 +28,24 @@ class UserFirebaseConnection : FirebaseConnectionInterface {
     //      val interests = profile["interests"] as List<String>
 
     return User(uid, username, email, password)
+  }
+
+  override fun add(user: User) {
+
+    val userMap: HashMap<String, Any?> =
+        hashMapOf(
+            "uid" to user.id,
+            "username" to user.username,
+            "email" to user.email,
+            "password" to user.password,
+        )
+
+    Firebase.firestore
+        .collection(USERS)
+        .document(user.id)
+        .set(userMap)
+        .addOnSuccessListener { Log.d(TAG, "User successfully added!") }
+        .addOnFailureListener { e -> Log.w(TAG, "Error creating user", e) }
   }
 
   fun deleteCurrentUser() {

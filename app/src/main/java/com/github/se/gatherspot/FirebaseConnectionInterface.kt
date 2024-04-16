@@ -1,6 +1,8 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
@@ -14,17 +16,13 @@ interface FirebaseConnectionInterface {
   val COLLECTION: String
   val TAG: String
 
-  fun getID(): String {
-    return FirebaseDatabase.getInstance().getReference().child(COLLECTION).push().key!!
-  }
-
   fun getNewID(): String {
-    return FirebaseDatabase.getInstance().getReference().child(COLLECTION).push().key!!
+    return FirebaseDatabase.getInstance().getReference().child(COLLECTION.lowercase()).push().key!!
   }
 
   suspend fun fetch(id: String): CollectionClass? = suspendCancellableCoroutine { continuation ->
     Firebase.firestore
-        .collection(COLLECTION)
+        .collection(COLLECTION.lowercase())
         .document(id)
         .get()
         .addOnSuccessListener { doc ->
@@ -39,27 +37,20 @@ interface FirebaseConnectionInterface {
 
   fun getFromDocument(d: DocumentSnapshot): CollectionClass?
 
-  fun add(collectionClass: CollectionClass) {
-    val userMap: HashMap<String, Any?> = HashMap()
-    for (field in collectionClass.javaClass.declaredFields) {
-      userMap[field.name] = field.name
-    }
-
-    Firebase.firestore
-        .collection(COLLECTION)
-        .document(collectionClass.id)
-        .set(userMap)
-        .addOnSuccessListener { Log.d(TAG, "User successfully added!") }
-        .addOnFailureListener { e -> Log.w(TAG, "Error creating user", e) }
-  }
-
-  // Need to find a way to get rid of this
+  // Find a way to make this work for all classes generically
   fun add(event: Event) {}
 
+  fun add(user: User) {}
+
+  fun add(profile: Profile) {}
+
   fun delete(id: String) {
-    Firebase.firestore.collection(COLLECTION).document(id).delete().addOnFailureListener { exception
-      ->
-      Log.e(TAG, "Error deleting ${COLLECTION.lowercase()}", exception)
-    }
+    Firebase.firestore
+        .collection(COLLECTION.lowercase())
+        .document(id)
+        .delete()
+        .addOnFailureListener { exception ->
+          Log.e(TAG, "Error deleting ${COLLECTION.lowercase()}", exception)
+        }
   }
 }

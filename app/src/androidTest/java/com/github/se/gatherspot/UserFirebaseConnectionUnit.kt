@@ -16,16 +16,16 @@ class UserFirebaseConnectionUnit {
 
   @Test
   fun newUID() {
-    val uid = UserFirebaseConnection.getID()
+    val uid = UserFirebaseConnection.getNewID()
     assertNotNull(uid)
     assertTrue(uid.isNotEmpty())
   }
 
   @Test
   fun uniqueUIDS() {
-    val uid1 = UserFirebaseConnection.getID()
-    val uid2 = UserFirebaseConnection.getID()
-    val uid3 = UserFirebaseConnection.getID()
+    val uid1 = UserFirebaseConnection.getNewID()
+    val uid2 = UserFirebaseConnection.getNewID()
+    val uid3 = UserFirebaseConnection.getNewID()
     assertNotNull(uid1)
     assertNotNull(uid2)
     assertNotNull(uid3)
@@ -36,7 +36,7 @@ class UserFirebaseConnectionUnit {
 
   @Test
   fun testaddAndDelete() = runTest {
-    val uid = UserFirebaseConnection.getID()
+    val uid = UserFirebaseConnection.getNewID()
     val username = "Test"
     val email = "random"
     val password = "random"

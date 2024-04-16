@@ -7,7 +7,6 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.google.firebase.Firebase
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
@@ -112,15 +111,6 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
   val DATE_FORMAT = "dd/MM/yyyy"
   val TIME_FORMAT = "H:mm"
   var offset: DocumentSnapshot? = null
-
-  /**
-   * Creates a unique new identifier This function can be used for both Event IDs and User IDs
-   *
-   * @return A unique identifier
-   */
-  fun getNewEventID(): String {
-    return FirebaseDatabase.getInstance().getReference().child(EVENTS).push().key!!
-  }
 
   /**
    * Fetch the next number events stating from the offset
@@ -272,18 +262,6 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
     Firebase.firestore.collection(EVENTS).document(event.id).set(eventItem).addOnFailureListener {
         exception ->
       Log.e(TAG, "Error adding new Event", exception)
-    }
-  }
-
-  /**
-   * Delete an event in the database
-   *
-   * @param eventID: The eventID of the event to delete
-   */
-  fun deleteEvent(eventID: String) {
-    Firebase.firestore.collection(EVENTS).document(eventID).delete().addOnFailureListener {
-        exception ->
-      Log.e(TAG, "Error deleting Event", exception)
     }
   }
 }

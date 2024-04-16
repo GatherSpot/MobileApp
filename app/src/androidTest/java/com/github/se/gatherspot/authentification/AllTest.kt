@@ -115,7 +115,5 @@ class AllTest : TestCase() {
           }
           .await()
     }
-    UserFirebaseConnection.delete(MainActivity.uid)
-    UserFirebaseConnection.deleteCurrentUser()
   }
 }

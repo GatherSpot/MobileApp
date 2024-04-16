@@ -13,7 +13,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface {
     TODO("Not yet implemented")
   }
 
-  fun addProfile(profile: Profile) {}
+  override fun add(profile: Profile) {}
 
   fun deleteProfile(uid: String) {}
 

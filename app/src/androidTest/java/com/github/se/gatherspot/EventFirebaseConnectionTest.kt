@@ -25,15 +25,15 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun testgetID() {
-    val newId = EventFirebaseConnection.getID()
+    val newId = EventFirebaseConnection.getNewID()
     assertNotNull(newId)
     assertTrue(newId.isNotEmpty())
   }
 
   @Test
   fun testUniquegetID() {
-    val newId1 = EventFirebaseConnection.getID()
-    val newId2 = EventFirebaseConnection.getID()
+    val newId1 = EventFirebaseConnection.getNewID()
+    val newId2 = EventFirebaseConnection.getNewID()
     assertNotNull(newId1)
     assertNotNull(newId2)
     assertNotEquals(newId1, newId2)
@@ -41,7 +41,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun testAddAndFetchEvent() = runTest {
-    val eventID = EventFirebaseConnection.getID()
+    val eventID = EventFirebaseConnection.getNewID()
     val event =
         Event(
             id = eventID,
@@ -148,7 +148,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun deleteEvent() = runTest {
-    val eventID = EventFirebaseConnection.getID()
+    val eventID = EventFirebaseConnection.getNewID()
     val event =
         Event(
             id = eventID,
@@ -187,14 +187,14 @@ class EventFirebaseConnectionTest {
     async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertNotNull(resultEvent)
     assertEquals(resultEvent!!.id, eventID)
-    EventFirebaseConnection.deleteEvent(eventID)
+    EventFirebaseConnection.delete(eventID)
     async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertEquals(resultEvent, null)
   }
 
   @Test
   fun nullCasesTest() = runTest {
-    val eventID = EventFirebaseConnection.getID()
+    val eventID = EventFirebaseConnection.getNewID()
     val event =
         Event(
             id = eventID,
@@ -237,7 +237,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.images, null)
-    EventFirebaseConnection.deleteEvent(eventID)
+    EventFirebaseConnection.delete(eventID)
   }
 
   @Test
