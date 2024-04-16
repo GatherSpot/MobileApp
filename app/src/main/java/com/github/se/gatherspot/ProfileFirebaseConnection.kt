@@ -7,6 +7,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 class ProfileFirebaseConnection : FirebaseConnectionInterface {
 
   override val COLLECTION = FirebaseCollection.PROFILES.toString()
+  override val TAG = "ProfileFirebase"
 
   override fun getFromDocument(d: DocumentSnapshot): Profile? {
     TODO("Not yet implemented")
