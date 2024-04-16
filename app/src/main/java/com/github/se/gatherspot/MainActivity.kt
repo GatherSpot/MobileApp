@@ -76,10 +76,9 @@ class MainActivity : ComponentActivity() {
                     gson.fromJson(
                         backStackEntry.arguments?.getString("eventJson"), Event::class.java)
                 EventUI(
-                  event = eventObject!!,
-                  navActions = NavigationActions(navController),
-                  viewModel = EventRegistrationViewModel()
-                )
+                    event = eventObject!!,
+                    navActions = NavigationActions(navController),
+                    viewModel = EventRegistrationViewModel())
               }
 
               composable("map") { Map(NavigationActions(navController)) }

@@ -9,6 +9,9 @@ import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel class for handling event registration logic
+ */
 class EventRegistrationViewModel : ViewModel() {
   // LiveData for holding registration state
   private val _registrationState = MutableLiveData<RegistrationState>()
@@ -17,7 +20,9 @@ class EventRegistrationViewModel : ViewModel() {
 
 
 
-  // Function to register for the event
+  /**
+   * Registers the user for the given event
+   */
   fun registerForEvent(event: Event) {
     // Perform registration logic here, such as making network requests
     viewModelScope.launch {
@@ -51,7 +56,7 @@ class EventRegistrationViewModel : ViewModel() {
 
 
 sealed class RegistrationState {
-  object Success : RegistrationState()
+  data object Success : RegistrationState()
 
   data class Error(val message: String) : RegistrationState()
 }

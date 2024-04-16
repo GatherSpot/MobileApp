@@ -43,10 +43,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -61,7 +59,7 @@ import java.time.format.FormatStyle
 @Composable
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
   var showDialog by remember { mutableStateOf(false) }
-    val registrationState by viewModel.registrationState.observeAsState()
+  val registrationState by viewModel.registrationState.observeAsState()
 
   Scaffold(
       modifier = Modifier.testTag("EventUIScreen"),
@@ -82,29 +80,22 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
       }) { innerPadding ->
         Column(
             modifier =
-            Modifier
-                .padding(innerPadding)
-                .padding(8.dp)
-                .testTag("eventColumn")
-                .verticalScroll(rememberScrollState())) {
+                Modifier.padding(innerPadding)
+                    .padding(8.dp)
+                    .testTag("eventColumn")
+                    .verticalScroll(rememberScrollState())) {
               // Event Image
               event.images?.let { img ->
                 Image(
                     bitmap = img,
                     contentDescription = "Event Image",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .testTag("eventImage"),
+                    modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
                     contentScale = ContentScale.FillBounds)
               }
                   ?: Image(
                       painter = painterResource(id = R.drawable.default_event_image),
                       contentDescription = "Default Event Image",
-                      modifier = Modifier
-                          .fillMaxWidth()
-                          .height(150.dp)
-                          .testTag("eventImage"),
+                      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
                       contentScale = ContentScale.FillBounds)
 
               Spacer(modifier = Modifier.height(16.dp))
@@ -127,9 +118,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               Text(
                   text = "Number of attendees",
                   modifier =
-                  Modifier
-                      .align(Alignment.CenterHorizontally)
-                      .testTag("attendeesInfoTitle"),
+                      Modifier.align(Alignment.CenterHorizontally).testTag("attendeesInfoTitle"),
                   fontWeight = FontWeight.Bold)
 
               // Event Capacity
@@ -155,11 +144,10 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               // TODO: Implement the actual map and test it
               Box(
                   modifier =
-                  Modifier
-                      .height(200.dp)
-                      .fillMaxWidth()
-                      .background(Color.Gray)
-                      .testTag("mapView")) {
+                      Modifier.height(200.dp)
+                          .fillMaxWidth()
+                          .background(Color.Gray)
+                          .testTag("mapView")) {
                     // Here should be the code to integrate the actual map
                     BasicText(text = "Map Placeholder")
                   }
@@ -207,45 +195,37 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               Spacer(modifier = Modifier.height(16.dp))
               Button(
                   onClick = {
-                      viewModel.registerForEvent(event)
-                      showDialog = true
+                    viewModel.registerForEvent(event)
 
-                            },
-                  modifier = Modifier
-                      .fillMaxWidth()
-                      .testTag("registerButton"),
+                    showDialog = true
+                  },
+                  modifier = Modifier.fillMaxWidth().testTag("registerButton"),
                   colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
                     Text("Register", color = Color.White)
                   }
             }
 
-      if (showDialog) {
+        if (showDialog) {
           AlertDialog(
+              modifier = Modifier.testTag("alertBox"),
               onDismissRequest = { showDialog = false },
               title = { Text("Registration Result") },
               text = {
-                  when (val state = registrationState) {
-                      is RegistrationState.Success -> Text("Registration successful!")
-                      is RegistrationState.Error -> Text(state.message)
-                      else -> Text("Unknown state")
-                  }
+                when (val state = registrationState) {
+                  is RegistrationState.Success -> Text("You have been successfully registered!")
+                  is RegistrationState.Error -> Text(state.message)
+                  else -> Text("Unknown state")
+                }
               },
-              confirmButton = {
-                  Button(onClick = { showDialog = false }) {
-                      Text("OK")
-                  }
-              }
-          )
-      }
+              confirmButton = { Button(onClick = { showDialog = false }) { Text("OK") } })
+        }
       }
 }
 
 @Composable
 fun Chip(interest: Interests) {
   Surface(
-      modifier = Modifier
-          .padding(4.dp)
-          .testTag("chip"),
+      modifier = Modifier.padding(4.dp).testTag("chip"),
       elevation = 4.dp,
       shape = RoundedCornerShape(50), // Circular shaped corners
       color = Color(0xFF3A89C9) // Use the primary color from the theme
@@ -261,19 +241,15 @@ fun ProfileIndicator(profile: Profile) {
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
-      Modifier
-          .padding(horizontal = 16.dp, vertical = 8.dp)
-          .testTag("profileIndicator")) {
+          Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("profileIndicator")) {
         // TODO implement image here: do it later
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-            Modifier
-                .size(40.dp) // Set the size of the circle
-                .background(
-                    color = Color(0xFF9C27B0),
-                    shape = CircleShape
-                ) // Set the background color and shape of the circle
+                Modifier.size(40.dp) // Set the size of the circle
+                    .background(
+                        color = Color(0xFF9C27B0),
+                        shape = CircleShape) // Set the background color and shape of the circle
             ) {
               Text(
                   text =
@@ -288,4 +264,3 @@ fun ProfileIndicator(profile: Profile) {
         Text(text = profile.userName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
       }
 }
-

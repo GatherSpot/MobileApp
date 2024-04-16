@@ -1,9 +1,12 @@
 package com.github.se.gatherspot.ui
 
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
@@ -16,13 +19,17 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+
 @RunWith(AndroidJUnit4::class)
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
 
+
   @Test
   fun testEverythingExists() {
-    composeTestRule.setContent {
+      // To make it works, need to define a global MainActivity.uid
+      MainActivity.uid = "test"
+      composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
           Event(
@@ -77,6 +84,8 @@ class EventUITest {
 
   @Test
   fun testEverythingIsDisplayed() {
+    // To make it works in isolation, need to define a global MainActivity.uid
+    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -160,11 +169,14 @@ class EventUITest {
         performScrollTo()
         assertIsDisplayed()
       }
+      alertBox { assertIsNotDisplayed() }
     }
   }
 
   @Test
   fun textsDisplayedAreCorrect() {
+    // To make it works, need to define a global MainActivity.uid
+    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -235,4 +247,57 @@ class EventUITest {
       registerButton { hasText("Register") }
     }
   }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun registerToAnEventWorks(){
+        // To make it works, need to define a global MainActivity.uid
+        MainActivity.uid = "test"
+        composeTestRule.setContent {
+            val navController = rememberNavController()
+            val event =
+                Event(
+                    eventID = "1",
+                    title = "Event Title",
+                    description =
+                        "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+                    organizer =
+                        com.github.se.gatherspot.model.Profile(
+                            "Elias",
+                            "Bio",
+                            "image",
+                            "uid",
+                            setOf(
+                                Interests.BASKETBALL,
+                                Interests.FOOTBALL,
+                                Interests.BOWLING,
+                                Interests.CHESS)),
+                    attendanceMaxCapacity = 100,
+                    attendanceMinCapacity = 10,
+                    categories = setOf(Interests.BASKETBALL),
+                    eventEndDate = LocalDate.of(2024, 4, 15),
+                    eventStartDate = LocalDate.of(2024, 4, 14),
+                    globalRating = 4,
+                    inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+                    inscriptionLimitTime = LocalTime.of(23, 59),
+                    location = null,
+                    registeredUsers = mutableListOf(),
+                    timeBeginning = LocalTime.of(13, 0),
+                    timeEnding = LocalTime.of(16, 0),
+                )
+            EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+        }
+        ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+            registerButton {
+                performScrollTo()
+                performClick()
+            }
+            composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
+            alertBox {
+                assertIsDisplayed()
+                hasText("You have been successfully registered!")
+            }
+
+        }
+    }
 }

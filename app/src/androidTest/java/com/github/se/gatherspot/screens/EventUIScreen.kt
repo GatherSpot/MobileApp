@@ -23,4 +23,5 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val inscriptionLimitTitle = onNode { hasTestTag("inscriptionLimitTitle") }
   val inscriptionLimitDateAndTime = onNode { hasTestTag("inscriptionLimitDateAndTime") }
   val registerButton = onNode { hasTestTag("registerButton") }
+  val alertBox = onNode { hasTestTag("alertBox") }
 }
