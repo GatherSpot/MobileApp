@@ -4,41 +4,42 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class ProfileUnitTest {
-  fun setUsername(){
+  fun setUsername() {
     val profile = Profile.dummyProfile()
     assert(profile.userName == "John Doe")
     profile.userName = "newName"
     assert(profile.userName == "newName")
   }
+
   @Test
-  fun setUsernameEmpty(){
+  fun setUsernameEmpty() {
     val profile = Profile.dummyProfile()
-    assertThrows(IllegalArgumentException::class.java) {
-      profile.userName = ""
-    }
+    assertThrows(IllegalArgumentException::class.java) { profile.userName = "" }
   }
+
   @Test
-  fun setUsernameSpecialCharacters(){
+  fun setUsernameSpecialCharacters() {
     val profile = Profile.dummyProfile()
-    assertThrows(IllegalArgumentException::class.java) {
-      profile.userName = "John@Doe"
-    }
+    assertThrows(IllegalArgumentException::class.java) { profile.userName = "John@Doe" }
   }
+
   @Test
-  fun addInterestsTest(){
+  fun addInterestsTest() {
     val profile = Profile.dummyProfile()
     profile.addInterest(Interests.BOWLING)
     assert(profile.interests.contains(Interests.BOWLING))
   }
+
   @Test
-  fun removeInterestsTest(){
+  fun removeInterestsTest() {
     val profile = Profile.dummyProfile()
     assert(profile.interests.contains(Interests.FOOTBALL))
     profile.removeInterest(Interests.FOOTBALL)
     assert(!profile.interests.contains(Interests.FOOTBALL))
   }
+
   @Test
-  fun switchInterestsTest(){
+  fun switchInterestsTest() {
     val profile = Profile.dummyProfile()
     assert(profile.interests.contains(Interests.FOOTBALL))
     profile.swapInterest(Interests.FOOTBALL)
