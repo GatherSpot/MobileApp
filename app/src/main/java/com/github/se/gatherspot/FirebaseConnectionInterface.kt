@@ -53,6 +53,7 @@ interface FirebaseConnectionInterface {
         .addOnFailureListener { e -> Log.w(TAG, "Error creating user", e) }
   }
 
+  // Need to find a way to get rid of this
   fun add(event: Event) {}
 
   fun delete(id: String) {
