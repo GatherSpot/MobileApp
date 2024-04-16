@@ -1,9 +1,9 @@
 package com.github.se.gatherspot
 
 import android.util.Log
-import com.github.se.gatherspot.model.Chat
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.User
+import com.github.se.gatherspot.model.chat.Chat
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.database.FirebaseDatabase
@@ -93,7 +93,6 @@ class UserFirebaseConnection {
           .addOnSuccessListener { result ->
             for (document in result) {
               if (document.get("username") == username) {
-                Log.d(TAG, "LOL")
                 res = true
               }
               if (res) {
@@ -112,7 +111,7 @@ class UserFirebaseConnection {
           .collection(USERS)
           .document(uid)
           .update(hm)
-          .addOnSuccessListener { Log.d(TAG, "Interests sucessfully added!") }
+          .addOnSuccessListener { Log.d(TAG, "Interests successfully added!") }
           .addOnFailureListener { e -> Log.w(TAG, "Error for interests", e) }
     }
 
@@ -122,8 +121,8 @@ class UserFirebaseConnection {
           .collection(USERS)
           .document(uid)
           .update(hm)
-          .addOnSuccessListener { Log.d(TAG, "Chat sucessfully added!") }
-          .addOnFailureListener { e -> Log.w(TAG, "Error for chat", e) }
+          .addOnSuccessListener { Log.d(TAG, "Chat successfully added to user!") }
+          .addOnFailureListener { e -> Log.w(TAG, "Error in adding new chat to user", e) }
     }
   }
 }

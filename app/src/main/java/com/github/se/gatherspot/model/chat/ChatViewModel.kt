@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.model.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

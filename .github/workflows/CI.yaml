@@ -4,8 +4,7 @@ name: CI - Test Runner
 on:
   push:
     branches:
-      - main
-      - 38-add-tests-for-loginsign-up-classes
+      - origin
 
   pull_request:
     types:

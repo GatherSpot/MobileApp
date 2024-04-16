@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.model
 
+import com.github.se.gatherspot.model.chat.ChatWithIndicator
+
 // NOTE : I will add interests once theses are pushed
 /**
  * Profile data object

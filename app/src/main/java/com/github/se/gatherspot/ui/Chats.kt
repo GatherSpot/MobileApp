@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.model.ChatViewModel
-import com.github.se.gatherspot.model.ChatWithIndicator
+import com.github.se.gatherspot.model.chat.ChatViewModel
+import com.github.se.gatherspot.model.chat.ChatWithIndicator
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
@@ -76,10 +76,10 @@ fun Chat(viewModel: ChatViewModel, nav: NavigationActions) {
               }
 
           if (loading) {
-            Text("Loading new events ... Keep scrolling")
+            Text("Loading next chats ... Keep scrolling")
           }
           if (fetched) {
-            Text("Fetched new events")
+            Text("Fetched next chats")
           }
         }
       },
