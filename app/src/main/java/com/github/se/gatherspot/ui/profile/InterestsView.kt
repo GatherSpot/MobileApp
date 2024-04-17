@@ -34,7 +34,8 @@ public class InterestsView {
     val set by viewModel.interests.observeAsState(emptySet())
     val swap = viewModel::swapInterests
     FlowRow() {
-      // This needs to be computed here since it needs to be recomputed when we change the set, maybe we can make it a lambda or adapt the viewmodel to make it more elegant
+      // This needs to be computed here since it needs to be recomputed when we change the set,
+      // maybe we can make it a lambda or adapt the viewmodel to make it more elegant
       interestList.forEach { interest ->
         val selected = set.contains(interest)
         EditableInterest(interest, selected) { swap(interest) }
@@ -53,26 +54,23 @@ public class InterestsView {
   private fun EditableInterest(interest: Interests, selected: Boolean, onClick: (Int) -> Unit) {
 
     FilterChip(
-      onClick = { onClick(interest.ordinal) },
-      label = { Text(interest.name) },
-      selected = selected,
-      leadingIcon = {
-        if (selected) {
-          Icon(
-            imageVector = Icons.Filled.Done,
-            contentDescription = "Done icon",
-            modifier = Modifier.size(FilterChipDefaults.IconSize)
-          )
-        } else {
-          Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = "Add icon",
-            modifier = Modifier.size(FilterChipDefaults.IconSize)
-          )
-        }
-      },
-      modifier = Modifier.padding(horizontal = 4.dp)
-    )
+        onClick = { onClick(interest.ordinal) },
+        label = { Text(interest.name) },
+        selected = selected,
+        leadingIcon = {
+          if (selected) {
+            Icon(
+                imageVector = Icons.Filled.Done,
+                contentDescription = "Done icon",
+                modifier = Modifier.size(FilterChipDefaults.IconSize))
+          } else {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Add icon",
+                modifier = Modifier.size(FilterChipDefaults.IconSize))
+          }
+        },
+        modifier = Modifier.padding(horizontal = 4.dp))
   }
 
   @OptIn(ExperimentalMaterial3Api::class)
@@ -80,11 +78,10 @@ public class InterestsView {
   private fun UneditableInterest(interest: Interests, selected: Boolean) {
     if (selected) {
       FilterChip(
-        onClick = {},
-        label = { Text(interest.name) },
-        selected = true,
-        modifier = Modifier.padding(horizontal = 4.dp)
-      )
+          onClick = {},
+          label = { Text(interest.name) },
+          selected = true,
+          modifier = Modifier.padding(horizontal = 4.dp))
     }
   }
 }

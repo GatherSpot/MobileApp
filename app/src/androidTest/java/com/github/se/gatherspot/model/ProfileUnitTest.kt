@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model
 
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
@@ -43,12 +42,12 @@ class ProfileUnitTest {
     var profile = Profile.dummyProfile()
     profile.delete()
     profile.save("Johnny", "I am not a bot", "", setOf(Interests.BOWLING))
-    profile = Profile.fromUID("TEST") {
-      assert(profile.userName == "Johnny")
-      assert(profile.bio == "I am not a bot")
-      assert(profile.image == "")
-      assert(profile.interests == setOf(Interests.BOWLING))
-    }
+    profile =
+        Profile.fromUID("TEST") {
+          assert(profile.userName == "Johnny")
+          assert(profile.bio == "I am not a bot")
+          assert(profile.image == "")
+          assert(profile.interests == setOf(Interests.BOWLING))
+        }
   }
-
 }

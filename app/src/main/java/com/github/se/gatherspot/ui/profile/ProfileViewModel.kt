@@ -22,16 +22,13 @@ class OwnProfileViewModel : ViewModel() {
 
   val image: LiveData<String>
     get() = _image
+
   val interests: LiveData<Set<Interests>>
     get() = _interests
 
   fun save() {
     _profile.save(
-      _username.value ?: "",
-      bio.value ?: "",
-      image.value ?: "",
-      interests.value ?: emptySet()
-    )
+        _username.value ?: "", bio.value ?: "", image.value ?: "", interests.value ?: emptySet())
   }
 
   fun update() {
@@ -42,7 +39,7 @@ class OwnProfileViewModel : ViewModel() {
     _interests.value = _profile.interests
   }
 
-  //TODO : add sanitization to these function !!!
+  // TODO : add sanitization to these function !!!
   fun updateUsername(userName: String) {
     _username.value = userName
   }
@@ -56,11 +53,12 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun swapInterests(interest: Interests) {
-    _interests.value = if (interest in _interests.value!!) {
-      interests.value!!.minus(interest)
-    } else {
-      interests.value!!.plus(interest)
-    }
+    _interests.value =
+        if (interest in _interests.value!!) {
+          interests.value!!.minus(interest)
+        } else {
+          interests.value!!.plus(interest)
+        }
   }
 
   fun isInterestsSelected(interest: Interests): Boolean {
