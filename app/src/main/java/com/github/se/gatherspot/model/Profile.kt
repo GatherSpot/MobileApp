@@ -18,7 +18,6 @@ class Profile(
     private var _interests: Set<Interests>
 ) : CollectionClass() {
 
-
   var userName: String = _userName
   var bio: String = _bio
   var image: String = _image
