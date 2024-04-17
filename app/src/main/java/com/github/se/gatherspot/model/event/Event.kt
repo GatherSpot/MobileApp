@@ -33,27 +33,27 @@ import java.time.LocalTime
  * @param globalRating: The rating of the event by the attendees
  */
 data class Event(
-  // How to generate a unique ID
-  val eventID: String,
-  val title: String,
-  val description: String?,
-  val location: Location?,
-  val eventStartDate: LocalDate?,
-  val eventEndDate: LocalDate?,
-  val timeBeginning: LocalTime?, // Beginning in the eventStartDate
-  val timeEnding: LocalTime?, // End in the eventEndDate
-  val attendanceMaxCapacity: Int?,
-  val attendanceMinCapacity: Int = 0,
-  val inscriptionLimitDate: LocalDate?,
-  val inscriptionLimitTime: LocalTime?,
-  val eventStatus: EventStatus = EventStatus.DRAFT,
-  val categories: Set<Interests>? = emptySet(),
-  // List of the IDs of the users who registered for the event
-  val organizer: Profile = Profile.fromUID(Firebase.auth.uid!!) {},
-  val registeredUsers: List<Profile>? = emptyList(),
-  val finalAttendees: List<Profile>? = emptyList(),
-  // Find a way to upload image
-  var images: ImageBitmap? =
-    ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image
-  val globalRating: Int?
+    // How to generate a unique ID
+    val eventID: String,
+    val title: String,
+    val description: String?,
+    val location: Location?,
+    val eventStartDate: LocalDate?,
+    val eventEndDate: LocalDate?,
+    val timeBeginning: LocalTime?, // Beginning in the eventStartDate
+    val timeEnding: LocalTime?, // End in the eventEndDate
+    val attendanceMaxCapacity: Int?,
+    val attendanceMinCapacity: Int = 0,
+    val inscriptionLimitDate: LocalDate?,
+    val inscriptionLimitTime: LocalTime?,
+    val eventStatus: EventStatus = EventStatus.DRAFT,
+    val categories: Set<Interests>? = emptySet(),
+    // List of the IDs of the users who registered for the event
+    val organizer: Profile = Profile.fromUID(Firebase.auth.uid!!) {},
+    val registeredUsers: List<Profile>? = emptyList(),
+    val finalAttendees: List<Profile>? = emptyList(),
+    // Find a way to upload image
+    var images: ImageBitmap? =
+        ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image
+    val globalRating: Int?
 )
