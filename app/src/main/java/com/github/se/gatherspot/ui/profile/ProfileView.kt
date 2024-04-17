@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -48,21 +49,22 @@ class ProfileView {
    */
   @Composable
   fun ViewOwnProfile(
-      nav: NavigationActions,
-      viewModel: OwnProfileViewModel,
-      navController: NavController
+    nav: NavigationActions,
+    viewModel: OwnProfileViewModel,
+    navController: NavController
   ) {
     Scaffold(
-        bottomBar = {
-          BottomNavigationMenu(
-              onTabSelect = { tld -> nav.navigateTo(tld) },
-              tabList = TOP_LEVEL_DESTINATIONS,
-              selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
-        },
-        content = { paddingValues: PaddingValues ->
-          ViewOwnProfileContent(viewModel, navController)
-          Log.d(ContentValues.TAG, paddingValues.toString())
-        })
+      bottomBar = {
+        BottomNavigationMenu(
+          onTabSelect = { tld -> nav.navigateTo(tld) },
+          tabList = TOP_LEVEL_DESTINATIONS,
+          selectedItem = nav.controller.currentBackStackEntry?.destination?.route
+        )
+      },
+      content = { paddingValues: PaddingValues ->
+        ViewOwnProfileContent(viewModel, navController)
+        Log.d(ContentValues.TAG, paddingValues.toString())
+      })
   }
 
   /**
@@ -73,100 +75,126 @@ class ProfileView {
    */
   @Composable
   fun EditOwnProfile(
-      nav: NavigationActions,
-      viewModel: OwnProfileViewModel,
-      navController: NavController
+    nav: NavigationActions,
+    viewModel: OwnProfileViewModel,
+    navController: NavController
   ) {
     Scaffold(
-        bottomBar = {
-          BottomNavigationMenu(
-              onTabSelect = { tld -> nav.navigateTo(tld) },
-              tabList = TOP_LEVEL_DESTINATIONS,
-              selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
-        },
-        content = { paddingValues: PaddingValues ->
-          EditOwnProfileContent(viewModel, navController)
-          Log.d(ContentValues.TAG, paddingValues.toString())
-        })
+      bottomBar = {
+        BottomNavigationMenu(
+          onTabSelect = { tld -> nav.navigateTo(tld) },
+          tabList = TOP_LEVEL_DESTINATIONS,
+          selectedItem = nav.controller.currentBackStackEntry?.destination?.route
+        )
+      },
+      content = { paddingValues: PaddingValues ->
+        EditOwnProfileContent(viewModel, navController)
+        Log.d(ContentValues.TAG, paddingValues.toString())
+      })
   }
 
   @Composable
   fun EditButton(nav: NavController) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp), horizontalArrangement = Arrangement.End
+    ) {
       // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
       Icon(
-          painter = painterResource(R.drawable.edit),
-          contentDescription = "edit",
-          modifier =
-              Modifier.clickable { nav.navigate("edit") }
-                  .size(24.dp)
-                  .semantics { contentDescription = "edit" })
+        painter = painterResource(R.drawable.edit),
+        contentDescription = "edit",
+        modifier =
+        Modifier
+          .clickable { nav.navigate("edit") }
+          .size(24.dp)
+          .semantics { contentDescription = "edit" })
     }
   }
 
   @Composable
   fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, nav: NavController) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween) {
-          Text(
-              text = "Cancel",
-              modifier =
-                  Modifier.clickable {
-                        cancel()
-                        nav.navigate("view")
-                      }
-                      .semantics { contentDescription = "cancel" })
-          Text(
-              text = "Save",
-              modifier =
-                  Modifier.clickable {
-                        save()
-                        nav.navigate("view")
-                      }
-                      .semantics { contentDescription = "save" })
-        }
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp),
+      horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+      Text(
+        text = "Cancel",
+        modifier =
+        Modifier
+          .clickable {
+            cancel()
+            nav.navigate("view")
+          }
+          .semantics { contentDescription = "cancel" })
+      Text(
+        text = "Save",
+        modifier =
+        Modifier
+          .clickable {
+            save()
+            nav.navigate("view")
+          }
+          .semantics { contentDescription = "save" })
+    }
   }
 
   @Composable
   private fun UsernameField(username: String, updateUsername: (String) -> Unit, edit: Boolean) {
     OutlinedTextField(
-        modifier =
-            Modifier.fillMaxWidth().padding(8.dp).semantics { contentDescription = "username" },
-        label = { Text("username") },
-        value = username,
-        readOnly = !edit,
-        onValueChange = { updateUsername(it) })
+      modifier =
+      Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+        .semantics { contentDescription = "username" },
+      label = { Text("username") },
+      value = username,
+      readOnly = !edit,
+      onValueChange = { updateUsername(it) })
   }
 
   @Composable
   private fun BioField(bio: String, updateBio: (String) -> Unit, edit: Boolean) {
     OutlinedTextField(
-        label = { Text("Bio") },
-        value = bio,
-        onValueChange = { updateBio(it) },
-        readOnly = !edit,
-        modifier =
-            Modifier.height(150.dp).fillMaxWidth().padding(8.dp).semantics {
-              contentDescription = "bio"
-            })
+      label = { Text("Bio") },
+      value = bio,
+      onValueChange = { updateBio(it) },
+      readOnly = !edit,
+      modifier =
+      Modifier
+        .height(150.dp)
+        .fillMaxWidth()
+        .padding(8.dp)
+        .semantics {
+          contentDescription = "bio"
+        })
   }
 
   @Composable
   private fun ProfileImage(imageUri: String, updateImageUri: (String) -> Unit, edit: Boolean) {
     val painter = rememberAsyncImagePainter(imageUri.ifEmpty { R.drawable.user })
     Column(
-        modifier = Modifier.padding(8.dp).fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-          Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
-            Image(
-                painter = painter,
-                contentDescription = "profile image",
-                modifier = Modifier.clickable { /*select image*/},
-                contentScale = ContentScale.Crop)
-          }
-          if (edit) Text(text = "Change profile picture")
-        }
+      modifier = Modifier
+        .padding(8.dp)
+        .fillMaxWidth(),
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+      Card(
+        shape = CircleShape, modifier = Modifier
+          .padding(8.dp)
+          .size(180.dp)
+      ) {
+        Image(
+          painter = painter,
+          contentDescription = "profile image",
+          modifier = Modifier.clickable { /*select image*/ },
+          contentScale = ContentScale.Crop
+        )
+      }
+      if (edit) Text(text = "Change profile picture")
+    }
   }
 
   @Composable
@@ -177,12 +205,19 @@ class ProfileView {
     val bio by viewModel.bio.observeAsState("")
     val imageUri by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+    Column {
       EditButton(navController)
-      ProfileImage(imageUri, {}, false)
-      UsernameField(username, {}, false)
-      BioField(bio, {}, false)
-      InterestsView().ShowInterests(interests)
+      Column(
+        modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(8.dp)
+      ) {
+        ProfileImage(imageUri, {}, false)
+        UsernameField(username, {}, false)
+        BioField(bio, {}, false)
+        InterestsView().ShowInterests(interests)
+        Spacer(modifier = Modifier.height(56.dp)) //TODO check if good size
+      }
     }
   }
 
@@ -198,12 +233,19 @@ class ProfileView {
     val updateImageUri = { s: String -> viewModel.updateProfileImage(s) }
     val save = { viewModel.save() }
     val cancel = { viewModel.update() }
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+    Column() {
       SaveCancelButtons(save, cancel, navController)
-      ProfileImage(imageUri, updateImageUri, true)
-      UsernameField(username, updateUsername, true)
-      BioField(bio, updateBio, true)
-      InterestsView().EditInterests(viewModel)
+      Column(
+        modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(56.dp)
+      ) {
+        ProfileImage(imageUri, updateImageUri, true)
+        UsernameField(username, updateUsername, true)
+        BioField(bio, updateBio, true)
+        InterestsView().EditInterests(viewModel)
+        Spacer(modifier = Modifier.height(16.dp)) //TODO check if good size
+      }
     }
   }
 
@@ -219,7 +261,11 @@ class ProfileView {
     val imageUri = viewModel.image
     val interests = viewModel.interests
 
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+    Column(
+      modifier = Modifier
+        .verticalScroll(rememberScrollState())
+        .padding(8.dp)
+    ) {
       ProfileImage(imageUri, {}, false)
       UsernameField(username, {}, false)
       BioField(bio, {}, false)
