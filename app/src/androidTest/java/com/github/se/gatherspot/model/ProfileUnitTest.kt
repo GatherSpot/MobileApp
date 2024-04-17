@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.model
 
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
@@ -24,28 +25,30 @@ class ProfileUnitTest {
   }
 
   @Test
-  fun addInterestsTest() {
+  fun setBio() {
     val profile = Profile.dummyProfile()
-    profile.addInterest(Interests.BOWLING)
-    assert(profile.interests.contains(Interests.BOWLING))
+    assert(profile.bio == "I am not a bot")
+    profile.bio = "captcha passed"
+    assert(profile.bio == "captcha passed")
   }
 
   @Test
-  fun removeInterestsTest() {
+  fun setBioTooLong() {
     val profile = Profile.dummyProfile()
-    assert(profile.interests.contains(Interests.FOOTBALL))
-    profile.removeInterest(Interests.FOOTBALL)
-    assert(!profile.interests.contains(Interests.FOOTBALL))
+    assertThrows(IllegalArgumentException::class.java) { profile.bio = "a".repeat(101) }
   }
 
   @Test
-  fun switchInterestsTest() {
-    val profile = Profile.dummyProfile()
-    assert(profile.interests.contains(Interests.FOOTBALL))
-    profile.swapInterest(Interests.FOOTBALL)
-    assert(!profile.interests.contains(Interests.FOOTBALL))
-    assert(!profile.interests.contains(Interests.BOWLING))
-    profile.swapInterest(Interests.BOWLING)
-    assert(profile.interests.contains(Interests.BOWLING))
+  fun firebase() {
+    var profile = Profile.dummyProfile()
+    profile.delete()
+    profile.save("Johnny", "I am not a bot", "", setOf(Interests.BOWLING))
+    profile = Profile.fromUID("TEST") {
+      assert(profile.userName == "Johnny")
+      assert(profile.bio == "I am not a bot")
+      assert(profile.image == "")
+      assert(profile.interests == setOf(Interests.BOWLING))
+    }
   }
+
 }

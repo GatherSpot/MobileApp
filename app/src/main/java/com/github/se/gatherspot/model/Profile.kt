@@ -14,11 +14,11 @@ import com.google.firebase.ktx.Firebase
  */
 class Profile
 private constructor(
-    private var _userName: String,
-    private var _bio: String,
-    private var _image: String,
-    private var _interests: Set<Interests>,
-    private val uid: String
+  private var _userName: String,
+  private var _bio: String,
+  private var _image: String,
+  private var _interests: Set<Interests>,
+  private val uid: String
 ) {
   var userName: String
     get() = _userName
@@ -49,6 +49,7 @@ private constructor(
   var image: String
     get() = _image
     set(value) {
+      //TODO: SANITIZATION
       _image = value
     }
 
@@ -71,46 +72,46 @@ private constructor(
 
   private fun saveToFirebase() {
     val data =
-        hashMapOf(
-            "userName" to userName,
-            "bio" to bio,
-            "image" to image,
-            // TODO : change interests to make it more compact, maybe do it in its own class and not
-            // here
-            "interests" to Interests.toCompressedString(interests))
+      hashMapOf(
+        "userName" to userName,
+        "bio" to bio,
+        "image" to image,
+        // TODO : change interests to make it more compact, maybe do it in its own class and not
+        // here
+        "interests" to Interests.toCompressedString(interests)
+      )
     db.collection(tag)
-        .document(uid)
-        .set(data)
-        .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
-        .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
+      .document(uid)
+      .set(data)
+      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
+      .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
   }
 
   fun updateFromFirebase(uid: String, update: () -> Unit) {
-    val doc =
-        db.collection(tag)
-            .document(uid)
-            .get()
-            .addOnSuccessListener { document ->
-              if (document != null) {
-                userName = document.get("userName") as String
-                bio = document.get("bio") as String
-                image = document.get("image") as String
-                interests = Interests.fromCompressedString(document.get("interests") as String)
-                update()
-                Log.d(tag, "DocumentSnapshot data: ${document.data}")
-              } else {
-                Log.d(tag, "No such document")
-              }
-            }
-            .addOnFailureListener { exception -> Log.d(tag, "get failed with :", exception) }
+    db.collection(tag)
+      .document(uid)
+      .get()
+      .addOnSuccessListener { document ->
+        if (document != null) {
+          userName = document.get("userName") as String
+          bio = document.get("bio") as String
+          image = document.get("image") as String
+          interests = Interests.fromCompressedString(document.get("interests") as String)
+          update()
+          Log.d(tag, "DocumentSnapshot data: ${document.data}")
+        } else {
+          Log.d(tag, "No such document")
+        }
+      }
+      .addOnFailureListener { exception -> Log.d(tag, "get failed with :", exception) }
   }
 
-  fun Delete() {
+  fun delete() {
     db.collection(tag)
-        .document(uid)
-        .delete()
-        .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
-        .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
+      .document(uid)
+      .delete()
+      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
+      .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
   }
 
   companion object {
@@ -146,7 +147,7 @@ private constructor(
      * @return a profile object
      */
     fun dummyProfile(): Profile {
-      return Profile("John Doe", "I am not a bot", "", setOf(Interests.FOOTBALL), "TEST_UID")
+      return Profile("John Doe", "I am not a bot", "", setOf(Interests.FOOTBALL), "TEST")
     }
   }
 }

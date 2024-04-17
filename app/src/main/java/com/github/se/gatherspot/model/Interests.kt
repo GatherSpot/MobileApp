@@ -71,7 +71,7 @@ enum class Interests {
 
     /**
      * Returns a new set of Interests with the given Interest removed
-     *
+     * done in a functional way to be able to use it in a mutableState or LiveData
      * @param set the set of Interests
      * @param interest the Interest to remove
      * @return the new set of Interests
@@ -82,7 +82,7 @@ enum class Interests {
 
     /**
      * Returns a new set of Interests with the given Interest swapped
-     *
+     * done in a functional way to be able to use it in a mutableState or LiveData
      * @param set the set of Interests
      * @param interest the Interest to swap
      * @return the new set of Interests
