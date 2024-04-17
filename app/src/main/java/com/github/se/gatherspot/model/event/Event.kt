@@ -48,7 +48,7 @@ data class Event(
     val eventStatus: EventStatus = EventStatus.DRAFT,
     val categories: Set<Interests>? = emptySet(),
     // List of the IDs of the users who registered for the event
-    val organizer: Profile = Profile("", "", "", "", setOf()),
+    val organizer: Profile = Profile.dummyProfile(),
     val registeredUsers: List<Profile>? = emptyList(),
     val finalAttendees: List<Profile>? = emptyList(),
     // Find a way to upload image

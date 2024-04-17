@@ -16,12 +16,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.ui.Chat
 import com.github.se.gatherspot.ui.Community
-import com.github.se.gatherspot.ui.CreateEvent
 import com.github.se.gatherspot.ui.EventUI
 import com.github.se.gatherspot.ui.Events
 import com.github.se.gatherspot.ui.LogIn

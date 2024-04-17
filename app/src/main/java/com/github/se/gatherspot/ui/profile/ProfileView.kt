@@ -197,7 +197,7 @@ class ProfileView {
     val updateBio = { s: String -> viewModel.updateBio(s) }
     val updateImageUri = { s: String -> viewModel.updateProfileImage(s) }
     val save = { viewModel.save() }
-    val cancel = { viewModel.cancel() }
+    val cancel = { viewModel.update() }
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       SaveCancelButtons(save, cancel, navController)
       ProfileImage(imageUri, updateImageUri, true)

@@ -103,7 +103,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
         images = images,
         globalRating = globalRating,
         // TODO: Add organizer
-        organizer = Profile("null", "null", "null", "null", setOf()))
+        organizer = Profile.dummyProfile())
   }
 
   override val TAG = "FirebaseConnection" // Used for debugging/logs

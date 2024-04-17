@@ -32,11 +32,11 @@ public class InterestsView {
   fun EditInterests(viewModel: OwnProfileViewModel) {
     val interestList = enumValues<Interests>().toList()
     val set by viewModel.interests.observeAsState(emptySet())
-    val swap = viewModel::swapInterest
+    val swap = viewModel::swapInterests
+    val selected = viewModel::isInterestsSelected
     FlowRow() {
       interestList.forEach { interest ->
-        val selected = set.contains(interest)
-        EditableInterest(interest, selected) { swap(interest, selected) }
+        EditableInterest(interest, selected(interest)) { swap(interest) }
       }
     }
   }
