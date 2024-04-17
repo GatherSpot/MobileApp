@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
@@ -67,6 +68,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
   var showDialog by remember { mutableStateOf(false) }
   var clickOnDelete by remember { mutableStateOf(false) }
   val isOrganizer = event.organizer._uid == MainActivity.uid
+  val eventUtils = EventUtils()
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
   val buttonText =
@@ -271,6 +273,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               },
               confirmButton = { Button(modifier = Modifier.testTag("okButton"), onClick = {
                   // TODO : delete the event
+                  // eventUtils.deleteEvent(event)
                   showDialog = false }) { Text("Delete") } },
               dismissButton = { Button(modifier = Modifier.testTag("cancelButton"), onClick = { showDialog = false }) { Text("Cancel") } })
 
