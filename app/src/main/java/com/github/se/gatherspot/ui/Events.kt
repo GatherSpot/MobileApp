@@ -178,8 +178,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
             LaunchedEffect(lazyState.isScrollInProgress) {
               loading = false
               fetched = false
-              val isAtBottom =
-                  (lazyState.firstVisibleItemIndex + EventsViewModel.PAGESIZE) >= events.size
+              val isAtBottom = (lazyState.firstVisibleItemIndex + viewModel.PAGESIZE) >= events.size
               val currentScrollPosition = lazyState.firstVisibleItemScrollOffset
               val downwards =
                   currentScrollPosition >= previousScrollPosition && currentScrollPosition > 0

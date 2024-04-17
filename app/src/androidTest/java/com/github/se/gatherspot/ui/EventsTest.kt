@@ -8,7 +8,6 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.EventsScreen
@@ -80,7 +79,6 @@ class EventsTest {
         assertIsDisplayed()
         performGesture { swipeUp(400F, 0F, 1000) }
       }
-      EventFirebaseConnection.offset = null
     }
   }
 
@@ -89,7 +87,7 @@ class EventsTest {
   fun testRefreshButtonFunctional() {
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
-    assert(viewModel.getLoadedEvents().size.toLong() == EventsViewModel.PAGESIZE)
+    assert(viewModel.getLoadedEvents().size.toLong() == viewModel.PAGESIZE)
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
       Events(viewModel = viewModel, nav = nav)
@@ -102,8 +100,7 @@ class EventsTest {
       }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 500)
       composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
-      assert(viewModel.getLoadedEvents().size.toLong() == 2 * EventsViewModel.PAGESIZE)
-      EventFirebaseConnection.offset = null
+      assert(viewModel.getLoadedEvents().size.toLong() == 2 * viewModel.PAGESIZE)
     }
   }
 
@@ -138,7 +135,6 @@ class EventsTest {
         }
       }
     }
-    EventFirebaseConnection.offset = null
   }
 
   @Test
@@ -172,7 +168,6 @@ class EventsTest {
       composeTestRule.waitForIdle()
       assert(
           viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.SPORT) ?: true })
-      EventFirebaseConnection.offset = null
     }
   }
 }
