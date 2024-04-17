@@ -48,8 +48,8 @@ data class Event(
     val categories: Set<Interests>? = emptySet(),
     val organizer: Profile = Profile("", "", "", "", setOf()),
     // List of the IDs of the users who registered for the event
-    val registeredUsers: MutableList<Profile> = mutableListOf(),
-    val finalAttendees: List<Profile>? = emptyList(),
+    val registeredUsers: MutableList<String> = mutableListOf(),
+    val finalAttendees: List<String>? = emptyList(),
     // Find a way to upload image
     var images: ImageBitmap? =
         ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image

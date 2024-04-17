@@ -300,4 +300,90 @@ class EventUITest {
 
         }
     }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testUnableToRegisterToAFullEvent(){
+        // To make it works, need to define a global MainActivity.uid
+        MainActivity.uid = "test"
+        composeTestRule.setContent {
+            val navController = rememberNavController()
+            val event =
+                Event(
+                    eventID = "1",
+                    title = "Event Title",
+                    description =
+                        "Hello: I am a description",
+                    attendanceMaxCapacity = 2,
+                    attendanceMinCapacity = 1,
+                    categories = setOf(Interests.BASKETBALL),
+                    eventEndDate = LocalDate.of(2024, 4, 15),
+                    eventStartDate = LocalDate.of(2024, 4, 14),
+                    globalRating = 4,
+                    inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+                    inscriptionLimitTime = LocalTime.of(23, 59),
+                    location = null,
+                    registeredUsers = mutableListOf("profil1", "profil2"),
+                    timeBeginning = LocalTime.of(13, 0),
+                    timeEnding = LocalTime.of(16, 0),
+                )
+
+            EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+        }
+        ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+            registerButton {
+                performScrollTo()
+                performClick()
+            }
+            composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
+            alertBox {
+                assertIsDisplayed()
+                hasText("Event is full")
+            }
+        }
+
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testAlreadyRegistered(){
+        // To make it works, need to define a global MainActivity.uid
+        MainActivity.uid = "test"
+        composeTestRule.setContent {
+            val navController = rememberNavController()
+            val event =
+                Event(
+                    eventID = "1",
+                    title = "Event Title",
+                    description =
+                        "Hello: I am a description",
+                    attendanceMaxCapacity = 10,
+                    attendanceMinCapacity = 1,
+                    categories = setOf(Interests.BASKETBALL),
+                    eventEndDate = LocalDate.of(2024, 4, 15),
+                    eventStartDate = LocalDate.of(2024, 4, 14),
+                    globalRating = 4,
+                    inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+                    inscriptionLimitTime = LocalTime.of(23, 59),
+                    location = null,
+                    registeredUsers = mutableListOf("test"),
+                    timeBeginning = LocalTime.of(13, 0),
+                    timeEnding = LocalTime.of(16, 0),
+                )
+
+            EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+        }
+        ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+            registerButton {
+                performScrollTo()
+                performClick()
+            }
+            composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
+            alertBox {
+                assertIsDisplayed()
+                hasText("Already registered for this event")
+            }
+        }
+
+    }
 }
