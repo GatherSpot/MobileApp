@@ -14,11 +14,11 @@ import com.google.firebase.ktx.Firebase
  */
 class Profile
 private constructor(
-  private var _userName: String,
-  private var _bio: String,
-  private var _image: String,
-  private var _interests: Set<Interests>,
-  private val uid: String
+    private var _userName: String,
+    private var _bio: String,
+    private var _image: String,
+    private var _interests: Set<Interests>,
+    private val uid: String
 ) {
   var userName: String
     get() = _userName
@@ -58,18 +58,6 @@ private constructor(
       _interests = value
     }
 
-  fun addInterest(interest: Interests) {
-    _interests = _interests.plus(interest)
-  }
-
-  fun removeInterest(interest: Interests) {
-    _interests = _interests.minus(interest)
-  }
-
-  fun swapInterest(interest: Interests) {
-    if (_interests.contains(interest)) removeInterest(interest) else addInterest(interest)
-  }
-
   fun save(userName: String, bio: String, image: String, interests: Set<Interests>) {
     this.userName = userName
     this.bio = bio
@@ -83,49 +71,46 @@ private constructor(
 
   private fun saveToFirebase() {
     val data =
-      hashMapOf(
-        "userName" to userName,
-        "bio" to bio,
-        "image" to image,
-        // TODO : change interests to make it more compact, maybe do it in its own class and not
-        // here
-        "interests" to ""
-      )
+        hashMapOf(
+            "userName" to userName,
+            "bio" to bio,
+            "image" to image,
+            // TODO : change interests to make it more compact, maybe do it in its own class and not
+            // here
+            "interests" to Interests.toCompressedString(interests))
     db.collection(tag)
-      .document(uid)
-      .set(data)
-      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
-      .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
+        .document(uid)
+        .set(data)
+        .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
+        .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
   }
 
   fun updateFromFirebase(uid: String, update: () -> Unit) {
     val doc =
-      db.collection(tag)
-        .document(uid)
-        .get()
-        .addOnSuccessListener { document ->
-          if (document != null) {
-            userName = document.get("userName") as String
-            bio = document.get("bio") as String
-            image = document.get("image") as String
-            // TODO : Interests
-            println("document.get(\"userName\") = ${document.get("userName")}")
-            println("username = $userName")
-            update()
-            Log.d(tag, "DocumentSnapshot data: ${document.data}")
-          } else {
-            Log.d(tag, "No such document")
-          }
-        }
-        .addOnFailureListener { exception -> Log.d(tag, "get failed with :", exception) }
+        db.collection(tag)
+            .document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+              if (document != null) {
+                userName = document.get("userName") as String
+                bio = document.get("bio") as String
+                image = document.get("image") as String
+                interests = Interests.fromCompressedString(document.get("interests") as String)
+                update()
+                Log.d(tag, "DocumentSnapshot data: ${document.data}")
+              } else {
+                Log.d(tag, "No such document")
+              }
+            }
+            .addOnFailureListener { exception -> Log.d(tag, "get failed with :", exception) }
   }
 
   fun Delete() {
     db.collection(tag)
-      .document(uid)
-      .delete()
-      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
-      .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
+        .document(uid)
+        .delete()
+        .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
+        .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
   }
 
   companion object {
@@ -133,8 +118,9 @@ private constructor(
      * Factory method to fetch a profile given a certain UID
      *
      * @param uid the unique identifier of the user
-     * @param update a function to update the profile when fetched from firebase, this is used to
-     *   avoid locking, the profile will be empty until the update function is called
+     * @param update a function to update the profile view when fetched from firebase, this is used
+     *   to avoid locking, the profile will be empty until the update function is called. Might try
+     *   to find a simpler solution.
      * @return a profile object
      */
     fun fromUID(uid: String, update: () -> Unit): Profile {

@@ -1,6 +1,6 @@
+package com.github.se.gatherspot.model
+
 import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
