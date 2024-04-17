@@ -43,8 +43,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -52,6 +55,8 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -60,7 +65,7 @@ import java.time.format.FormatStyle
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
   var showDialog by remember { mutableStateOf(false) }
   val registrationState by viewModel.registrationState.observeAsState()
-  val isButtonEnabled = registrationState == null || registrationState is RegistrationState.Error
+  val isButtonEnabled = registrationState == null
   val buttonText =
       when (registrationState) {
         is RegistrationState.Success -> "Registered"
@@ -226,7 +231,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                   else -> Text("Unknown state")
                 }
               },
-              confirmButton = { Button(onClick = { showDialog = false }) { Text("OK") } })
+              confirmButton = { Button(modifier = Modifier.testTag("okButton"), onClick = { showDialog = false }) { Text("OK") } })
         }
       }
 }
@@ -272,4 +277,30 @@ fun ProfileIndicator(profile: Profile) {
         Spacer(modifier = Modifier.width(4.dp))
         Text(text = profile.userName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
       }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EventUIPreview() {
+    // for testing purposes
+    MainActivity.uid = "testUID"
+    val dummyEvent = Event(
+        eventID = "1",
+        title = "Event Title",
+        description = "Hello: I am a description",
+        attendanceMaxCapacity = 2,
+        attendanceMinCapacity = 1,
+        categories = setOf(Interests.BASKETBALL),
+        eventEndDate = LocalDate.of(2024, 4, 15),
+        eventStartDate = LocalDate.of(2024, 4, 14),
+        globalRating = 4,
+        inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+        inscriptionLimitTime = LocalTime.of(23, 59),
+        location = null,
+        registeredUsers = mutableListOf("profil1", "profil2"),
+        timeBeginning = LocalTime.of(13, 0),
+        timeEnding = LocalTime.of(16, 0),
+    )
+
+    EventUI(dummyEvent, NavigationActions(rememberNavController()), EventRegistrationViewModel())
 }

@@ -295,6 +295,11 @@ class EventUITest {
         assertIsDisplayed()
         hasText("You have been successfully registered!")
       }
+        okButton.performClick()
+        registerButton {
+            assertIsNotEnabled()
+            assert(hasText("Registered"))
+        }
     }
   }
 
@@ -336,6 +341,11 @@ class EventUITest {
         assertIsDisplayed()
         hasText("Event is full")
       }
+        okButton.performClick()
+        registerButton {
+            assertIsNotEnabled()
+            assert(hasText("Full"))
+        }
     }
   }
 
@@ -377,6 +387,12 @@ class EventUITest {
         assertIsDisplayed()
         hasText("Already registered for this event")
       }
+
+        okButton.performClick()
+        registerButton {
+            assertIsNotEnabled()
+            assert(hasText("Registered"))
+        }
     }
   }
 }

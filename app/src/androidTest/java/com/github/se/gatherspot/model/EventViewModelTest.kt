@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model
 
-import androidx.compose.runtime.getValue
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
@@ -10,7 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class EventRegistrationViewModelTest {
+class EventViewModelTest {
 
   @Test
   fun testRegisterForEventChangeEventListRegistered() {
