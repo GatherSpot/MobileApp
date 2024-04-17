@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -64,6 +65,7 @@ import java.time.format.FormatStyle
 @Composable
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
   var showDialog by remember { mutableStateOf(false) }
+  val isOrganizer = event.organizer._uid == MainActivity.uid
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
   val buttonText =
@@ -90,6 +92,28 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                         contentDescription = "Go back to overview")
                   }
             },
+            actions = {
+                if (isOrganizer) {
+                    IconButton(
+                        onClick = { /* TODO : handle the navigation. navActions.controller.navigate("editEvent")*/ },
+                        modifier = Modifier.testTag("editEventButton")) {
+                        Icon(
+                            modifier = Modifier.size(24.dp).testTag("editEventIcon"),
+                            painter = painterResource(id = R.drawable.edit),
+                            contentDescription = "Edit event")
+                    }
+                    IconButton(
+                        onClick = { /* TODO: delete the event */},
+                        modifier = Modifier.testTag("deleteEventButton")) {
+                        Icon(
+                            modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
+                            painter = painterResource(id = R.drawable.delete),
+                            contentDescription = "Delete event")
+                    }
+
+                }
+            }
+
         )
       }) { innerPadding ->
         Column(
@@ -290,6 +314,7 @@ fun EventUIPreview() {
         description = "Hello: I am a description",
         attendanceMaxCapacity = 2,
         attendanceMinCapacity = 1,
+        organizer = Profile("", "", "", "testUID", setOf()),
         categories = setOf(Interests.BASKETBALL),
         eventEndDate = LocalDate.of(2024, 4, 15),
         eventStartDate = LocalDate.of(2024, 4, 14),
