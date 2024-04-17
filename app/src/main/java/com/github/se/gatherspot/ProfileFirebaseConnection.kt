@@ -1,20 +1,40 @@
 package com.github.se.gatherspot
 
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
+import com.google.firebase.firestore.DocumentSnapshot
 
-class ProfileFirebaseConnection {
+class ProfileFirebaseConnection : FirebaseConnectionInterface {
 
-  companion object {
+  override val COLLECTION = FirebaseCollection.PROFILES.toString()
+  override val TAG = "ProfileFirebase"
 
-    fun addProfile(profile: Profile) {}
+  override fun getFromDocument(d: DocumentSnapshot): Profile? {
+    TODO("Not yet implemented")
+  }
 
-    fun deleteProfile(uid: String) {}
+  override fun add(profile: Profile) {}
 
-    fun fetchProfile(uid: String): Profile {
+  fun deleteProfile(uid: String) {}
 
-      return Profile()
+  fun fetchProfile(uid: String): Profile {
+
+    return Profile()
+  }
+
+  fun updateProfile(profile: Profile) {}
+  // THE NEXT THREE ARE USED FOR TESTS
+  private lateinit var dummyProfile: Profile
+
+  fun dummySave(profile: Profile) {
+    dummyProfile = profile
+  }
+
+  fun dummyFetch(): Profile {
+    if (!::dummyProfile.isInitialized) {
+      dummyProfile =
+          Profile("John Doe", "I am not a bot", "", "", setOf(Interests.BOWLING, Interests.CHESS))
     }
-
-    fun updateProfile(profile: Profile) {}
+    return dummyProfile
   }
 }

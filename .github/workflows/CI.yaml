@@ -4,7 +4,8 @@ name: CI - Test Runner
 on:
   push:
     branches:
-      - origin
+      - main
+      - 75-interface-for-all-firebaseconnection-classes
 
   pull_request:
     types:

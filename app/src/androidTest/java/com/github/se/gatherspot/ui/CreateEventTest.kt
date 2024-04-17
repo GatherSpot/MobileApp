@@ -21,6 +21,9 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class CreateEventTest {
+
+  private val EventFirebaseConnection = EventFirebaseConnection()
+
   @get:Rule val composeTestRule = createComposeRule()
 
   // Restructured to use EventDataFormScreen

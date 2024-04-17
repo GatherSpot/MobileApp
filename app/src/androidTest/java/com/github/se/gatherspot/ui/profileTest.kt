@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.navigation.compose.rememberNavController
@@ -84,5 +85,23 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("username").assert(hasText("John Doe"))
     composeTestRule.onNodeWithContentDescription("bio").assert(hasText("I am not a bot"))
     // next: check image
+  }
+
+  @Test
+  fun interestsTest() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      Profile(NavigationActions(navController), OwnProfileViewModel())
+    }
+    composeTestRule.onNodeWithText("FOOTBALL").assertDoesNotExist()
+    // press edit and add a new interest
+    composeTestRule.onNodeWithContentDescription("edit").performClick()
+    // check if things are here :
+    composeTestRule.onNodeWithText("FOOTBALL").assertExists("FOOTBALL field not found")
+    // select football interest and go back to view
+    composeTestRule.onNodeWithText("FOOTBALL").performClick()
+    composeTestRule.onNodeWithContentDescription("save").performClick()
+    // check if things are here :
+    composeTestRule.onNodeWithText("FOOTBALL").assertExists("FOOTBALL field not found")
   }
 }

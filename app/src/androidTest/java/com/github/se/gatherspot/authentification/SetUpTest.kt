@@ -28,9 +28,11 @@ import org.junit.runner.RunWith
 class SetUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
 
+  val UserFirebaseConnection = UserFirebaseConnection()
+
   @After
   fun cleanUp() {
-    UserFirebaseConnection.deleteUser(MainActivity.uid)
+    UserFirebaseConnection.delete(MainActivity.uid)
     UserFirebaseConnection.deleteCurrentUser()
   }
 
