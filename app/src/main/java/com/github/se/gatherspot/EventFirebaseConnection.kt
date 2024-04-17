@@ -140,8 +140,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
     val listOfEvents = mutableListOf<Event>()
 
     listOfMaps.forEach { map ->
-      val uid = map["eventID"] as String
-      val event = super.fetch(uid)
+      val uid = map["id"] as String
+      val event = fetch(uid)
       event?.let { listOfEvents.add(it as Event) }
     }
 

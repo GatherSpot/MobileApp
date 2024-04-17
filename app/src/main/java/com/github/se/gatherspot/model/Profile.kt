@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.CollectionClass
+import com.github.se.gatherspot.model.chat.Chat
 
 // NOTE : I will add interests once theses are pushed
 /**
@@ -22,6 +23,7 @@ class Profile(
   var bio: String = _bio
   var image: String = _image
   var interests: Set<Interests> = _interests
+  var chats: Set<Chat> = setOf()
 
   constructor() : this("", "", "", "", setOf())
 }

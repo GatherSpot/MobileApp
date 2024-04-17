@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatWithIndicator
@@ -143,32 +144,32 @@ fun ChatRow(chatWithIndicator: ChatWithIndicator, navigation: NavigationActions)
         }
 
         Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
-          if (chatWithIndicator.chat.people.size > 2) {
+          if (chatWithIndicator.chat.peopleIDs.size > 2) {
 
             Text(
-                text = "Chat between ${chatWithIndicator.chat.people.size} people",
+                text = "Chat between ${chatWithIndicator.chat.peopleIDs.size} people",
                 fontWeight = FontWeight.Bold,
                 fontSize = 10.sp)
           } else {
             Text(
                 text =
-                    "Chat between ${chatWithIndicator.chat.people[0].userName} and ${chatWithIndicator.chat.people[1].userName}",
+                    "Chat between ${chatWithIndicator.chat.peopleIDs[0]} and ${chatWithIndicator.chat.peopleIDs[1]}", //TODO: change with usernames
                 fontWeight = FontWeight.Bold,
                 fontSize = 10.sp)
           }
           Text(
-              text = "Event: ${chatWithIndicator.chat.event.title}",
+              text = "Event: ${chatWithIndicator.chat.eventID}", //TODO: change with event name
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
         }
 
         Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
           Row(verticalAlignment = Alignment.CenterVertically) {
-            when (chatWithIndicator.newMessage) {
+            when (chatWithIndicator.unreadMessages) {
               0 -> Text("", color = Color(0xFF00668A), fontSize = 14.sp)
               else ->
                   Text(
-                      "${chatWithIndicator.newMessage} new messages",
+                      "${chatWithIndicator.unreadMessages} new messages",
                       color = Color(255, 165, 0),
                       fontSize = 14.sp)
             }

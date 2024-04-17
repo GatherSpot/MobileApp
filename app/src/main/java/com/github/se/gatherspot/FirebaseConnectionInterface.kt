@@ -3,6 +3,7 @@ package com.github.se.gatherspot
 import android.util.Log
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.User
+import com.github.se.gatherspot.model.chat.Chat
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
@@ -43,6 +44,7 @@ interface FirebaseConnectionInterface {
   fun add(user: User) {}
 
   fun add(profile: Profile) {}
+    fun add(chat: Chat) {}
 
   fun delete(id: String) {
     Firebase.firestore
