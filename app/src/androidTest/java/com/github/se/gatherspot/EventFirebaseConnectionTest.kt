@@ -20,17 +20,20 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class EventFirebaseConnectionTest {
+
+  val EventFirebaseConnection = EventFirebaseConnection()
+
   @Test
-  fun testGetNewEventID() {
-    val newId = EventFirebaseConnection.getNewEventID()
+  fun testgetID() {
+    val newId = EventFirebaseConnection.getNewID()
     assertNotNull(newId)
     assertTrue(newId.isNotEmpty())
   }
 
   @Test
-  fun testUniqueGetNewEventID() {
-    val newId1 = EventFirebaseConnection.getNewEventID()
-    val newId2 = EventFirebaseConnection.getNewEventID()
+  fun testUniquegetID() {
+    val newId1 = EventFirebaseConnection.getNewID()
+    val newId2 = EventFirebaseConnection.getNewID()
     assertNotNull(newId1)
     assertNotNull(newId2)
     assertNotEquals(newId1, newId2)
@@ -38,10 +41,10 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun testAddAndFetchEvent() = runTest {
-    val eventID = EventFirebaseConnection.getNewEventID()
+    val eventID = EventFirebaseConnection.getNewID()
     val event =
         Event(
-            eventID = eventID,
+            id = eventID,
             title = "Test Event",
             description = "This is a test event",
             location = Location(0.0, 0.0, "Test Location"),
@@ -72,11 +75,11 @@ class EventFirebaseConnectionTest {
             images = null,
             globalRating = null)
 
-    EventFirebaseConnection.addNewEvent(event)
+    EventFirebaseConnection.add(event)
     var resultEvent: Event? = null
-    async { resultEvent = EventFirebaseConnection.fetchEvent(eventID) }.await()
+    async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertNotNull(resultEvent)
-    assertEquals(resultEvent!!.eventID, eventID)
+    assertEquals(resultEvent!!.id, eventID)
     assertEquals(resultEvent!!.title, "Test Event")
     assertEquals(resultEvent!!.description, "This is a test event")
     assertNotNull(resultEvent!!.location)
@@ -116,7 +119,7 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchReturnsNull() = runTest {
     // Supposing that id will never equal nonexistent
-    val event = EventFirebaseConnection.fetchEvent("nonexistent")
+    val event = EventFirebaseConnection.fetch("nonexistent")
     assertEquals(event, null)
   }
 
@@ -137,7 +140,7 @@ class EventFirebaseConnectionTest {
         assertEquals(round, listOfEvents2.size)
         for (i in 0 until round) {
           for (j in 0 until round) {
-            assertNotEquals(listOfEvents1[i].eventID, listOfEvents2[j].eventID)
+            assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
         EventFirebaseConnection.offset = null
@@ -145,10 +148,10 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun deleteEvent() = runTest {
-    val eventID = EventFirebaseConnection.getNewEventID()
+    val eventID = EventFirebaseConnection.getNewID()
     val event =
         Event(
-            eventID = eventID,
+            id = eventID,
             title = "Test Event",
             description = "This is a test event",
             location = Location(0.0, 0.0, "Test Location"),
@@ -179,22 +182,22 @@ class EventFirebaseConnectionTest {
             images = null,
             globalRating = null)
 
-    EventFirebaseConnection.addNewEvent(event)
+    EventFirebaseConnection.add(event)
     var resultEvent: Event? = null
-    async { resultEvent = EventFirebaseConnection.fetchEvent(eventID) }.await()
+    async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertNotNull(resultEvent)
-    assertEquals(resultEvent!!.eventID, eventID)
-    EventFirebaseConnection.deleteEvent(eventID)
-    async { resultEvent = EventFirebaseConnection.fetchEvent(eventID) }.await()
+    assertEquals(resultEvent!!.id, eventID)
+    EventFirebaseConnection.delete(eventID)
+    async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertEquals(resultEvent, null)
   }
 
   @Test
   fun nullCasesTest() = runTest {
-    val eventID = EventFirebaseConnection.getNewEventID()
+    val eventID = EventFirebaseConnection.getNewID()
     val event =
         Event(
-            eventID = eventID,
+            id = eventID,
             title = "Test Event",
             description = "This is a test event",
             location = null,
@@ -213,11 +216,11 @@ class EventFirebaseConnectionTest {
             images = null,
             globalRating = null)
 
-    EventFirebaseConnection.addNewEvent(event)
+    EventFirebaseConnection.add(event)
     var resultEvent: Event? = null
-    async { resultEvent = EventFirebaseConnection.fetchEvent(eventID) }.await()
+    async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertNotNull(resultEvent)
-    assertEquals(resultEvent!!.eventID, eventID)
+    assertEquals(resultEvent!!.id, eventID)
     assertEquals(resultEvent!!.title, "Test Event")
     assertEquals(resultEvent!!.description, "This is a test event")
     assertEquals(resultEvent!!.location, null)
@@ -234,7 +237,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.images, null)
-    EventFirebaseConnection.deleteEvent(eventID)
+    EventFirebaseConnection.delete(eventID)
   }
 
   @Test

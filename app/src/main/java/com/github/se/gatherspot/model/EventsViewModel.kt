@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 
 class EventsViewModel : ViewModel() {
 
+  val EventFirebaseConnection = EventFirebaseConnection()
+
   val PAGESIZE: Long = 9
   private var _uiState = MutableStateFlow(UIState())
   val uiState: StateFlow<UIState> = _uiState

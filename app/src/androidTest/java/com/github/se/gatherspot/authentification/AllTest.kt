@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.UserFirebaseConnection
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.screens.LoginScreen
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.screens.SignUpScreen
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith
 const val USERNAME = "AuthEndToEndTest"
 const val EMAIL = "AuthEndToEnd@test.com"
 const val PASSWORD = "AuthEndToEndTest,2024;"
+private val UserFirebaseConnection = UserFirebaseConnection()
 
 @RunWith(AndroidJUnit4::class)
 class AllTest : TestCase() {
@@ -35,7 +37,7 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    UserFirebaseConnection.deleteUser(MainActivity.uid)
+    UserFirebaseConnection.delete(MainActivity.uid)
     UserFirebaseConnection.deleteCurrentUser()
   }
 
@@ -103,9 +105,9 @@ class AllTest : TestCase() {
     UserFirebaseConnection.updateUserInterests(MainActivity.uid, enumValues<Interests>().toList())
     runTest {
       async {
-            val user = UserFirebaseConnection.fetchUser(MainActivity.uid)
+            val user = UserFirebaseConnection.fetch(MainActivity.uid) as User?
             assert(user != null)
-            assert(user!!.uid == MainActivity.uid)
+            assert(user!!.id == MainActivity.uid)
             assert(user.username == USERNAME)
             assert(user.email == EMAIL)
             assert(user.password == PASSWORD)
@@ -113,7 +115,5 @@ class AllTest : TestCase() {
           }
           .await()
     }
-    UserFirebaseConnection.deleteUser(MainActivity.uid)
-    UserFirebaseConnection.deleteCurrentUser()
   }
 }
