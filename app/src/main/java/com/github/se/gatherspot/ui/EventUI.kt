@@ -60,7 +60,7 @@ import java.time.format.FormatStyle
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
   var showDialog by remember { mutableStateOf(false) }
   val registrationState by viewModel.registrationState.observeAsState()
-  val isButtonEnabled = registrationState == null || registrationState is RegistrationState.Error
+  val isButtonEnabled = registrationState == null
   val buttonText =
       when (registrationState) {
         is RegistrationState.Success -> "Registered"
@@ -226,7 +226,11 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                   else -> Text("Unknown state")
                 }
               },
-              confirmButton = { Button(onClick = { showDialog = false }) { Text("OK") } })
+              confirmButton = {
+                Button(modifier = Modifier.testTag("okButton"), onClick = { showDialog = false }) {
+                  Text("OK")
+                }
+              })
         }
       }
 }

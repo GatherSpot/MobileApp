@@ -288,12 +288,23 @@ class EventUITest {
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
         performScrollTo()
+        assertIsEnabled()
         performClick()
       }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
       alertBox {
         assertIsDisplayed()
         hasText("You have been successfully registered!")
+      }
+      okButton {
+        assertExists()
+        performClick()
+      }
+
+      registerButton {
+        performScrollTo()
+        assertIsNotEnabled()
+        assert(hasText("Registered"))
       }
     }
   }
@@ -336,6 +347,12 @@ class EventUITest {
         assertIsDisplayed()
         hasText("Event is full")
       }
+
+      okButton.performClick()
+      registerButton {
+        assertIsNotEnabled()
+        assert(hasText("Full"))
+      }
     }
   }
 
@@ -376,6 +393,12 @@ class EventUITest {
       alertBox {
         assertIsDisplayed()
         hasText("Already registered for this event")
+      }
+
+      okButton.performClick()
+      registerButton {
+        assertIsNotEnabled()
+        assert(hasText("Registered"))
       }
     }
   }
