@@ -14,7 +14,7 @@ class Profile(
     private var _userName: String,
     private var _bio: String,
     private var _image: String,
-    override val _uid: String,
+    override val id: String,
     private var _interests: Set<Interests>
 ) : CollectionClass() {
 
