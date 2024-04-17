@@ -65,6 +65,7 @@ import java.time.format.FormatStyle
 @Composable
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
   var showDialog by remember { mutableStateOf(false) }
+  var clickOnDelete by remember { mutableStateOf(false) }
   val isOrganizer = event.organizer._uid == MainActivity.uid
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
@@ -94,6 +95,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
             },
             actions = {
                 if (isOrganizer) {
+                    //Edit button
                     IconButton(
                         onClick = { /* TODO : handle the navigation. navActions.controller.navigate("editEvent")*/ },
                         modifier = Modifier.testTag("editEventButton")) {
@@ -102,8 +104,9 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                             painter = painterResource(id = R.drawable.edit),
                             contentDescription = "Edit event")
                     }
+                    //Delete button
                     IconButton(
-                        onClick = { /* TODO: delete the event */},
+                        onClick = { clickOnDelete = true},
                         modifier = Modifier.testTag("deleteEventButton")) {
                         Icon(
                             modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
@@ -256,6 +259,21 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                 }
               },
               confirmButton = { Button(modifier = Modifier.testTag("okButton"), onClick = { showDialog = false }) { Text("OK") } })
+        }
+
+        if (clickOnDelete){
+            AlertDialog(
+              modifier = Modifier.testTag("alertBox"),
+              onDismissRequest = { showDialog = false },
+              title = { Text("Delete Event") },
+              text = {
+                Text("Are you sure you want to delete this event? This action cannot be undone.")
+              },
+              confirmButton = { Button(modifier = Modifier.testTag("okButton"), onClick = {
+                  // TODO : delete the event
+                  showDialog = false }) { Text("Delete") } },
+              dismissButton = { Button(modifier = Modifier.testTag("cancelButton"), onClick = { showDialog = false }) { Text("Cancel") } })
+
         }
       }
 }

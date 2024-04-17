@@ -77,6 +77,10 @@ class EventUtils {
     return event
   }
 
+  fun deleteEvent(event: Event) {
+    EventFirebaseConnection.deleteEvent(event.eventID)
+  }
+
   /**
    * Check if the data entered by the user is valid. Parse the data and check if it is in the
    * correct format, then call createEvent or updateEvent function. If the eventCreation is
