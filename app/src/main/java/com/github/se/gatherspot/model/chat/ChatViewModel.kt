@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class ChatViewModel : ViewModel() {
 
   init {
     viewModelScope.launch {
-      val nextChats = (ProfileFirebaseConnection.fetch(MainActivity.uid) as Profile).chats
+      val nextChats = (ProfileFirebaseConnection.fetch(FirebaseAuth.getInstance().currentUser!!.uid) as Profile).chats
       _uiState.value = ChatUIState(nextChats.map { ChatWithIndicator(it, it.messages.count { message -> message.read == false })}.toMutableSet())
     }
   }

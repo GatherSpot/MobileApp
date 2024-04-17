@@ -10,7 +10,15 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface {
   override val TAG = "ProfileFirebase"
 
   override fun getFromDocument(d: DocumentSnapshot): Profile? {
-    TODO("Not yet implemented")
+    if (d.getString("uid") == null) {
+      return null
+    }
+    val uid = d.getString("uid")!!
+    val name = d.getString("name")!!
+    val bio = d.getString("bio")!!
+    val image = d.getString("image")!!
+    val interests = d.get("interests") as Set<Interests>
+    return Profile(name, bio, image, uid, interests)
   }
 
   override fun add(profile: Profile) {}

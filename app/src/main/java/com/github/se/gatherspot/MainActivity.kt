@@ -31,6 +31,7 @@ import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -47,7 +48,6 @@ class MainActivity : ComponentActivity() {
 
     super.onCreate(savedInstanceState)
     val eventsViewModel = EventsViewModel()
-    val chatViewModel = ChatViewModel()
 
     signInLauncher =
         registerForActivityResult(
@@ -82,10 +82,10 @@ class MainActivity : ComponentActivity() {
 
               composable("community") { Community(NavigationActions(navController)) }
 
-              composable("chat") { Chat(chatViewModel, NavigationActions(navController)) }
+              composable("chat") { Chat(ChatViewModel(), NavigationActions(navController)) }
 
               composable("profile") {
-                Profile(NavigationActions(navController))
+                Profile(NavigationActions(navController), OwnProfileViewModel())
               }
               composable("createEvent") {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())

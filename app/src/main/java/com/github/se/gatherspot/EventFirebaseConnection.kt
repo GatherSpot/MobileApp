@@ -27,10 +27,10 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
    * @return The Event object
    */
   override fun getFromDocument(d: DocumentSnapshot): Event? {
-    if (d.getString("eventID") == null) {
+    if (d.getString("id") == null) {
       return null
     }
-    val eventID = d.getString("eventID")!!
+    val eventID = d.getString("id")!!
     val title = d.getString("title")!!
     val description = d.getString("description")!!
     val location: Location?
@@ -121,12 +121,12 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
   suspend fun fetchNextEvents(number: Long): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
         if (offset == null) {
-          Firebase.firestore.collection(EVENTS).orderBy("eventID").limit(number).get().await()
+          Firebase.firestore.collection(EVENTS).orderBy("id").limit(number).get().await()
         } else {
           Firebase.firestore
               .collection(EVENTS)
-              .orderBy("eventID")
-              .startAfter(offset!!.get("eventID"))
+              .orderBy("id")
+              .startAfter(offset!!.get("id"))
               .limit(number)
               .get()
               .await()
@@ -192,7 +192,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
   override fun add(event: Event) {
     val eventItem =
         hashMapOf(
-            "eventID" to event.id,
+            "id" to event.id,
             "title" to event.title,
             "description" to event.description,
             "locationLatitude" to
