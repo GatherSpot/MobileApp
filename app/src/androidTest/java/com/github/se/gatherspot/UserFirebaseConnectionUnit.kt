@@ -11,18 +11,21 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class UserFirebaseConnectionUnit {
+
+  val UserFirebaseConnection = UserFirebaseConnection()
+
   @Test
   fun newUID() {
-    val uid = UserFirebaseConnection.getUID()
+    val uid = UserFirebaseConnection.getNewID()
     assertNotNull(uid)
     assertTrue(uid.isNotEmpty())
   }
 
   @Test
   fun uniqueUIDS() {
-    val uid1 = UserFirebaseConnection.getUID()
-    val uid2 = UserFirebaseConnection.getUID()
-    val uid3 = UserFirebaseConnection.getUID()
+    val uid1 = UserFirebaseConnection.getNewID()
+    val uid2 = UserFirebaseConnection.getNewID()
+    val uid3 = UserFirebaseConnection.getNewID()
     assertNotNull(uid1)
     assertNotNull(uid2)
     assertNotNull(uid3)
@@ -32,22 +35,22 @@ class UserFirebaseConnectionUnit {
   }
 
   @Test
-  fun testAddUserAndDelete() = runTest {
-    val uid = UserFirebaseConnection.getUID()
+  fun testaddAndDelete() = runTest {
+    val uid = UserFirebaseConnection.getNewID()
     val username = "Test"
     val email = "random"
     val password = "random"
     val user = User(uid, username, email, password)
-    UserFirebaseConnection.addUser(user)
+    UserFirebaseConnection.add(user)
     var userFetched: User? = null
-    async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
+    async { userFetched = UserFirebaseConnection.fetch(uid) as User? }.await()
     assertNotNull(userFetched)
-    assertEquals(uid, userFetched!!.uid)
+    assertEquals(uid, userFetched!!.id)
     assertEquals(username, userFetched!!.username)
     assertEquals(password, userFetched!!.password)
 
-    UserFirebaseConnection.deleteUser(uid)
-    async { userFetched = UserFirebaseConnection.fetchUser(uid) }.await()
+    UserFirebaseConnection.delete(uid)
+    async { userFetched = UserFirebaseConnection.fetch(uid) as User? }.await()
     assertNull(userFetched)
   }
 }

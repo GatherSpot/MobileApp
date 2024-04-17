@@ -173,14 +173,16 @@ class ProfileView {
   private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
-    val username by viewModel.username.observeAsState(initial = "")
-    val bio by viewModel.bio.observeAsState(initial = "")
-    val imageUri by viewModel.image.observeAsState(initial = "")
+    val username by viewModel.username.observeAsState("")
+    val bio by viewModel.bio.observeAsState("")
+    val imageUri by viewModel.image.observeAsState("")
+    val interests = viewModel.interests.value ?: mutableSetOf()
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       EditButton(navController)
       ProfileImage(imageUri, {}, false)
       UsernameField(username, {}, false)
       BioField(bio, {}, false)
+      InterestsView().ShowInterests(interests)
     }
   }
 
@@ -188,9 +190,9 @@ class ProfileView {
   private fun EditOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
-    val username by viewModel.username.observeAsState(initial = "")
-    val bio by viewModel.bio.observeAsState(initial = "")
-    val imageUri by viewModel.image.observeAsState(initial = "")
+    val username by viewModel.username.observeAsState("")
+    val bio by viewModel.bio.observeAsState("")
+    val imageUri by viewModel.image.observeAsState("")
     val updateUsername = { s: String -> viewModel.updateUsername(s) }
     val updateBio = { s: String -> viewModel.updateBio(s) }
     val updateImageUri = { s: String -> viewModel.updateProfileImage(s) }
@@ -201,6 +203,7 @@ class ProfileView {
       ProfileImage(imageUri, updateImageUri, true)
       UsernameField(username, updateUsername, true)
       BioField(bio, updateBio, true)
+      InterestsView().EditInterests(viewModel)
     }
   }
 
@@ -214,11 +217,13 @@ class ProfileView {
     val username = viewModel.username
     val bio = viewModel.bio
     val imageUri = viewModel.image
+    val interests = viewModel.interests
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       ProfileImage(imageUri, {}, false)
       UsernameField(username, {}, false)
       BioField(bio, {}, false)
+      InterestsView().ShowInterests(interests)
     }
   }
 }

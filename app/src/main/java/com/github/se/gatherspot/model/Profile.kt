@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.model
 
+import com.github.se.gatherspot.CollectionClass
+
 // NOTE : I will add interests once theses are pushed
 /**
  * Profile data object
@@ -12,14 +14,14 @@ class Profile(
     private var _userName: String,
     private var _bio: String,
     private var _image: String,
-    private var _uid: String,
+    override val id: String,
     private var _interests: Set<Interests>
-) {
+) : CollectionClass() {
 
   var userName: String = _userName
   var bio: String = _bio
   var image: String = _image
   var interests: Set<Interests> = _interests
 
-  constructor() : this("", "", "", "", emptySet())
+  constructor() : this("", "", "", "", setOf())
 }
