@@ -91,10 +91,16 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                       imageVector = Icons.Filled.Menu,
                       contentDescription = null,
                       modifier =
-                          Modifier.clickable { showDropdownMenu = !showDropdownMenu }
+                          Modifier.clickable {
+                                showDropdownMenu = !showDropdownMenu
+                                if (!showDropdownMenu) {
+                                  viewModel.filter(interestsSelected)
+                                  interestsSelected = mutableListOf()
+                                }
+                              }
                               .testTag("filterMenu"))
                   DropdownMenu(
-                      modifier = Modifier.height(300.dp),
+                      modifier = Modifier.height(300.dp).testTag("dropdown"),
                       expanded = showDropdownMenu,
                       onDismissRequest = {
                         showDropdownMenu = false
@@ -113,7 +119,10 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                       }
                 }
                 Spacer(modifier = Modifier.width(30.dp))
-                Icon(Icons.Filled.Refresh, "fetch", modifier = Modifier.clickable { fetch = true })
+                Icon(
+                    Icons.Filled.Refresh,
+                    "fetch",
+                    modifier = Modifier.clickable { fetch = true }.testTag("refresh"))
                 LaunchedEffect(fetch) {
                   if (fetch) {
                     Log.d(TAG, "entered")
@@ -121,6 +130,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                     fetch = false
                   }
                 }
+
                 Spacer(modifier = Modifier.width(30.dp))
                 Text(
                     text = "Create an event",
@@ -149,6 +159,11 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
             tabList = TOP_LEVEL_DESTINATIONS,
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
       }) { paddingValues ->
+        if (fetch) {
+          Text(
+              modifier = Modifier.testTag("fetch").padding(vertical = 30.dp),
+              text = "Fetching new events...")
+        }
         val events = state.value.list
         val lazyState = rememberLazyListState()
         Log.d(TAG, "size = " + events.size.toString())
@@ -164,7 +179,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
             LaunchedEffect(lazyState.isScrollInProgress) {
               loading = false
               fetched = false
-              val isAtBottom = (lazyState.firstVisibleItemIndex + viewModel.PAGESIZE) >= events.size
+              val isAtBottom =
+                  (lazyState.firstVisibleItemIndex + EventsViewModel.PAGESIZE) >= events.size
               val currentScrollPosition = lazyState.firstVisibleItemScrollOffset
               val downwards =
                   currentScrollPosition >= previousScrollPosition && currentScrollPosition > 0
@@ -249,6 +265,7 @@ fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Int
   var selected by remember { mutableStateOf(false) }
 
   DropdownMenuItem(
+      modifier = Modifier.testTag(interest.toString()),
       text = { Text(interest.toString()) },
       onClick = {
         selected = !selected
