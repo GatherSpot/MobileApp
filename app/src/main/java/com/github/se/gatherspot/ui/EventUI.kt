@@ -60,6 +60,15 @@ import java.time.format.FormatStyle
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
   var showDialog by remember { mutableStateOf(false) }
   val registrationState by viewModel.registrationState.observeAsState()
+  val isButtonEnabled = registrationState == null || registrationState is RegistrationState.Error
+  val buttonText =
+      when (registrationState) {
+        is RegistrationState.Success -> "Registered"
+        is RegistrationState.Error ->
+            if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
+            else "Registered"
+        else -> "Register"
+      }
 
   Scaffold(
       modifier = Modifier.testTag("EventUIScreen"),
@@ -196,12 +205,12 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               Button(
                   onClick = {
                     viewModel.registerForEvent(event)
-
                     showDialog = true
                   },
+                  enabled = isButtonEnabled,
                   modifier = Modifier.fillMaxWidth().testTag("registerButton"),
                   colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-                    Text("Register", color = Color.White)
+                    Text(buttonText, color = Color.White)
                   }
             }
 
