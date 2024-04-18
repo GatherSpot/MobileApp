@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - 38-add-tests-for-loginsign-up-classes
+      - 75-interface-for-all-firebaseconnection-classes
 
   pull_request:
     types:

@@ -36,6 +36,8 @@ class EventUtils {
    * @param timeLimitInscription: The last time to register for the event
    * @return The event created
    */
+  private val EventFirebaseConnection = EventFirebaseConnection()
+
   private fun createEvent(
       title: String,
       description: String,
@@ -50,8 +52,9 @@ class EventUtils {
       dateLimitInscription: LocalDate?,
       timeLimitInscription: LocalTime?
   ): Event {
+
     // First fetch an unique ID for the event
-    val eventID = EventFirebaseConnection.getNewEventID()
+    val eventID = EventFirebaseConnection.getNewID()
 
     // Create the event
     val event =
@@ -73,7 +76,7 @@ class EventUtils {
             eventStatus = EventStatus.CREATED)
 
     // Add the event to the database
-    EventFirebaseConnection.addNewEvent(event)
+    EventFirebaseConnection.add(event)
 
     return event
   }
@@ -262,7 +265,7 @@ class EventUtils {
   ): Event {
     val event =
         Event(
-            oldEvent.eventID,
+            oldEvent.id,
             title,
             description,
             location,
@@ -281,7 +284,7 @@ class EventUtils {
             eventStatus = EventStatus.CREATED,
         )
     // Add the event to the database
-    EventFirebaseConnection.addNewEvent(event)
+    EventFirebaseConnection.add(event)
     return event
   }
 

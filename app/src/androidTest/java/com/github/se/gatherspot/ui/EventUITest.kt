@@ -33,7 +33,7 @@ class EventUITest {
       val navController = rememberNavController()
       val event =
           Event(
-              eventID = "1",
+              id = "1",
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
@@ -90,7 +90,7 @@ class EventUITest {
       val navController = rememberNavController()
       val event =
           Event(
-              eventID = "1",
+              id = "1",
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
@@ -181,7 +181,7 @@ class EventUITest {
       val navController = rememberNavController()
       val event =
           Event(
-              eventID = "1",
+              id = "1",
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
