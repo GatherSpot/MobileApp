@@ -90,10 +90,10 @@ fun EventUI(event: Event, navActions: NavigationActions) {
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-              ProfileIndicator(profile = event!!.organizer)
+              ProfileIndicator(profile = event.organizer)
 
               // Event Description
-              event!!.description?.let { description ->
+              event.description?.let { description ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     modifier = Modifier.testTag("eventDescription"),

@@ -48,7 +48,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.delay
 
 @Composable
-fun Chat(viewModel: ChatViewModel, nav: NavigationActions) {
+fun Chats(viewModel: ChatViewModel, nav: NavigationActions) {
 
   val state = viewModel.uiState.collectAsState()
   var previousScrollPosition by remember { mutableIntStateOf(0) }
@@ -127,6 +127,7 @@ fun Chat(viewModel: ChatViewModel, nav: NavigationActions) {
 
 @Composable
 fun ChatRow(chatWithIndicator: ChatWithIndicator, navigation: NavigationActions) {
+
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
@@ -185,5 +186,5 @@ fun ChatRow(chatWithIndicator: ChatWithIndicator, navigation: NavigationActions)
 @Preview
 @Composable
 fun ChatPreview() {
-  Chat(ChatViewModel(), NavigationActions(rememberNavController()))
+  Chats(ChatViewModel(), NavigationActions(rememberNavController()))
 }
