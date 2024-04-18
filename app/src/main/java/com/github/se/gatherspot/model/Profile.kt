@@ -20,133 +20,140 @@ private constructor(
     private var _interests: Set<Interests>,
     private val uid: String
 ) {
-  var userName: String
-    get() = _userName
-    set(value) {
-      val regex = Regex("^[a-zA-Z_\\-\\s]*$")
-      if (value.isEmpty()) {
-        Log.d("Profile", "Username is empty")
-        return
-      }
-      if (!regex.matches(value)) {
-        Log.d("Profile", "Username contains special characters")
-        return
-      }
-      if (value.length > 20) {
-        Log.d("Profile", "Username too long")
-        return
-      }
-      _userName = value
-    }
-
-  var bio: String
-    get() = _bio
-    set(value) {
-      if (value.length > 100) throw IllegalArgumentException("Bio too long")
-      _bio = value
-    }
-
-  var image: String
-    get() = _image
-    set(value) {
-      // TODO: SANITIZATION
-      _image = value
-    }
-
-  var interests: Set<Interests>
-    get() = _interests
-    set(value) {
-      _interests = value
-    }
-
-  fun save(userName: String, bio: String, image: String, interests: Set<Interests>) {
-    this.userName = userName
-    this.bio = bio
-    this.image = image
-    this._interests = interests
-    saveToFirebase()
-  }
-
-  private val db = Firebase.firestore
-  private val tag = "profiles"
-
-  private fun saveToFirebase() {
-    val data =
-        hashMapOf(
-            "userName" to userName,
-            "bio" to bio,
-            "image" to image,
-            // TODO : change interests to make it more compact, maybe do it in its own class and not
-            // here
-            "interests" to Interests.toCompressedString(interests))
-    db.collection(tag)
-        .document(uid)
-        .set(data)
-        .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
-        .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
-  }
-
-  fun updateFromFirebase(uid: String, update: () -> Unit) {
-    db.collection(tag)
-        .document(uid)
-        .get()
-        .addOnSuccessListener { document ->
-          if (document != null) {
-            userName = document.get("userName") as String
-            bio = document.get("bio") as String
-            image = document.get("image") as String
-            interests = Interests.fromCompressedString(document.get("interests") as String)
-            update()
-            Log.d(tag, "DocumentSnapshot data: ${document.data}")
-          } else {
-            Log.d(tag, "No such document")
-          }
+    var userName: String
+        get() = _userName
+        set(value) {
+            val regex = Regex("^[a-zA-Z_\\-\\s]*$")
+            if (value.isEmpty()) {
+                throw IllegalArgumentException("Username cannot be empty")
+            }
+            if (!regex.matches(value)) {
+                throw IllegalArgumentException("Username can only contain letters, spaces, - and _")
+            }
+            if (value.length > 20) {
+                throw IllegalArgumentException("Username too long")
+            }
+            _userName = value
         }
-        .addOnFailureListener { exception -> Log.d(tag, "get failed with :", exception) }
-  }
 
-  fun delete() {
-    db.collection(tag)
-        .document(uid)
-        .delete()
-        .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
-        .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
-  }
+    var bio: String
+        get() = _bio
+        set(value) {
+            if (value.length > 100) throw IllegalArgumentException("Bio too long")
+            _bio = value
+        }
 
-  companion object {
-    /**
-     * Factory method to fetch a profile given a certain UID
-     *
-     * @param uid the unique identifier of the user
-     * @param update a function to update the profile view when fetched from firebase, this is used
-     *   to avoid locking, the profile will be empty until the update function is called. Might try
-     *   to find a simpler solution.
-     * @return a profile object
-     */
-    fun fromUID(uid: String, update: () -> Unit): Profile {
-      if (uid.isEmpty()) throw IllegalArgumentException("UID cannot be empty")
-      val profile = emptyProfile(uid)
-      profile.updateFromFirebase(uid, update)
-      return profile
+    var image: String
+        get() = _image
+        set(value) {
+            // TODO: SANITIZATION
+            _image = value
+        }
+
+    var interests: Set<Interests>
+        get() = _interests
+        set(value) {
+            _interests = value
+        }
+
+    fun save(userName: String, bio: String, image: String, interests: Set<Interests>) {
+        this.userName = userName
+        this.bio = bio
+        this.image = image
+        this._interests = interests
+        saveToFirebase()
     }
 
-    /**
-     * Factory method to create an empty profile useful creating a new profile on signup
-     *
-     * @param uid to get from firebase when creating new account
-     * @return a profile object
-     */
-    private fun emptyProfile(uid: String): Profile {
-      return Profile("", "", "", emptySet(), uid)
+    private val db = Firebase.firestore
+    private val tag = "profiles"
+
+    private fun saveToFirebase() {
+        val data =
+            hashMapOf(
+                "userName" to userName,
+                "bio" to bio,
+                "image" to image,
+                // TODO : change interests to make it more compact, maybe do it in its own class and not
+                // here
+                "interests" to Interests.toCompressedString(interests)
+            )
+        db.collection(tag)
+            .document(uid)
+            .set(data)
+            .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
+            .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
     }
 
-    /**
-     * Factory method to create a dummy profile useful for testing and prototyping
-     *
-     * @return a profile object
-     */
-    fun dummyProfile(): Profile {
-      return Profile("John Doe", "I am not a bot", "", setOf(Interests.FOOTBALL), "TEST")
+    fun updateFromFirebase(uid: String, update: () -> Unit) {
+        //TODO: replace this by hilt injection
+        if (uid == "TEST") {
+            _userName = "John Doe"
+            _bio = "I am not a bot"
+            _image = ""
+            _interests = setOf(Interests.FOOTBALL)
+            update()
+            return
+        }
+        db.collection(tag)
+            .document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    userName = document.get("userName") as String
+                    bio = document.get("bio") as String
+                    image = document.get("image") as String
+                    interests = Interests.fromCompressedString(document.get("interests") as String)
+                    update()
+                    Log.d(tag, "DocumentSnapshot data: ${document.data}")
+                } else {
+                    Log.d(tag, "No such document")
+                }
+            }
+            .addOnFailureListener { exception -> Log.d(tag, "get failed with :", exception) }
     }
-  }
+
+    fun delete() {
+        db.collection(tag)
+            .document(uid)
+            .delete()
+            .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
+            .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
+    }
+
+    companion object {
+        /**
+         * Factory method to fetch a profile given a certain UID
+         *
+         * @param uid the unique identifier of the user
+         * @param update a function to update the profile view when fetched from firebase, this is used
+         *   to avoid locking, the profile will be empty until the update function is called. Might try
+         *   to find a simpler solution.
+         * @return a profile object
+         */
+        fun fromUID(uid: String, update: () -> Unit): Profile {
+            if (uid.isEmpty()) throw IllegalArgumentException("UID cannot be empty")
+            val profile = emptyProfile(uid)
+            profile.updateFromFirebase(uid, update)
+            return profile
+        }
+
+        /**
+         * Factory method to create an empty profile useful creating a new profile on signup
+         *
+         * @param uid to get from firebase when creating new account
+         * @return a profile object
+         */
+        private fun emptyProfile(uid: String): Profile {
+            return Profile("", "", "", emptySet(), uid)
+        }
+
+        /**
+         * Factory method to create a dummy profile useful for testing and prototyping
+         *
+         * @return a profile object
+         */
+        fun dummyProfile(): Profile {
+            return Profile("John Doe", "I am not a bot", "", setOf(Interests.FOOTBALL), "TEST")
+        }
+    }
 }
