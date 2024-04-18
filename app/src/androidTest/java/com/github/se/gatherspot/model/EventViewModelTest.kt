@@ -14,6 +14,7 @@ class EventViewModelTest {
   @Test
   fun testRegisterForEventChangeEventListRegistered() {
     // Set global uid
+    // This test is not working in the CI pipeline :(
     MainActivity.uid = "test"
     val viewModel = EventRegistrationViewModel()
 
