@@ -25,6 +25,9 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
+
+  val UserFirebaseConnection = UserFirebaseConnection()
+
   @get:Rule val composeTestRule = createComposeRule()
 
   // The IntentsTestRule simply calls Intents.init() before the @Test block
@@ -35,9 +38,9 @@ class SignUpTest : TestCase() {
   @After
   fun cleanUp() {
     try {
-      UserFirebaseConnection.deleteUser(MainActivity.uid)
+      UserFirebaseConnection.delete(MainActivity.uid)
     } catch (_: Exception) {}
-    UserFirebaseConnection.deleteUser("test")
+    UserFirebaseConnection.delete("test")
     UserFirebaseConnection.deleteCurrentUser()
   }
 
@@ -103,7 +106,7 @@ class SignUpTest : TestCase() {
       }
     }
 
-    UserFirebaseConnection.addUser(User("test", "test", "test", "test"))
+    UserFirebaseConnection.add(User("test", "test", "test", "test"))
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField {
         performTextInput("test")

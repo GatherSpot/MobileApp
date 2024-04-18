@@ -14,9 +14,10 @@ import org.junit.Assert
 import org.junit.Test
 
 class EventUtilsTest {
+  private val EventFirebaseConnection = EventFirebaseConnection()
   private val testEvent =
       Event(
-          eventID = "testID",
+          id = "testID",
           title = "Test Event",
           description = "This is a test event",
           location = Location(0.0, 0.0, "Test Location"),
