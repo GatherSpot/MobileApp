@@ -66,7 +66,7 @@ import java.time.format.FormatStyle
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
   var showDialog by remember { mutableStateOf(false) }
   var clickOnDelete by remember { mutableStateOf(false) }
-  val isOrganizer = event.organizer._uid == MainActivity.uid
+  val isOrganizer = event.organizer.id == MainActivity.uid
   val eventUtils = EventUtils()
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
@@ -140,7 +140,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-              ProfileIndicator(profile = event!!.organizer)
+              ProfileIndicator(profile = event.organizer)
 
               // Event Description
               event!!.description?.let { description ->
@@ -346,7 +346,7 @@ fun EventUIPreview() {
   MainActivity.uid = "totoUID"
   val dummyEvent =
       Event(
-          eventID = "1",
+          id = "1",
           title = "Event Title",
           description = "Hello: I am a description",
           attendanceMaxCapacity = 2,

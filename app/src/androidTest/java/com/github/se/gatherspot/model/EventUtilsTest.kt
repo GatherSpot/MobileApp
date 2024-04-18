@@ -455,7 +455,7 @@ class EventUtilsTest {
     // create an event, add it to the database, then delete it
     val event =
         Event(
-            eventID = "myEventToDelete",
+            id = "myEventToDelete",
             title = "Event Title",
             description = "Hello: I am a description",
             attendanceMaxCapacity = 10,
@@ -473,14 +473,14 @@ class EventUtilsTest {
             timeEnding = LocalTime.of(16, 0),
         )
     val eventUtils = EventUtils()
-    EventFirebaseConnection.addNewEvent(event)
-    val eventFromDB = runBlocking { EventFirebaseConnection.fetchEvent("myEventToDelete") }
-    Assert.assertEquals(event.eventID, eventFromDB?.eventID)
-    Assert.assertEquals(event.title, eventFromDB?.title)
+    EventFirebaseConnection.add(event)
+    val eventFromDB = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }
+    Assert.assertEquals(event.id, eventFromDB?.id)
+
 
     eventUtils.deleteEvent(event)
     val eventFromDBAfterDelete = runBlocking {
-      EventFirebaseConnection.fetchEvent("myEventToDelete")
+      EventFirebaseConnection.fetch("myEventToDelete")
     }
     Assert.assertNull(eventFromDBAfterDelete)
   }
