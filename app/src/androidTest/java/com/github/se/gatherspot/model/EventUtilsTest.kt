@@ -6,10 +6,10 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
-import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 
@@ -448,41 +448,39 @@ class EventUtilsTest {
       Assert.assertEquals("Invalid number format", e.message)
     }
   }
-    @Test
-    fun deleteEventTest(){
-        //create an event, add it to the database, then delete it
-        val event =
-            Event(
-                eventID = "myEventToDelete",
-                title = "Event Title",
-                description = "Hello: I am a description",
-                attendanceMaxCapacity = 10,
-                attendanceMinCapacity = 1,
-                categories = setOf(Interests.BASKETBALL),
-                organizer = Profile("","","","organizer", setOf()),
-                eventEndDate = LocalDate.of(2024, 4, 15),
-                eventStartDate = LocalDate.of(2024, 4, 14),
-                globalRating = 4,
-                inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-                inscriptionLimitTime = LocalTime.of(23, 59),
-                location = null,
-                registeredUsers = mutableListOf("test"),
-                timeBeginning = LocalTime.of(13, 0),
-                timeEnding = LocalTime.of(16, 0),
-            )
-        val eventUtils = EventUtils()
-        EventFirebaseConnection.addNewEvent(event)
-        val eventFromDB = runBlocking { EventFirebaseConnection.fetchEvent("myEventToDelete") }
-        Assert.assertEquals(event.eventID, eventFromDB?.eventID)
-        Assert.assertEquals(event.title, eventFromDB?.title)
 
-        eventUtils.deleteEvent(event)
-        val eventFromDBAfterDelete = runBlocking { EventFirebaseConnection.fetchEvent("myEventToDelete") }
-        Assert.assertNull(eventFromDBAfterDelete)
+  @Test
+  fun deleteEventTest() {
+    // create an event, add it to the database, then delete it
+    val event =
+        Event(
+            eventID = "myEventToDelete",
+            title = "Event Title",
+            description = "Hello: I am a description",
+            attendanceMaxCapacity = 10,
+            attendanceMinCapacity = 1,
+            categories = setOf(Interests.BASKETBALL),
+            organizer = Profile("", "", "", "organizer", setOf()),
+            eventEndDate = LocalDate.of(2024, 4, 15),
+            eventStartDate = LocalDate.of(2024, 4, 14),
+            globalRating = 4,
+            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+            inscriptionLimitTime = LocalTime.of(23, 59),
+            location = null,
+            registeredUsers = mutableListOf("test"),
+            timeBeginning = LocalTime.of(13, 0),
+            timeEnding = LocalTime.of(16, 0),
+        )
+    val eventUtils = EventUtils()
+    EventFirebaseConnection.addNewEvent(event)
+    val eventFromDB = runBlocking { EventFirebaseConnection.fetchEvent("myEventToDelete") }
+    Assert.assertEquals(event.eventID, eventFromDB?.eventID)
+    Assert.assertEquals(event.title, eventFromDB?.title)
 
-
-
+    eventUtils.deleteEvent(event)
+    val eventFromDBAfterDelete = runBlocking {
+      EventFirebaseConnection.fetchEvent("myEventToDelete")
     }
+    Assert.assertNull(eventFromDBAfterDelete)
+  }
 }
-
-

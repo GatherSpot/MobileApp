@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -96,30 +95,27 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                   }
             },
             actions = {
-                if (isOrganizer) {
-                    //Edit button
-                    IconButton(
-                        onClick = { /* TODO : handle the navigation. navActions.controller.navigate("editEvent")*/ },
-                        modifier = Modifier.testTag("editEventButton")) {
-                        Icon(
-                            modifier = Modifier.size(24.dp).testTag("editEventIcon"),
-                            painter = painterResource(id = R.drawable.edit),
-                            contentDescription = "Edit event")
+              if (isOrganizer) {
+                // Edit button
+                IconButton(
+                    onClick = { /* TODO : handle the navigation. navActions.controller.navigate("editEvent")*/},
+                    modifier = Modifier.testTag("editEventButton")) {
+                      Icon(
+                          modifier = Modifier.size(24.dp).testTag("editEventIcon"),
+                          painter = painterResource(id = R.drawable.edit),
+                          contentDescription = "Edit event")
                     }
-                    //Delete button
-                    IconButton(
-                        onClick = { clickOnDelete = true},
-                        modifier = Modifier.testTag("deleteEventButton")) {
-                        Icon(
-                            modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
-                            painter = painterResource(id = R.drawable.delete),
-                            contentDescription = "Delete event")
+                // Delete button
+                IconButton(
+                    onClick = { clickOnDelete = true },
+                    modifier = Modifier.testTag("deleteEventButton")) {
+                      Icon(
+                          modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
+                          painter = painterResource(id = R.drawable.delete),
+                          contentDescription = "Delete event")
                     }
-
-                }
-            }
-
-        )
+              }
+            })
       }) { innerPadding ->
         Column(
             modifier =
@@ -237,17 +233,16 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
               if (!isOrganizer) {
-                  Button(
-                      onClick = {
-                          viewModel.registerForEvent(event)
-                          showDialog = true
-                      },
-                      enabled = isButtonEnabled,
-                      modifier = Modifier.fillMaxWidth().testTag("registerButton"),
-                      colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))
-                  ) {
+                Button(
+                    onClick = {
+                      viewModel.registerForEvent(event)
+                      showDialog = true
+                    },
+                    enabled = isButtonEnabled,
+                    modifier = Modifier.fillMaxWidth().testTag("registerButton"),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
                       Text(buttonText, color = Color.White)
-                  }
+                    }
               }
             }
 
@@ -263,24 +258,40 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                   else -> Text("Unknown state")
                 }
               },
-              confirmButton = { Button(modifier = Modifier.testTag("okButton"), onClick = { showDialog = false }) { Text("OK") } })
+              confirmButton = {
+                Button(modifier = Modifier.testTag("okButton"), onClick = { showDialog = false }) {
+                  Text("OK")
+                }
+              })
         }
 
-        if (clickOnDelete){
-            AlertDialog(
+        if (clickOnDelete) {
+          AlertDialog(
               modifier = Modifier.testTag("alertBox"),
               onDismissRequest = { clickOnDelete = false },
               title = { Text("Delete Event") },
               text = {
                 Text("Are you sure you want to delete this event? This action cannot be undone.")
               },
-              confirmButton = { Button(modifier = Modifier.testTag("okButton"), onClick = {
-                  // Delete the event
-                  eventUtils.deleteEvent(event)
-                  navActions.goBack()
-                  clickOnDelete = false }) { Text("Delete") } },
-              dismissButton = { Button(modifier = Modifier.testTag("cancelButton"), onClick = { clickOnDelete = false }) { Text("Cancel") } })
-
+              confirmButton = {
+                Button(
+                    modifier = Modifier.testTag("okButton"),
+                    onClick = {
+                      // Delete the event
+                      eventUtils.deleteEvent(event)
+                      navActions.goBack()
+                      clickOnDelete = false
+                    }) {
+                      Text("Delete")
+                    }
+              },
+              dismissButton = {
+                Button(
+                    modifier = Modifier.testTag("cancelButton"),
+                    onClick = { clickOnDelete = false }) {
+                      Text("Cancel")
+                    }
+              })
         }
       }
 }
@@ -331,26 +342,27 @@ fun ProfileIndicator(profile: Profile) {
 @Preview(showBackground = true)
 @Composable
 fun EventUIPreview() {
-    // for testing purposes
-    MainActivity.uid = "totoUID"
-    val dummyEvent = Event(
-        eventID = "1",
-        title = "Event Title",
-        description = "Hello: I am a description",
-        attendanceMaxCapacity = 2,
-        attendanceMinCapacity = 1,
-        organizer = Profile("", "", "", "testUID", setOf()),
-        categories = setOf(Interests.BASKETBALL),
-        eventEndDate = LocalDate.of(2024, 4, 15),
-        eventStartDate = LocalDate.of(2024, 4, 14),
-        globalRating = 4,
-        inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-        inscriptionLimitTime = LocalTime.of(23, 59),
-        location = null,
-        registeredUsers = mutableListOf("profil1", "profil2"),
-        timeBeginning = LocalTime.of(13, 0),
-        timeEnding = LocalTime.of(16, 0),
-    )
+  // for testing purposes
+  MainActivity.uid = "totoUID"
+  val dummyEvent =
+      Event(
+          eventID = "1",
+          title = "Event Title",
+          description = "Hello: I am a description",
+          attendanceMaxCapacity = 2,
+          attendanceMinCapacity = 1,
+          organizer = Profile("", "", "", "testUID", setOf()),
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf("profil1", "profil2"),
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+      )
 
-    EventUI(dummyEvent, NavigationActions(rememberNavController()), EventRegistrationViewModel())
+  EventUI(dummyEvent, NavigationActions(rememberNavController()), EventRegistrationViewModel())
 }

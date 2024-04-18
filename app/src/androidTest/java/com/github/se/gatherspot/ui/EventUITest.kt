@@ -7,14 +7,13 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
-
 import java.time.LocalDate
 import java.time.LocalTime
 import org.junit.Rule
@@ -297,11 +296,11 @@ class EventUITest {
         assertIsDisplayed()
         hasText("You have been successfully registered!")
       }
-        okButton.performClick()
-        registerButton {
-            assertIsNotEnabled()
-            assert(hasText("Registered"))
-        }
+      okButton.performClick()
+      registerButton {
+        assertIsNotEnabled()
+        assert(hasText("Registered"))
+      }
     }
   }
 
@@ -343,11 +342,11 @@ class EventUITest {
         assertIsDisplayed()
         hasText("Event is full")
       }
-        okButton.performClick()
-        registerButton {
-            assertIsNotEnabled()
-            assert(hasText("Full"))
-        }
+      okButton.performClick()
+      registerButton {
+        assertIsNotEnabled()
+        assert(hasText("Full"))
+      }
     }
   }
 
@@ -390,44 +389,42 @@ class EventUITest {
         hasText("Already registered for this event")
       }
 
-        okButton.performClick()
-        registerButton {
-            assertIsNotEnabled()
-            assert(hasText("Registered"))
-        }
+      okButton.performClick()
+      registerButton {
+        assertIsNotEnabled()
+        assert(hasText("Registered"))
+      }
     }
   }
 
-    @Test
-    fun testOrganiserDeleteEditButtonAreHere(){
-        // To make it works, need to define a global MainActivity.uid
-        MainActivity.uid = "test"
-        composeTestRule.setContent {
-            val navController = rememberNavController()
-            val event =
-                Event(
-                    eventID = "1",
-                    title = "Event Title",
-                    description = "Hello: I am a description",
-                    attendanceMaxCapacity = 10,
-                    attendanceMinCapacity = 1,
-                    organizer = Profile("user", "bio", "", "test", setOf(Interests.BASKETBALL)),
-                    categories = setOf(Interests.BASKETBALL),
-                    eventEndDate = LocalDate.of(2024, 4, 15),
-                    eventStartDate = LocalDate.of(2024, 4, 14),
-                    inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-                    inscriptionLimitTime = LocalTime.of(23, 59),
-                    location = null,
-                    registeredUsers = mutableListOf("test"),
-                    timeBeginning = LocalTime.of(13, 0),
-                    globalRating = 4,
-                    timeEnding = LocalTime.of(16, 0),
-                )
+  @Test
+  fun testOrganiserDeleteEditButtonAreHere() {
+    // To make it works, need to define a global MainActivity.uid
+    MainActivity.uid = "test"
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val event =
+          Event(
+              eventID = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 10,
+              attendanceMinCapacity = 1,
+              organizer = Profile("user", "bio", "", "test", setOf(Interests.BASKETBALL)),
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf("test"),
+              timeBeginning = LocalTime.of(13, 0),
+              globalRating = 4,
+              timeEnding = LocalTime.of(16, 0),
+          )
 
-            EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
-        }
-        ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-
-        }
+      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {}
+  }
 }
