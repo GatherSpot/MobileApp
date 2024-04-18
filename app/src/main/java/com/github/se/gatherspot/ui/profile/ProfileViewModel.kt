@@ -9,14 +9,21 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
 class OwnProfileViewModel : ViewModel() {
-  // TODO : Change this to hilt injection
-  private var _profile: Profile =
-      Firebase.auth.currentUser?.uid?.let { Profile.fromUID(it) { update() } }
-          ?: Profile.dummyProfile()
+  private lateinit var _profile: Profile
   private var _username = MutableLiveData<String>()
   private var _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
   private val _interests = MutableLiveData<Set<Interests>>()
+
+  init {
+    // TODO : Change this to hilt injection
+    Firebase.auth.currentUser?.uid?.let { uid -> _profile = Profile.fromUID(uid) { update() } }
+        ?: run {
+          _profile = Profile.dummyProfile()
+          update()
+        }
+  }
+
   val username: LiveData<String>
     get() = _username
 
