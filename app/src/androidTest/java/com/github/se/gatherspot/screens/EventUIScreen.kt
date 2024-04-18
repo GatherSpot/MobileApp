@@ -10,7 +10,8 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         viewBuilderAction = { hasTestTag("EventUIScreen") }) {
   val eventScaffold: KNode = onNode { hasTestTag("EventUIScreen") }
   val topBar: KNode = onNode { hasTestTag("topBar") }
-  val deleteButton: KNode = onNode { hasTestTag("deleteButton") }
+  val deleteButton: KNode = onNode { hasTestTag("deleteEventButton") }
+  val editButton: KNode = onNode { hasTestTag("editEventButton") }
   val backButton: KNode = onNode { hasTestTag("goBackButton") }
   val formColumn: KNode = onNode { hasTestTag("eventColumn") }
   val image: KNode = onNode { hasTestTag("eventImage") }
@@ -26,4 +27,5 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val registerButton = onNode { hasTestTag("registerButton") }
   val alertBox = onNode { hasTestTag("alertBox") }
   val okButton = onNode { hasTestTag("okButton") }
+  val cancelButton = onNode { hasTestTag("cancelButton") }
 }
