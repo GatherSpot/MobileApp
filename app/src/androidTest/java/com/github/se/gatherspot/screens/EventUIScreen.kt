@@ -10,6 +10,7 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         viewBuilderAction = { hasTestTag("EventUIScreen") }) {
   val eventScaffold: KNode = onNode { hasTestTag("EventUIScreen") }
   val topBar: KNode = onNode { hasTestTag("topBar") }
+  val deleteButton : KNode = onNode { hasTestTag("deleteButton") }
   val backButton: KNode = onNode { hasTestTag("goBackButton") }
   val formColumn: KNode = onNode { hasTestTag("eventColumn") }
   val image: KNode = onNode { hasTestTag("eventImage") }

@@ -236,16 +236,19 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
 
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
-              Button(
-                  onClick = {
-                    viewModel.registerForEvent(event)
-                    showDialog = true
-                  },
-                  enabled = isButtonEnabled,
-                  modifier = Modifier.fillMaxWidth().testTag("registerButton"),
-                  colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-                    Text(buttonText, color = Color.White)
+              if (!isOrganizer) {
+                  Button(
+                      onClick = {
+                          viewModel.registerForEvent(event)
+                          showDialog = true
+                      },
+                      enabled = isButtonEnabled,
+                      modifier = Modifier.fillMaxWidth().testTag("registerButton"),
+                      colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))
+                  ) {
+                      Text(buttonText, color = Color.White)
                   }
+              }
             }
 
         if (showDialog) {
@@ -266,16 +269,17 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
         if (clickOnDelete){
             AlertDialog(
               modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { showDialog = false },
+              onDismissRequest = { clickOnDelete = false },
               title = { Text("Delete Event") },
               text = {
                 Text("Are you sure you want to delete this event? This action cannot be undone.")
               },
               confirmButton = { Button(modifier = Modifier.testTag("okButton"), onClick = {
-                  // TODO : delete the event
-                  // eventUtils.deleteEvent(event)
-                  showDialog = false }) { Text("Delete") } },
-              dismissButton = { Button(modifier = Modifier.testTag("cancelButton"), onClick = { showDialog = false }) { Text("Cancel") } })
+                  // Delete the event
+                  eventUtils.deleteEvent(event)
+                  navActions.goBack()
+                  clickOnDelete = false }) { Text("Delete") } },
+              dismissButton = { Button(modifier = Modifier.testTag("cancelButton"), onClick = { clickOnDelete = false }) { Text("Cancel") } })
 
         }
       }
@@ -328,7 +332,7 @@ fun ProfileIndicator(profile: Profile) {
 @Composable
 fun EventUIPreview() {
     // for testing purposes
-    MainActivity.uid = "testUID"
+    MainActivity.uid = "totoUID"
     val dummyEvent = Event(
         eventID = "1",
         title = "Event Title",

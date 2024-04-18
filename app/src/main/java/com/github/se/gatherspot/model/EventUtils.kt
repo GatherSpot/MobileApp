@@ -87,10 +87,10 @@ class EventUtils {
   fun deleteEvent(event: Event) {
       // Remove the event from all the users who registered for it
       val profileFireBase = ProfileFirebaseConnection()
-        event.registeredUsers.forEach { userID ->
-            val profile = profileFireBase.fetchProfile(userID)
-            profile.registeredEvents.remove(event.eventID)
-            profileFireBase.updateProfile(profile)
+      event.registeredUsers.forEach { userID ->
+          val profile = profileFireBase.fetchProfile(userID)
+          profile.registeredEvents.remove(event.eventID)
+          profileFireBase.updateProfile(profile)
         }
       EventFirebaseConnection.deleteEvent(event.eventID)
 
