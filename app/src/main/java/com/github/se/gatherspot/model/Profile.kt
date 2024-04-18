@@ -152,7 +152,12 @@ private constructor(
      * @return a profile object
      */
     fun dummyProfile(): Profile {
-      return Profile("John Doe", "I am not a bot", "", Interests.addInterest(Interests.new(),Interests.FOOTBALL), "TEST")
+      return Profile(
+          "John Doe",
+          "I am not a bot",
+          "",
+          Interests.addInterest(Interests.new(), Interests.FOOTBALL),
+          "TEST")
     }
   }
 }
