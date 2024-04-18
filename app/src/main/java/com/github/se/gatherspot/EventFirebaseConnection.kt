@@ -16,9 +16,14 @@ import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.tasks.await
 
 /** Class to handle the connection to the Firebase database for events */
-class EventFirebaseConnection : FirebaseConnectionInterface {
+class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
   override val COLLECTION = FirebaseCollection.EVENTS.toString()
+  override val TAG = "FirebaseConnection" // Used for debugging/logs
+  val EVENTS = "events" // Collection name for events
+  val DATE_FORMAT = "dd/MM/yyyy"
+  val TIME_FORMAT = "HH:mm"
+  var offset: DocumentSnapshot? = null
 
   /**
    * Maps a document to an Event object
@@ -27,10 +32,10 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
    * @return The Event object
    */
   override fun getFromDocument(d: DocumentSnapshot): Event? {
-    if (d.getString("id") == null) {
+    if (d.getString("eventID") == null) {
       return null
     }
-    val eventID = d.getString("id")!!
+    val eventID = d.getString("eventID")!!
     val title = d.getString("title")!!
     val description = d.getString("description")!!
     val location: Location?
@@ -106,12 +111,6 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
         organizer = Profile("null", "null", "null", "null", setOf()))
   }
 
-  override val TAG = "FirebaseConnection" // Used for debugging/logs
-  val EVENTS = "events" // Collection name for events
-  val DATE_FORMAT = "dd/MM/yyyy"
-  val TIME_FORMAT = "H:mm"
-  var offset: DocumentSnapshot? = null
-
   /**
    * Fetch the next number events stating from the offset
    *
@@ -121,12 +120,12 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
   suspend fun fetchNextEvents(number: Long): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
         if (offset == null) {
-          Firebase.firestore.collection(EVENTS).orderBy("id").limit(number).get().await()
+          Firebase.firestore.collection(EVENTS).orderBy("eventID").limit(number).get().await()
         } else {
           Firebase.firestore
               .collection(EVENTS)
-              .orderBy("id")
-              .startAfter(offset!!.get("id"))
+              .orderBy("eventID")
+              .startAfter(offset!!.get("eventID"))
               .limit(number)
               .get()
               .await()
@@ -140,8 +139,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
     val listOfEvents = mutableListOf<Event>()
 
     listOfMaps.forEach { map ->
-      val uid = map["id"] as String
-      val event = fetch(uid)
+      val uid = map["eventID"] as String
+      val event = super.fetch(uid)
       event?.let { listOfEvents.add(it as Event) }
     }
 
@@ -187,81 +186,82 @@ class EventFirebaseConnection : FirebaseConnectionInterface {
   /**
    * Adds an event to the database
    *
-   * @param event: The event to add
+   * @param element: The event to add
    */
-  override fun add(event: Event) {
+  override fun add(element: Event) {
     val eventItem =
         hashMapOf(
-            "id" to event.id,
-            "title" to event.title,
-            "description" to event.description,
+            "eventID" to element.id,
+            "title" to element.title,
+            "description" to element.description,
             "locationLatitude" to
-                when (event.location) {
+                when (element.location) {
                   null -> 200.0
-                  else -> event.location.latitude
+                  else -> element.location.latitude
                 },
             "locationLongitude" to
-                when (event.location) {
+                when (element.location) {
                   null -> 200.0
-                  else -> event.location.longitude
+                  else -> element.location.longitude
                 },
             "locationName" to
-                when (event.location) {
+                when (element.location) {
                   null -> ""
-                  else -> event.location.name
+                  else -> element.location.name
                 },
             "eventStartDate" to
-                when (event.eventStartDate) {
+                when (element.eventStartDate) {
                   null -> "null"
-                  else -> event.eventStartDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
+                  else -> element.eventStartDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
                 },
             "eventEndDate" to
-                when (event.eventEndDate) {
+                when (element.eventEndDate) {
                   null -> "null"
-                  else -> event.eventEndDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
+                  else -> element.eventEndDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
                 },
             "timeBeginning" to
-                when (event.timeBeginning) {
+                when (element.timeBeginning) {
                   null -> "null"
-                  else -> event.timeBeginning.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
+                  else -> element.timeBeginning.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                 },
             "timeEnding" to
-                when (event.timeEnding) {
+                when (element.timeEnding) {
                   null -> "null"
-                  else -> event.timeEnding.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
+                  else -> element.timeEnding.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                 },
             "attendanceMaxCapacity" to
-                when (event.attendanceMaxCapacity) {
+                when (element.attendanceMaxCapacity) {
                   null -> "Unlimited"
-                  else -> event.attendanceMaxCapacity.toString()
+                  else -> element.attendanceMaxCapacity.toString()
                 },
-            "attendanceMinCapacity" to event.attendanceMinCapacity.toString(),
+            "attendanceMinCapacity" to element.attendanceMinCapacity.toString(),
             "inscriptionLimitDate" to
-                when (event.inscriptionLimitDate) {
+                when (element.inscriptionLimitDate) {
                   null -> "null"
                   else ->
-                      event.inscriptionLimitDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
+                      element.inscriptionLimitDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
                 },
             "inscriptionLimitTime" to
-                when (event.inscriptionLimitTime) {
+                when (element.inscriptionLimitTime) {
                   null -> "null"
                   else ->
-                      event.inscriptionLimitTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
+                      element.inscriptionLimitTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                 },
-            "categories" to event.categories?.toList(),
-            "registeredUsers" to event.registeredUsers,
-            "finalAttendee" to event.finalAttendees,
+            "categories" to element.categories?.toList(),
+            "registeredUsers" to element.registeredUsers,
+            "finalAttendee" to element.finalAttendees,
             "globalRating" to
-                when (event.globalRating) {
+                when (element.globalRating) {
                   null -> "null"
-                  else -> event.globalRating.toString()
+                  else -> element.globalRating.toString()
                 },
             "images" to null, // TODO: ADD IMAGES
-            "eventStatus" to event.eventStatus)
+            "eventStatus" to element.eventStatus)
 
-    Firebase.firestore.collection(EVENTS).document(event.id).set(eventItem).addOnFailureListener {
-        exception ->
-      Log.e(TAG, "Error adding new Event", exception)
-    }
+    Firebase.firestore
+        .collection(EVENTS)
+        .document(element.id)
+        .set(eventItem)
+        .addOnFailureListener { exception -> Log.e(TAG, "Error adding new Event", exception) }
   }
 }

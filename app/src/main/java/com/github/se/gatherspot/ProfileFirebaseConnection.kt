@@ -4,7 +4,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.firestore.DocumentSnapshot
 
-class ProfileFirebaseConnection : FirebaseConnectionInterface {
+class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   override val COLLECTION = FirebaseCollection.PROFILES.toString()
   override val TAG = "ProfileFirebase"
@@ -21,7 +21,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface {
     return Profile(name, bio, image, uid, interests)
   }
 
-  override fun add(profile: Profile) {}
+  override fun add(element: Profile) {}
 
   fun deleteProfile(uid: String) {}
 
