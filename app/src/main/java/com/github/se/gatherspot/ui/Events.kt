@@ -159,7 +159,7 @@ fun EventRow(event: Event, navigation: NavigationActions) {
         }
 
         Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
-            val EventFirebaseConnection = EventFirebaseConnection()
+          val EventFirebaseConnection = EventFirebaseConnection()
           Text(
               text =
                   "Start date: ${event.eventStartDate?.

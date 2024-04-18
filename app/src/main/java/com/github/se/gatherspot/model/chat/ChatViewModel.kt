@@ -20,14 +20,28 @@ class ChatViewModel : ViewModel() {
 
   init {
     viewModelScope.launch {
-      val nextChats = (ProfileFirebaseConnection.fetch(FirebaseAuth.getInstance().currentUser!!.uid) as Profile).chats
-      _uiState.value = ChatUIState(nextChats.map { ChatWithIndicator(it, it.messages.count { message -> message.read == false })}.toMutableSet())
+      val nextChats =
+          (ProfileFirebaseConnection.fetch(FirebaseAuth.getInstance().currentUser!!.uid) as Profile)
+              .chats
+      _uiState.value =
+          ChatUIState(
+              nextChats
+                  .map {
+                    ChatWithIndicator(it, it.messages.count { message -> message.read == false })
+                  }
+                  .toMutableSet())
     }
   }
 
   suspend fun fetchNext() {
     val nextChats = (ProfileFirebaseConnection.fetch(MainActivity.uid) as Profile).chats
-    val newChats = _uiState.value.list.apply { addAll(nextChats.map { ChatWithIndicator(it, it.messages.count { message -> message.read == false }) }) }
+    val newChats =
+        _uiState.value.list.apply {
+          addAll(
+              nextChats.map {
+                ChatWithIndicator(it, it.messages.count { message -> message.read == false })
+              })
+        }
     _uiState.value = ChatUIState(newChats)
   }
 }

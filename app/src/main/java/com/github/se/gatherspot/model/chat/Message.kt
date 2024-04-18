@@ -3,7 +3,7 @@ package com.github.se.gatherspot.model.chat
 import com.github.se.gatherspot.CollectionClass
 import com.google.firebase.Timestamp
 
-class Message (
+class Message(
     override val id: String,
     val senderID: String,
     val content: String,

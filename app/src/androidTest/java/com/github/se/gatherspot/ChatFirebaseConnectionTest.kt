@@ -5,16 +5,17 @@ import com.github.se.gatherspot.model.chat.Message
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.firestore
+import kotlin.time.Duration
 import kotlinx.coroutines.async
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
-import kotlin.time.Duration
 
 class ChatFirebaseConnectionTest {
 
-    val ChatFirebaseConnection = ChatFirebaseConnection()
+  val ChatFirebaseConnection = ChatFirebaseConnection()
+
   @Test
   fun testAddAndFetchChat() = runTest {
     val chatID = ChatFirebaseConnection.getNewID()
@@ -23,17 +24,7 @@ class ChatFirebaseConnectionTest {
             chatID,
             listOf("1", "2"),
             "",
-            listOf(
-                Message(
-                    "0",
-                    "1",
-                    "Hello",
-                    Timestamp.now(),
-                    false
-                )
-            )
-        )
-
+            listOf(Message("0", "1", "Hello", Timestamp.now(), false)))
 
     ChatFirebaseConnection.add(chat)
     var resultChat: Chat? = null
@@ -41,13 +32,13 @@ class ChatFirebaseConnectionTest {
     Assert.assertNotNull(resultChat)
     Assert.assertEquals(resultChat!!.id, chatID)
     Assert.assertEquals(resultChat!!.eventID, chat.eventID)
-      for (i in chat.messages.indices) {
-          Assert.assertEquals(resultChat!!.messages[i].id, chat.messages[i].id)
-          Assert.assertEquals(resultChat!!.messages[i].senderID, chat.messages[i].senderID)
-          Assert.assertEquals(resultChat!!.messages[i].content, chat.messages[i].content)
-          Assert.assertEquals(resultChat!!.messages[i].timestamp, chat.messages[i].timestamp)
-          Assert.assertEquals(resultChat!!.messages[i].read, chat.messages[i].read)
-      }
+    for (i in chat.messages.indices) {
+      Assert.assertEquals(resultChat!!.messages[i].id, chat.messages[i].id)
+      Assert.assertEquals(resultChat!!.messages[i].senderID, chat.messages[i].senderID)
+      Assert.assertEquals(resultChat!!.messages[i].content, chat.messages[i].content)
+      Assert.assertEquals(resultChat!!.messages[i].timestamp, chat.messages[i].timestamp)
+      Assert.assertEquals(resultChat!!.messages[i].read, chat.messages[i].read)
+    }
     Assert.assertEquals(resultChat!!.messages[0].id, chat.messages[0].id)
     Assert.assertEquals(resultChat!!.peopleIDs, chat.peopleIDs)
   }

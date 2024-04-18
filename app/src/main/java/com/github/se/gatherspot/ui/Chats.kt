@@ -38,7 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatWithIndicator
@@ -153,12 +152,12 @@ fun ChatRow(chatWithIndicator: ChatWithIndicator, navigation: NavigationActions)
           } else {
             Text(
                 text =
-                    "Chat between ${chatWithIndicator.chat.peopleIDs[0]} and ${chatWithIndicator.chat.peopleIDs[1]}", //TODO: change with usernames
+                    "Chat between ${chatWithIndicator.chat.peopleIDs[0]} and ${chatWithIndicator.chat.peopleIDs[1]}", // TODO: change with usernames
                 fontWeight = FontWeight.Bold,
                 fontSize = 10.sp)
           }
           Text(
-              text = "Event: ${chatWithIndicator.chat.eventID}", //TODO: change with event name
+              text = "Event: ${chatWithIndicator.chat.eventID}", // TODO: change with event name
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
         }

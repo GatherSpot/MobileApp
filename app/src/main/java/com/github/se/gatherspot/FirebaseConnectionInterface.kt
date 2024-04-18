@@ -44,7 +44,8 @@ interface FirebaseConnectionInterface {
   fun add(user: User) {}
 
   fun add(profile: Profile) {}
-    fun add(chat: Chat) {}
+
+  fun add(chat: Chat) {}
 
   fun delete(id: String) {
     Firebase.firestore
