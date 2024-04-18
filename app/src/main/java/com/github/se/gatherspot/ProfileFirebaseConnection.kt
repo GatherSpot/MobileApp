@@ -23,13 +23,6 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   override fun add(element: Profile) {}
 
-  fun deleteProfile(uid: String) {}
-
-  fun fetchProfile(uid: String): Profile {
-
-    return Profile()
-  }
-
   fun updateProfile(profile: Profile) {}
   // THE NEXT THREE ARE USED FOR TESTS
   private lateinit var dummyProfile: Profile

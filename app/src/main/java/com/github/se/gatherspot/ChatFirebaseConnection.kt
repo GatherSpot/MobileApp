@@ -10,14 +10,14 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
-class ChatFirebaseConnection : FirebaseConnectionInterface {
+class ChatFirebaseConnection : FirebaseConnectionInterface<Chat> {
 
   override val COLLECTION: String = FirebaseCollection.CHATS.toString()
   override val TAG = "ChatFirebase"
   val CHATS = "chats" // Collection name for chats
   var offset: DocumentSnapshot? = null
 
-  override fun getFromDocument(d: DocumentSnapshot): CollectionClass? {
+  override fun getFromDocument(d: DocumentSnapshot): Chat? {
     if (d.getString("id") == null) {
       return null
     }
@@ -74,17 +74,17 @@ class ChatFirebaseConnection : FirebaseConnectionInterface {
     return listOfChats
   }
 
-  override fun add(chat: Chat) {
+  override fun add(element: Chat) {
     val userMap: HashMap<String, Any?> =
         hashMapOf(
-            "id" to chat.id,
-            "peopleIDs" to chat.peopleIDs,
-            "eventID" to chat.eventID,
-            "messages" to chat.messages)
+            "id" to element.id,
+            "peopleIDs" to element.peopleIDs,
+            "eventID" to element.eventID,
+            "messages" to element.messages)
 
     Firebase.firestore
         .collection(CHATS)
-        .document(chat.id)
+        .document(element.id)
         .set(userMap)
         .addOnSuccessListener { Log.d(TAG, "Chat successfully added!") }
         .addOnFailureListener { e -> Log.w(TAG, "Error creating chat", e) }
