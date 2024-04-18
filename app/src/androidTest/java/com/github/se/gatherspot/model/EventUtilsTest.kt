@@ -477,11 +477,8 @@ class EventUtilsTest {
     val eventFromDB = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertEquals(event.id, eventFromDB?.id)
 
-
     eventUtils.deleteEvent(event)
-    val eventFromDBAfterDelete = runBlocking {
-      EventFirebaseConnection.fetch("myEventToDelete")
-    }
+    val eventFromDBAfterDelete = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertNull(eventFromDBAfterDelete)
   }
 }
