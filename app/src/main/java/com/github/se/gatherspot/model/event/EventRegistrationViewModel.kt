@@ -28,11 +28,11 @@ class EventRegistrationViewModel : ViewModel() {
         }
       }
       // Check if the user is already registered for the event
-      if (event.registeredUsers.contains(profile.id)) {
+      if (event.registeredUsers.contains(MainActivity.uid)) {
         _registrationState.value = RegistrationState.Error("Already registered for this event")
         return@launch
       }
-      event.registeredUsers.add(profile.id)
+      event.registeredUsers.add(MainActivity.uid)
       profile.registeredEvents.add(event.id)
       // Update the event in the database
       EventFirebaseConnection().add(event)
