@@ -15,11 +15,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.profile.ProfileView
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import org.junit.Rule
-import org.junit.Test //    // inject a dummyLogin or this will not work
+import org.junit.Test
 import org.junit.runner.RunWith
 
 // NOTE: For ui tests to work, and to make app accessible, please ADD CONTENT DESCRIPTION TO EVERY
@@ -29,13 +28,14 @@ import org.junit.runner.RunWith
 class ProfileInstrumentedTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @Test
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      Profile(NavigationActions(navController), OwnProfileViewModel())
+      Profile(NavigationActions(navController))
     }
     // check if things are here :
     composeTestRule
@@ -71,9 +71,7 @@ class ProfileInstrumentedTest {
   @Test
   fun profileScreenTest() {
     composeTestRule.setContent {
-      ProfileView()
-          .ProfileScreen(
-              ProfileViewModel(Profile("John Doe", "I am not a bot", "", "12", emptySet())))
+      ProfileView().ProfileScreen(ProfileViewModel(Profile.dummyProfile()))
     }
     // check if things are here :
     composeTestRule
@@ -91,17 +89,19 @@ class ProfileInstrumentedTest {
   fun interestsTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      Profile(NavigationActions(navController), OwnProfileViewModel())
+      Profile(NavigationActions(navController))
     }
-    composeTestRule.onNodeWithText("FOOTBALL").assertDoesNotExist()
+    composeTestRule.onNodeWithText("BASKETBALL").assertDoesNotExist()
     // press edit and add a new interest
     composeTestRule.onNodeWithContentDescription("edit").performClick()
     // check if things are here :
-    composeTestRule.onNodeWithText("FOOTBALL").assertExists("FOOTBALL field not found")
+    composeTestRule.onNodeWithText("BASKETBALL").assertExists("BASKETBALL field not found")
     // select football interest and go back to view
-    composeTestRule.onNodeWithText("FOOTBALL").performClick()
+    composeTestRule.onNodeWithText("BASKETBALL").performClick()
+    // wait for the animation to finish
+    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithContentDescription("save").performClick()
     // check if things are here :
-    composeTestRule.onNodeWithText("FOOTBALL").assertExists("FOOTBALL field not found")
+    composeTestRule.onNodeWithText("BASKETBALL").assertExists("BASKETBALL field not found")
   }
 }

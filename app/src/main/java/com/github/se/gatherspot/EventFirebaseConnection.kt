@@ -108,7 +108,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         images = images,
         globalRating = globalRating,
         // TODO: Add organizer
-        organizer = Profile("null", "null", "null", "null", setOf()))
+        organizer = Profile.dummyProfile())
   }
 
   /**

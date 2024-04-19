@@ -16,13 +16,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.ui.Chat
 import com.github.se.gatherspot.ui.Community
-import com.github.se.gatherspot.ui.CreateEvent
 import com.github.se.gatherspot.ui.EventUI
 import com.github.se.gatherspot.ui.Events
 import com.github.se.gatherspot.ui.LogIn
@@ -31,7 +29,6 @@ import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -87,12 +84,7 @@ class MainActivity : ComponentActivity() {
 
               composable("chat") { Chat(NavigationActions(navController)) }
 
-              composable("profile") {
-                Profile(NavigationActions(navController), OwnProfileViewModel())
-              }
-              composable("createEvent") {
-                CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
-              }
+              composable("profile") { Profile(NavigationActions(navController)) }
 
               composable("setup") { SetUpProfile(NavigationActions(navController), uid) }
             }

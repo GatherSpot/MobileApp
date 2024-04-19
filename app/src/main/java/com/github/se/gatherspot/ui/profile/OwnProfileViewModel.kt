@@ -1,21 +1,29 @@
 package com.github.se.gatherspot.ui.profile
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
-// Note : This warning is properly taken care of
-@SuppressLint("MutableCollectionMutableState")
 class OwnProfileViewModel : ViewModel() {
-  private var _profile: Profile
-  private val _username = MutableLiveData<String>()
-  private val _bio = MutableLiveData<String>()
+  private lateinit var _profile: Profile
+  private var _username = MutableLiveData<String>()
+  private var _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
   private val _interests = MutableLiveData<Set<Interests>>()
+
+  init {
+    // TODO : Change this to hilt injection
+    Firebase.auth.currentUser?.uid?.let { uid -> _profile = Profile.fromUID(uid) { update() } }
+        ?: run {
+          _profile = Profile.dummyProfile()
+          update()
+        }
+  }
+
   val username: LiveData<String>
     get() = _username
 
@@ -28,35 +36,21 @@ class OwnProfileViewModel : ViewModel() {
   val interests: LiveData<Set<Interests>>
     get() = _interests
 
-  init {
-    _profile = ProfileFirebaseConnection().dummyFetch()
-    _username.value = _profile.userName
-    _bio.value = _profile.bio
-    _image.value = _profile.image
-  }
-
   fun save() {
-    _profile =
-        Profile(
-            username.value ?: "",
-            bio.value ?: "",
-            image.value ?: "",
-            "",
-            interests.value ?: mutableSetOf())
-    // next: THIS NEEDS SANITIZATION
-    ProfileFirebaseConnection().dummySave(_profile)
+    _profile.save(
+        _username.value ?: "", bio.value ?: "", image.value ?: "", interests.value ?: emptySet())
   }
 
-  fun cancel() {
+  fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
-    _interests.value = _profile.interests.toMutableSet()
+    _interests.value = _profile.interests
   }
 
+  // TODO : add sanitization to these function !!!
   fun updateUsername(userName: String) {
     _username.value = userName
-    println("Username: $userName")
   }
 
   fun updateBio(bio: String) {
@@ -67,11 +61,17 @@ class OwnProfileViewModel : ViewModel() {
     _image.value = image
   }
 
-  fun swapInterest(interest: Interests, selected: Boolean) {
-    val copy = interests.value?.toMutableSet() ?: mutableSetOf()
-    if (selected) copy.remove(interest) else copy.add(interest)
-    _interests.value = copy
-    println("Interests: $_interests")
+  fun swapInterests(interest: Interests) {
+    _interests.value =
+        if (interest in _interests.value!!) {
+          interests.value!!.minus(interest)
+        } else {
+          interests.value!!.plus(interest)
+        }
+  }
+
+  fun isInterestsSelected(interest: Interests): Boolean {
+    return interest in _interests.value!!
   }
 }
 
