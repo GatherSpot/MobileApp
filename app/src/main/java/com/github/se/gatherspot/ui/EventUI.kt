@@ -33,8 +33,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -232,7 +230,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                 Button(
                     onClick = {
                       viewModel.registerForEvent(event)
-                        viewModel.clickRegisterButton()
+                      viewModel.clickRegisterButton()
                     },
                     enabled = isButtonEnabled,
                     modifier = Modifier.fillMaxWidth().testTag("registerButton"),
@@ -255,9 +253,11 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                 }
               },
               confirmButton = {
-                Button(modifier = Modifier.testTag("okButton"), onClick = { viewModel.dismissAlert() }) {
-                  Text("OK")
-                }
+                Button(
+                    modifier = Modifier.testTag("okButton"),
+                    onClick = { viewModel.dismissAlert() }) {
+                      Text("OK")
+                    }
               })
         }
 
@@ -284,7 +284,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               dismissButton = {
                 Button(
                     modifier = Modifier.testTag("cancelButton"),
-                    onClick = { viewModel.dismissAlert()}) {
+                    onClick = { viewModel.dismissAlert() }) {
                       Text("Cancel")
                     }
               })
