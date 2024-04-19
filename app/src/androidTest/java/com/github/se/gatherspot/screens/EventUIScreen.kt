@@ -28,4 +28,3 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val alertBox = onNode { hasTestTag("alertBox") }
   val okButton = onNode { hasTestTag("okButton") }
   val cancelButton = onNode { hasTestTag("cancelButton") }
-}

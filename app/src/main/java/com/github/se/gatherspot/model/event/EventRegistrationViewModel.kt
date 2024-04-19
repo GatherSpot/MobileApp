@@ -14,6 +14,7 @@ class EventRegistrationViewModel : ViewModel() {
   // LiveData for holding registration state
   private val _registrationState = MutableLiveData<RegistrationState>()
   val registrationState: LiveData<RegistrationState> = _registrationState
+
   // LiveData for displaying the alert dialog for the registration
   private val _displayAlertRegistration = MutableLiveData(false)
   val displayAlertRegistration: LiveData<Boolean> = _displayAlertRegistration
@@ -36,11 +37,12 @@ class EventRegistrationViewModel : ViewModel() {
         }
       }
       // Check if the user is already registered for the event
-      if (event.registeredUsers.contains(profile.id)) {
+      if (event.registeredUsers.contains(MainActivity.uid)) {
         _registrationState.value = RegistrationState.Error("Already registered for this event")
         return@launch
       }
-      event.registeredUsers.add(profile.id)
+      event.registeredUsers.add(MainActivity.uid)
+
       profile.registeredEvents.add(event.id)
       // Update the event in the database
       EventFirebaseConnection().add(event)
@@ -50,6 +52,7 @@ class EventRegistrationViewModel : ViewModel() {
       _registrationState.value = RegistrationState.Success
     }
   }
+
   fun clickRegisterButton() {
     _displayAlertRegistration.value = true
   }
@@ -60,7 +63,7 @@ class EventRegistrationViewModel : ViewModel() {
     _displayAlertRegistration.value = false
     _displayAlertDeletion.value = false
   }
-}
+
 
 sealed class RegistrationState {
   data object Success : RegistrationState()

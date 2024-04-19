@@ -10,23 +10,53 @@ import kotlinx.coroutines.launch
 
 class EventsViewModel : ViewModel() {
 
-  val EventFirebaseConnection = EventFirebaseConnection()
-
   val PAGESIZE: Long = 9
   private var _uiState = MutableStateFlow(UIState())
   val uiState: StateFlow<UIState> = _uiState
+  private var loadedEvents: MutableList<Event> = mutableListOf()
+  val eventFirebaseConnection = EventFirebaseConnection()
 
   init {
     viewModelScope.launch {
-      val events = EventFirebaseConnection.fetchNextEvents(PAGESIZE)
+      val events = eventFirebaseConnection.fetchNextEvents(PAGESIZE)
       _uiState.value = UIState(events)
+      loadedEvents = events.toMutableList()
     }
   }
 
   suspend fun fetchNext() {
-    val nextEvents = EventFirebaseConnection.fetchNextEvents(PAGESIZE)
-    val newEvents = _uiState.value.list.apply { addAll(nextEvents) }
+    removeFilter()
+    val nextEvents = eventFirebaseConnection.fetchNextEvents(PAGESIZE)
+    loadedEvents.addAll(nextEvents)
+    _uiState.value = UIState(loadedEvents)
+  }
+
+  fun filter(s: List<Interests>) {
+    if (s.isEmpty()) {
+      removeFilter()
+      return
+    }
+    val newEvents =
+        loadedEvents.filter { event -> event.categories?.any { it in s } ?: false }.toMutableList()
     _uiState.value = UIState(newEvents)
+  }
+
+  private fun filterInterests() {
+    // TO BE CHANGED WHEN ProfileFirebaseConnection DONE
+    val userInterests = listOf(Interests.BASKETBALL, Interests.CHESS)
+    val newEvents =
+        _uiState.value.list
+            .filter { event -> event.categories?.any { it in userInterests } ?: false }
+            .toMutableList()
+    _uiState.value = UIState(newEvents)
+  }
+
+  fun removeFilter() {
+    _uiState.value = UIState(loadedEvents)
+  }
+
+  fun getLoadedEvents(): MutableList<Event> {
+    return loadedEvents
   }
 }
 

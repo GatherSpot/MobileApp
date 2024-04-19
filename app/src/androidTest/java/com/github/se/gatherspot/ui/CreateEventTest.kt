@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
+import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
@@ -99,6 +100,7 @@ class CreateEventTest {
         performClick()
         assert(hasText("Enter an address"))
       }
+      Espresso.closeSoftKeyboard()
       eventInscriptionLimitDate {
         assertExists()
         performScrollTo()
@@ -106,11 +108,11 @@ class CreateEventTest {
         performClick()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT))
       }
+      Espresso.closeSoftKeyboard()
       eventInscriptionLimitTime {
         assertExists()
         performScrollTo()
         assert(hasText("Inscription Limit Time"))
-        performClick()
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }

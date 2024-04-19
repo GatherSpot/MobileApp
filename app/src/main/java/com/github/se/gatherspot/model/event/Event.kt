@@ -12,7 +12,7 @@ import java.time.LocalTime
 /**
  * Data class for an event
  *
- * @param eventID: The unique identifier of the event
+ * @param id: The unique identifier of the event
  * @param title: The title of the event
  * @param description: A short description of the event
  * @param location: The location of the event (GPS coordinates)

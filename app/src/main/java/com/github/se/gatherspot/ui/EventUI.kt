@@ -60,6 +60,7 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
+
   val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
   val isOrganizer = event.organizer.id == MainActivity.uid
@@ -228,6 +229,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
 
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
+
               if (!isOrganizer) {
                 Button(
                     onClick = {
@@ -246,6 +248,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
           AlertDialog(
               modifier = Modifier.testTag("alertBox"),
               onDismissRequest = { viewModel.dismissAlert() },
+
               title = { Text("Registration Result") },
               text = {
                 when (val state = registrationState) {
@@ -255,6 +258,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                 }
               },
               confirmButton = {
+
                 Button(modifier = Modifier.testTag("okButton"), onClick = { viewModel.dismissAlert() }) {
                   Text("OK")
                 }
@@ -289,6 +293,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                     }
               })
         }
+
       }
 }
 
