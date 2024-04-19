@@ -293,7 +293,7 @@ class EventUtils {
     }
   }
 
-  /** Fetch location suggestions from the OpenStreetMap API. Basic code to improve */
+  /** Fetch location suggestions from the OpenStreetMap API. */
   suspend fun fetchLocationSuggestions(query: String): List<Location> =
       withContext(Dispatchers.IO) {
         if (query.isEmpty()) return@withContext emptyList()

@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -30,6 +31,11 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,13 +49,27 @@ import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun EventUI(event: Event, navActions: NavigationActions) {
+fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
+  var showDialog by remember { mutableStateOf(false) }
+  val registrationState by viewModel.registrationState.observeAsState()
+  val isButtonEnabled = registrationState == null
+  val buttonText =
+      when (registrationState) {
+        is RegistrationState.Success -> "Registered"
+        is RegistrationState.Error ->
+            if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
+            else "Registered"
+        else -> "Register"
+      }
+
   Scaffold(
       modifier = Modifier.testTag("EventUIScreen"),
       topBar = {
@@ -183,12 +203,35 @@ fun EventUI(event: Event, navActions: NavigationActions) {
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
               Button(
-                  onClick = { /* TODO register user: Doing this in another task */},
+                  onClick = {
+                    viewModel.registerForEvent(event)
+                    showDialog = true
+                  },
+                  enabled = isButtonEnabled,
                   modifier = Modifier.fillMaxWidth().testTag("registerButton"),
                   colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-                    Text("Register", color = Color.White)
+                    Text(buttonText, color = Color.White)
                   }
             }
+
+        if (showDialog) {
+          AlertDialog(
+              modifier = Modifier.testTag("alertBox"),
+              onDismissRequest = { showDialog = false },
+              title = { Text("Registration Result") },
+              text = {
+                when (val state = registrationState) {
+                  is RegistrationState.Success -> Text("You have been successfully registered!")
+                  is RegistrationState.Error -> Text(state.message)
+                  else -> Text("Unknown state")
+                }
+              },
+              confirmButton = {
+                Button(modifier = Modifier.testTag("okButton"), onClick = { showDialog = false }) {
+                  Text("OK")
+                }
+              })
+        }
       }
 }
 
