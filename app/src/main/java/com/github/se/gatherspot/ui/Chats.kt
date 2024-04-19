@@ -108,7 +108,7 @@ fun Chats(viewModel: ChatViewModel, nav: NavigationActions) {
             LaunchedEffect(lazyState.isScrollInProgress) {
               loading = false
               fetched = false
-              val isAtBottom = (lazyState.firstVisibleItemIndex + viewModel.PAGESIZE) >= chats.size
+              val isAtBottom = (lazyState.firstVisibleItemIndex + viewModel.PAGE_SIZE) >= chats.size
               val currentScrollPosition = lazyState.firstVisibleItemScrollOffset
               val downwards =
                   currentScrollPosition >= previousScrollPosition && currentScrollPosition > 0

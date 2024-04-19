@@ -14,7 +14,7 @@ class ChatViewModel : ViewModel() {
 
   val ProfileFirebaseConnection = ProfileFirebaseConnection()
 
-  val PAGESIZE: Long = 9
+  val PAGE_SIZE: Long = 9
   private var _uiState = MutableStateFlow(ChatUIState())
   val uiState: StateFlow<ChatUIState> = _uiState
 
