@@ -60,8 +60,8 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
-  var showDialog by remember { mutableStateOf(false) }
-  var clickOnDelete by remember { mutableStateOf(false) }
+  val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
+  val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
   val isOrganizer = event.organizer.id == MainActivity.uid
   val eventUtils = EventUtils()
   val registrationState by viewModel.registrationState.observeAsState()
@@ -103,7 +103,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                     }
                 // Delete button
                 IconButton(
-                    onClick = { clickOnDelete = true },
+                    onClick = { viewModel.clickDeleteButton() },
                     modifier = Modifier.testTag("deleteEventButton")) {
                       Icon(
                           modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
@@ -232,7 +232,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                 Button(
                     onClick = {
                       viewModel.registerForEvent(event)
-                      showDialog = true
+                        viewModel.clickRegisterButton()
                     },
                     enabled = isButtonEnabled,
                     modifier = Modifier.fillMaxWidth().testTag("registerButton"),
@@ -242,10 +242,10 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               }
             }
 
-        if (showDialog) {
+        if (showDialogRegistration!!) {
           AlertDialog(
               modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { showDialog = false },
+              onDismissRequest = { viewModel.dismissAlert() },
               title = { Text("Registration Result") },
               text = {
                 when (val state = registrationState) {
@@ -255,16 +255,16 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                 }
               },
               confirmButton = {
-                Button(modifier = Modifier.testTag("okButton"), onClick = { showDialog = false }) {
+                Button(modifier = Modifier.testTag("okButton"), onClick = { viewModel.dismissAlert() }) {
                   Text("OK")
                 }
               })
         }
 
-        if (clickOnDelete) {
+        if (showDialogDelete!!) {
           AlertDialog(
               modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { clickOnDelete = false },
+              onDismissRequest = { viewModel.dismissAlert() },
               title = { Text("Delete Event") },
               text = {
                 Text("Are you sure you want to delete this event? This action cannot be undone.")
@@ -276,7 +276,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                       // Delete the event
                       eventUtils.deleteEvent(event)
                       navActions.goBack()
-                      clickOnDelete = false
+                      viewModel.dismissAlert()
                     }) {
                       Text("Delete")
                     }
@@ -284,7 +284,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               dismissButton = {
                 Button(
                     modifier = Modifier.testTag("cancelButton"),
-                    onClick = { clickOnDelete = false }) {
+                    onClick = { viewModel.dismissAlert()}) {
                       Text("Cancel")
                     }
               })
