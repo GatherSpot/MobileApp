@@ -41,8 +41,11 @@ class EventRegistrationViewModelTest {
             timeEnding = LocalTime.of(12, 0),
         )
 
-    runBlocking { viewModel.registerForEvent(event) }
-    assertEquals(event.registeredUsers.size, 1)
+    runBlocking {
+      viewModel.registerForEvent(event)
+      delay(2000)
+      assertEquals(event.registeredUsers.size, 1)
+    }
   }
 
   @Test
