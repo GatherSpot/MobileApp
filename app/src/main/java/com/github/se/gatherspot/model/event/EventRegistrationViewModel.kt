@@ -14,9 +14,11 @@ class EventRegistrationViewModel : ViewModel() {
   // LiveData for holding registration state
   private val _registrationState = MutableLiveData<RegistrationState>()
   val registrationState: LiveData<RegistrationState> = _registrationState
+
   // LiveData for displaying the alert dialog for the registration
   private val _displayAlertRegistration = MutableLiveData(false)
   val displayAlertRegistration: LiveData<Boolean> = _displayAlertRegistration
+
   // LiveData for displaying the alert dialog for the deletion
   private val _displayAlertDeletion = MutableLiveData(false)
   val displayAlertDeletion: LiveData<Boolean> = _displayAlertDeletion
@@ -41,6 +43,7 @@ class EventRegistrationViewModel : ViewModel() {
         return@launch
       }
       event.registeredUsers.add(MainActivity.uid)
+
       profile.registeredEvents.add(event.id)
       // Update the event in the database
       EventFirebaseConnection().add(event)

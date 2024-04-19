@@ -58,6 +58,7 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
+
   val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
   val isOrganizer = event.organizer.id == MainActivity.uid
@@ -226,6 +227,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
 
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
+
               if (!isOrganizer) {
                 Button(
                     onClick = {

@@ -8,7 +8,7 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
 
-class UserFirebaseConnection : FirebaseConnectionInterface {
+class UserFirebaseConnection : FirebaseConnectionInterface<User> {
 
   override val COLLECTION = FirebaseCollection.USERS.toString()
   override val TAG = "UserFirebase"
@@ -30,19 +30,19 @@ class UserFirebaseConnection : FirebaseConnectionInterface {
     return User(uid, username, email, password)
   }
 
-  override fun add(user: User) {
+  override fun add(element: User) {
 
     val userMap: HashMap<String, Any?> =
         hashMapOf(
-            "uid" to user.id,
-            "username" to user.username,
-            "email" to user.email,
-            "password" to user.password,
+            "uid" to element.id,
+            "username" to element.username,
+            "email" to element.email,
+            "password" to element.password,
         )
 
     Firebase.firestore
         .collection(USERS)
-        .document(user.id)
+        .document(element.id)
         .set(userMap)
         .addOnSuccessListener { Log.d(TAG, "User successfully added!") }
         .addOnFailureListener { e -> Log.w(TAG, "Error creating user", e) }
