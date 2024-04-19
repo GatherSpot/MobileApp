@@ -1,40 +1,76 @@
 package com.github.se.gatherspot
 
+import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
-import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
-class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
+class ProfileFirebaseConnection {
 
-  override val COLLECTION = FirebaseCollection.PROFILES.toString()
-  override val TAG = "ProfileFirebase"
+  private val db = Firebase.firestore
+  private val tag = "profiles"
 
-  override fun getFromDocument(d: DocumentSnapshot): Profile? {
-    TODO("Not yet implemented")
-  }
-
-  override fun add(element: Profile) {}
-
-  fun deleteProfile(uid: String) {}
-
-  fun fetchProfile(uid: String): Profile {
-
-    return Profile()
-  }
-
-  fun updateProfile(profile: Profile) {}
-  // THE NEXT THREE ARE USED FOR TESTS
-  private lateinit var dummyProfile: Profile
-
-  fun dummySave(profile: Profile) {
-    dummyProfile = profile
-  }
-
-  fun dummyFetch(): Profile {
-    if (!::dummyProfile.isInitialized) {
-      dummyProfile =
-          Profile("John Doe", "I am not a bot", "", "", setOf(Interests.BOWLING, Interests.CHESS))
+  /**
+   * Fetches the profile from the database
+   * @param uid the id of the user
+   * @param update the function to update the profile
+   * @return the profile
+   * NOTE : The profile will be initially empty, to use it in a view, you need to update the view using with a lambda function that updates the view
+   */
+  fun updateFromFirebase(uid: String, update: () -> Unit): Profile {
+    // TODO : replace this with hilt injection
+    if (uid == "TEST") {
+      return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))
     }
-    return dummyProfile
+    val profile = Profile("", "", "", uid, Interests.new())
+    db.collection(tag)
+      .document(uid)
+      .get()
+      .addOnSuccessListener { document ->
+        if (document != null) {
+          profile.userName = document.get("userName") as String
+          profile.bio = document.get("bio") as String
+          profile.image = document.get("image") as String
+          profile.interests = Interests.fromCompressedString(document.get("interests") as String)
+          update()
+          Log.d(tag, "DocumentSnapshot data: ${document.data}")
+        } else {
+          Log.d(tag, "No such document")
+        }
+      }
+      .addOnFailureListener { exception -> Log.d(tag, "get failed with :", exception) }
+    return profile
+  }
+
+  /**
+   * Saves the profile to the database
+   * @param profile the profile to save
+   */
+  fun saveToFirebase(profile: Profile) {
+    val data =
+      hashMapOf(
+        "userName" to profile.userName,
+        "bio" to profile.bio,
+        "image" to profile.image,
+        "interests" to Interests.toCompressedString(profile.interests)
+      )
+    db.collection(tag)
+      .document(profile.id)
+      .set(data)
+      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
+      .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
+  }
+
+  /**
+   * Deletes the profile from the database
+   * @param id the id of the profile to delete
+   */
+  fun deleteFromFirebase(id: String) {
+    db.collection(tag)
+      .document(id)
+      .delete()
+      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
+      .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
   }
 }
