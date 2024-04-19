@@ -33,8 +33,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +43,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
@@ -58,7 +58,11 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
-  var showDialog by remember { mutableStateOf(false) }
+
+  val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
+  val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
+  val isOrganizer = event.organizer.id == MainActivity.uid
+  val eventUtils = EventUtils()
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
   val buttonText =
@@ -85,7 +89,28 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                         contentDescription = "Go back to overview")
                   }
             },
-        )
+            actions = {
+              if (isOrganizer) {
+                // Edit button
+                IconButton(
+                    onClick = { /* TODO : handle the navigation. navActions.controller.navigate("editEvent")*/},
+                    modifier = Modifier.testTag("editEventButton")) {
+                      Icon(
+                          modifier = Modifier.size(24.dp).testTag("editEventIcon"),
+                          painter = painterResource(id = R.drawable.edit),
+                          contentDescription = "Edit event")
+                    }
+                // Delete button
+                IconButton(
+                    onClick = { viewModel.clickDeleteButton() },
+                    modifier = Modifier.testTag("deleteEventButton")) {
+                      Icon(
+                          modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
+                          painter = painterResource(id = R.drawable.delete),
+                          contentDescription = "Delete event")
+                    }
+              }
+            })
       }) { innerPadding ->
         Column(
             modifier =
@@ -110,7 +135,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-              ProfileIndicator(profile = event!!.organizer)
+              ProfileIndicator(profile = event.organizer)
 
               // Event Description
               event!!.description?.let { description ->
@@ -202,22 +227,25 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
 
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
-              Button(
-                  onClick = {
-                    viewModel.registerForEvent(event)
-                    showDialog = true
-                  },
-                  enabled = isButtonEnabled,
-                  modifier = Modifier.fillMaxWidth().testTag("registerButton"),
-                  colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-                    Text(buttonText, color = Color.White)
-                  }
+
+              if (!isOrganizer) {
+                Button(
+                    onClick = {
+                      viewModel.registerForEvent(event)
+                      viewModel.clickRegisterButton()
+                    },
+                    enabled = isButtonEnabled,
+                    modifier = Modifier.fillMaxWidth().testTag("registerButton"),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
+                      Text(buttonText, color = Color.White)
+                    }
+              }
             }
 
-        if (showDialog) {
+        if (showDialogRegistration!!) {
           AlertDialog(
               modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { showDialog = false },
+              onDismissRequest = { viewModel.dismissAlert() },
               title = { Text("Registration Result") },
               text = {
                 when (val state = registrationState) {
@@ -227,9 +255,40 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                 }
               },
               confirmButton = {
-                Button(modifier = Modifier.testTag("okButton"), onClick = { showDialog = false }) {
-                  Text("OK")
-                }
+                Button(
+                    modifier = Modifier.testTag("okButton"),
+                    onClick = { viewModel.dismissAlert() }) {
+                      Text("OK")
+                    }
+              })
+        }
+
+        if (showDialogDelete!!) {
+          AlertDialog(
+              modifier = Modifier.testTag("alertBox"),
+              onDismissRequest = { viewModel.dismissAlert() },
+              title = { Text("Delete Event") },
+              text = {
+                Text("Are you sure you want to delete this event? This action cannot be undone.")
+              },
+              confirmButton = {
+                Button(
+                    modifier = Modifier.testTag("okButton"),
+                    onClick = {
+                      // Delete the event
+                      eventUtils.deleteEvent(event)
+                      navActions.goBack()
+                      viewModel.dismissAlert()
+                    }) {
+                      Text("Delete")
+                    }
+              },
+              dismissButton = {
+                Button(
+                    modifier = Modifier.testTag("cancelButton"),
+                    onClick = { viewModel.dismissAlert() }) {
+                      Text("Cancel")
+                    }
               })
         }
       }

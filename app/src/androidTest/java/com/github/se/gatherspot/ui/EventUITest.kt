@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
@@ -36,7 +37,7 @@ class EventUITest {
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
               organizer =
-                  com.github.se.gatherspot.model.Profile(
+                  Profile(
                       "Elias",
                       "Bio",
                       "image",
@@ -93,7 +94,7 @@ class EventUITest {
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
               organizer =
-                  com.github.se.gatherspot.model.Profile(
+                  Profile(
                       "Elias",
                       "Bio",
                       "image",
@@ -184,7 +185,7 @@ class EventUITest {
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
               organizer =
-                  com.github.se.gatherspot.model.Profile(
+                  Profile(
                       "Elias",
                       "Bio",
                       "image",
@@ -260,7 +261,7 @@ class EventUITest {
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
               organizer =
-                  com.github.se.gatherspot.model.Profile(
+                  Profile(
                       "Elias",
                       "Bio",
                       "image",
@@ -296,6 +297,7 @@ class EventUITest {
         assertIsDisplayed()
         hasText("You have been successfully registered!")
       }
+
       okButton {
         assertExists()
         performClick()
@@ -402,6 +404,86 @@ class EventUITest {
         assertIsNotEnabled()
         assert(hasText("Registered"))
       }
+    }
+  }
+
+  @Test
+  fun testOrganiserDeleteEditButtonAreHere() {
+    // To make it works, need to define a global MainActivity.uid
+    MainActivity.uid = "test"
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 10,
+              attendanceMinCapacity = 1,
+              organizer = Profile("user", "bio", "", "test", setOf(Interests.BASKETBALL)),
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf("test"),
+              timeBeginning = LocalTime.of(13, 0),
+              globalRating = 4,
+              timeEnding = LocalTime.of(16, 0),
+          )
+
+      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+    }
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {}
+  }
+
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun testClicOnDeleteButton() {
+    // To make it works, need to define a global MainActivity.uid
+    MainActivity.uid = "test"
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 10,
+              attendanceMinCapacity = 1,
+              organizer = Profile("user", "bio", "", "test", setOf(Interests.BASKETBALL)),
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf("test"),
+              timeBeginning = LocalTime.of(13, 0),
+              globalRating = 4,
+              timeEnding = LocalTime.of(16, 0),
+          )
+
+      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+    }
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      editButton { assertIsDisplayed() }
+      deleteButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
+      alertBox {
+        assertIsDisplayed()
+        hasText("Are you sure you want to delete this event? This action cannot be undone.")
+      }
+      okButton {
+        assertIsDisplayed()
+        hasText("Delete")
+      }
+      cancelButton.performClick()
+      alertBox { assertIsNotDisplayed() }
     }
   }
 }
