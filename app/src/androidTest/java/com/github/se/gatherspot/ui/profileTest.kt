@@ -60,6 +60,7 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("save").assertDoesNotExist()
     // press edit button
     composeTestRule.onNodeWithContentDescription("edit").performClick()
+    composeTestRule.waitForIdle()
     // check if things are here :
     composeTestRule
         .onNodeWithContentDescription("username")
@@ -116,6 +117,7 @@ class ProfileInstrumentedTest {
     // wait for the animation to finish
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithContentDescription("save").performClick()
+    composeTestRule.waitForIdle()
     // check if things are here :
     composeTestRule.onNodeWithText("BASKETBALL").assertExists("BASKETBALL field not found")
   }
