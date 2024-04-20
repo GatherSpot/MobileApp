@@ -24,16 +24,13 @@ class Profile(
     set(value) {
       val regex = Regex("^[a-zA-Z_\\-\\s]*$")
       if (value.isEmpty()) {
-        Log.d("Profile", "Username cannot be empty")
-        return
+        throw IllegalArgumentException("Username cannot be empty")
       }
       if (!regex.matches(value)) {
-        Log.d("Profile", "Username can only contain letters, spaces, - and _")
-        return
+        throw IllegalArgumentException("Username can only contain letters, spaces, hyphens, and underscores")
       }
       if (value.length > 20) {
-        Log.d("Profile", "Username too long")
-        return
+        throw IllegalArgumentException("Username cannot be longer than 20 characters")
       }
       _userName = value
     }

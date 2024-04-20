@@ -2,9 +2,9 @@ package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.CollectionClass
 
-class IdSet(
+class IdList(
   override val id: String,
-  var events: Set<String>,
+  var events: List<String>,
   val typeTag: String
 ) : CollectionClass() {
   fun add(eventId: String) {
@@ -23,6 +23,6 @@ class IdSet(
      * @return an empty IdList
      * useful for tests, the creation of a new list, and enabling non blocking access to the list
      */
-    fun empty(id: String, tag: String) = IdSet(id, setOf(), tag)
+    fun empty(id: String, tag: String) = IdList(id, listOf(), tag)
   }
 }

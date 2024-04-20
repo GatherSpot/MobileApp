@@ -1,20 +1,20 @@
 package com.github.se.gatherspot
 
 import android.util.Log
-import com.github.se.gatherspot.model.IdSet
+import com.github.se.gatherspot.model.IdList
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class IdSetFirebaseConnection {
+class IdListFirebaseConnection {
   private val db = Firebase.firestore
-  fun updateFromFirebase(uid: String, tag: String, update: () -> Unit): IdSet {
-    val idSet = IdSet.empty(uid, tag)
+  fun updateFromFirebase(uid: String, tag: String, update: () -> Unit): IdList {
+    val idSet = IdList.empty(uid, tag)
     val docRef = db.collection(tag).document(uid)
     docRef.get()
       .addOnSuccessListener { document ->
         if (document != null) {
           Log.d(tag, "DocumentSnapshot data: ${document.data}")
-          idSet.events = document.get("ids") as Set<String>
+          idSet.events = document.get("ids") as List<String>
           update()
         } else {
           Log.d(tag, "No such document")
@@ -26,13 +26,13 @@ class IdSetFirebaseConnection {
     return idSet
   }
 
-  fun saveToFirebase(idSet: IdSet) {
+  fun saveToFirebase(idSet: IdList) {
     val tag = idSet.typeTag
     val id = idSet.id
     //TODO : check if this good way to store data
     val data =
       hashMapOf(
-        "ids" to idSet.events
+        "ids" to idSet.events.toList()
       )
     db.collection(tag)
       .document(id)
