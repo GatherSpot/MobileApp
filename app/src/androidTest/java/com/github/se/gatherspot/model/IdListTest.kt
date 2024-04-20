@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.model;
+package com.github.se.gatherspot.model
 
 import junit.framework.TestCase.assertEquals
 import org.junit.Test

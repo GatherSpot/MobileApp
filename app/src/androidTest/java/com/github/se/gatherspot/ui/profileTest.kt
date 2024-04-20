@@ -27,8 +27,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
 
-  @get:Rule
-  val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
@@ -40,8 +39,8 @@ class ProfileInstrumentedTest {
     }
     // check if things are here :
     composeTestRule
-      .onNodeWithContentDescription("username")
-      .assertExists("username field not found")
+        .onNodeWithContentDescription("username")
+        .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
     composeTestRule.onNodeWithContentDescription("edit").assertExists("edit button not found")
     // check buttons that should not be there yet are not here yet
@@ -51,8 +50,8 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("edit").performClick()
     // check if things are here :
     composeTestRule
-      .onNodeWithContentDescription("username")
-      .assertExists("username field not found")
+        .onNodeWithContentDescription("username")
+        .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
     composeTestRule.onNodeWithContentDescription("cancel").assertExists()
     composeTestRule.onNodeWithContentDescription("save").assertExists()
@@ -71,13 +70,11 @@ class ProfileInstrumentedTest {
 
   @Test
   fun profileScreenTest() {
-    composeTestRule.setContent {
-      ProfileView().ProfileScreen(ProfileViewModel(Profile.test()))
-    }
+    composeTestRule.setContent { ProfileView().ProfileScreen(ProfileViewModel(Profile.test())) }
     // check if things are here :
     composeTestRule
-      .onNodeWithContentDescription("username")
-      .assertExists("username field not found")
+        .onNodeWithContentDescription("username")
+        .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
     composeTestRule.onNodeWithContentDescription("profile image").assertExists("image not found")
     // check if fields are filled properly

@@ -6,6 +6,7 @@ import com.github.se.gatherspot.CollectionClass
 // NOTE : I will add interests once theses are pushed
 /**
  * Profile data object
+ *
  * @param _userName the name of the user
  * @param _bio the bio of the user
  * @param _image link of the profile picture of the user
@@ -13,11 +14,11 @@ import com.github.se.gatherspot.CollectionClass
  * @param id the id of the user
  */
 class Profile(
-  private var _userName: String,
-  private var _bio: String,
-  private var _image: String,
-  override val id: String,
-  private var _interests: Set<Interests>,
+    private var _userName: String,
+    private var _bio: String,
+    private var _image: String,
+    override val id: String,
+    private var _interests: Set<Interests>,
 ) : CollectionClass() {
   var userName: String
     get() = _userName
@@ -27,13 +28,15 @@ class Profile(
         throw IllegalArgumentException("Username cannot be empty")
       }
       if (!regex.matches(value)) {
-        throw IllegalArgumentException("Username can only contain letters, spaces, hyphens, and underscores")
+        throw IllegalArgumentException(
+            "Username can only contain letters, spaces, hyphens, and underscores")
       }
       if (value.length > 20) {
         throw IllegalArgumentException("Username cannot be longer than 20 characters")
       }
       _userName = value
     }
+
   var bio: String
     get() = _bio
     set(value) {

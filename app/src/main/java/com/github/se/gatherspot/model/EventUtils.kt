@@ -6,15 +6,15 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
+import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
-import java.io.IOException
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 private const val ELEMENTS_TO_DISPLAY = 5
 
@@ -39,18 +39,18 @@ class EventUtils {
   private val EventFirebaseConnection = EventFirebaseConnection()
 
   private fun createEvent(
-    title: String,
-    description: String,
-    location: Location?,
-    eventStartDate: LocalDate,
-    eventEndDate: LocalDate?,
-    eventTimeStart: LocalTime,
-    eventTimeEnd: LocalTime,
-    categories: List<Interests>?,
-    maxAttendees: Int?,
-    minAttendees: Int?,
-    dateLimitInscription: LocalDate?,
-    timeLimitInscription: LocalTime?
+      title: String,
+      description: String,
+      location: Location?,
+      eventStartDate: LocalDate,
+      eventEndDate: LocalDate?,
+      eventTimeStart: LocalTime,
+      eventTimeEnd: LocalTime,
+      categories: List<Interests>?,
+      maxAttendees: Int?,
+      minAttendees: Int?,
+      dateLimitInscription: LocalDate?,
+      timeLimitInscription: LocalTime?
   ): Event {
 
     // First fetch an unique ID for the event
@@ -58,23 +58,22 @@ class EventUtils {
 
     // Create the event
     val event =
-      Event(
-        eventID,
-        title,
-        description,
-        location,
-        eventStartDate,
-        eventEndDate,
-        eventTimeStart,
-        eventTimeEnd,
-        maxAttendees,
-        attendanceMinCapacity = minAttendees ?: 0,
-        dateLimitInscription,
-        timeLimitInscription,
-        globalRating = null,
-        categories = categories?.toSet(),
-        eventStatus = EventStatus.CREATED
-      )
+        Event(
+            eventID,
+            title,
+            description,
+            location,
+            eventStartDate,
+            eventEndDate,
+            eventTimeStart,
+            eventTimeEnd,
+            maxAttendees,
+            attendanceMinCapacity = minAttendees ?: 0,
+            dateLimitInscription,
+            timeLimitInscription,
+            globalRating = null,
+            categories = categories?.toSet(),
+            eventStatus = EventStatus.CREATED)
 
     // Add the event to the database
     EventFirebaseConnection.add(event)
@@ -92,8 +91,8 @@ class EventUtils {
     val profileFireBase = ProfileFirebaseConnection()
     event.registeredUsers.forEach { userID ->
       val profile = profileFireBase.updateFromFirebase(userID) {}
-      //profile.registeredEvents.remove(event.id)
-      //profileFireBase.updateProfile(profile) {}
+      // profile.registeredEvents.remove(event.id)
+      // profileFireBase.updateProfile(profile) {}
     }
     EventFirebaseConnection.delete(event.id)
   }
@@ -118,20 +117,20 @@ class EventUtils {
    * @throws Exception if the data is not valid
    */
   fun validateAndCreateOrUpdateEvent(
-    title: String,
-    description: String,
-    location: Location?,
-    eventStartDate: String,
-    eventEndDate: String,
-    eventTimeStart: String,
-    eventTimeEnd: String,
-    categories: List<Interests>?,
-    maxAttendees: String,
-    minAttendees: String,
-    dateLimitInscription: String,
-    timeLimitInscription: String,
-    eventAction: EventAction,
-    event: Event? = null
+      title: String,
+      description: String,
+      location: Location?,
+      eventStartDate: String,
+      eventEndDate: String,
+      eventTimeStart: String,
+      eventTimeEnd: String,
+      categories: List<Interests>?,
+      maxAttendees: String,
+      minAttendees: String,
+      dateLimitInscription: String,
+      timeLimitInscription: String,
+      eventAction: EventAction,
+      event: Event? = null
   ): Event {
     // test if the date is valid
     val parsedEventStartDate = validateDate(eventStartDate, "Invalid date format")
@@ -172,14 +171,14 @@ class EventUtils {
     var parsedMaxAttendees: Int? = null
     if (maxAttendees.isNotEmpty()) {
       parsedMaxAttendees =
-        validateNumber(maxAttendees, "Invalid max attendees format, must be a number")
+          validateNumber(maxAttendees, "Invalid max attendees format, must be a number")
     }
 
     // test if the min attendees is valid
     var parsedMinAttendees: Int? = null
     if (minAttendees.isNotEmpty()) {
       parsedMinAttendees =
-        validateNumber(minAttendees, "Invalid min attendees format, must be a number")
+          validateNumber(minAttendees, "Invalid min attendees format, must be a number")
       if (parsedMaxAttendees != null && parsedMinAttendees > parsedMaxAttendees) {
         throw Exception("Minimum attendees must be less than maximum attendees")
       }
@@ -192,11 +191,10 @@ class EventUtils {
     if (dateLimitInscription.isNotEmpty()) {
 
       parsedDateLimitInscription =
-        validateDate(dateLimitInscription, "Invalid inscription limit date format")
+          validateDate(dateLimitInscription, "Invalid inscription limit date format")
       try {
         LocalDate.parse(
-          dateLimitInscription, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)
-        )
+            dateLimitInscription, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))
       } catch (e: Exception) {
         throw Exception("Invalid inscription limit date format")
       }
@@ -205,87 +203,84 @@ class EventUtils {
       }
       // If Limit time is not given, set it to 23:59
       parsedTimeLimitInscription =
-        if (timeLimitInscription.isNotEmpty()) {
-          validateTime(timeLimitInscription, "Invalid inscription limit time format")
-        } else {
-          LocalTime.of(23, 59)
-        }
+          if (timeLimitInscription.isNotEmpty()) {
+            validateTime(timeLimitInscription, "Invalid inscription limit time format")
+          } else {
+            LocalTime.of(23, 59)
+          }
       if (parsedDateLimitInscription.isEqual(parsedEventStartDate) &&
-        parsedTimeLimitInscription!!.isAfter(parsedEventTimeStart)
-      ) {
+          parsedTimeLimitInscription!!.isAfter(parsedEventTimeStart)) {
         throw Exception("Inscription limit time must be before event start time on the same day")
       }
     }
     // If all the data is valid and eventAction = CREATE, call createEvent function
     if (eventAction == EventAction.CREATE) {
       return createEvent(
-        title,
-        description,
-        location,
-        parsedEventStartDate,
-        parsedEventEndDate,
-        parsedEventTimeStart,
-        parsedEventTimeEnd,
-        categories,
-        parsedMaxAttendees,
-        parsedMinAttendees,
-        parsedDateLimitInscription,
-        parsedTimeLimitInscription
-      )
+          title,
+          description,
+          location,
+          parsedEventStartDate,
+          parsedEventEndDate,
+          parsedEventTimeStart,
+          parsedEventTimeEnd,
+          categories,
+          parsedMaxAttendees,
+          parsedMinAttendees,
+          parsedDateLimitInscription,
+          parsedTimeLimitInscription)
     } else {
       return editEvent(
-        title,
-        description,
-        location,
-        parsedEventStartDate,
-        parsedEventEndDate,
-        parsedEventTimeStart,
-        parsedEventTimeEnd,
-        categories,
-        parsedMaxAttendees,
-        parsedMinAttendees,
-        parsedDateLimitInscription,
-        parsedTimeLimitInscription,
-        event!!
-      )
+          title,
+          description,
+          location,
+          parsedEventStartDate,
+          parsedEventEndDate,
+          parsedEventTimeStart,
+          parsedEventTimeEnd,
+          categories,
+          parsedMaxAttendees,
+          parsedMinAttendees,
+          parsedDateLimitInscription,
+          parsedTimeLimitInscription,
+          event!!)
     }
   }
 
   private fun editEvent(
-    title: String,
-    description: String,
-    location: Location?,
-    eventStartDate: LocalDate,
-    eventEndDate: LocalDate?,
-    eventTimeStart: LocalTime,
-    eventTimeEnd: LocalTime,
-    categories: List<Interests>?,
-    maxAttendees: Int?,
-    minAttendees: Int?,
-    dateLimitInscription: LocalDate?,
-    timeLimitInscription: LocalTime?,
-    oldEvent: Event
+      title: String,
+      description: String,
+      location: Location?,
+      eventStartDate: LocalDate,
+      eventEndDate: LocalDate?,
+      eventTimeStart: LocalTime,
+      eventTimeEnd: LocalTime,
+      categories: List<Interests>?,
+      maxAttendees: Int?,
+      minAttendees: Int?,
+      dateLimitInscription: LocalDate?,
+      timeLimitInscription: LocalTime?,
+      oldEvent: Event
   ): Event {
     val event =
-      Event(
-        oldEvent.id,
-        title,
-        description,
-        location,
-        eventStartDate,
-        eventEndDate,
-        eventTimeStart,
-        eventTimeEnd,
-        maxAttendees,
-        attendanceMinCapacity = minAttendees ?: 0,
-        dateLimitInscription,
-        timeLimitInscription,
-        globalRating = oldEvent.globalRating,
-        categories = categories?.toSet(),
-        registeredUsers = oldEvent.registeredUsers,
-        images = oldEvent.images,
-        eventStatus = EventStatus.CREATED,
-      )
+        Event(
+            oldEvent.id,
+            title,
+            description,
+            location,
+            eventStartDate,
+            eventEndDate,
+            eventTimeStart,
+            eventTimeEnd,
+            maxAttendees,
+            attendanceMinCapacity = minAttendees ?: 0,
+            dateLimitInscription,
+            timeLimitInscription,
+            globalRating = oldEvent.globalRating,
+            categories = categories?.toSet(),
+            registeredUsers = oldEvent.registeredUsers,
+            images = oldEvent.images,
+            eventStatus = EventStatus.CREATED,
+        )
     // Add the event to the database
     EventFirebaseConnection.add(event)
     return event
@@ -317,36 +312,35 @@ class EventUtils {
 
   /** Fetch location suggestions from the OpenStreetMap API. */
   suspend fun fetchLocationSuggestions(query: String): List<Location> =
-    withContext(Dispatchers.IO) {
-      if (query.isEmpty()) return@withContext emptyList()
+      withContext(Dispatchers.IO) {
+        if (query.isEmpty()) return@withContext emptyList()
 
-      val client = OkHttpClient()
-      val requestUrl = "https://nominatim.openstreetmap.org/search?format=json&q=$query"
-      val request = Request.Builder().url(requestUrl).build()
-      val suggestions = mutableListOf<Location>()
+        val client = OkHttpClient()
+        val requestUrl = "https://nominatim.openstreetmap.org/search?format=json&q=$query"
+        val request = Request.Builder().url(requestUrl).build()
+        val suggestions = mutableListOf<Location>()
 
-      try {
-        client.newCall(request).execute().use { response ->
-          if (!response.isSuccessful) throw IOException("Unexpected code $response")
+        try {
+          client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-          val responseBody = response.body?.string()
-          responseBody?.let {
-            val jsonArray = JSONArray(it)
-            val elementsToDisplay = minOf(jsonArray.length(), ELEMENTS_TO_DISPLAY)
-            for (i in 0 until elementsToDisplay) {
-              val jsonObject = jsonArray.getJSONObject(i)
-              val displayName = jsonObject.getString("display_name")
-              val latitude = jsonObject.getDouble("lat")
-              val longitude = jsonObject.getDouble("lon")
-              suggestions.add(
-                Location(latitude = latitude, longitude = longitude, name = displayName)
-              )
+            val responseBody = response.body?.string()
+            responseBody?.let {
+              val jsonArray = JSONArray(it)
+              val elementsToDisplay = minOf(jsonArray.length(), ELEMENTS_TO_DISPLAY)
+              for (i in 0 until elementsToDisplay) {
+                val jsonObject = jsonArray.getJSONObject(i)
+                val displayName = jsonObject.getString("display_name")
+                val latitude = jsonObject.getDouble("lat")
+                val longitude = jsonObject.getDouble("lon")
+                suggestions.add(
+                    Location(latitude = latitude, longitude = longitude, name = displayName))
+              }
             }
           }
+        } catch (e: Exception) {
+          e.printStackTrace()
         }
-      } catch (e: Exception) {
-        e.printStackTrace()
+        return@withContext suggestions
       }
-      return@withContext suggestions
-    }
 }

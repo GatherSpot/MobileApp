@@ -21,10 +21,10 @@ class OwnProfileViewModel : ViewModel() {
     Firebase.auth.currentUser?.uid?.let { uid ->
       _profile = ProfileFirebaseConnection().updateFromFirebase(uid) { update() }
     }
-      ?: run {
-        _profile = Profile.test()
-        update()
-      }
+        ?: run {
+          _profile = Profile.test()
+          update()
+        }
   }
 
   val username: LiveData<String>
@@ -69,11 +69,11 @@ class OwnProfileViewModel : ViewModel() {
 
   fun swapInterests(interest: Interests) {
     _interests.value =
-      if (interest in _interests.value!!) {
-        interests.value!!.minus(interest)
-      } else {
-        interests.value!!.plus(interest)
-      }
+        if (interest in _interests.value!!) {
+          interests.value!!.minus(interest)
+        } else {
+          interests.value!!.plus(interest)
+        }
   }
 
   fun isInterestsSelected(interest: Interests): Boolean {

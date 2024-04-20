@@ -30,10 +30,8 @@ class EventRegistrationViewModel : ViewModel() {
 
   // Profile of the user, is needed to add the event to the user's registered events
   private val registeredEventsList =
-    IdListFirebaseConnection().updateFromFirebase(
-      userId,
-      FirebaseCollection.REGISTERED_EVENTS.name
-    ) {}
+      IdListFirebaseConnection().updateFromFirebase(
+          userId, FirebaseCollection.REGISTERED_EVENTS.name) {}
 
   /** Registers the user for the given event */
   fun registerForEvent(event: Event) {
