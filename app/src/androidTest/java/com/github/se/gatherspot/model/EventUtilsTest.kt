@@ -6,43 +6,50 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class EventUtilsTest {
   private val EventFirebaseConnection = EventFirebaseConnection()
   private val testEvent =
-      Event(
-          id = "testID",
-          title = "Test Event",
-          description = "This is a test event",
-          location = Location(0.0, 0.0, "Test Location"),
-          eventStartDate =
-              LocalDate.parse(
-                  "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
-          eventEndDate =
-              LocalDate.parse(
-                  "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
-          timeBeginning =
-              LocalTime.parse(
-                  "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          timeEnding =
-              LocalTime.parse(
-                  "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          attendanceMaxCapacity = 100,
-          attendanceMinCapacity = 10,
-          inscriptionLimitDate =
-              LocalDate.parse(
-                  "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
-          inscriptionLimitTime =
-              LocalTime.parse(
-                  "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          eventStatus = EventStatus.CREATED,
-          globalRating = null)
+    Event(
+      id = "testID",
+      title = "Test Event",
+      description = "This is a test event",
+      location = Location(0.0, 0.0, "Test Location"),
+      eventStartDate =
+      LocalDate.parse(
+        "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)
+      ),
+      eventEndDate =
+      LocalDate.parse(
+        "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)
+      ),
+      timeBeginning =
+      LocalTime.parse(
+        "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)
+      ),
+      timeEnding =
+      LocalTime.parse(
+        "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)
+      ),
+      attendanceMaxCapacity = 100,
+      attendanceMinCapacity = 10,
+      inscriptionLimitDate =
+      LocalDate.parse(
+        "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)
+      ),
+      inscriptionLimitTime =
+      LocalTime.parse(
+        "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)
+      ),
+      eventStatus = EventStatus.CREATED,
+      globalRating = null
+    )
   private val eventUtils = EventUtils()
 
   // Write tests for validateParseEventData
@@ -50,20 +57,21 @@ class EventUtilsTest {
   fun validateEventData_withValidData_returnsValidEvent() {
     // validate data parse strings
     val event =
-        eventUtils.validateAndCreateOrUpdateEvent(
-            "Test Event2",
-            "This is a test event",
-            Location(0.0, 0.0, "Test Location"),
-            "12/04/2026",
-            "12/05/2026",
-            "10:00",
-            "12:00",
-            listOf(Interests.ART, Interests.SPORT),
-            "100",
-            "10",
-            "10/04/2025",
-            "09:00",
-            EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+        "Test Event2",
+        "This is a test event",
+        Location(0.0, 0.0, "Test Location"),
+        "12/04/2026",
+        "12/05/2026",
+        "10:00",
+        "12:00",
+        listOf(Interests.ART, Interests.SPORT),
+        "100",
+        "10",
+        "10/04/2025",
+        "09:00",
+        EventAction.CREATE
+      )
 
     Assert.assertEquals("Test Event2", event.title)
     Assert.assertEquals("This is a test event", event.description)
@@ -84,21 +92,22 @@ class EventUtilsTest {
   fun validateEventDataForUpdate_withValidData_returnsValidEvent() {
     // validate data parse strings
     val event =
-        eventUtils.validateAndCreateOrUpdateEvent(
-            "Test Event2",
-            "This is a test event",
-            Location(0.0, 0.0, "Test Location"),
-            "12/04/2026",
-            "12/05/2026",
-            "10:00",
-            "12:00",
-            listOf(Interests.ART, Interests.SPORT),
-            "100",
-            "10",
-            "10/04/2025",
-            "09:00",
-            EventAction.EDIT,
-            testEvent)
+      eventUtils.validateAndCreateOrUpdateEvent(
+        "Test Event2",
+        "This is a test event",
+        Location(0.0, 0.0, "Test Location"),
+        "12/04/2026",
+        "12/05/2026",
+        "10:00",
+        "12:00",
+        listOf(Interests.ART, Interests.SPORT),
+        "100",
+        "10",
+        "10/04/2025",
+        "09:00",
+        EventAction.EDIT,
+        testEvent
+      )
 
     Assert.assertEquals("Test Event2", event.title)
     Assert.assertEquals("This is a test event", event.description)
@@ -120,20 +129,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event3",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/03/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.ART, Interests.SPORT),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event3",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/03/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.ART, Interests.SPORT),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Event end date must be after start date", e.message)
     }
@@ -144,20 +154,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event4",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12022020",
-              "12/03/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.ART, Interests.SPORT),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event4",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12022020",
+          "12/03/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.ART, Interests.SPORT),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Invalid date format", e.message)
     }
@@ -168,20 +179,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "10/04/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.ART, Interests.SPORT),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "10/04/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.ART, Interests.SPORT),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Event end date must be after start date", e.message)
     }
@@ -192,20 +204,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event5",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "",
-              "10:00",
-              "12:00",
-              emptyList(),
-              "",
-              "",
-              "",
-              "",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event5",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "",
+          "10:00",
+          "12:00",
+          emptyList(),
+          "",
+          "",
+          "",
+          "",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Event end date must be after start date", e.message)
     }
@@ -216,20 +229,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event6",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/05/2026",
-              "10:00",
-              "25:00",
-              emptyList(),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event6",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/05/2026",
+          "10:00",
+          "25:00",
+          emptyList(),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Invalid time format for end time", e.message)
     }
@@ -240,21 +254,22 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              emptyList(),
-              "two",
-              "0",
-              "10/04/2025",
-              "09:00",
-              EventAction.EDIT,
-              testEvent)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          emptyList(),
+          "two",
+          "0",
+          "10/04/2025",
+          "09:00",
+          EventAction.EDIT,
+          testEvent
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Invalid max attendees format, must be a number", e.message)
     }
@@ -265,20 +280,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              emptyList(),
-              "100",
-              "two",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          emptyList(),
+          "100",
+          "two",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Invalid min attendees format, must be a number", e.message)
     }
@@ -289,20 +305,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2020",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              emptyList(),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2020",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          emptyList(),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Event date must be in the future", e.message)
     }
@@ -313,20 +330,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.BASKETBALL),
-              "100",
-              "200",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.BASKETBALL),
+          "100",
+          "200",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Minimum attendees must be less than maximum attendees", e.message)
     }
@@ -337,20 +355,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.BASKETBALL),
-              "100",
-              "10",
-              "10/04/2020",
-              "09:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.BASKETBALL),
+          "100",
+          "10",
+          "10/04/2020",
+          "09:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Inscription limit date must be in the future", e.message)
     }
@@ -361,23 +380,25 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "10/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.BASKETBALL),
-              "100",
-              "10",
-              "10/04/2026",
-              "11:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "10/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.BASKETBALL),
+          "100",
+          "10",
+          "10/04/2026",
+          "11:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals(
-          "Inscription limit time must be before event start time on the same day", e.message)
+        "Inscription limit time must be before event start time on the same day", e.message
+      )
     }
   }
 
@@ -386,20 +407,21 @@ class EventUtilsTest {
     // validate data parse strings
     try {
       val result =
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "10/04/2026",
-              "10/04/2026",
-              "12:00",
-              "10:00",
-              listOf(Interests.BASKETBALL),
-              "100",
-              "10",
-              "10/04/2026",
-              "09:00",
-              EventAction.CREATE)
+        eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "10/04/2026",
+          "10/04/2026",
+          "12:00",
+          "10:00",
+          listOf(Interests.BASKETBALL),
+          "100",
+          "10",
+          "10/04/2026",
+          "09:00",
+          EventAction.CREATE
+        )
     } catch (e: Exception) {
       Assert.assertEquals("Event end time must be after start time", e.message)
     }
@@ -454,24 +476,24 @@ class EventUtilsTest {
   fun deleteEventTest() {
     // create an event, add it to the database, then delete it
     val event =
-        Event(
-            id = "myEventToDelete",
-            title = "Event Title",
-            description = "Hello: I am a description",
-            attendanceMaxCapacity = 10,
-            attendanceMinCapacity = 1,
-            categories = setOf(Interests.BASKETBALL),
-            organizer = Profile("", "", "", "organizer", setOf()),
-            eventEndDate = LocalDate.of(2024, 4, 15),
-            eventStartDate = LocalDate.of(2024, 4, 14),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = null,
-            registeredUsers = mutableListOf("test"),
-            timeBeginning = LocalTime.of(13, 0),
-            timeEnding = LocalTime.of(16, 0),
-        )
+      Event(
+        id = "myEventToDelete",
+        title = "Event Title",
+        description = "Hello: I am a description",
+        attendanceMaxCapacity = 10,
+        attendanceMinCapacity = 1,
+        categories = setOf(Interests.BASKETBALL),
+        organizer = Profile.test(),
+        eventEndDate = LocalDate.of(2024, 4, 15),
+        eventStartDate = LocalDate.of(2024, 4, 14),
+        globalRating = 4,
+        inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+        inscriptionLimitTime = LocalTime.of(23, 59),
+        location = null,
+        registeredUsers = mutableListOf("test"),
+        timeBeginning = LocalTime.of(13, 0),
+        timeEnding = LocalTime.of(16, 0),
+      )
     val eventUtils = EventUtils()
     EventFirebaseConnection.add(event)
     val eventFromDB = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }

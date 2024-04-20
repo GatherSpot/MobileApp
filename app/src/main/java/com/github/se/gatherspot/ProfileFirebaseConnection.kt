@@ -11,6 +11,7 @@ class ProfileFirebaseConnection {
   private val db = Firebase.firestore
   private val tag = FirebaseCollection.PROFILES.name
 
+
   /**
    * Fetches the profile from the database
    *
@@ -19,24 +20,27 @@ class ProfileFirebaseConnection {
    * @return the profile NOTE : The profile will be initially empty, to use it in a view, you need
    *   to update the view using with a lambda function that updates the view
    */
-  fun updateFromFirebase(uid: String, update: () -> Unit): Profile {
-    val profile = Profile("", "", "", uid, Interests.new())
+  fun updateFromFirebase(uid: String?, update: () -> Unit): Profile {
+    Log.d(tag, "uid: $uid")
+    val id = uid ?: "TEST"
+    val profile = Profile("", "", "", id, Interests.new())
     db.collection(tag)
-        .document(uid)
-        .get()
-        .addOnSuccessListener { document ->
-          if (document != null) {
-            profile.userName = document.get("userName") as String
-            profile.bio = document.get("bio") as String
-            profile.image = document.get("image") as String
-            profile.interests = Interests.fromCompressedString(document.get("interests") as String)
-            update()
-            Log.d(tag, "DocumentSnapshot data: ${document.data}")
-          } else {
-            Log.d(tag, "No such document")
-          }
+      .document(id)
+      .get()
+      .addOnSuccessListener { document ->
+        if (document != null) {
+          Log.d(tag, "Document is empty")
+          profile.userName = document.get("userName") as String
+          profile.bio = document.get("bio") as String
+          profile.image = document.get("image") as String
+          profile.interests = Interests.fromCompressedString(document.get("interests") as String)
+          update()
+          Log.d(tag, "DocumentSnapshot data: ${document.data}")
+        } else {
+          Log.d(tag, "No such document")
         }
-        .addOnFailureListener { exception -> Log.d(tag, "get failed with :", exception) }
+      }
+      .addOnFailureListener { exception -> Log.d(tag, "get failed with :", exception) }
     return profile
   }
 
@@ -47,16 +51,17 @@ class ProfileFirebaseConnection {
    */
   fun saveToFirebase(profile: Profile) {
     val data =
-        hashMapOf(
-            "userName" to profile.userName,
-            "bio" to profile.bio,
-            "image" to profile.image,
-            "interests" to Interests.toCompressedString(profile.interests))
+      hashMapOf(
+        "userName" to profile.userName,
+        "bio" to profile.bio,
+        "image" to profile.image,
+        "interests" to Interests.toCompressedString(profile.interests)
+      )
     db.collection(tag)
-        .document(profile.id)
-        .set(data)
-        .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
-        .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
+      .document(profile.id)
+      .set(data)
+      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
+      .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
   }
 
   /**
@@ -68,9 +73,9 @@ class ProfileFirebaseConnection {
     // TODO : WE WILL NEED TO REMOVE EVERYTHING RELATED TO THE USER, LIKE REGISTERED_EVENTS, etc...
     // probably want to do that at a later date in the project, when the picture is complete
     db.collection(tag)
-        .document(id)
-        .delete()
-        .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
-        .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
+      .document(id)
+      .delete()
+      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
+      .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
   }
 }
