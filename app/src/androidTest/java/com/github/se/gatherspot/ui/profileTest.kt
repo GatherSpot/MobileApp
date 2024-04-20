@@ -13,10 +13,13 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.ProfileView
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,8 +29,18 @@ import org.junit.runner.RunWith
 // adding a text is not enough, as we will probably change theses when internationalizing texts
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
+  @Before
+  fun setUp() {
+    ProfileFirebaseConnection().saveToFirebase(Profile.testOrganizer())
+  }
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @After
+  fun cleanUp() {
+    ProfileFirebaseConnection().deleteFromFirebase("TEST")
+  }
+
+  @get:Rule
+  val composeTestRule = createComposeRule()
 
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
@@ -39,8 +52,8 @@ class ProfileInstrumentedTest {
     }
     // check if things are here :
     composeTestRule
-        .onNodeWithContentDescription("username")
-        .assertExists("username field not found")
+      .onNodeWithContentDescription("username")
+      .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
     composeTestRule.onNodeWithContentDescription("edit").assertExists("edit button not found")
     // check buttons that should not be there yet are not here yet
@@ -50,8 +63,8 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("edit").performClick()
     // check if things are here :
     composeTestRule
-        .onNodeWithContentDescription("username")
-        .assertExists("username field not found")
+      .onNodeWithContentDescription("username")
+      .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
     composeTestRule.onNodeWithContentDescription("cancel").assertExists()
     composeTestRule.onNodeWithContentDescription("save").assertExists()
@@ -77,8 +90,8 @@ class ProfileInstrumentedTest {
     }
     // check if things are here :
     composeTestRule
-        .onNodeWithContentDescription("username")
-        .assertExists("username field not found")
+      .onNodeWithContentDescription("username")
+      .assertExists("username field not found")
     composeTestRule.onNodeWithContentDescription("bio").assertExists("bio field not found")
     composeTestRule.onNodeWithContentDescription("profile image").assertExists("image not found")
     // check if fields are filled properly
