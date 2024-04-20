@@ -28,7 +28,8 @@ class SignUpTest : TestCase() {
 
   val UserFirebaseConnection = UserFirebaseConnection()
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule
+  val composeTestRule = createComposeRule()
 
   // The IntentsTestRule simply calls Intents.init() before the @Test block
   // and Intents.release() after the @Test block is completed. IntentsTestRule
@@ -39,7 +40,8 @@ class SignUpTest : TestCase() {
   fun cleanUp() {
     try {
       UserFirebaseConnection.delete(MainActivity.uid)
-    } catch (_: Exception) {}
+    } catch (_: Exception) {
+    }
     UserFirebaseConnection.delete("test")
     UserFirebaseConnection.deleteCurrentUser()
   }
