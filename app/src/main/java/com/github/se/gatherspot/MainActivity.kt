@@ -49,11 +49,11 @@ class MainActivity : ComponentActivity() {
     val eventsViewModel = EventsViewModel()
 
     signInLauncher =
-      registerForActivityResult(
-        FirebaseAuthUIActivityResultContract(),
-      ) { res ->
-        this.onSignInResult(res, navController)
-      }
+        registerForActivityResult(
+            FirebaseAuthUIActivityResultContract(),
+        ) { res ->
+          this.onSignInResult(res, navController)
+        }
 
     setContent {
       GatherSpotTheme {
@@ -72,14 +72,12 @@ class MainActivity : ComponentActivity() {
               composable("event/{eventJson}") { backStackEntry ->
                 val gson = Gson()
                 val eventObject =
-                  gson.fromJson(
-                    backStackEntry.arguments?.getString("eventJson"), Event::class.java
-                  )
+                    gson.fromJson(
+                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
                 EventUI(
-                  event = eventObject!!,
-                  navActions = NavigationActions(navController),
-                  viewModel = EventRegistrationViewModel()
-                )
+                    event = eventObject!!,
+                    navActions = NavigationActions(navController),
+                    viewModel = EventRegistrationViewModel())
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -103,8 +101,8 @@ class MainActivity : ComponentActivity() {
   }
 
   private fun onSignInResult(
-    result: FirebaseAuthUIAuthenticationResult,
-    navController: NavHostController
+      result: FirebaseAuthUIAuthenticationResult,
+      navController: NavHostController
   ): Int {
     if (result.resultCode == RESULT_OK) {
       if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
