@@ -6,7 +6,6 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
@@ -26,8 +25,6 @@ class EventUITest {
 
   @Test
   fun testEverythingExists() {
-    // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -36,17 +33,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer =
-                  Profile(
-                      "Elias",
-                      "Bio",
-                      "image",
-                      "uid",
-                      setOf(
-                          Interests.BASKETBALL,
-                          Interests.FOOTBALL,
-                          Interests.BOWLING,
-                          Interests.CHESS)),
+              organizer = Profile.testParticipant(),
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -83,8 +70,6 @@ class EventUITest {
 
   @Test
   fun testEverythingIsDisplayed() {
-    // To make it works in isolation, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -93,17 +78,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer =
-                  Profile(
-                      "Elias",
-                      "Bio",
-                      "image",
-                      "uid",
-                      setOf(
-                          Interests.BASKETBALL,
-                          Interests.FOOTBALL,
-                          Interests.BOWLING,
-                          Interests.CHESS)),
+              organizer = Profile.testParticipant(),
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -174,8 +149,6 @@ class EventUITest {
 
   @Test
   fun textsDisplayedAreCorrect() {
-    // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -184,17 +157,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer =
-                  Profile(
-                      "Elias",
-                      "Bio",
-                      "image",
-                      "uid",
-                      setOf(
-                          Interests.BASKETBALL,
-                          Interests.FOOTBALL,
-                          Interests.BOWLING,
-                          Interests.CHESS)),
+              organizer = Profile.testParticipant(),
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),

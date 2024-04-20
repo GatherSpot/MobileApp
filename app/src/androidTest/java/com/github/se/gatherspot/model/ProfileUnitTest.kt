@@ -38,19 +38,4 @@ class ProfileUnitTest {
     val profile = Profile.testOrganizer()
     assertThrows(IllegalArgumentException::class.java) { profile.bio = "a".repeat(101) }
   }
-
-  //  @Test
-  //  fun firebase() {
-  // TODO : Implement once hilt injection is done
-  //    var profile = Profile.dummyProfile()
-  //    profile.delete()
-  //    profile.save("Johnny", "I am not a bot", "", setOf(Interests.BOWLING))
-  //    profile =
-  //        Profile.fromUID("TEST") {
-  //          assert(profile.userName == "Johnny")
-  //          assert(profile.bio == "I am not a bot")
-  //          assert(profile.image == "")
-  //          assert(profile.interests == setOf(Interests.BOWLING))
-  //        }
-  //  }
 }

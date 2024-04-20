@@ -1,7 +1,6 @@
 package com.github.se.gatherspot
 
 import com.github.se.gatherspot.model.IdList
-import java.lang.Thread.sleep
 import junit.framework.TestCase.assertEquals
 import kotlin.random.Random
 import org.junit.Test
@@ -20,12 +19,13 @@ class IdListFirebaseConnectionTest {
     // save to firebase
     IdListFirebaseConnection().saveToFirebase(idList1)
     // wait as a precaution as we don't know how long it will take to save to firebase
-    sleep(1000)
     var block = true
     // fetch the data from firebase
-    var idList2 = IdListFirebaseConnection().updateFromFirebase(id, tag) { block = false }
+    val idList2 = IdListFirebaseConnection().updateFromFirebase(id, tag) { block = false }
     // busy wait until values are updated
-    sleep(1000)
+    while (block) {
+      {}
+    }
     // check if the values are updated and equal
     assertEquals(listOf(randString), idList2.events)
   }
