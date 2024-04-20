@@ -7,21 +7,27 @@ import com.google.firebase.ktx.Firebase
 
 class IdListFirebaseConnection {
   private val db = Firebase.firestore
+  private val logTag = "FirebaseActions"
   fun updateFromFirebase(uid: String, tag: String, update: () -> Unit): IdList {
     val idSet = IdList.empty(uid, tag)
-    val docRef = db.collection(tag).document(uid)
-    docRef.get()
+    Log.d(logTag, "uid: $uid")
+    db.collection(tag).document(uid)
+      .get()
       .addOnSuccessListener { document ->
         if (document != null) {
-          Log.d(tag, "DocumentSnapshot data: ${document.data}")
-          idSet.events = document.get("ids") as List<String>
-          update()
+          val data = document.data
+          if (data != null) {
+            val ids = data["ids"]
+            idSet.events = ids as List<String>
+          }
+          Log.d(logTag, "DocumentSnapshot data: ${document.data}")
         } else {
-          Log.d(tag, "No such document")
+          Log.d(logTag, "No such document")
         }
+        update()
       }
       .addOnFailureListener { exception ->
-        Log.d(tag, "get failed with ", exception)
+        Log.d(logTag, "get failed with ", exception)
       }
     return idSet
   }
@@ -37,15 +43,15 @@ class IdListFirebaseConnection {
     db.collection(tag)
       .document(id)
       .set(data)
-      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully written!") }
-      .addOnFailureListener { e -> Log.w(tag, "Error writing document", e) }
+      .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully written!") }
+      .addOnFailureListener { e -> Log.w(logTag, "Error writing document", e) }
   }
 
   fun deleteFromFirebase(id: String, tag: String) {
     db.collection(tag)
       .document(id)
       .delete()
-      .addOnSuccessListener { Log.d(tag, "DocumentSnapshot successfully deleted!") }
-      .addOnFailureListener { e -> Log.w(tag, "Error deleting document", e) }
+      .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully deleted!") }
+      .addOnFailureListener { e -> Log.w(logTag, "Error deleting document", e) }
   }
 }

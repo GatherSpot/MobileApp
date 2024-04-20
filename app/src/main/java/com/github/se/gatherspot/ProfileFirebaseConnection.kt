@@ -63,6 +63,8 @@ class ProfileFirebaseConnection {
    * @param id the id of the profile to delete
    */
   fun deleteFromFirebase(id: String) {
+    // TODO : WE WILL NEED TO REMOVE EVERYTHING RELATED TO THE USER, LIKE REGISTERED_EVENTS, etc...
+    // probably want to do that at a later date in the project, when the picture is complete
     db.collection(tag)
       .document(id)
       .delete()
