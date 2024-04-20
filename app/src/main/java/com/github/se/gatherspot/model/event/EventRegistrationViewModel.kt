@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
 class EventRegistrationViewModel : ViewModel() {
-  // TODO : use hilt injection instead of hardcoded userId
+  // TODO : use hilt injection instead of hardcoded userId to remove this test handle in production
   private val userId = Firebase.auth.currentUser?.uid ?: "TEST"
 
   // LiveData for holding registration state
@@ -30,8 +30,9 @@ class EventRegistrationViewModel : ViewModel() {
 
   // Profile of the user, is needed to add the event to the user's registered events
   private val registeredEventsList =
-      IdListFirebaseConnection().updateFromFirebase(
-          userId, FirebaseCollection.REGISTERED_EVENTS.name) {}
+    IdListFirebaseConnection().updateFromFirebase(
+      userId, FirebaseCollection.REGISTERED_EVENTS.name
+    ) {}
 
   /** Registers the user for the given event */
   fun registerForEvent(event: Event) {

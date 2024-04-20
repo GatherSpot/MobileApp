@@ -160,7 +160,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
       ProfileIndicator(profile = event.organizer)
 
       // Event Description
-      event!!.description?.let { description ->
+      event.description?.let { description ->
         Spacer(modifier = Modifier.height(8.dp))
         Text(
           modifier = Modifier.testTag("eventDescription"),
