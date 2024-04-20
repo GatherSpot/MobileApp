@@ -13,11 +13,11 @@ import com.github.se.gatherspot.CollectionClass
  * @param id the id of the user
  */
 class Profile(
-    private var _userName: String,
-    private var _bio: String,
-    private var _image: String,
-    override val id: String,
-    private var _interests: Set<Interests>,
+  private var _userName: String,
+  private var _bio: String,
+  private var _image: String,
+  override val id: String,
+  private var _interests: Set<Interests>,
 ) : CollectionClass() {
   var userName: String
     get() = _userName
@@ -28,7 +28,8 @@ class Profile(
       }
       if (!regex.matches(value)) {
         throw IllegalArgumentException(
-            "Username can only contain letters, spaces, hyphens, and underscores")
+          "Username can only contain letters, spaces, hyphens, and underscores"
+        )
       }
       if (value.length > 20) {
         throw IllegalArgumentException("Username cannot be longer than 20 characters")
@@ -67,5 +68,5 @@ class Profile(
     }
   }
 
-  constructor(id: String) : this("", "", "", "id", setOf())
+  constructor(id: String) : this("", "", "", id, setOf())
 }

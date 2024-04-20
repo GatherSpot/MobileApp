@@ -101,7 +101,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedCheck --parallel --build-cache --info
+          script: ./gradlew connectedCheck --parallel --build-cache --info --stacktrace
 
       # This step generates the coverage report which will be uploaded to sonar
       - name: Generate Coverage Report
