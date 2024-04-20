@@ -9,7 +9,7 @@ import com.google.firebase.ktx.Firebase
 class ProfileFirebaseConnection {
 
   private val db = Firebase.firestore
-  private val tag = "profiles"
+  private val tag = FirebaseCollection.PROFILES.name
 
   /**
    * Fetches the profile from the database

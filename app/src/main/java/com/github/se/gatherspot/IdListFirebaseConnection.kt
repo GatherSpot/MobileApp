@@ -7,10 +7,9 @@ import com.google.firebase.ktx.Firebase
 
 class IdListFirebaseConnection {
   private val db = Firebase.firestore
-  private val logTag = "FirebaseActions"
+  private val logTag = "IdListFirebaseConnection"
   fun updateFromFirebase(uid: String, tag: String, update: () -> Unit): IdList {
     val idSet = IdList.empty(uid, tag)
-    Log.d(logTag, "uid: $uid")
     db.collection(tag).document(uid)
       .get()
       .addOnSuccessListener { document ->
