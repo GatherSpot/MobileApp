@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.idListFirebaseConnection
-import com.github.se.gatherspot.model.IdList
+import com.github.se.gatherspot.FirebaseCollection
+import com.github.se.gatherspot.IdSetFirebaseConnection
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -29,7 +29,10 @@ class EventRegistrationViewModel : ViewModel() {
 
   // Profile of the user, is needed to add the event to the user's registered events
   private val registeredEventsList =
-    idListFirebaseConnection().updateFromFirebase(userId, IdList.REGISTERED_EVENTS) {}
+    IdSetFirebaseConnection().updateFromFirebase(
+      userId,
+      FirebaseCollection.REGISTERED_EVENTS.name
+    ) {}
 
   /** Registers the user for the given event */
   fun registerForEvent(event: Event) {
@@ -49,11 +52,11 @@ class EventRegistrationViewModel : ViewModel() {
       }
       event.registeredUsers.add(userId)
 
-      registeredEventsList.add(userId)
+      registeredEventsList.add(event.id)
       // Update the event in the database
       EventFirebaseConnection().add(event)
       // Update the registration in the database.
-      idListFirebaseConnection().saveToFirebase(registeredEventsList)
+      IdSetFirebaseConnection().saveToFirebase(registeredEventsList)
       // Notify the UI that registration was successful
       _registrationState.value = RegistrationState.Success
     }

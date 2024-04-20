@@ -2,9 +2,9 @@ package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.CollectionClass
 
-class IdList constructor(
+class IdSet(
   override val id: String,
-  var events: List<String>,
+  var events: Set<String>,
   val typeTag: String
 ) : CollectionClass() {
   fun add(eventId: String) {
@@ -16,13 +16,6 @@ class IdList constructor(
   }
 
   companion object {
-    //tag list to ease the access to the collection
-
-    /**
-     * tag for the list of events the user is attending
-     */
-    const val REGISTERED_EVENTS = "registeredEvents"
-
     /**
      * Create an empty IdList
      * @param id the id of the user
@@ -30,6 +23,6 @@ class IdList constructor(
      * @return an empty IdList
      * useful for tests, the creation of a new list, and enabling non blocking access to the list
      */
-    fun empty(id: String, tag: String) = IdList(id, mutableListOf(), tag)
+    fun empty(id: String, tag: String) = IdSet(id, setOf(), tag)
   }
 }
