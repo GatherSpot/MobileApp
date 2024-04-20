@@ -3,6 +3,7 @@ package com.github.se.gatherspot.ui.profile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
@@ -17,11 +18,13 @@ class OwnProfileViewModel : ViewModel() {
 
   init {
     // TODO : Change this to hilt injection
-    Firebase.auth.currentUser?.uid?.let { uid -> _profile = Profile.fromUID(uid) { update() } }
-        ?: run {
-          _profile = Profile.dummyProfile()
-          update()
-        }
+    Firebase.auth.currentUser?.uid?.let { uid ->
+      _profile = ProfileFirebaseConnection().updateFromFirebase(uid) { update() }
+    }
+      ?: run {
+        _profile = Profile.test()
+        update()
+      }
   }
 
   val username: LiveData<String>
@@ -37,8 +40,11 @@ class OwnProfileViewModel : ViewModel() {
     get() = _interests
 
   fun save() {
-    _profile.save(
-        _username.value ?: "", bio.value ?: "", image.value ?: "", interests.value ?: emptySet())
+    _profile.userName = _username.value!!
+    _profile.bio = _bio.value!!
+    _profile.image = _image.value!!
+    _profile.interests = _interests.value!!
+    ProfileFirebaseConnection().saveToFirebase(_profile)
   }
 
   fun update() {
@@ -63,11 +69,11 @@ class OwnProfileViewModel : ViewModel() {
 
   fun swapInterests(interest: Interests) {
     _interests.value =
-        if (interest in _interests.value!!) {
-          interests.value!!.minus(interest)
-        } else {
-          interests.value!!.plus(interest)
-        }
+      if (interest in _interests.value!!) {
+        interests.value!!.minus(interest)
+      } else {
+        interests.value!!.plus(interest)
+      }
   }
 
   fun isInterestsSelected(interest: Interests): Boolean {

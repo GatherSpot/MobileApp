@@ -33,7 +33,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +42,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
@@ -52,6 +50,8 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -61,278 +61,317 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
 
   val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
-  val isOrganizer = event.organizer.id == MainActivity.uid
+  val isOrganizer = event.organizer.id == Firebase.auth.currentUser!!.uid
   val eventUtils = EventUtils()
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
   val buttonText =
-      when (registrationState) {
-        is RegistrationState.Success -> "Registered"
-        is RegistrationState.Error ->
-            if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
-            else "Registered"
-        else -> "Register"
-      }
+    when (registrationState) {
+      is RegistrationState.Success -> "Registered"
+      is RegistrationState.Error ->
+        if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
+        else "Registered"
+
+      else -> "Register"
+    }
 
   Scaffold(
-      modifier = Modifier.testTag("EventUIScreen"),
-      topBar = {
-        TopAppBar(
-            modifier = Modifier.testTag("topBar"),
-            title = { Text(text = event.title) },
-            backgroundColor = Color.White,
-            navigationIcon = {
-              IconButton(
-                  onClick = { navActions.goBack() }, modifier = Modifier.testTag("goBackButton")) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Go back to overview")
-                  }
-            },
-            actions = {
-              if (isOrganizer) {
-                // Edit button
-                IconButton(
-                    onClick = { /* TODO : handle the navigation. navActions.controller.navigate("editEvent")*/},
-                    modifier = Modifier.testTag("editEventButton")) {
-                      Icon(
-                          modifier = Modifier.size(24.dp).testTag("editEventIcon"),
-                          painter = painterResource(id = R.drawable.edit),
-                          contentDescription = "Edit event")
-                    }
-                // Delete button
-                IconButton(
-                    onClick = { viewModel.clickDeleteButton() },
-                    modifier = Modifier.testTag("deleteEventButton")) {
-                      Icon(
-                          modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
-                          painter = painterResource(id = R.drawable.delete),
-                          contentDescription = "Delete event")
-                    }
-              }
-            })
-      }) { innerPadding ->
-        Column(
-            modifier =
-                Modifier.padding(innerPadding)
-                    .padding(8.dp)
-                    .testTag("eventColumn")
-                    .verticalScroll(rememberScrollState())) {
-              // Event Image
-              event.images?.let { img ->
-                Image(
-                    bitmap = img,
-                    contentDescription = "Event Image",
-                    modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                    contentScale = ContentScale.FillBounds)
-              }
-                  ?: Image(
-                      painter = painterResource(id = R.drawable.default_event_image),
-                      contentDescription = "Default Event Image",
-                      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                      contentScale = ContentScale.FillBounds)
-
-              Spacer(modifier = Modifier.height(16.dp))
-
-              // Event Host
-              ProfileIndicator(profile = event.organizer)
-
-              // Event Description
-              event!!.description?.let { description ->
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    modifier = Modifier.testTag("eventDescription"),
-                    text = description,
-                    fontWeight = FontWeight(400),
-                    fontSize = 16.sp)
-              }
-
-              Spacer(modifier = Modifier.height(16.dp))
-
-              Text(
-                  text = "Number of attendees",
-                  modifier =
-                      Modifier.align(Alignment.CenterHorizontally).testTag("attendeesInfoTitle"),
-                  fontWeight = FontWeight.Bold)
-
-              // Event Capacity
-              Row(modifier = Modifier.testTag("attendeesInfo")) {
-                Text("Min: ", fontWeight = FontWeight.Bold)
-                Text("${event.attendanceMinCapacity}")
-                Spacer(modifier = Modifier.width(100.dp))
-                Text("Current: ", fontWeight = FontWeight.Bold)
-                Text(text = "${event.registeredUsers?.size ?: 0}")
-                Spacer(modifier = Modifier.width(100.dp))
-                Text("Max: ", fontWeight = FontWeight.Bold)
-                Text(text = "${event.attendanceMaxCapacity}")
-              }
-
-              // Categories
-              Spacer(modifier = Modifier.height(16.dp))
-              FlowRow(modifier = Modifier.testTag("categoriesRow")) {
-                event.categories?.forEach { interest -> Chip(interest = interest) }
-              }
-
-              // Map View Placeholder
-              Spacer(modifier = Modifier.height(16.dp))
-              // TODO: Implement the actual map and test it
-              Box(
-                  modifier =
-                      Modifier.height(200.dp)
-                          .fillMaxWidth()
-                          .background(Color.Gray)
-                          .testTag("mapView")) {
-                    // Here should be the code to integrate the actual map
-                    BasicText(text = "Map Placeholder")
-                  }
-              // Event Dates and Times
-              Spacer(modifier = Modifier.height(16.dp))
-              Row(modifier = Modifier.testTag("eventDatesTimes")) {
-                Column {
-                  Text("Event Start:", fontWeight = FontWeight.Bold)
-                  event.eventStartDate?.let { startDate ->
-                    Text(startDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                  }
-                  event.timeBeginning?.let { startTime ->
-                    Text(startTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
-                  }
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                  Text("Event End:", fontWeight = FontWeight.Bold)
-                  event.eventEndDate?.let { endDate ->
-                    Text(endDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                  }
-                  event.timeEnding?.let { endTime ->
-                    Text(endTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
-                  }
-                }
-              }
-
-              // Inscription Limit Date and Time
-              Spacer(modifier = Modifier.height(8.dp))
-              Text(
-                  "Inscription Limit:",
-                  fontWeight = FontWeight.Bold,
-                  modifier = Modifier.testTag("inscriptionLimitTitle"))
-              Row(modifier = Modifier.testTag("inscriptionLimitDateAndTime")) {
-                event.inscriptionLimitDate?.let { limitDate ->
-                  Text(limitDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                event.inscriptionLimitTime?.let { limitTime ->
-                  Text(limitTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
-                }
-              }
-
-              // Registration Button
-              Spacer(modifier = Modifier.height(16.dp))
-
-              if (!isOrganizer) {
-                Button(
-                    onClick = {
-                      viewModel.registerForEvent(event)
-                      viewModel.clickRegisterButton()
-                    },
-                    enabled = isButtonEnabled,
-                    modifier = Modifier.fillMaxWidth().testTag("registerButton"),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-                      Text(buttonText, color = Color.White)
-                    }
-              }
+    modifier = Modifier.testTag("EventUIScreen"),
+    topBar = {
+      TopAppBar(
+        modifier = Modifier.testTag("topBar"),
+        title = { Text(text = event.title) },
+        backgroundColor = Color.White,
+        navigationIcon = {
+          IconButton(
+            onClick = { navActions.goBack() }, modifier = Modifier.testTag("goBackButton")
+          ) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              contentDescription = "Go back to overview"
+            )
+          }
+        },
+        actions = {
+          if (isOrganizer) {
+            // Edit button
+            IconButton(
+              onClick = { /* TODO : handle the navigation. navActions.controller.navigate("editEvent")*/ },
+              modifier = Modifier.testTag("editEventButton")
+            ) {
+              Icon(
+                modifier = Modifier
+                  .size(24.dp)
+                  .testTag("editEventIcon"),
+                painter = painterResource(id = R.drawable.edit),
+                contentDescription = "Edit event"
+              )
             }
+            // Delete button
+            IconButton(
+              onClick = { viewModel.clickDeleteButton() },
+              modifier = Modifier.testTag("deleteEventButton")
+            ) {
+              Icon(
+                modifier = Modifier
+                  .size(24.dp)
+                  .testTag("deleteEventIcon"),
+                painter = painterResource(id = R.drawable.delete),
+                contentDescription = "Delete event"
+              )
+            }
+          }
+        })
+    }) { innerPadding ->
+    Column(
+      modifier =
+      Modifier
+        .padding(innerPadding)
+        .padding(8.dp)
+        .testTag("eventColumn")
+        .verticalScroll(rememberScrollState())
+    ) {
+      // Event Image
+      event.images?.let { img ->
+        Image(
+          bitmap = img,
+          contentDescription = "Event Image",
+          modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .testTag("eventImage"),
+          contentScale = ContentScale.FillBounds
+        )
+      }
+        ?: Image(
+          painter = painterResource(id = R.drawable.default_event_image),
+          contentDescription = "Default Event Image",
+          modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .testTag("eventImage"),
+          contentScale = ContentScale.FillBounds
+        )
 
-        if (showDialogRegistration!!) {
-          AlertDialog(
-              modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { viewModel.dismissAlert() },
-              title = { Text("Registration Result") },
-              text = {
-                when (val state = registrationState) {
-                  is RegistrationState.Success -> Text("You have been successfully registered!")
-                  is RegistrationState.Error -> Text(state.message)
-                  else -> Text("Unknown state")
-                }
-              },
-              confirmButton = {
-                Button(
-                    modifier = Modifier.testTag("okButton"),
-                    onClick = { viewModel.dismissAlert() }) {
-                      Text("OK")
-                    }
-              })
+      Spacer(modifier = Modifier.height(16.dp))
+
+      // Event Host
+      ProfileIndicator(profile = event.organizer)
+
+      // Event Description
+      event!!.description?.let { description ->
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+          modifier = Modifier.testTag("eventDescription"),
+          text = description,
+          fontWeight = FontWeight(400),
+          fontSize = 16.sp
+        )
+      }
+
+      Spacer(modifier = Modifier.height(16.dp))
+
+      Text(
+        text = "Number of attendees",
+        modifier =
+        Modifier
+          .align(Alignment.CenterHorizontally)
+          .testTag("attendeesInfoTitle"),
+        fontWeight = FontWeight.Bold
+      )
+
+      // Event Capacity
+      Row(modifier = Modifier.testTag("attendeesInfo")) {
+        Text("Min: ", fontWeight = FontWeight.Bold)
+        Text("${event.attendanceMinCapacity}")
+        Spacer(modifier = Modifier.width(100.dp))
+        Text("Current: ", fontWeight = FontWeight.Bold)
+        Text(text = "${event.registeredUsers?.size ?: 0}")
+        Spacer(modifier = Modifier.width(100.dp))
+        Text("Max: ", fontWeight = FontWeight.Bold)
+        Text(text = "${event.attendanceMaxCapacity}")
+      }
+
+      // Categories
+      Spacer(modifier = Modifier.height(16.dp))
+      FlowRow(modifier = Modifier.testTag("categoriesRow")) {
+        event.categories?.forEach { interest -> Chip(interest = interest) }
+      }
+
+      // Map View Placeholder
+      Spacer(modifier = Modifier.height(16.dp))
+      // TODO: Implement the actual map and test it
+      Box(
+        modifier =
+        Modifier
+          .height(200.dp)
+          .fillMaxWidth()
+          .background(Color.Gray)
+          .testTag("mapView")
+      ) {
+        // Here should be the code to integrate the actual map
+        BasicText(text = "Map Placeholder")
+      }
+      // Event Dates and Times
+      Spacer(modifier = Modifier.height(16.dp))
+      Row(modifier = Modifier.testTag("eventDatesTimes")) {
+        Column {
+          Text("Event Start:", fontWeight = FontWeight.Bold)
+          event.eventStartDate?.let { startDate ->
+            Text(startDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+          }
+          event.timeBeginning?.let { startTime ->
+            Text(startTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
+          }
         }
-
-        if (showDialogDelete!!) {
-          AlertDialog(
-              modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { viewModel.dismissAlert() },
-              title = { Text("Delete Event") },
-              text = {
-                Text("Are you sure you want to delete this event? This action cannot be undone.")
-              },
-              confirmButton = {
-                Button(
-                    modifier = Modifier.testTag("okButton"),
-                    onClick = {
-                      // Delete the event
-                      eventUtils.deleteEvent(event)
-                      navActions.goBack()
-                      viewModel.dismissAlert()
-                    }) {
-                      Text("Delete")
-                    }
-              },
-              dismissButton = {
-                Button(
-                    modifier = Modifier.testTag("cancelButton"),
-                    onClick = { viewModel.dismissAlert() }) {
-                      Text("Cancel")
-                    }
-              })
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+          Text("Event End:", fontWeight = FontWeight.Bold)
+          event.eventEndDate?.let { endDate ->
+            Text(endDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+          }
+          event.timeEnding?.let { endTime ->
+            Text(endTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
+          }
         }
       }
+
+      // Inscription Limit Date and Time
+      Spacer(modifier = Modifier.height(8.dp))
+      Text(
+        "Inscription Limit:",
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.testTag("inscriptionLimitTitle")
+      )
+      Row(modifier = Modifier.testTag("inscriptionLimitDateAndTime")) {
+        event.inscriptionLimitDate?.let { limitDate ->
+          Text(limitDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        event.inscriptionLimitTime?.let { limitTime ->
+          Text(limitTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
+        }
+      }
+
+      // Registration Button
+      Spacer(modifier = Modifier.height(16.dp))
+
+      if (!isOrganizer) {
+        Button(
+          onClick = {
+            viewModel.registerForEvent(event)
+            viewModel.clickRegisterButton()
+          },
+          enabled = isButtonEnabled,
+          modifier = Modifier
+            .fillMaxWidth()
+            .testTag("registerButton"),
+          colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))
+        ) {
+          Text(buttonText, color = Color.White)
+        }
+      }
+    }
+
+    if (showDialogRegistration!!) {
+      AlertDialog(
+        modifier = Modifier.testTag("alertBox"),
+        onDismissRequest = { viewModel.dismissAlert() },
+        title = { Text("Registration Result") },
+        text = {
+          when (val state = registrationState) {
+            is RegistrationState.Success -> Text("You have been successfully registered!")
+            is RegistrationState.Error -> Text(state.message)
+            else -> Text("Unknown state")
+          }
+        },
+        confirmButton = {
+          Button(
+            modifier = Modifier.testTag("okButton"),
+            onClick = { viewModel.dismissAlert() }) {
+            Text("OK")
+          }
+        })
+    }
+
+    if (showDialogDelete!!) {
+      AlertDialog(
+        modifier = Modifier.testTag("alertBox"),
+        onDismissRequest = { viewModel.dismissAlert() },
+        title = { Text("Delete Event") },
+        text = {
+          Text("Are you sure you want to delete this event? This action cannot be undone.")
+        },
+        confirmButton = {
+          Button(
+            modifier = Modifier.testTag("okButton"),
+            onClick = {
+              // Delete the event
+              eventUtils.deleteEvent(event)
+              navActions.goBack()
+              viewModel.dismissAlert()
+            }) {
+            Text("Delete")
+          }
+        },
+        dismissButton = {
+          Button(
+            modifier = Modifier.testTag("cancelButton"),
+            onClick = { viewModel.dismissAlert() }) {
+            Text("Cancel")
+          }
+        })
+    }
+  }
 }
 
 @Composable
 fun Chip(interest: Interests) {
   Surface(
-      modifier = Modifier.padding(4.dp).testTag("chip"),
-      elevation = 4.dp,
-      shape = RoundedCornerShape(50), // Circular shaped corners
-      color = Color(0xFF3A89C9) // Use the primary color from the theme
-      ) {
-        Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-          Text(text = interest.name, style = MaterialTheme.typography.body2, color = Color.White)
-        }
-      }
+    modifier = Modifier
+      .padding(4.dp)
+      .testTag("chip"),
+    elevation = 4.dp,
+    shape = RoundedCornerShape(50), // Circular shaped corners
+    color = Color(0xFF3A89C9) // Use the primary color from the theme
+  ) {
+    Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+      Text(text = interest.name, style = MaterialTheme.typography.body2, color = Color.White)
+    }
+  }
 }
 
 @Composable
 fun ProfileIndicator(profile: Profile) {
   Row(
-      verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = Alignment.CenterVertically,
+    modifier =
+    Modifier
+      .padding(horizontal = 16.dp, vertical = 8.dp)
+      .testTag("profileIndicator")
+  ) {
+    // TODO implement image here: do it later
+    Box(
+      contentAlignment = Alignment.Center,
       modifier =
-          Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("profileIndicator")) {
-        // TODO implement image here: do it later
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier =
-                Modifier.size(40.dp) // Set the size of the circle
-                    .background(
-                        color = Color(0xFF9C27B0),
-                        shape = CircleShape) // Set the background color and shape of the circle
-            ) {
-              Text(
-                  text =
-                      profile.userName.take(1).uppercase(), // Take the first character of the name
-                  color = Color.White,
-                  fontSize = 20.sp,
-                  fontWeight = FontWeight.Bold)
-            }
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = "Hosted by", fontWeight = FontWeight.Light, fontSize = 16.sp)
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(text = profile.userName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-      }
+      Modifier
+        .size(40.dp) // Set the size of the circle
+        .background(
+          color = Color(0xFF9C27B0),
+          shape = CircleShape
+        ) // Set the background color and shape of the circle
+    ) {
+      Text(
+        text =
+        profile.userName.take(1).uppercase(), // Take the first character of the name
+        color = Color.White,
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold
+      )
+    }
+    Spacer(modifier = Modifier.width(8.dp))
+    Text(text = "Hosted by", fontWeight = FontWeight.Light, fontSize = 16.sp)
+    Spacer(modifier = Modifier.width(4.dp))
+    Text(text = profile.userName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+  }
 }

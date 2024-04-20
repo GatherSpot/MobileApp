@@ -19,10 +19,6 @@ class ProfileFirebaseConnection {
    * NOTE : The profile will be initially empty, to use it in a view, you need to update the view using with a lambda function that updates the view
    */
   fun updateFromFirebase(uid: String, update: () -> Unit): Profile {
-    // TODO : replace this with hilt injection
-    if (uid == "TEST") {
-      return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))
-    }
     val profile = Profile("", "", "", uid, Interests.new())
     db.collection(tag)
       .document(uid)

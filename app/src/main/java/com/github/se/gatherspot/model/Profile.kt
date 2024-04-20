@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.model
 
+import android.util.Log
 import com.github.se.gatherspot.CollectionClass
 
 // NOTE : I will add interests once theses are pushed
@@ -23,27 +24,32 @@ class Profile(
     set(value) {
       val regex = Regex("^[a-zA-Z_\\-\\s]*$")
       if (value.isEmpty()) {
-        throw IllegalArgumentException("Username cannot be empty")
+        Log.d("Profile", "Username cannot be empty")
+        return
       }
       if (!regex.matches(value)) {
-        throw IllegalArgumentException("Username can only contain letters, spaces, - and _")
+        Log.d("Profile", "Username can only contain letters, spaces, - and _")
+        return
       }
       if (value.length > 20) {
-        throw IllegalArgumentException("Username too long")
+        Log.d("Profile", "Username too long")
+        return
       }
       _userName = value
     }
   var bio: String
     get() = _bio
     set(value) {
-      if (value.length > 100) throw IllegalArgumentException("Bio too long")
+      if (value.length > 100) {
+        Log.d("Profile", "Bio too long")
+        return
+      }
       _bio = value
     }
 
   var image: String
     get() = _image
     set(value) {
-      // TODO: SANITIZATION
       _image = value
     }
 
@@ -52,6 +58,12 @@ class Profile(
     set(value) {
       _interests = value
     }
+
+  companion object {
+    fun test(): Profile {
+      return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))
+    }
+  }
 
   constructor(id: String) : this("", "", "", "id", setOf())
 }

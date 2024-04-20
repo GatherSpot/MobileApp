@@ -92,8 +92,8 @@ class EventUtils {
     val profileFireBase = ProfileFirebaseConnection()
     event.registeredUsers.forEach { userID ->
       val profile = profileFireBase.updateFromFirebase(userID) {}
-      profile.registeredEvents.remove(event.id)
-      profileFireBase.updateProfile(profile) {}
+      //profile.registeredEvents.remove(event.id)
+      //profileFireBase.updateProfile(profile) {}
     }
     EventFirebaseConnection.delete(event.id)
   }
