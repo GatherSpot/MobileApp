@@ -43,6 +43,6 @@ fun ProfilePreview() {
 @Preview
 @Composable
 fun ViewProfilePreview() {
-  val profile = Profile.test()
+  val profile = Profile.testOrganizer()
   ProfileView().ProfileScreen(ProfileViewModel(profile))
 }

@@ -14,15 +14,16 @@ import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import java.time.LocalDate
-import java.time.LocalTime
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.LocalDate
+import java.time.LocalTime
 
 @RunWith(AndroidJUnit4::class)
 class EventUITest {
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule
+  val composeTestRule = createComposeRule()
 
   @Test
   fun testEverythingExists() {
@@ -31,34 +32,36 @@ class EventUITest {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description =
-                  "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer =
-                  Profile(
-                      "Elias",
-                      "Bio",
-                      "image",
-                      "uid",
-                      setOf(
-                          Interests.BASKETBALL,
-                          Interests.FOOTBALL,
-                          Interests.BOWLING,
-                          Interests.CHESS)),
-              attendanceMaxCapacity = 100,
-              attendanceMinCapacity = 10,
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.now().plusDays(5),
-              eventStartDate = LocalDate.now().plusDays(4),
-              globalRating = 4,
-              inscriptionLimitDate = LocalDate.now().plusDays(1),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              timeBeginning = LocalTime.of(13, 0),
-              timeEnding = LocalTime.of(16, 0),
-          )
+        Event(
+          id = "1",
+          title = "Event Title",
+          description =
+          "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+          organizer =
+          Profile(
+            "Elias",
+            "Bio",
+            "image",
+            "uid",
+            setOf(
+              Interests.BASKETBALL,
+              Interests.FOOTBALL,
+              Interests.BOWLING,
+              Interests.CHESS
+            )
+          ),
+          attendanceMaxCapacity = 100,
+          attendanceMinCapacity = 10,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.now().plusDays(5),
+          eventStartDate = LocalDate.now().plusDays(4),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.now().plusDays(1),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+        )
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -88,34 +91,36 @@ class EventUITest {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description =
-                  "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer =
-                  Profile(
-                      "Elias",
-                      "Bio",
-                      "image",
-                      "uid",
-                      setOf(
-                          Interests.BASKETBALL,
-                          Interests.FOOTBALL,
-                          Interests.BOWLING,
-                          Interests.CHESS)),
-              attendanceMaxCapacity = 100,
-              attendanceMinCapacity = 10,
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.now().plusDays(5),
-              eventStartDate = LocalDate.now().plusDays(4),
-              globalRating = 4,
-              inscriptionLimitDate = LocalDate.now().plusDays(1),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              timeBeginning = LocalTime.of(13, 0),
-              timeEnding = LocalTime.of(16, 0),
-          )
+        Event(
+          id = "1",
+          title = "Event Title",
+          description =
+          "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+          organizer =
+          Profile(
+            "Elias",
+            "Bio",
+            "image",
+            "uid",
+            setOf(
+              Interests.BASKETBALL,
+              Interests.FOOTBALL,
+              Interests.BOWLING,
+              Interests.CHESS
+            )
+          ),
+          attendanceMaxCapacity = 100,
+          attendanceMinCapacity = 10,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.now().plusDays(5),
+          eventStartDate = LocalDate.now().plusDays(4),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.now().plusDays(1),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+        )
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -179,42 +184,46 @@ class EventUITest {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description =
-                  "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer =
-                  Profile(
-                      "Elias",
-                      "Bio",
-                      "image",
-                      "uid",
-                      setOf(
-                          Interests.BASKETBALL,
-                          Interests.FOOTBALL,
-                          Interests.BOWLING,
-                          Interests.CHESS)),
-              attendanceMaxCapacity = 100,
-              attendanceMinCapacity = 10,
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
-              globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              registeredUsers = mutableListOf(),
-              timeBeginning = LocalTime.of(13, 0),
-              timeEnding = LocalTime.of(16, 0),
-          )
+        Event(
+          id = "1",
+          title = "Event Title",
+          description =
+          "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+          organizer =
+          Profile(
+            "Elias",
+            "Bio",
+            "image",
+            "uid",
+            setOf(
+              Interests.BASKETBALL,
+              Interests.FOOTBALL,
+              Interests.BOWLING,
+              Interests.CHESS
+            )
+          ),
+          attendanceMaxCapacity = 100,
+          attendanceMinCapacity = 10,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+        )
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description {
         assert(
-            hasText(
-                "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry."))
+          hasText(
+            "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry."
+          )
+        )
       }
       profileIndicator {
         hasText("Hosted by")
@@ -251,39 +260,29 @@ class EventUITest {
   @Test
   fun registerToAnEventWorks() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description =
-                  "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer =
-                  Profile(
-                      "Elias",
-                      "Bio",
-                      "image",
-                      "uid",
-                      setOf(
-                          Interests.BASKETBALL,
-                          Interests.FOOTBALL,
-                          Interests.BOWLING,
-                          Interests.CHESS)),
-              attendanceMaxCapacity = 100,
-              attendanceMinCapacity = 10,
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
-              globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              registeredUsers = mutableListOf(),
-              timeBeginning = LocalTime.of(13, 0),
-              timeEnding = LocalTime.of(16, 0),
-          )
+        Event(
+          id = "1",
+          title = "Event Title",
+          description =
+          "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+          organizer =
+          Profile.testParticipant(),
+          attendanceMaxCapacity = 100,
+          attendanceMinCapacity = 10,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+        )
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -315,27 +314,27 @@ class EventUITest {
   @Test
   fun testUnableToRegisterToAFullEvent() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description = "Hello: I am a description",
-              attendanceMaxCapacity = 2,
-              attendanceMinCapacity = 1,
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
-              globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              registeredUsers = mutableListOf("profil1", "profil2"),
-              timeBeginning = LocalTime.of(13, 0),
-              timeEnding = LocalTime.of(16, 0),
-          )
+        Event(
+          id = "1",
+          title = "Event Title",
+          description = "Hello: I am a description",
+          attendanceMaxCapacity = 2,
+          attendanceMinCapacity = 1,
+          organizer = Profile.testParticipant(),
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf("1", "2"),
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+        )
 
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
@@ -363,27 +362,27 @@ class EventUITest {
   @Test
   fun testAlreadyRegistered() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description = "Hello: I am a description",
-              attendanceMaxCapacity = 10,
-              attendanceMinCapacity = 1,
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
-              globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              registeredUsers = mutableListOf("test"),
-              timeBeginning = LocalTime.of(13, 0),
-              timeEnding = LocalTime.of(16, 0),
-          )
+        Event(
+          id = "1",
+          title = "Event Title",
+          description = "Hello: I am a description",
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 1,
+          organizer = Profile.testParticipant(),
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf("TEST"),
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+        )
 
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
@@ -410,28 +409,27 @@ class EventUITest {
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description = "Hello: I am a description",
-              attendanceMaxCapacity = 10,
-              attendanceMinCapacity = 1,
-              organizer = Profile("user", "bio", "", "test", setOf(Interests.BASKETBALL)),
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              registeredUsers = mutableListOf("test"),
-              timeBeginning = LocalTime.of(13, 0),
-              globalRating = 4,
-              timeEnding = LocalTime.of(16, 0),
-          )
+        Event(
+          id = "1",
+          title = "Event Title",
+          description = "Hello: I am a description",
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 1,
+          organizer = Profile.testOrganizer(),
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf("TEST"),
+          timeBeginning = LocalTime.of(13, 0),
+          globalRating = 4,
+          timeEnding = LocalTime.of(16, 0),
+        )
 
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
@@ -440,30 +438,29 @@ class EventUITest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testClicOnDeleteButton() {
+  fun testClickOnDeleteButton() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description = "Hello: I am a description",
-              attendanceMaxCapacity = 10,
-              attendanceMinCapacity = 1,
-              organizer = Profile("user", "bio", "", "test", setOf(Interests.BASKETBALL)),
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              registeredUsers = mutableListOf("test"),
-              timeBeginning = LocalTime.of(13, 0),
-              globalRating = 4,
-              timeEnding = LocalTime.of(16, 0),
-          )
+        Event(
+          id = "1",
+          title = "Event Title",
+          description = "Hello: I am a description",
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 1,
+          organizer = Profile.testOrganizer(),
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf("TEST"),
+          timeBeginning = LocalTime.of(13, 0),
+          globalRating = 4,
+          timeEnding = LocalTime.of(16, 0),
+        )
 
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }

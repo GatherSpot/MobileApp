@@ -1,6 +1,8 @@
 package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.EventFirebaseConnection
+import com.github.se.gatherspot.FirebaseCollection
+import com.github.se.gatherspot.IdListFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -88,6 +90,13 @@ class EventUtils {
    */
   fun deleteEvent(event: Event) {
     // Remove the event from all the users who registered for it
+    val idListFirebase = IdListFirebaseConnection()
+    event.registeredUsers.forEach { userID ->
+      val registeredEvents =
+        idListFirebase.updateFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS.name) {}
+      registeredEvents.remove(event.id)
+      idListFirebase.saveToFirebase(registeredEvents)
+    }
     EventFirebaseConnection.delete(event.id)
   }
 

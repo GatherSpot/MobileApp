@@ -47,7 +47,7 @@ data class Event(
   val inscriptionLimitTime: LocalTime?,
   val eventStatus: EventStatus = EventStatus.DRAFT,
   val categories: Set<Interests>? = emptySet(),
-  val organizer: Profile = Profile.test(),
+  val organizer: Profile = Profile.testOrganizer(),
   // List of the IDs of the users who registered for the event
   val registeredUsers: MutableList<String> = mutableListOf(),
   val finalAttendees: List<String>? = emptyList(),

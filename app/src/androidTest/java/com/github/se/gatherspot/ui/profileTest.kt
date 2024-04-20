@@ -73,7 +73,7 @@ class ProfileInstrumentedTest {
 
   @Test
   fun profileScreenTest() {
-    composeTestRule.setContent { ProfileView().ProfileScreen(ProfileViewModel(Profile.test())) }
+    composeTestRule.setContent { ProfileView().ProfileScreen(ProfileViewModel(Profile.testOrganizer())) }
     // check if things are here :
     composeTestRule
       .onNodeWithContentDescription("username")

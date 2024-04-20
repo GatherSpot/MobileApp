@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model
 
-import android.util.Log
 import com.github.se.gatherspot.CollectionClass
 
 // NOTE : I will add interests once theses are pushed
@@ -14,11 +13,11 @@ import com.github.se.gatherspot.CollectionClass
  * @param id the id of the user
  */
 class Profile(
-    private var _userName: String,
-    private var _bio: String,
-    private var _image: String,
-    override val id: String,
-    private var _interests: Set<Interests>,
+  private var _userName: String,
+  private var _bio: String,
+  private var _image: String,
+  override val id: String,
+  private var _interests: Set<Interests>,
 ) : CollectionClass() {
   var userName: String
     get() = _userName
@@ -29,7 +28,8 @@ class Profile(
       }
       if (!regex.matches(value)) {
         throw IllegalArgumentException(
-            "Username can only contain letters, spaces, hyphens, and underscores")
+          "Username can only contain letters, spaces, hyphens, and underscores"
+        )
       }
       if (value.length > 20) {
         throw IllegalArgumentException("Username cannot be longer than 20 characters")
@@ -41,8 +41,7 @@ class Profile(
     get() = _bio
     set(value) {
       if (value.length > 100) {
-        Log.d("Profile", "Bio too long")
-        return
+        throw IllegalArgumentException("Bio cannot be longer than 100 characters")
       }
       _bio = value
     }
@@ -60,8 +59,12 @@ class Profile(
     }
 
   companion object {
-    fun test(): Profile {
+    fun testOrganizer(): Profile {
       return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))
+    }
+
+    fun testParticipant(): Profile {
+      return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
     }
   }
 

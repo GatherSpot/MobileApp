@@ -63,6 +63,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
   val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
   // TODO : this fails when not logged in : try to find a solution to enable tests more cleanly
   val isOrganizer = event.organizer.id == (Firebase.auth.currentUser?.uid ?: "TEST")
+  println("Is organizer: $isOrganizer, ${event.organizer.id}, ${Firebase.auth.currentUser?.uid}")
   val eventUtils = EventUtils()
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
