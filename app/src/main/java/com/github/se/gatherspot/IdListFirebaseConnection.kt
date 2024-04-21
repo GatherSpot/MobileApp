@@ -9,8 +9,9 @@ class IdListFirebaseConnection {
   private val db = Firebase.firestore
   private val logTag = "IdListFirebaseConnection"
 
-  fun updateFromFirebase(uid: String, tag: String, update: () -> Unit): IdList {
-    val idSet = IdList.empty(uid, tag)
+  fun updateFromFirebase(uid: String, category: FirebaseCollection, update: () -> Unit): IdList {
+    val tag = category.name
+    val idSet = IdList.empty(uid, category)
     db.collection(tag)
         .document(uid)
         .get()
@@ -32,7 +33,7 @@ class IdListFirebaseConnection {
   }
 
   fun saveToFirebase(idSet: IdList) {
-    val tag = idSet.typeTag
+    val tag = idSet.collection.name
     val id = idSet.id
     // TODO : check if this good way to store data
     val data = hashMapOf("ids" to idSet.events.toList())
@@ -43,8 +44,8 @@ class IdListFirebaseConnection {
         .addOnFailureListener { e -> Log.w(logTag, "Error writing document", e) }
   }
 
-  fun deleteFromFirebase(id: String, tag: String) {
-    db.collection(tag)
+  fun deleteFromFirebase(id: String, tag: FirebaseCollection) {
+    db.collection(tag.name)
         .document(id)
         .delete()
         .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully deleted!") }

@@ -2,12 +2,12 @@ package com.github.se.gatherspot
 
 import com.github.se.gatherspot.model.IdList
 import junit.framework.TestCase.assertEquals
-import kotlin.random.Random
 import org.junit.After
 import org.junit.Test
+import kotlin.random.Random
 
 class IdListFirebaseConnectionTest {
-  private val tag = FirebaseCollection.REGISTERED_EVENTS.name
+  private val tag = FirebaseCollection.REGISTERED_EVENTS
   private val id = "TEST"
   private val randString = Random.nextInt(1000).toString()
 

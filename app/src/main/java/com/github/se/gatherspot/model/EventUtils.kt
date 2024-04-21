@@ -7,15 +7,15 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
-import java.io.IOException
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
+import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 private const val ELEMENTS_TO_DISPLAY = 5
 
@@ -92,7 +92,7 @@ class EventUtils {
     val idListFirebase = IdListFirebaseConnection()
     event.registeredUsers.forEach { userID ->
       val registeredEvents =
-          idListFirebase.updateFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS.name) {}
+          idListFirebase.updateFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
       registeredEvents.remove(event.id)
       idListFirebase.saveToFirebase(registeredEvents)
     }
