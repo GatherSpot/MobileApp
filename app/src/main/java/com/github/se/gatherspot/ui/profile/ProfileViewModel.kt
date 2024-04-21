@@ -80,4 +80,10 @@ class ProfileViewModel(profile: Profile) {
   val bio: String = profile.bio
   val image: String = profile.image
   val interests: Set<Interests> = profile.interests
+  fun follow(){
+    // TODO : implement this when idLists are pushed
+  }
+  fun addFriend(){
+    // TODO : implement this when idLists are pushed
+  }
 }
