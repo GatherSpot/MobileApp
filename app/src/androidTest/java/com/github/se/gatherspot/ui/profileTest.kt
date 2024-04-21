@@ -13,13 +13,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.profile.ProfileView
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import org.junit.Rule
-import org.junit.Test //    // inject a dummyLogin or this will not work
+import org.junit.Test
 import org.junit.runner.RunWith
 
 // NOTE: For ui tests to work, and to make app accessible, please ADD CONTENT DESCRIPTION TO EVERY
@@ -29,6 +28,7 @@ import org.junit.runner.RunWith
 class ProfileInstrumentedTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @Test
@@ -70,11 +70,7 @@ class ProfileInstrumentedTest {
 
   @Test
   fun profileScreenTest() {
-    composeTestRule.setContent {
-      ProfileView()
-          .ProfileScreen(
-              ProfileViewModel(Profile("John Doe", "I am not a bot", "", "12", emptySet())))
-    }
+    composeTestRule.setContent { ProfileView().ProfileScreen(ProfileViewModel("TEST")) }
     // check if things are here :
     composeTestRule
         .onNodeWithContentDescription("username")

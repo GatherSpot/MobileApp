@@ -37,13 +37,12 @@ class OwnProfileViewModel : ViewModel() {
 
   fun save() {
     _profile =
-      Profile(
-        username.value ?: "",
-        bio.value ?: "",
-        image.value ?: "",
-        "",
-        interests.value ?: mutableSetOf()
-      )
+        Profile(
+            username.value ?: "",
+            bio.value ?: "",
+            image.value ?: "",
+            "",
+            interests.value ?: mutableSetOf())
     // next: THIS NEEDS SANITIZATION
     ProfileFirebaseConnection().dummySave(_profile)
   }
@@ -77,13 +76,20 @@ class OwnProfileViewModel : ViewModel() {
 }
 
 class ProfileViewModel(uid: String) {
-  //TODO: replace this line with the firebase implementation when it is pulled into main and it should work
-  //private val profile = ProfileFirebaseConnection().updateFromFirebase(uid){update()}
+  // TODO: replace this line with the firebase implementation when it is pulled into main and it
+  // should work
+  // private val profile = ProfileFirebaseConnection().updateFromFirebase(uid){update()}
   private val _profile = Profile("John Doe", "I am not a bot", "", "TEST", setOf())
   private val _username = MutableLiveData<String>()
   private val _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
   private val _interests = MutableLiveData<Set<Interests>>()
+
+  // TODO : remove init at the same time
+  init {
+    update()
+  }
+
   val username: LiveData<String>
     get() = _username
 
@@ -96,7 +102,7 @@ class ProfileViewModel(uid: String) {
   val interests: LiveData<Set<Interests>>
     get() = _interests
 
-  fun update() {
+  private fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _image.value = _profile.image
