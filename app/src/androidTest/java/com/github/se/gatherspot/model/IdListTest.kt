@@ -4,7 +4,7 @@ import com.github.se.gatherspot.FirebaseCollection
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
-public class IdListTest {
+class IdListTest {
   @Test
   fun addTest() {
     val idList = IdList.empty("id", FirebaseCollection.REGISTERED_EVENTS)
