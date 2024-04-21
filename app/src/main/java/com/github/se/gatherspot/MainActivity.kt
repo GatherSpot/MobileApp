@@ -30,6 +30,7 @@ import com.github.se.gatherspot.ui.Map
 import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
+import com.github.se.gatherspot.ui.ViewProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
@@ -50,11 +51,11 @@ class MainActivity : ComponentActivity() {
     val eventsViewModel = EventsViewModel()
 
     signInLauncher =
-        registerForActivityResult(
-            FirebaseAuthUIActivityResultContract(),
-        ) { res ->
-          this.onSignInResult(res, navController)
-        }
+      registerForActivityResult(
+        FirebaseAuthUIActivityResultContract(),
+      ) { res ->
+        this.onSignInResult(res, navController)
+      }
 
     setContent {
       GatherSpotTheme {
@@ -73,12 +74,14 @@ class MainActivity : ComponentActivity() {
               composable("event/{eventJson}") { backStackEntry ->
                 val gson = Gson()
                 val eventObject =
-                    gson.fromJson(
-                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+                  gson.fromJson(
+                    backStackEntry.arguments?.getString("eventJson"), Event::class.java
+                  )
                 EventUI(
-                    event = eventObject!!,
-                    navActions = NavigationActions(navController),
-                    viewModel = EventRegistrationViewModel())
+                  event = eventObject!!,
+                  navActions = NavigationActions(navController),
+                  viewModel = EventRegistrationViewModel()
+                )
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -89,6 +92,11 @@ class MainActivity : ComponentActivity() {
 
               composable("profile") {
                 Profile(NavigationActions(navController), OwnProfileViewModel())
+              }
+              composable("viewProfile/{uid}") { backstackEntry ->
+                backstackEntry.arguments?.getString("uid")?.let {
+                  ViewProfile(NavigationActions(navController), it)
+                }
               }
               composable("createEvent") {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
@@ -103,8 +111,8 @@ class MainActivity : ComponentActivity() {
   }
 
   private fun onSignInResult(
-      result: FirebaseAuthUIAuthenticationResult,
-      navController: NavHostController
+    result: FirebaseAuthUIAuthenticationResult,
+    navController: NavHostController
   ): Int {
     if (result.resultCode == RESULT_OK) {
       if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {

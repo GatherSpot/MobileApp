@@ -29,6 +29,11 @@ fun Profile(nav: NavigationActions, viewModel: OwnProfileViewModel) {
   }
 }
 
+@Composable
+fun ViewProfile(nav: NavigationActions, uid: String) {
+  ProfileView().ProfileScreen(ProfileViewModel(uid))
+}
+
 // Those preview should show you all the functions you can call when it comes to profiles
 @Preview
 @Composable
@@ -42,5 +47,5 @@ fun ProfilePreview() {
 fun ViewProfilePreview() {
   val set: Set<Interests> = setOf(Interests.FOOTBALL, Interests.CHESS)
   val profile = Profile("John Doe", "I am not a bot", "", "", set)
-  ProfileView().ProfileScreen(ProfileViewModel(profile))
+  ProfileView().ProfileScreen(ProfileViewModel("TEST"))
 }
