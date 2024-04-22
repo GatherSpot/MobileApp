@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.CollectionClass
-import com.github.se.gatherspot.model.chat.Chat
 
 // NOTE : I will add interests once theses are pushed
 /**
@@ -23,7 +22,8 @@ class Profile(
   var bio: String = _bio
   var image: String = _image
   var interests: Set<Interests> = _interests
-  var chats: Set<Chat> = setOf()
+  val registeredEvents = mutableListOf<String>() // list of event ids
+  val chats = mutableListOf<String>() // list of chat ids
 
   constructor() : this("", "", "", "", setOf())
 }

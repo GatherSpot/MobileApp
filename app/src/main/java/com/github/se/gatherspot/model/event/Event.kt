@@ -12,7 +12,7 @@ import java.time.LocalTime
 /**
  * Data class for an event
  *
- * @param eventID: The unique identifier of the event
+ * @param id: The unique identifier of the event
  * @param title: The title of the event
  * @param description: A short description of the event
  * @param location: The location of the event (GPS coordinates)
@@ -47,10 +47,10 @@ data class Event(
     val inscriptionLimitTime: LocalTime?,
     val eventStatus: EventStatus = EventStatus.DRAFT,
     val categories: Set<Interests>? = emptySet(),
-    // List of the IDs of the users who registered for the event
     val organizer: Profile = Profile("", "", "", "", setOf()),
-    val registeredUsers: List<Profile>? = emptyList(),
-    val finalAttendees: List<Profile>? = emptyList(),
+    // List of the IDs of the users who registered for the event
+    val registeredUsers: MutableList<String> = mutableListOf(),
+    val finalAttendees: List<String>? = emptyList(),
     // Find a way to upload image
     var images: ImageBitmap? =
         ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image

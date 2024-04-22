@@ -10,18 +10,17 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   override val TAG = "ProfileFirebase"
 
   override fun getFromDocument(d: DocumentSnapshot): Profile? {
-    if (d.getString("uid") == null) {
-      return null
-    }
-    val uid = d.getString("uid")!!
-    val name = d.getString("name")!!
-    val bio = d.getString("bio")!!
-    val image = d.getString("image")!!
-    val interests = d.get("interests") as Set<Interests>
-    return Profile(name, bio, image, uid, interests)
+    TODO("Not yet implemented")
   }
 
   override fun add(element: Profile) {}
+
+  fun deleteProfile(uid: String) {}
+
+  fun fetchProfile(uid: String): Profile {
+
+    return Profile()
+  }
 
   fun updateProfile(profile: Profile) {}
   // THE NEXT THREE ARE USED FOR TESTS
@@ -34,7 +33,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   fun dummyFetch(): Profile {
     if (!::dummyProfile.isInitialized) {
       dummyProfile =
-          Profile("John Doe", "I am not a bot", "", "", setOf(Interests.BOWLING, Interests.CHESS))
+        Profile("John Doe", "I am not a bot", "", "", setOf(Interests.BOWLING, Interests.CHESS))
     }
     return dummyProfile
   }
