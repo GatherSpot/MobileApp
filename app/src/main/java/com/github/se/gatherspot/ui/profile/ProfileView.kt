@@ -49,7 +49,7 @@ class ProfileView {
   @Composable
   fun ViewOwnProfile(
       nav: NavigationActions,
-      viewModel: OwnProfileViewModel,
+      viewModel: ProfileViewModel,
       navController: NavController
   ) {
     Scaffold(
@@ -74,7 +74,7 @@ class ProfileView {
   @Composable
   fun EditOwnProfile(
       nav: NavigationActions,
-      viewModel: OwnProfileViewModel,
+      viewModel: ProfileViewModel,
       navController: NavController
   ) {
     Scaffold(
@@ -170,7 +170,7 @@ class ProfileView {
   }
 
   @Composable
-  private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
+  private fun ViewOwnProfileContent(viewModel: ProfileViewModel, navController: NavController) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
     val username by viewModel.username.observeAsState("")
@@ -187,7 +187,7 @@ class ProfileView {
   }
 
   @Composable
-  private fun EditOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
+  private fun EditOwnProfileContent(viewModel: ProfileViewModel, navController: NavController) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
     val username by viewModel.username.observeAsState("")
@@ -220,10 +220,10 @@ class ProfileView {
     val interests = viewModel.interests
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-      ProfileImage(imageUri, {}, false)
-      UsernameField(username, {}, false)
-      BioField(bio, {}, false)
-      InterestsView().ShowInterests(interests)
+      ProfileImage(imageUri.toString(), {}, false)
+      UsernameField(username.toString(), {}, false)
+      BioField(bio.toString(), {}, false)
+      InterestsView().ShowInterests(interests.value!!)
     }
   }
 }
