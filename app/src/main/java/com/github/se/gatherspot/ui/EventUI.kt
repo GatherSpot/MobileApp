@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -30,6 +31,9 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,17 +43,37 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun EventUI(event: Event, navActions: NavigationActions) {
+fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
+
+  val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
+  val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
+  val isOrganizer = event.organizer.id == MainActivity.uid
+  val eventUtils = EventUtils()
+  val registrationState by viewModel.registrationState.observeAsState()
+  val isButtonEnabled = registrationState == null
+  val buttonText =
+      when (registrationState) {
+        is RegistrationState.Success -> "Registered"
+        is RegistrationState.Error ->
+            if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
+            else "Registered"
+        else -> "Register"
+      }
+
   Scaffold(
       modifier = Modifier.testTag("EventUIScreen"),
       topBar = {
@@ -65,7 +89,28 @@ fun EventUI(event: Event, navActions: NavigationActions) {
                         contentDescription = "Go back to overview")
                   }
             },
-        )
+            actions = {
+              if (isOrganizer) {
+                // Edit button
+                IconButton(
+                    onClick = { /* TODO : handle the navigation. navActions.controller.navigate("editEvent")*/},
+                    modifier = Modifier.testTag("editEventButton")) {
+                      Icon(
+                          modifier = Modifier.size(24.dp).testTag("editEventIcon"),
+                          painter = painterResource(id = R.drawable.edit),
+                          contentDescription = "Edit event")
+                    }
+                // Delete button
+                IconButton(
+                    onClick = { viewModel.clickDeleteButton() },
+                    modifier = Modifier.testTag("deleteEventButton")) {
+                      Icon(
+                          modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
+                          painter = painterResource(id = R.drawable.delete),
+                          contentDescription = "Delete event")
+                    }
+              }
+            })
       }) { innerPadding ->
         Column(
             modifier =
@@ -182,13 +227,70 @@ fun EventUI(event: Event, navActions: NavigationActions) {
 
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
-              Button(
-                  onClick = { /* TODO register user: Doing this in another task */},
-                  modifier = Modifier.fillMaxWidth().testTag("registerButton"),
-                  colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-                    Text("Register", color = Color.White)
-                  }
+
+              if (!isOrganizer) {
+                Button(
+                    onClick = {
+                      viewModel.registerForEvent(event)
+                      viewModel.clickRegisterButton()
+                    },
+                    enabled = isButtonEnabled,
+                    modifier = Modifier.fillMaxWidth().testTag("registerButton"),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
+                      Text(buttonText, color = Color.White)
+                    }
+              }
             }
+
+        if (showDialogRegistration!!) {
+          AlertDialog(
+              modifier = Modifier.testTag("alertBox"),
+              onDismissRequest = { viewModel.dismissAlert() },
+              title = { Text("Registration Result") },
+              text = {
+                when (val state = registrationState) {
+                  is RegistrationState.Success -> Text("You have been successfully registered!")
+                  is RegistrationState.Error -> Text(state.message)
+                  else -> Text("Unknown state")
+                }
+              },
+              confirmButton = {
+                Button(
+                    modifier = Modifier.testTag("okButton"),
+                    onClick = { viewModel.dismissAlert() }) {
+                      Text("OK")
+                    }
+              })
+        }
+
+        if (showDialogDelete!!) {
+          AlertDialog(
+              modifier = Modifier.testTag("alertBox"),
+              onDismissRequest = { viewModel.dismissAlert() },
+              title = { Text("Delete Event") },
+              text = {
+                Text("Are you sure you want to delete this event? This action cannot be undone.")
+              },
+              confirmButton = {
+                Button(
+                    modifier = Modifier.testTag("okButton"),
+                    onClick = {
+                      // Delete the event
+                      eventUtils.deleteEvent(event)
+                      navActions.goBack()
+                      viewModel.dismissAlert()
+                    }) {
+                      Text("Delete")
+                    }
+              },
+              dismissButton = {
+                Button(
+                    modifier = Modifier.testTag("cancelButton"),
+                    onClick = { viewModel.dismissAlert() }) {
+                      Text("Cancel")
+                    }
+              })
+        }
       }
 }
 
