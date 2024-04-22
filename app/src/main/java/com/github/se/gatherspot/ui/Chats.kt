@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,7 +17,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -61,26 +61,26 @@ fun Chats(viewModel: ChatViewModel, nav: NavigationActions) {
               modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
               horizontalArrangement = Arrangement.Center,
               verticalAlignment = Alignment.CenterVertically) {
-                ExtendedFloatingActionButton(
-                    onClick = { nav.controller.navigate("createChat") },
-                    icon = {
-                      Icon(
-                          imageVector = Icons.Default.Add,
-                          contentDescription = null,
-                          modifier = Modifier.testTag("createChat"))
-                    },
-                    text = {
-                      Text(text = "Chat", fontSize = 18.sp, modifier = Modifier.testTag("textChat"))
-                    },
-                    modifier = Modifier.size(50.dp))
-              }
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = "Add chat", fontSize = 18.sp, modifier = Modifier.testTag("AddChat"))
+                Spacer(modifier = Modifier.width(10.dp))
+                Box {
+                  Icon(
+                      imageVector = Icons.Default.Add,
+                      contentDescription = null,
+                      modifier =
+                          Modifier.clickable { nav.controller.navigate("createChat") }
+                              .testTag("createChatMenu"))
+                }
+                Spacer(modifier = Modifier.width(10.dp))
 
-          if (loading) {
-            Text("Loading next chats ... Keep scrolling")
-          }
-          if (fetched) {
-            Text("Fetched next chats")
-          }
+                if (loading) {
+                  Text("Loading next chats ... Keep scrolling")
+                }
+                if (fetched) {
+                  Text("Fetched next chats")
+                }
+              }
         }
       },
       bottomBar = {

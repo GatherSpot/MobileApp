@@ -12,37 +12,43 @@ import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
 
-  val ProfileFirebaseConnection = ProfileFirebaseConnection()
-
   val PAGE_SIZE: Long = 9
   private var _uiState = MutableStateFlow(ChatUIState())
   val uiState: StateFlow<ChatUIState> = _uiState
 
-  init {
+
+    // This init block needs to be deleted in real use!!!
+    // This is only to simulate the data fetching before the user class is well implemented in code
+    // and in Firebase
+init {
     viewModelScope.launch {
-      // val nextChats =
-      //    (ProfileFirebaseConnection.fetch(FirebaseAuth.getInstance().currentUser!!.uid) as
-      // Profile)
-      //        .chats
-      // TODO in real app, we would use the commented code above
-      val chatFirebase = ChatFirebaseConnection()
-      val nextChats = chatFirebase.fetchNextChats(5)
-      _uiState.value =
-          ChatUIState(
-              nextChats
-                  .map {
-                    ChatWithIndicator(it, it.messages.count { message -> message.read == false })
-                  }
-                  .toMutableSet())
+        val chats =
+            listOf(
+                ChatFirebaseConnection().fetch("-NvgK6Aqo7lV01S27jVp")!!,
+                ChatFirebaseConnection().fetch("-NvgLLs9rCbpvRhOeOfx")!!,
+                ChatFirebaseConnection().fetch("-NvgLa_oDM6QcBPzsHFo")!!,
+            )
+
+        val newChats =
+            _uiState.value.list.apply {
+                addAll(
+                    chats.map {
+                        ChatWithIndicator(
+                            it,
+                            it.messages.count { message -> message.read == false })
+                    })
+            }
+        _uiState.value = ChatUIState(newChats)
     }
-  }
+}
 
   suspend fun fetchNext() {
-    val nextChats = (ProfileFirebaseConnection.fetch(MainActivity.uid) as Profile).chats
+
+    val chats = ChatFirebaseConnection().fetchNextChats(PAGE_SIZE)
     val newChats =
         _uiState.value.list.apply {
           addAll(
-              nextChats.map {
+              chats.map {
                 ChatWithIndicator(it, it.messages.count { message -> message.read == false })
               })
         }
