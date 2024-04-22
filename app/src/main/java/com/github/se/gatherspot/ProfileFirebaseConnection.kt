@@ -33,7 +33,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   fun dummyFetch(): Profile {
     if (!::dummyProfile.isInitialized) {
       dummyProfile =
-        Profile("John Doe", "I am not a bot", "", "", setOf(Interests.BOWLING, Interests.CHESS))
+          Profile("John Doe", "I am not a bot", "", "", setOf(Interests.BOWLING, Interests.CHESS))
     }
     return dummyProfile
   }

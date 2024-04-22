@@ -16,12 +16,11 @@ class ChatFirebaseConnectionTest {
   fun testAddAndFetchChat() = runTest {
     val chatID = ChatFirebaseConnection.getNewID()
     val chat =
-      Chat(
-        chatID,
-        listOf("1", "2"),
-        "",
-        listOf(Message("0", "1", "Hello", Timestamp.now(), false))
-      )
+        Chat(
+            chatID,
+            listOf("1", "2"),
+            "",
+            listOf(Message("0", "1", "Hello", Timestamp.now(), false)))
 
     ChatFirebaseConnection.add(chat)
     var resultChat: Chat? = null
@@ -47,23 +46,24 @@ class ChatFirebaseConnectionTest {
     Assert.assertEquals(chat, null)
   }
 
-// Commented out until everything else is implemented
-//  @Test
-//  fun fetchNextReturnsDistinctChats() =
-//      runTest(timeout = Duration.parse("20s")) {
-//        val numberOfChats =
-//            Firebase.firestore.collection(ChatFirebaseConnection.CHATS).get().await().documents.size
-//        val round = 5
-//        val listOfChats1 = ChatFirebaseConnection.fetchNextChats(round.toLong())
-//        Assert.assertEquals(round, listOfChats1.size)
-//        val listOfChats2 = ChatFirebaseConnection.fetchNextChats(round.toLong())
-//        Assert.assertEquals(round, listOfChats2.size)
-//
-//        listOfChats1.forEach { chat1 ->
-//          listOfChats2.forEach { chat2 -> Assert.assertNotEquals(chat1.id, chat2.id) }
-//        }
-//
-//        ChatFirebaseConnection.offset = null
-//      }
-//
+  // Commented out until everything else is implemented
+  //  @Test
+  //  fun fetchNextReturnsDistinctChats() =
+  //      runTest(timeout = Duration.parse("20s")) {
+  //        val numberOfChats =
+  //
+  // Firebase.firestore.collection(ChatFirebaseConnection.CHATS).get().await().documents.size
+  //        val round = 5
+  //        val listOfChats1 = ChatFirebaseConnection.fetchNextChats(round.toLong())
+  //        Assert.assertEquals(round, listOfChats1.size)
+  //        val listOfChats2 = ChatFirebaseConnection.fetchNextChats(round.toLong())
+  //        Assert.assertEquals(round, listOfChats2.size)
+  //
+  //        listOfChats1.forEach { chat1 ->
+  //          listOfChats2.forEach { chat2 -> Assert.assertNotEquals(chat1.id, chat2.id) }
+  //        }
+  //
+  //        ChatFirebaseConnection.offset = null
+  //      }
+  //
 }
