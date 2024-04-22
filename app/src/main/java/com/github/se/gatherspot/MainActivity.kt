@@ -18,9 +18,11 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.chat.Chat
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.ui.Chat
+import com.github.se.gatherspot.ui.ChatUI
+import com.github.se.gatherspot.ui.Chats
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
 import com.github.se.gatherspot.ui.EventUI
@@ -31,7 +33,7 @@ import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.profile.ProfileViewModel
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -48,7 +50,6 @@ class MainActivity : ComponentActivity() {
 
     super.onCreate(savedInstanceState)
     val eventsViewModel = EventsViewModel()
-    val chatViewModel = ChatViewModel()
 
     signInLauncher =
         registerForActivityResult(
@@ -83,10 +84,16 @@ class MainActivity : ComponentActivity() {
 
               composable("community") { Community(NavigationActions(navController)) }
 
-              composable("chat") { Chat(chatViewModel, NavigationActions(navController)) }
+              composable("chat") { Chats(ChatViewModel(), NavigationActions(navController)) }
+              composable("chat/{chatJson}") { backStackEntry ->
+                val gson = Gson()
+                val chatObject =
+                    gson.fromJson(backStackEntry.arguments?.getString("chatJson"), Chat::class.java)
+                ChatUI(chatObject!!, NavigationActions(navController))
+              }
 
               composable("profile") {
-                Profile(NavigationActions(navController), ProfileViewModel())
+                Profile(NavigationActions(navController), OwnProfileViewModel())
               }
               composable("createEvent") {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())

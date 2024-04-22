@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.profile.ProfileView
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
 
@@ -19,7 +20,7 @@ import com.github.se.gatherspot.ui.profile.ProfileViewModel
  * bottom navigation bar.
  */
 @Composable
-fun Profile(nav: NavigationActions, viewModel: ProfileViewModel) {
+fun Profile(nav: NavigationActions, viewModel: OwnProfileViewModel) {
   // This new navController will navigate between seeing profile and editing profile
   val navController = rememberNavController()
   NavHost(navController, startDestination = "view") {
@@ -33,7 +34,7 @@ fun Profile(nav: NavigationActions, viewModel: ProfileViewModel) {
 @Composable
 fun ProfilePreview() {
   val navController = rememberNavController()
-  Profile(NavigationActions(navController), ProfileViewModel())
+  Profile(NavigationActions(navController), OwnProfileViewModel())
 }
 
 @Preview

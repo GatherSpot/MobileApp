@@ -74,4 +74,10 @@ class OwnProfileViewModel : ViewModel() {
     println("Interests: $_interests")
   }
 }
-class ProfileViewModel()
+
+class ProfileViewModel(profile: Profile) {
+  val username: String = profile.userName
+  val bio: String = profile.bio
+  val image: String = profile.image
+  val interests: Set<Interests> = profile.interests
+}
