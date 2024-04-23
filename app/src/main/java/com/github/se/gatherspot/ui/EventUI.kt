@@ -41,8 +41,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventUtils
@@ -51,6 +53,7 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
+import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -183,7 +186,12 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                           .background(Color.Gray)
                           .testTag("mapView")) {
                     // Here should be the code to integrate the actual map
-                    BasicText(text = "Map Placeholder")
+                  event.location?.let { location ->
+                      GeoMap(
+                          userCoordinates = location,
+                          interestsCoordinates = emptyList(),
+                          mapViewModifier = Modifier.fillMaxWidth().height(200.dp))
+                  } ?: BasicText(text = "No location provided for this event")
                   }
               // Event Dates and Times
               Spacer(modifier = Modifier.height(16.dp))
@@ -335,4 +343,35 @@ fun ProfileIndicator(profile: Profile) {
         Spacer(modifier = Modifier.width(4.dp))
         Text(text = profile.userName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
       }
+}
+
+// Preview for the Event UI, for testing purposes
+@Preview
+@Composable
+fun EventUIPreview() {
+    // Set global uid for testing
+    MainActivity.uid = "testProfileId"
+    val event =
+        Event(
+            id = "idTestEvent",
+            title = "Event Title",
+            description =
+            "Hello: I am a description of the event just saying that I would love to say" +
+                    "that Messi is not the best player in the world, but I can't. I am sorry.",
+            attendanceMaxCapacity = 5,
+            attendanceMinCapacity = 1,
+            categories = setOf(Interests.BASKETBALL),
+            eventEndDate = null,
+            eventStartDate = null,
+            globalRating = null,
+            inscriptionLimitDate = null,
+            inscriptionLimitTime = null,
+            location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
+            registeredUsers = mutableListOf(),
+            timeBeginning = null,
+            timeEnding = null,
+            organizer = Profile("test", "Test User", "", "", setOf())
+        )
+    val viewModel = EventRegistrationViewModel()
+    EventUI(event = event, navActions = NavigationActions(rememberNavController()), viewModel = viewModel)
 }

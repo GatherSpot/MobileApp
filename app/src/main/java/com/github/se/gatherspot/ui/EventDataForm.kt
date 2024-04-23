@@ -106,7 +106,6 @@ fun EventDataForm(
   var locationName by remember { mutableStateOf("") }
   var categories: MutableList<Interests> = remember { mutableStateListOf() }
   // Flow for query text input
-  val queryText = MutableStateFlow("")
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
 
   // Coroutine scope for launching coroutines
