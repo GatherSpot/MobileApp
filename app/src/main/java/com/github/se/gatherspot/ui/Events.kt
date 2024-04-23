@@ -94,7 +94,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                                 showDropdownMenu = !showDropdownMenu
                                 if (!showDropdownMenu) {
                                   viewModel.filter(interestsSelected)
-                                  interestsSelected = mutableListOf()
+                               //   interestsSelected = mutableListOf()
                                 }
                               }
                               .testTag("filterMenu"))
@@ -104,12 +104,13 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                       onDismissRequest = {
                         showDropdownMenu = false
                         viewModel.filter(interestsSelected)
-                        interestsSelected = mutableListOf()
+                     //   interestsSelected = mutableListOf()
                       }) {
                         DropdownMenuItem(
                             text = { Text("REMOVE FILTER") },
                             onClick = {
                               viewModel.removeFilter()
+                              interestsSelected = mutableListOf()
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.Clear, "clear") })
@@ -124,8 +125,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                     modifier = Modifier.clickable { fetch = true }.testTag("refresh"))
                 LaunchedEffect(fetch) {
                   if (fetch) {
-                    Log.d(TAG, "entered")
-                    viewModel.fetchNext()
+                    Log.d(TAG, "entered with $interestsSelected")
+                    viewModel.fetchNext(interestsSelected)
                     fetch = false
                   }
                 }
@@ -167,7 +168,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
         val lazyState = rememberLazyListState()
         Log.d(TAG, "size = " + events.size.toString())
         when {
-          events.isEmpty() -> Empty(viewModel)
+          events.isEmpty() -> Empty(viewModel, interestsSelected)
           else -> {
             LazyColumn(
                 state = lazyState,
@@ -186,7 +187,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
               if (lazyState.isScrollInProgress && isAtBottom && downwards) {
                 loading = true
                 delay(1000)
-                viewModel.fetchNext()
+                viewModel.fetchNext(interestsSelected)
                 fetched = true
               }
             }
@@ -197,7 +198,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
-  val EventFirebaseConnection = com.github.se.gatherspot.EventFirebaseConnection()
+  val eventFirebaseConnection = com.github.se.gatherspot.EventFirebaseConnection()
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
@@ -216,13 +217,13 @@ fun EventRow(event: Event, navigation: NavigationActions) {
           Text(
               text =
                   "Start date: ${event.eventStartDate?.
-                format(DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))}",
+                format(DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT))}",
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
           Text(
               text =
                   "End date: ${event.eventEndDate?.
-                format(DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))}",
+                format(DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT))}",
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
           Text(text = event.title, fontSize = 14.sp)
@@ -247,14 +248,17 @@ fun EventRow(event: Event, navigation: NavigationActions) {
 }
 
 @Composable
-fun Empty(viewModel: EventsViewModel) {
+fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>) {
   Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
       Text("No events matched your query")
       Text(
           "Remove filter",
           color = Color.Blue,
-          modifier = Modifier.clickable { viewModel.removeFilter() })
+          modifier = Modifier.clickable {
+              viewModel.removeFilter()
+              interests.removeAll{ true }
+          })
     }
   }
 }
