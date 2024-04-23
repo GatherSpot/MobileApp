@@ -94,7 +94,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                                 showDropdownMenu = !showDropdownMenu
                                 if (!showDropdownMenu) {
                                   viewModel.filter(interestsSelected)
-                               //   interestsSelected = mutableListOf()
+                                } else {
+                                  interestsSelected = mutableListOf()
                                 }
                               }
                               .testTag("filterMenu"))
@@ -104,7 +105,6 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                       onDismissRequest = {
                         showDropdownMenu = false
                         viewModel.filter(interestsSelected)
-                     //   interestsSelected = mutableListOf()
                       }) {
                         DropdownMenuItem(
                             text = { Text("REMOVE FILTER") },
@@ -161,14 +161,16 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
       }) { paddingValues ->
         if (fetch) {
           Text(
-              modifier = Modifier.testTag("fetch").padding(vertical = 30.dp),
-              text = "Fetching new events...")
+              modifier = Modifier.testTag("fetch").padding(vertical = 40.dp),
+              text = "Fetching new events matching: ${interestsSelected.joinToString(", ")}",
+              fontSize = 12.sp)
         }
+        Spacer(modifier = Modifier.height(10.dp))
         val events = state.value.list
         val lazyState = rememberLazyListState()
         Log.d(TAG, "size = " + events.size.toString())
         when {
-          events.isEmpty() -> Empty(viewModel, interestsSelected)
+          events.isEmpty() -> Empty(viewModel, interestsSelected) { fetch = true }
           else -> {
             LazyColumn(
                 state = lazyState,
@@ -248,17 +250,22 @@ fun EventRow(event: Event, navigation: NavigationActions) {
 }
 
 @Composable
-fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>) {
+fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: () -> Unit) {
   Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-      Text("No events matched your query")
-      Text(
-          "Remove filter",
-          color = Color.Blue,
-          modifier = Modifier.clickable {
-              viewModel.removeFilter()
-              interests.removeAll{ true }
-          })
+      Text("No loaded events matched your query")
+      Row {
+        Text(
+            "Remove filter ",
+            color = Color.Blue,
+            modifier =
+                Modifier.clickable {
+                  viewModel.removeFilter()
+                  interests.removeAll { true }
+                })
+        Text("or ")
+        Text("try loading new ones", color = Color.Blue, modifier = Modifier.clickable { fetch() })
+      }
     }
   }
 }
@@ -273,8 +280,10 @@ fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Int
       onClick = {
         selected = !selected
         if (selected) {
+          Log.d(TAG, "added ${interest.name}")
           interestsSelected.add(interest)
         } else {
+          Log.d(TAG, "removed ${interest.name}")
           interestsSelected.remove(interest)
         }
       },

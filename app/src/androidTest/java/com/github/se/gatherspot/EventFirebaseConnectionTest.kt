@@ -4,8 +4,6 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -126,13 +124,6 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchNextReturnsDistinctEvents() =
       runTest(timeout = Duration.parse("20s")) {
-        val numberOfEvents =
-            Firebase.firestore
-                .collection(EventFirebaseConnection.EVENTS)
-                .get()
-                .await()
-                .documents
-                .size
         val round = 5
         val listOfEvents1 = EventFirebaseConnection.fetchNextEvents(round.toLong())
         assertEquals(round, listOfEvents1.size)
@@ -143,6 +134,47 @@ class EventFirebaseConnectionTest {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
+        EventFirebaseConnection.offset = null
+      }
+
+  @Test
+  fun fetchNextBasedOnInterestReturnsCorrectEvents() =
+      runTest(timeout = Duration.parse("20s")) {
+        val round = 5
+        val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
+        val listOfEvents1 =
+            EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+        val listOfEvents2 =
+            EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+        for (i in 0 until round) {
+          assertNotNull(listOfEvents1[i].categories)
+          assertTrue(
+              listOfEvents1[i].categories!!.contains(interests[0]) ||
+                  listOfEvents1[i].categories!!.contains(interests[1]))
+          assertNotNull(listOfEvents2[i].categories)
+          assertTrue(
+              listOfEvents2[i].categories!!.contains(interests[0]) ||
+                  listOfEvents2[i].categories!!.contains(interests[1]))
+        }
+
+        EventFirebaseConnection.offset = null
+      }
+
+  @Test
+  fun fetchNextBasedOnInterestReturnsDistinctEvents() =
+      runTest(timeout = Duration.parse("20s")) {
+        val round = 5
+        val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
+        val listOfEvents1 =
+            EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+        val listOfEvents2 =
+            EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+        for (i in 0 until round) {
+          for (j in 0 until round) {
+            assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
+          }
+        }
+
         EventFirebaseConnection.offset = null
       }
 

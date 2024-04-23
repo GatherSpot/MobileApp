@@ -111,17 +111,17 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         organizer = Profile("null", "null", "null", "null", setOf()))
   }
 
-  private suspend fun eventsFromQuerySnaphot(querySnapshot: QuerySnapshot): MutableList<Event>{
-      val listOfMaps = querySnapshot.documents.map { it.data!! }
-      val listOfEvents = mutableListOf<Event>()
+  private suspend fun eventsFromQuerySnaphot(querySnapshot: QuerySnapshot): MutableList<Event> {
+    val listOfMaps = querySnapshot.documents.map { it.data!! }
+    val listOfEvents = mutableListOf<Event>()
 
-      listOfMaps.forEach { map ->
-          val uid = map["eventID"] as String
-          val event = super.fetch(uid)
-          event?.let { listOfEvents.add(it as Event) }
-      }
+    listOfMaps.forEach { map ->
+      val uid = map["eventID"] as String
+      val event = super.fetch(uid)
+      event?.let { listOfEvents.add(it as Event) }
+    }
 
-      return listOfEvents
+    return listOfEvents
   }
 
   /**
@@ -149,24 +149,32 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     }
 
     return eventsFromQuerySnaphot(querySnapshot)
-
   }
 
-  suspend fun fetchEventsBasedOnInterests(number: Long, l: List<Interests>): MutableList<Event>{
-      val querySnapshot: QuerySnapshot =
-      if(offset == null) {
-          Firebase.firestore.collection(EVENTS).orderBy("eventID")
-              .whereArrayContainsAny("categories", l.map { it.name }).limit(number).get().await()
-      }
-      else{
-          Firebase.firestore.collection(EVENTS).orderBy("eventID")
+  suspend fun fetchEventsBasedOnInterests(number: Long, l: List<Interests>): MutableList<Event> {
+    val querySnapshot: QuerySnapshot =
+        if (offset == null) {
+          Firebase.firestore
+              .collection(EVENTS)
+              .orderBy("eventID")
               .whereArrayContainsAny("categories", l.map { it.name })
-              .startAfter(offset!!.get("eventID")).limit(number).get().await()
-      }
-      if (querySnapshot.documents.isNotEmpty()) {
-          offset = querySnapshot.documents.last()
-      }
-      return eventsFromQuerySnaphot(querySnapshot)
+              .limit(number)
+              .get()
+              .await()
+        } else {
+          Firebase.firestore
+              .collection(EVENTS)
+              .orderBy("eventID")
+              .whereArrayContainsAny("categories", l.map { it.name })
+              .startAfter(offset!!.get("eventID"))
+              .limit(number)
+              .get()
+              .await()
+        }
+    if (querySnapshot.documents.isNotEmpty()) {
+      offset = querySnapshot.documents.last()
+    }
+    return eventsFromQuerySnaphot(querySnapshot)
   }
 
   /**

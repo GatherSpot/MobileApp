@@ -28,24 +28,23 @@ class EventsViewModel : ViewModel() {
     }
   }
 
-  suspend fun fetchNext(l: List<Interests>) {
-    //removeFilter()
+  suspend fun fetchNext(l: MutableList<Interests>) {
+    // removeFilter()
     Log.d(TAG, "previous$previousInterests")
     Log.d(TAG, "current$l")
     val newRequest = l != previousInterests
     Log.d(TAG, newRequest.toString())
-    if(newRequest){
+    if (newRequest) {
       Log.d(TAG, "new request")
       eventFirebaseConnection.offset = null
       loadedFilteredEvents = mutableListOf()
     }
     previousInterests = l.toMutableList()
-    if(l.isEmpty()) {
+    if (l.isEmpty()) {
       val nextEvents = eventFirebaseConnection.fetchNextEvents(PAGESIZE)
       loadedEvents.addAll(nextEvents)
       _uiState.value = UIState(loadedEvents)
-    }
-    else{
+    } else {
       val nextEvents = eventFirebaseConnection.fetchEventsBasedOnInterests(PAGESIZE, l)
       loadedFilteredEvents.addAll(nextEvents)
       _uiState.value = UIState(loadedFilteredEvents)
@@ -58,7 +57,8 @@ class EventsViewModel : ViewModel() {
       return
     }
 
-    val newEvents = loadedEvents.filter { event -> event.categories?.any { it in s } ?: false }.toMutableList()
+    val newEvents =
+        loadedEvents.filter { event -> event.categories?.any { it in s } ?: false }.toMutableList()
     _uiState.value = UIState(newEvents)
   }
 
