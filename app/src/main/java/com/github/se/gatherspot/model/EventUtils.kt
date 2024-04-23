@@ -92,7 +92,7 @@ class EventUtils {
     val idListFirebase = IdListFirebaseConnection()
     event.registeredUsers.forEach { userID ->
       val registeredEvents =
-          idListFirebase.updateFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
+          idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
       registeredEvents.remove(event.id)
       idListFirebase.saveToFirebase(registeredEvents)
     }

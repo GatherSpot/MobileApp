@@ -32,7 +32,7 @@ public class InterestsView {
   fun EditInterests(viewModel: OwnProfileViewModel) {
     val interestList = enumValues<Interests>().toList()
     val set by viewModel.interests.observeAsState(emptySet())
-    val swap = viewModel::swapInterests
+    val swap = viewModel::flipInterests
     FlowRow() {
       // This needs to be computed here since it needs to be recomputed when we change the set,
       // maybe we can make it a lambda or adapt the viewmodel to make it more elegant

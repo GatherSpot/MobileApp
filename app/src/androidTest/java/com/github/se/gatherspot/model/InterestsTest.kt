@@ -21,9 +21,9 @@ class InterestsTest {
   @Test
   fun switchInterestsTest() {
     val interests = setOf<Interests>()
-    val newInterests = Interests.swapInterest(interests, Interests.FOOTBALL)
+    val newInterests = Interests.flipInterest(interests, Interests.FOOTBALL)
     assert(newInterests.contains(Interests.FOOTBALL))
-    val newInterests2 = Interests.swapInterest(newInterests, Interests.FOOTBALL)
+    val newInterests2 = Interests.flipInterest(newInterests, Interests.FOOTBALL)
     assert(!newInterests2.contains(Interests.FOOTBALL))
   }
 }

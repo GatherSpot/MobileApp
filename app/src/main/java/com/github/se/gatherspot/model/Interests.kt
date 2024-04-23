@@ -82,14 +82,14 @@ enum class Interests {
     }
 
     /**
-     * Returns a new set of Interests with the given Interest swapped done in a functional way to be
+     * Returns a new set of Interests with the given Interest flipped done in a functional way to be
      * able to use it in a mutableState or LiveData
      *
      * @param set the set of Interests
-     * @param interest the Interest to swap
+     * @param interest the Interest to flip
      * @return the new set of Interests
      */
-    fun swapInterest(set: Set<Interests>, interest: Interests): Set<Interests> {
+    fun flipInterest(set: Set<Interests>, interest: Interests): Set<Interests> {
       return if (set.contains(interest)) removeInterest(set, interest)
       else addInterest(set, interest)
     }

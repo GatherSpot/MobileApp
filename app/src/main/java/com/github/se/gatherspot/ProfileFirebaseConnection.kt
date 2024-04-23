@@ -15,7 +15,7 @@ class ProfileFirebaseConnection {
    * Fetches the profile from the database
    *
    * @param uid the id of the user
-   * @param update the function to update the profile
+   * @param update lambda returned when fetched, useful to update the viewModel
    * @return the profile NOTE : The profile will be initially empty, to use it in a view, you need
    *   to update the view using with a lambda function that updates the view
    */

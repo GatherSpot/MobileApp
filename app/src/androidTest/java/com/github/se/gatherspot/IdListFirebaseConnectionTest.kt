@@ -28,7 +28,7 @@ class IdListFirebaseConnectionTest {
     // wait as a precaution as we don't know how long it will take to save to firebase
     var block = true
     // fetch the data from firebase
-    val idList2 = IdListFirebaseConnection().updateFromFirebase(id, tag) { block = false }
+    val idList2 = IdListFirebaseConnection().fetchFromFirebase(id, tag) { block = false }
     // busy wait until values are updated
     while (block) {
       {}

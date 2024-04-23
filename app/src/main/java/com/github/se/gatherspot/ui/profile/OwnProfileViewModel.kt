@@ -67,7 +67,7 @@ class OwnProfileViewModel : ViewModel() {
     _image.value = image
   }
 
-  fun swapInterests(interest: Interests) {
+  fun flipInterests(interest: Interests) {
     _interests.value =
         if (interest in _interests.value!!) {
           interests.value!!.minus(interest)

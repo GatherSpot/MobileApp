@@ -9,11 +9,20 @@ class IdListFirebaseConnection {
   private val db = Firebase.firestore
   private val logTag = "IdListFirebaseConnection"
 
-  fun updateFromFirebase(uid: String, category: FirebaseCollection, update: () -> Unit): IdList {
+  /**
+   * Fetches the IdList from Firebase
+   *
+   * @param id The id of the owner of the list (can be owned by a user, event, etc..).
+   * @param category The category of the IdList.
+   * @param update lambda returned when fetched, useful to update the viewModel
+   * @return the IdList NOTE : The IdList will be initially empty, to use it in a view, you need to
+   *   update the view using with a lambda function that updates the view
+   */
+  fun fetchFromFirebase(id: String, category: FirebaseCollection, update: () -> Unit): IdList {
     val tag = category.name
-    val idSet = IdList.empty(uid, category)
+    val idSet = IdList.empty(id, category)
     db.collection(tag)
-        .document(uid)
+        .document(id)
         .get()
         .addOnSuccessListener { document ->
           if (document != null) {
@@ -31,7 +40,11 @@ class IdListFirebaseConnection {
         .addOnFailureListener { exception -> Log.d(logTag, "get failed with ", exception) }
     return idSet
   }
-
+  /**
+   * Saves the IdList to Firebase
+   *
+   * @param idSet The IdList to save.
+   */
   fun saveToFirebase(idSet: IdList) {
     val tag = idSet.collection.name
     val id = idSet.id
@@ -43,9 +56,14 @@ class IdListFirebaseConnection {
         .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully written!") }
         .addOnFailureListener { e -> Log.w(logTag, "Error writing document", e) }
   }
-
-  fun deleteFromFirebase(id: String, tag: FirebaseCollection) {
-    db.collection(tag.name)
+  /**
+   * Deletes the IdList from Firebase
+   *
+   * @param id The id of the owner of the list (can be owned by a user, event, etc..).
+   * @param category The category of the IdList.
+   */
+  fun deleteFromFirebase(id: String, category: FirebaseCollection) {
+    db.collection(category.name)
         .document(id)
         .delete()
         .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully deleted!") }
