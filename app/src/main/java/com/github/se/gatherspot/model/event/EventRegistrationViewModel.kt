@@ -6,11 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.ProfileFirebaseConnection
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.Firebase.auth.auth
+import com.google.firebase.Firebase
+import com.github.se.gatherspot.FirebaseCollection
+import com.github.se.gatherspot.IdListFirebaseConnection
+
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
 class EventRegistrationViewModel : ViewModel() {
+  // TODO : use hilt injection instead of hardcoded userId to remove this test handle in production
+  private val userId = Firebase.auth.currentUser?.uid ?: "TEST"
+
   // LiveData for holding registration state
   private val _registrationState = MutableLiveData<RegistrationState>()
   val registrationState: LiveData<RegistrationState> = _registrationState
@@ -24,7 +31,9 @@ class EventRegistrationViewModel : ViewModel() {
   val displayAlertDeletion: LiveData<Boolean> = _displayAlertDeletion
 
   // Profile of the user, is needed to add the event to the user's registered events
-  private val profile = ProfileFirebaseConnection().fetchProfile(FirebaseAuth.getInstance().currentUser!!.uid)
+  private val registeredEventsList =
+      IdListFirebaseConnection().fetchFromFirebase(userId, FirebaseCollection.REGISTERED_EVENTS) {}
+
 
   /** Registers the user for the given event */
   fun registerForEvent(event: Event) {
@@ -38,17 +47,18 @@ class EventRegistrationViewModel : ViewModel() {
         }
       }
       // Check if the user is already registered for the event
-      if (event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
+
+      if (event.registeredUsers.contains(userId)) {
         _registrationState.value = RegistrationState.Error("Already registered for this event")
         return@launch
       }
-      event.registeredUsers.add(FirebaseAuth.getInstance().currentUser!!.uid)
+      event.registeredUsers.add(userId)
 
-      profile.registeredEvents.add(event.id)
+      registeredEventsList.add(event.id)
       // Update the event in the database
       EventFirebaseConnection().add(event)
-      // Update the profile in the database. Not working yet
-      ProfileFirebaseConnection().update(profile)
+      // Update the registration in the database.
+      IdListFirebaseConnection().saveToFirebase(registeredEventsList)
       // Notify the UI that registration was successful
       _registrationState.value = RegistrationState.Success
     }

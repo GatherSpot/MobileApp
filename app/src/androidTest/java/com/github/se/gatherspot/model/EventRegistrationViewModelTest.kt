@@ -52,9 +52,7 @@ class EventRegistrationViewModelTest {
 
   @Test
   fun testAlreadyRegistered() {
-
     testLogin()
-
     val viewModel = EventRegistrationViewModel()
     val event =
         Event(
@@ -70,6 +68,7 @@ class EventRegistrationViewModelTest {
             eventStartDate = LocalDate.of(2024, 4, 14),
             location = null,
             registeredUsers = mutableListOf(FirebaseAuth.getInstance().currentUser!!.uid),
+
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
             globalRating = null,
