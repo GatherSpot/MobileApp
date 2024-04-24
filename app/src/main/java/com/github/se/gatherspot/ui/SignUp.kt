@@ -40,12 +40,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -72,6 +76,7 @@ fun SignUp(nav: NavigationActions) {
           val success = checkCredentials(email, password, t)
           if (success) {
             FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
+            MainActivity.userName = username
             verifEmailSent = true
           } else {
             signUpFailed = true
@@ -224,12 +229,15 @@ fun SignUp(nav: NavigationActions) {
         AlertDialog(
             modifier =
                 Modifier.testTag("verification").clickable {
-                  verifEmailSent = false
-                  nav.controller.navigate("setup")
+                    verifEmailSent = false
+                    ProfileFirebaseConnection.add(Profile(username,"","",
+                        Firebase.auth.currentUser!!.uid, setOf()))
+                    nav.controller.navigate("setup")
                 },
             onDismissRequest = {
-              verifEmailSent = false
-              nav.controller.navigate("setup")
+                verifEmailSent = false
+                ProfileFirebaseConnection.add(Profile(username,"","","", setOf()))
+                nav.controller.navigate("setup")
             },
             confirmButton = {},
             title = { Text("Verification Email Sent") },

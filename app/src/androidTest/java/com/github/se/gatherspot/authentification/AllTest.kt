@@ -9,9 +9,8 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
-import com.github.se.gatherspot.UserFirebaseConnection
+import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.screens.LoginScreen
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.screens.SignUpScreen
@@ -28,7 +27,6 @@ import org.junit.runner.RunWith
 const val USERNAME = "AuthEndToEndTest"
 const val EMAIL = "AuthEndToEnd@test.com"
 const val PASSWORD = "AuthEndToEndTest,2024;"
-private val UserFirebaseConnection = UserFirebaseConnection()
 
 @RunWith(AndroidJUnit4::class)
 class AllTest : TestCase() {
@@ -38,8 +36,7 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    UserFirebaseConnection.delete(FirebaseAuth.getInstance().currentUser!!.uid)
-    UserFirebaseConnection.deleteCurrentUser()
+   // for now nothing maybe some cleanup can still be put here
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -103,15 +100,14 @@ class AllTest : TestCase() {
         performClick()
       }
     }
-    UserFirebaseConnection.updateUserInterests(FirebaseAuth.getInstance().currentUser!!.uid, enumValues<Interests>().toList())
+    ProfileFirebaseConnection().update(FirebaseAuth.getInstance().currentUser!!.uid, enumValues<Interests>().toList())
     runTest {
       async {
-            val user = UserFirebaseConnection.fetch(FirebaseAuth.getInstance().currentUser!!.uid)
-            assert(user != null)
-            assert(user!!.id == FirebaseAuth.getInstance().currentUser!!.uid)
-            assert(user.username == USERNAME)
-            assert(user.email == EMAIL)
-            assert(user.password == PASSWORD)
+            val profile = ProfileFirebaseConnection().fetch(FirebaseAuth.getInstance().currentUser!!.uid)
+            assert(profile != null)
+            assert(profile!!.id == FirebaseAuth.getInstance().currentUser!!.uid)
+            assert(profile.userName == USERNAME)
+            assert(FirebaseAuth.getInstance().currentUser?.email == EMAIL)
             // assert(user.profile.interests == enumValues<Interests>().toSet())
           }
           .await()

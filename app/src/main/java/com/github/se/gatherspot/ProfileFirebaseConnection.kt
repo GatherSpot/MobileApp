@@ -1,6 +1,5 @@
 package com.github.se.gatherspot
 
-import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
@@ -38,6 +37,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   override fun add(element: Profile) {}
 
+
   fun deleteProfile(uid: String) {}
 
   fun fetchProfile(uid: String): Profile {
@@ -46,6 +46,12 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   fun updateProfile(profile: Profile) {}
+  fun update(profile: Profile) {}
+
+  fun update(uid: String, toList: List<Interests>) {
+
+  }
+
   // THE NEXT THREE ARE USED FOR TESTS
   private lateinit var dummyProfile: Profile
 

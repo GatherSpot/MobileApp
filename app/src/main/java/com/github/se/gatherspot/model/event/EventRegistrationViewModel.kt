@@ -48,7 +48,7 @@ class EventRegistrationViewModel : ViewModel() {
       // Update the event in the database
       EventFirebaseConnection().add(event)
       // Update the profile in the database. Not working yet
-      ProfileFirebaseConnection().updateProfile(profile)
+      ProfileFirebaseConnection().update(profile)
       // Notify the UI that registration was successful
       _registrationState.value = RegistrationState.Success
     }
