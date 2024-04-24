@@ -105,6 +105,7 @@ class ProfileInstrumentedTest {
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithContentDescription("save").performClick()
     composeTestRule.waitForIdle()
+    sleep(2000)
     // check if things are here :
     composeTestRule
         .onNodeWithContentDescription("BASKETBALL", useUnmergedTree = true, substring = true)
