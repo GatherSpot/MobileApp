@@ -15,12 +15,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import java.lang.Thread.sleep
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.Thread.sleep
 
 // NOTE: For ui tests to work, and to make app accessible, please ADD CONTENT DESCRIPTION TO EVERY
 // COMPOSE NODE
@@ -103,7 +103,9 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("save").performClick()
     composeTestRule.waitForIdle()
     // check if things are here :
-    composeTestRule.onNodeWithContentDescription("BASKETBALL").assertExists("BASKETBALL field not found")
+    composeTestRule
+        .onNodeWithContentDescription("BASKETBALL")
+        .assertExists("BASKETBALL field not found")
   }
 
   @Test

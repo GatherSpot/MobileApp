@@ -72,8 +72,7 @@ public class InterestsView {
                 modifier = Modifier.size(FilterChipDefaults.IconSize))
           }
         },
-        modifier = Modifier.padding(horizontal = 4.dp)
-    )
+        modifier = Modifier.padding(horizontal = 4.dp))
   }
 
   @OptIn(ExperimentalMaterial3Api::class)
