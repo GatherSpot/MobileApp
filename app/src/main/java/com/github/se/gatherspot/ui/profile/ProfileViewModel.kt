@@ -17,7 +17,6 @@ class OwnProfileViewModel : ViewModel() {
   private val _interests = MutableLiveData<Set<Interests>>()
 
   init {
-    // TODO : Change this to hilt injection
     Firebase.auth.currentUser?.uid?.let { uid ->
       _profile = ProfileFirebaseConnection().updateFromFirebase(uid) { update() }
     }
@@ -82,16 +81,12 @@ class OwnProfileViewModel : ViewModel() {
 }
 
 class ProfileViewModel(uid: String) {
-  // TODO: replace this line with the firebase implementation when it is pulled into main and it
-  // should work
-  // private val profile = ProfileFirebaseConnection().updateFromFirebase(uid){update()}
-  private val _profile = Profile("John Doe", "I am not a bot", "", "TEST", setOf())
+  private val _profile = ProfileFirebaseConnection().updateFromFirebase(uid) { update() }
   private val _username = MutableLiveData<String>()
   private val _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
   private val _interests = MutableLiveData<Set<Interests>>()
 
-  // TODO : remove init at the same time
   init {
     update()
   }

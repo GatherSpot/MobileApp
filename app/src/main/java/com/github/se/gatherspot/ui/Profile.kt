@@ -10,7 +10,6 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.profile.ProfileView
@@ -31,9 +30,16 @@ fun Profile(nav: NavigationActions) {
     composable("edit") { ProfileView().EditOwnProfile(nav, viewModel, navController) }
   }
 }
-
+/**
+ * Show the profile of another user
+ *
+ * @param nav the navigation actions
+ * @param uid the id of the user to be shown
+ */
 @Composable
 fun ViewProfile(nav: NavigationActions, uid: String) {
+  // TODO : when actually implementing this, we will need to think how to go back to the previous
+  // screen
   ProfileView().ProfileScreen(ProfileViewModel(uid))
 }
 

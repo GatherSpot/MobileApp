@@ -87,9 +87,7 @@ class MainActivity : ComponentActivity() {
 
               composable("chat") { Chat(NavigationActions(navController)) }
 
-              composable("profile") {
-                Profile(NavigationActions(navController))
-              }
+              composable("profile") { Profile(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
                 backstackEntry.arguments?.getString("uid")?.let {
                   ViewProfile(NavigationActions(navController), it)
@@ -108,8 +106,8 @@ class MainActivity : ComponentActivity() {
   }
 
   private fun onSignInResult(
-    result: FirebaseAuthUIAuthenticationResult,
-    navController: NavHostController
+      result: FirebaseAuthUIAuthenticationResult,
+      navController: NavHostController
   ): Int {
     if (result.resultCode == RESULT_OK) {
       if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
