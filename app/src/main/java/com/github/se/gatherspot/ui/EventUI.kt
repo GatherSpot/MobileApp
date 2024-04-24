@@ -33,7 +33,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +42,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
@@ -52,6 +50,8 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -61,7 +61,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
 
   val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
-  val isOrganizer = event.organizer.id == MainActivity.uid
+  val isOrganizer = event.organizer.id == (Firebase.auth.currentUser?.uid ?: "TEST")
   val eventUtils = EventUtils()
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
@@ -138,7 +138,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               ProfileIndicator(profile = event.organizer)
 
               // Event Description
-              event!!.description?.let { description ->
+              event.description?.let { description ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     modifier = Modifier.testTag("eventDescription"),
