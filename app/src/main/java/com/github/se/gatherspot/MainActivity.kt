@@ -38,8 +38,8 @@ import com.google.gson.Gson
 
 class MainActivity : ComponentActivity() {
   companion object {
-    lateinit var uid: String
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
+    lateinit var userName : String
   }
 
   private lateinit var navController: NavHostController
@@ -94,7 +94,10 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
               }
 
-              composable("setup") { SetUpProfile(NavigationActions(navController), uid) }
+              composable("setup") { SetUpProfile(
+                NavigationActions(navController),
+                FirebaseAuth.getInstance().currentUser!!.uid
+              ) }
             }
           }
         }

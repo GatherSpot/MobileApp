@@ -6,7 +6,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.MainActivity
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
@@ -27,7 +27,7 @@ class EventUITest {
   @Test
   fun testEverythingExists() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -84,7 +84,7 @@ class EventUITest {
   @Test
   fun testEverythingIsDisplayed() {
     // To make it works in isolation, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -175,7 +175,7 @@ class EventUITest {
   @Test
   fun textsDisplayedAreCorrect() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -251,7 +251,7 @@ class EventUITest {
   @Test
   fun registerToAnEventWorks() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -315,7 +315,7 @@ class EventUITest {
   @Test
   fun testUnableToRegisterToAFullEvent() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -363,7 +363,7 @@ class EventUITest {
   @Test
   fun testAlreadyRegistered() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -410,7 +410,7 @@ class EventUITest {
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -442,7 +442,7 @@ class EventUITest {
   @Test
   fun testClicOnDeleteButton() {
     // To make it works, need to define a global MainActivity.uid
-    MainActivity.uid = "test"
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =

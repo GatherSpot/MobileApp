@@ -15,6 +15,7 @@ import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.screens.LoginScreen
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.screens.SignUpScreen
+import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.async
@@ -37,7 +38,7 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    UserFirebaseConnection.delete(MainActivity.uid)
+    UserFirebaseConnection.delete(FirebaseAuth.getInstance().currentUser!!.uid)
     UserFirebaseConnection.deleteCurrentUser()
   }
 
@@ -102,12 +103,12 @@ class AllTest : TestCase() {
         performClick()
       }
     }
-    UserFirebaseConnection.updateUserInterests(MainActivity.uid, enumValues<Interests>().toList())
+    UserFirebaseConnection.updateUserInterests(FirebaseAuth.getInstance().currentUser!!.uid, enumValues<Interests>().toList())
     runTest {
       async {
-            val user = UserFirebaseConnection.fetch(MainActivity.uid) as User?
+            val user = UserFirebaseConnection.fetch(FirebaseAuth.getInstance().currentUser!!.uid) as User?
             assert(user != null)
-            assert(user!!.id == MainActivity.uid)
+            assert(user!!.id == FirebaseAuth.getInstance().currentUser!!.uid)
             assert(user.username == USERNAME)
             assert(user.email == EMAIL)
             assert(user.password == PASSWORD)

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
@@ -24,7 +25,7 @@ class EventRegistrationViewModel : ViewModel() {
   val displayAlertDeletion: LiveData<Boolean> = _displayAlertDeletion
 
   // Profile of the user, is needed to add the event to the user's registered events
-  private val profile = ProfileFirebaseConnection().fetchProfile(MainActivity.uid)
+  private val profile = ProfileFirebaseConnection().fetchProfile(FirebaseAuth.getInstance().currentUser!!.uid)
 
   /** Registers the user for the given event */
   fun registerForEvent(event: Event) {
@@ -38,11 +39,11 @@ class EventRegistrationViewModel : ViewModel() {
         }
       }
       // Check if the user is already registered for the event
-      if (event.registeredUsers.contains(MainActivity.uid)) {
+      if (event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
         _registrationState.value = RegistrationState.Error("Already registered for this event")
         return@launch
       }
-      event.registeredUsers.add(MainActivity.uid)
+      event.registeredUsers.add(FirebaseAuth.getInstance().currentUser!!.uid)
 
       profile.registeredEvents.add(event.id)
       // Update the event in the database
