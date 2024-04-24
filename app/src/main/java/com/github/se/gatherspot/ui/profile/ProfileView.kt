@@ -241,16 +241,15 @@ class ProfileView {
     val bio by viewModel.bio.observeAsState("")
     val imageUri by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
-    Column(
-      modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .padding(8.dp)
-    ) {
+    Column {
       EditButton(navController)
-      ProfileImage(imageUri, {}, false)
-      UsernameField(username, {}, false)
-      BioField(bio, {}, false)
-      InterestsView().ShowInterests(interests)
+      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+        ProfileImage(imageUri, {}, false)
+        UsernameField(username, {}, false)
+        BioField(bio, {}, false)
+        InterestsView().ShowInterests(interests)
+        Spacer(modifier = Modifier.height(56.dp)) // TODO check if good size
+      }
     }
   }
 
@@ -265,17 +264,16 @@ class ProfileView {
     val updateBio = { s: String -> viewModel.updateBio(s) }
     val updateImageUri = { s: String -> viewModel.updateProfileImage(s) }
     val save = { viewModel.save() }
-    val cancel = { viewModel.cancel() }
-    Column(
-      modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .padding(8.dp)
-    ) {
+    val cancel = { viewModel.update() }
+    Column() {
       SaveCancelButtons(save, cancel, navController)
-      ProfileImage(imageUri, updateImageUri, true)
-      UsernameField(username, updateUsername, true)
-      BioField(bio, updateBio, true)
-      InterestsView().EditInterests(viewModel)
+      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
+        ProfileImage(imageUri, updateImageUri, true)
+        UsernameField(username, updateUsername, true)
+        BioField(bio, updateBio, true)
+        InterestsView().EditInterests(viewModel)
+        Spacer(modifier = Modifier.height(16.dp)) // TODO check if good size
+      }
     }
   }
 
