@@ -7,14 +7,6 @@ import androidx.lifecycle.ViewModel
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 // Note : This warning is properly taken care of
 @SuppressLint("MutableCollectionMutableState")
@@ -37,13 +29,10 @@ class OwnProfileViewModel : ViewModel() {
     get() = _interests
 
   init {
-    runBlocking {
-
-      _profile = ProfileFirebaseConnection().fetch(Firebase.auth.currentUser!!.uid)!!
-      _username.value = _profile.userName
-      _bio.value = _profile.bio
-      _image.value = _profile.image
-    }
+    _profile = ProfileFirebaseConnection().dummyFetch()
+    _username.value = _profile.userName
+    _bio.value = _profile.bio
+    _image.value = _profile.image
   }
 
   fun save() {
