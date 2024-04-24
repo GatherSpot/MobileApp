@@ -32,7 +32,6 @@ import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.ViewProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -51,11 +50,11 @@ class MainActivity : ComponentActivity() {
     val eventsViewModel = EventsViewModel()
 
     signInLauncher =
-      registerForActivityResult(
-        FirebaseAuthUIActivityResultContract(),
-      ) { res ->
-        this.onSignInResult(res, navController)
-      }
+        registerForActivityResult(
+            FirebaseAuthUIActivityResultContract(),
+        ) { res ->
+          this.onSignInResult(res, navController)
+        }
 
     setContent {
       GatherSpotTheme {
@@ -74,14 +73,12 @@ class MainActivity : ComponentActivity() {
               composable("event/{eventJson}") { backStackEntry ->
                 val gson = Gson()
                 val eventObject =
-                  gson.fromJson(
-                    backStackEntry.arguments?.getString("eventJson"), Event::class.java
-                  )
+                    gson.fromJson(
+                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
                 EventUI(
-                  event = eventObject!!,
-                  navActions = NavigationActions(navController),
-                  viewModel = EventRegistrationViewModel()
-                )
+                    event = eventObject!!,
+                    navActions = NavigationActions(navController),
+                    viewModel = EventRegistrationViewModel())
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -91,7 +88,7 @@ class MainActivity : ComponentActivity() {
               composable("chat") { Chat(NavigationActions(navController)) }
 
               composable("profile") {
-                Profile(NavigationActions(navController), OwnProfileViewModel())
+                Profile(NavigationActions(navController))
               }
               composable("viewProfile/{uid}") { backstackEntry ->
                 backstackEntry.arguments?.getString("uid")?.let {
