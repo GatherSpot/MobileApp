@@ -38,7 +38,6 @@ import com.google.gson.Gson
 class MainActivity : ComponentActivity() {
   companion object {
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
-    lateinit var userName : String
   }
 
   private lateinit var navController: NavHostController

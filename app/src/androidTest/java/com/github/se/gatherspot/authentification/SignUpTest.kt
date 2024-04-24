@@ -9,7 +9,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
@@ -45,7 +44,6 @@ class SignUpTest : TestCase() {
   fun signUp() {
 
     composeTestRule.setContent {
-      MainActivity.userName = "GatherSpot"
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
         navigation(startDestination = "signup", route = "auth") {
