@@ -1,8 +1,11 @@
 package com.github.se.gatherspot
 
+import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.firestore
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
@@ -11,6 +14,26 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   override fun getFromDocument(d: DocumentSnapshot): Profile? {
     TODO("Not yet implemented")
+  }
+
+  fun ifUsernameExists(username: String, onComplete: (Boolean) -> Unit) {
+
+    var res = false
+    Firebase.firestore
+      .collection(COLLECTION)
+      .get()
+      .addOnSuccessListener { result ->
+        for (document in result) {
+          if (document.get("username") == username) {
+            res = true
+          }
+          if (res) {
+            break
+          }
+        }
+        onComplete(res)
+      }
+      .addOnFailureListener { onComplete(true) }
   }
 
   override fun add(element: Profile) {}
