@@ -118,7 +118,7 @@ fun SignUp(nav: NavigationActions) {
                 value = username,
                 onValueChange = { s -> username = s },
                 label = { Text(text = "Username") },
-                modifier = Modifier.testTag("sign up username"),
+                modifier = Modifier.testTag("user"),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text))
             if (username.isEmpty()) {
               Text(text = "", color = Color.Red)
