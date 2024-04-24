@@ -94,8 +94,11 @@ class ProfileInstrumentedTest {
     composeTestRule.waitForIdle()
     // check if things are here :
     composeTestRule
-        .onNodeWithContentDescription("add BASKETBALL")
-        .assertExists("BASKETBALL field not found")
+        .onNodeWithContentDescription("add BASKETBALL", useUnmergedTree = true, substring = true)
+        .assertExists("add BASKETBALL field not found")
+    composeTestRule
+        .onNodeWithContentDescription("FOOTBALL", useUnmergedTree = true, substring = true)
+        .assertExists("FOOTBALL field not found")
     // select football interest and go back to view
     composeTestRule.onNodeWithContentDescription("add BASKETBALL").performClick()
     // wait for the animation to finish
@@ -104,8 +107,8 @@ class ProfileInstrumentedTest {
     composeTestRule.waitForIdle()
     // check if things are here :
     composeTestRule
-        .onNodeWithContentDescription("BASKETBALL")
-        .assertExists("BASKETBALL field not found")
+        .onNodeWithContentDescription("BASKETBALL", useUnmergedTree = true, substring = true)
+        .assertExists("BASKETBALL wasn't added")
   }
 
   @Test
