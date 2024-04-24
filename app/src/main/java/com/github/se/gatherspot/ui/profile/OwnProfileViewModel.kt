@@ -9,9 +9,12 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 // Note : This warning is properly taken care of
 @SuppressLint("MutableCollectionMutableState")
@@ -36,7 +39,7 @@ class OwnProfileViewModel : ViewModel() {
   init {
     runBlocking {
 
-      _profile = async{ ProfileFirebaseConnection().fetch(Firebase.auth.currentUser!!.uid)!!}.await()
+      _profile = ProfileFirebaseConnection().fetch(Firebase.auth.currentUser!!.uid)!!
       _username.value = _profile.userName
       _bio.value = _profile.bio
       _image.value = _profile.image
