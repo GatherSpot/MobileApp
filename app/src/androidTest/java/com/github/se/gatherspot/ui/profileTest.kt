@@ -15,8 +15,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.profile.ProfileView
-import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -84,7 +82,10 @@ class ProfileInstrumentedTest {
 
   @Test
   fun profileScreenTest() {
-    composeTestRule.setContent { ProfileView().ProfileScreen(ProfileViewModel("TEST")) }
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      ViewProfile(NavigationActions(navController), uid = "TEST")
+    }
     // check if things are here :
     composeTestRule
         .onNodeWithContentDescription("username")
