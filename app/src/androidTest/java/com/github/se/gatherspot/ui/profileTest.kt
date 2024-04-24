@@ -8,7 +8,6 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.navigation.compose.rememberNavController
@@ -16,12 +15,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import java.lang.Thread.sleep
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.Thread.sleep
 
 // NOTE: For ui tests to work, and to make app accessible, please ADD CONTENT DESCRIPTION TO EVERY
 // COMPOSE NODE
@@ -84,26 +83,27 @@ class ProfileInstrumentedTest {
 
   @Test
   fun interestsTest() {
-    // TODO: try to get some insight on why this could fail on CI
     composeTestRule.setContent {
       val navController = rememberNavController()
       Profile(NavigationActions(navController))
     }
-    sleep(2000)
-    composeTestRule.onNodeWithText("BASKETBALL").assertDoesNotExist()
+    sleep(5000)
+    composeTestRule.onNodeWithContentDescription("BASKETBALL").assertDoesNotExist()
     // press edit and add a new interest
     composeTestRule.onNodeWithContentDescription("edit").performClick()
     composeTestRule.waitForIdle()
     // check if things are here :
-    composeTestRule.onNodeWithText("BASKETBALL").assertExists("BASKETBALL field not found")
+    composeTestRule
+        .onNodeWithContentDescription("add BASKETBALL")
+        .assertExists("BASKETBALL field not found")
     // select football interest and go back to view
-    composeTestRule.onNodeWithText("BASKETBALL").performClick()
+    composeTestRule.onNodeWithContentDescription("add BASKETBALL").performClick()
     // wait for the animation to finish
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithContentDescription("save").performClick()
     composeTestRule.waitForIdle()
     // check if things are here :
-    composeTestRule.onNodeWithText("BASKETBALL").assertExists("BASKETBALL field not found")
+    composeTestRule.onNodeWithContentDescription("BASKETBALL").assertExists("BASKETBALL field not found")
   }
 
   @Test

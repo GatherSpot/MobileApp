@@ -16,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.model.Interests
@@ -61,16 +63,17 @@ public class InterestsView {
           if (selected) {
             Icon(
                 imageVector = Icons.Filled.Done,
-                contentDescription = "Done icon",
+                contentDescription = "remove ${interest.name}",
                 modifier = Modifier.size(FilterChipDefaults.IconSize))
           } else {
             Icon(
                 imageVector = Icons.Filled.Add,
-                contentDescription = "Add icon",
+                contentDescription = "add ${interest.name}",
                 modifier = Modifier.size(FilterChipDefaults.IconSize))
           }
         },
-        modifier = Modifier.padding(horizontal = 4.dp))
+        modifier = Modifier.padding(horizontal = 4.dp)
+    )
   }
 
   @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +84,8 @@ public class InterestsView {
           onClick = {},
           label = { Text(interest.name) },
           selected = true,
-          modifier = Modifier.padding(horizontal = 4.dp))
+          modifier =
+              Modifier.padding(horizontal = 4.dp).semantics { contentDescription = interest.name })
     }
   }
 }
