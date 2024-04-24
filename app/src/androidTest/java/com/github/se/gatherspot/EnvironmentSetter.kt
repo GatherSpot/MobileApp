@@ -3,9 +3,7 @@ package com.github.se.gatherspot
 import android.net.wifi.hotspot2.pps.Credential.UserCredential
 import android.util.Log
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
 

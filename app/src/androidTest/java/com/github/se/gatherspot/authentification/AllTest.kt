@@ -106,7 +106,7 @@ class AllTest : TestCase() {
     UserFirebaseConnection.updateUserInterests(FirebaseAuth.getInstance().currentUser!!.uid, enumValues<Interests>().toList())
     runTest {
       async {
-            val user = UserFirebaseConnection.fetch(FirebaseAuth.getInstance().currentUser!!.uid) as User?
+            val user = UserFirebaseConnection.fetch(FirebaseAuth.getInstance().currentUser!!.uid)
             assert(user != null)
             assert(user!!.id == FirebaseAuth.getInstance().currentUser!!.uid)
             assert(user.username == USERNAME)
