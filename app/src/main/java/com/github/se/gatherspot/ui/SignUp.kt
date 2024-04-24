@@ -40,7 +40,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.Profile
@@ -76,7 +75,6 @@ fun SignUp(nav: NavigationActions) {
           val success = checkCredentials(email, password, t)
           if (success) {
             FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
-            MainActivity.userName = username
             verifEmailSent = true
           } else {
             signUpFailed = true
