@@ -23,9 +23,6 @@ class ProfileFirebaseConnection {
     Log.d(tag, "uid: $uid")
     // TODO: change this with hilt injection
     val id = uid ?: "TEST"
-    if (id == "TEST") {
-      return Profile.testOrganizer()
-    }
     val profile = Profile("", "", "", id, Interests.new())
     db.collection(tag)
         .document(id)

@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.navigation.compose.rememberNavController
@@ -15,6 +16,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import java.lang.Thread.sleep
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -81,11 +83,36 @@ class ProfileInstrumentedTest {
   }
 
   @Test
-  fun profileScreenTest() {
+  fun interestsTest() {
+    // TODO: try to get some insight on why this could fail on CI
     composeTestRule.setContent {
       val navController = rememberNavController()
-      ViewProfile(NavigationActions(navController), uid = "TEST")
+      Profile(NavigationActions(navController))
     }
+    sleep(2000)
+    composeTestRule.onNodeWithText("BASKETBALL").assertDoesNotExist()
+    // press edit and add a new interest
+    composeTestRule.onNodeWithContentDescription("edit").performClick()
+    composeTestRule.waitForIdle()
+    // check if things are here :
+    composeTestRule.onNodeWithText("BASKETBALL").assertExists("BASKETBALL field not found")
+    // select football interest and go back to view
+    composeTestRule.onNodeWithText("BASKETBALL").performClick()
+    // wait for the animation to finish
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithContentDescription("save").performClick()
+    composeTestRule.waitForIdle()
+    // check if things are here :
+    composeTestRule.onNodeWithText("BASKETBALL").assertExists("BASKETBALL field not found")
+  }
+
+  @Test
+  fun viewProfileTest() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      ViewProfile(NavigationActions(navController), "TEST")
+    }
+    sleep(3000)
     // check if things are here :
     composeTestRule
         .onNodeWithContentDescription("username")
@@ -96,28 +123,5 @@ class ProfileInstrumentedTest {
     composeTestRule.onNodeWithContentDescription("username").assert(hasText("John Doe"))
     composeTestRule.onNodeWithContentDescription("bio").assert(hasText("I am not a bot"))
     // next: check image
-  }
-
-  @Test
-  fun interestsTest() {
-    // TODO: try to get some insight on why this could fail on CI
-    //    composeTestRule.setContent {
-    //      val navController = rememberNavController()
-    //      Profile(NavigationActions(navController))
-    //    }
-    //    composeTestRule.onNodeWithText("BASKETBALL").assertDoesNotExist()
-    //    // press edit and add a new interest
-    //    composeTestRule.onNodeWithContentDescription("edit").performClick()
-    //    composeTestRule.waitForIdle()
-    //    // check if things are here :
-    //    composeTestRule.onNodeWithText("BASKETBALL").assertExists("BASKETBALL field not found")
-    //    // select football interest and go back to view
-    //    composeTestRule.onNodeWithText("BASKETBALL").performClick()
-    //    // wait for the animation to finish
-    //    composeTestRule.waitForIdle()
-    //    composeTestRule.onNodeWithContentDescription("save").performClick()
-    //    composeTestRule.waitForIdle()
-    //    // check if things are here :
-    //    composeTestRule.onNodeWithText("BASKETBALL").assertExists("BASKETBALL field not found")
   }
 }
