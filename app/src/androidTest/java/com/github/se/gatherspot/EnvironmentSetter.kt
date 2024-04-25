@@ -1,6 +1,7 @@
 package com.github.se.gatherspot
 
 import android.util.Log
+import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.async
@@ -24,5 +25,12 @@ class EnvironmentSetter {
         Log.d(TAG, "Logged in")
       }
     }
+
+      fun signUpErrorSetUp(){
+          runTest{
+              //Make sure the "test" username is already in use
+              async{ ProfileFirebaseConnection().add(Profile("test","","","t_SignUpError", setOf()))}.await()
+          }
+      }
   }
 }
