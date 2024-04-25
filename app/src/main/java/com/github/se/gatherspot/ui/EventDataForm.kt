@@ -104,7 +104,7 @@ fun EventDataForm(
   var showErrorDialog by remember { mutableStateOf(false) }
   var errorMessage = ""
   var locationName by remember { mutableStateOf("") }
-  var categories: MutableList<Interests> = remember { mutableStateListOf() }
+  val categories: MutableList<Interests> = remember { mutableStateListOf() }
   // Flow for query text input
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
 
@@ -186,10 +186,10 @@ fun EventDataForm(
                 label = { Text("End date of the event") },
                 placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
 
-            // Time Start
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
+                  // Time Start
                   OutlinedTextField(
                       modifier =
                           Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeStartEvent"),
@@ -232,9 +232,7 @@ fun EventDataForm(
                               // Debounce logic: wait for 300 milliseconds after the last text
                               // change
                               delay(300)
-                              Log.e("EventDataForm", "Querying for $newValue")
                               suggestions = eventUtils.fetchLocationSuggestions(newValue)
-                              Log.e("EventDataForm", "Suggestions: $suggestions")
                             }
                       },
                       label = { Text("Location") },
@@ -324,8 +322,14 @@ fun EventDataForm(
                     errorMessage = e.message.toString()
                     showErrorDialog = true
                   }
-                  if (!showErrorDialog) {
-                    nav.controller.navigate("events")
+                  if (!showErrorDialog ){
+                      if ( eventAction == EventAction.CREATE) {
+                          // Go back to the list of events
+                          nav.controller.navigate("events")
+                      } else {
+                          // Go back to the event details
+                          nav.goBack()
+                      }
                   }
                 },
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
