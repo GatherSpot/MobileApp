@@ -87,12 +87,14 @@ class ProfileInstrumentedTest {
       basketball { assertDoesNotExist() }
       // press edit button
       edit { performClick() }
+      composeTestRule.waitForIdle()
       // check if things are here :
       addBasketball { assertExists() }
       basketball { assertDoesNotExist() }
       removeBasketball { assertDoesNotExist() }
       // press add button
       addBasketball { performClick() }
+      composeTestRule.waitForIdle()
       // check if things are here :
       removeBasketball { assertExists() }
       basketball { assertDoesNotExist() }
@@ -101,6 +103,7 @@ class ProfileInstrumentedTest {
       // press remove button
       removeBasketball { performClick() }
       // check if things are here :
+      composeTestRule.waitForIdle()
       basketball { assertDoesNotExist() }
       addBasketball { assertExists() }
       removeBasketball { assertDoesNotExist() }

@@ -19,13 +19,10 @@ class ProfileFirebaseConnection {
    * @return the profile NOTE : The profile will be initially empty, to use it in a view, you need
    *   to update the view using with a lambda function that updates the view
    */
-  fun updateFromFirebase(uid: String?, update: () -> Unit): Profile {
-    Log.d(tag, "uid: $uid")
-    // TODO: change this with hilt injection
-    val id = uid ?: "TEST"
-    val profile = Profile("", "", "", id, Interests.new())
+  fun updateFromFirebase(uid: String, update: () -> Unit): Profile {
+    val profile = Profile("", "", "", uid, Interests.new())
     db.collection(tag)
-        .document(id)
+        .document(uid)
         .get()
         .addOnSuccessListener { document ->
           if (document != null) {
