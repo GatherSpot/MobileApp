@@ -56,8 +56,7 @@ class EventRegistrationViewModelTest {
   @Test
   fun testAlreadyRegistered() {
     testLogin()
-      if (Firebase.auth.currentUser==null)
-        Log.d("testAlreadyRegistered", "User is null")
+    if (Firebase.auth.currentUser == null) Log.d("testAlreadyRegistered", "User is null")
     val viewModel = EventRegistrationViewModel()
     val event =
         Event(
@@ -87,7 +86,6 @@ class EventRegistrationViewModelTest {
       val error = viewModel.registrationState.value
       assertEquals(RegistrationState.Error("Already registered for this event"), error)
     }
-      testLoginCleanUp()
+    testLoginCleanUp()
   }
-
 }

@@ -15,7 +15,6 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After
@@ -39,10 +38,7 @@ class SetUpTest : TestCase() {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
         navigation(startDestination = "setup", route = "auth") {
-          composable("setup") {
-            SetUpProfile(
-                NavigationActions(navController), "SetUpTest")
-          }
+          composable("setup") { SetUpProfile(NavigationActions(navController), "SetUpTest") }
         }
       }
     }

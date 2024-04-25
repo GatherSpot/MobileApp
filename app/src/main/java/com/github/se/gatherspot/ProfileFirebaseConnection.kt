@@ -64,8 +64,8 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnFailureListener { onComplete(true) }
   }
 
-fun fetchFromUserName(userName : String) : Profile? {
-    var profile : Profile? = null
+  fun fetchFromUserName(userName: String): Profile? {
+    var profile: Profile? = null
     Firebase.firestore
         .collection(COLLECTION)
         .get()

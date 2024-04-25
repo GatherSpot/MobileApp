@@ -25,7 +25,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
 
@@ -60,7 +59,6 @@ class SignUpTest : TestCase() {
         }
       }
     }
-
 
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField {
@@ -138,7 +136,6 @@ class SignUpTest : TestCase() {
       badPassword.assertIsDisplayed()
     }
   }
-
 
   @OptIn(ExperimentalTestApi::class)
   @Test
