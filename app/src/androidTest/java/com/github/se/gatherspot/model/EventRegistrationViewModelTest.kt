@@ -1,8 +1,6 @@
 package com.github.se.gatherspot.model
 
-
 import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
