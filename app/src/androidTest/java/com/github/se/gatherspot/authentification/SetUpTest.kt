@@ -41,7 +41,7 @@ class SetUpTest : TestCase() {
         navigation(startDestination = "setup", route = "auth") {
           composable("setup") {
             SetUpProfile(
-                NavigationActions(navController), FirebaseAuth.getInstance().currentUser!!.uid)
+                NavigationActions(navController), "SetUpTest")
           }
         }
       }
