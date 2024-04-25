@@ -18,7 +18,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.model.Interests
@@ -73,8 +72,9 @@ public class InterestsView {
                 modifier = Modifier.size(FilterChipDefaults.IconSize))
           }
         },
-        modifier = Modifier.padding(horizontal = 4.dp).testTag(if (selected) "remove ${interest.name}" else "add ${interest.name}")
-    )
+        modifier =
+            Modifier.padding(horizontal = 4.dp)
+                .testTag(if (selected) "remove ${interest.name}" else "add ${interest.name}"))
   }
 
   @OptIn(ExperimentalMaterial3Api::class)
@@ -85,8 +85,7 @@ public class InterestsView {
           onClick = {},
           label = { Text(interest.name) },
           selected = true,
-          modifier =
-              Modifier.padding(horizontal = 4.dp).testTag(interest.name))
+          modifier = Modifier.padding(horizontal = 4.dp).testTag(interest.name))
     }
   }
 }

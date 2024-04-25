@@ -106,8 +106,9 @@ class ProfileInstrumentedTest {
       removeBasketball { assertDoesNotExist() }
     }
   }
-    @Test
-    fun viewProfileTest() {
+
+  @Test
+  fun viewProfileTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       ViewProfile(NavigationActions(navController), "TEST")
@@ -120,6 +121,6 @@ class ProfileInstrumentedTest {
       edit { assertDoesNotExist() }
       save { assertDoesNotExist() }
       cancel { assertDoesNotExist() }
-      }
     }
   }
+}
