@@ -1,10 +1,13 @@
 package com.github.se.gatherspot.model
 
+import android.util.Log
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import java.time.LocalDate
 import java.time.LocalTime
 import junit.framework.TestCase.assertEquals
@@ -53,6 +56,8 @@ class EventRegistrationViewModelTest {
   @Test
   fun testAlreadyRegistered() {
     testLogin()
+      if (Firebase.auth.currentUser==null)
+        Log.d("testAlreadyRegistered", "User is null")
     val viewModel = EventRegistrationViewModel()
     val event =
         Event(
@@ -67,7 +72,7 @@ class EventRegistrationViewModelTest {
             eventEndDate = LocalDate.of(2024, 4, 15),
             eventStartDate = LocalDate.of(2024, 4, 14),
             location = null,
-            registeredUsers = mutableListOf(FirebaseAuth.getInstance().currentUser!!.uid),
+            registeredUsers = mutableListOf(),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
             globalRating = null,
@@ -76,10 +81,13 @@ class EventRegistrationViewModelTest {
         )
 
     viewModel.registerForEvent(event)
+    viewModel.registerForEvent(event)
     runBlocking {
       delay(1000)
       val error = viewModel.registrationState.value
-      assertEquals(error, RegistrationState.Error("Already registered for this event"))
+      assertEquals(RegistrationState.Error("Already registered for this event"), error)
     }
+      testLoginCleanUp()
   }
+
 }

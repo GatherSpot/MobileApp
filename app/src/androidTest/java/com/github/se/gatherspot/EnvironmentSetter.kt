@@ -23,13 +23,20 @@ class EnvironmentSetter {
         // Hard coded this is the one account easily logged in for all tests unless specified
         // otherwise
         async {
-              Firebase.auth.signInWithEmailAndPassword(
-                  "gatherspot2024@gmail.com", "GatherSpot,2024;")
+              Firebase.auth.createUserWithEmailAndPassword(
+                  "neverdeleted@mail.com", "GatherSpot,2024;")
             }
             .await()
         Log.d(TAG, "Logged in")
       }
     }
+
+      fun testLoginCleanUp(){
+            runTest {
+                if(Firebase.auth.currentUser != null)
+                    async {Firebase.auth.currentUser!!.delete()}.await()
+            }
+      }
 
       fun signUpErrorSetUp(){
           runTest{
