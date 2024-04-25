@@ -9,7 +9,6 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.MainActivity
-import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.UserFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.User
@@ -29,7 +28,6 @@ const val USERNAME = "AuthEndToEndTest"
 const val EMAIL = "AuthEndToEnd@test.com"
 const val PASSWORD = "AuthEndToEndTest,2024;"
 private val UserFirebaseConnection = UserFirebaseConnection()
-private val uid = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
 
 @RunWith(AndroidJUnit4::class)
 class AllTest : TestCase() {
@@ -39,7 +37,7 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    UserFirebaseConnection.delete(uid)
+    UserFirebaseConnection.delete(MainActivity.uid)
     UserFirebaseConnection.deleteCurrentUser()
   }
 
@@ -104,12 +102,14 @@ class AllTest : TestCase() {
         performClick()
       }
     }
-    UserFirebaseConnection.updateUserInterests(uid, enumValues<Interests>().toList())
+    // Since the user class will be deleted in the next PR, remove this part of the test (Firebase
+    // issues)
+    UserFirebaseConnection.updateUserInterests(MainActivity.uid, enumValues<Interests>().toList())
     runTest {
       async {
-            val user = UserFirebaseConnection.fetch(uid) as User?
+            val user = UserFirebaseConnection.fetch(MainActivity.uid) as User?
             assert(user != null)
-            assert(user!!.id == uid)
+            assert(user!!.id == MainActivity.uid)
             assert(user.username == USERNAME)
             assert(user.email == EMAIL)
             assert(user.password == PASSWORD)
