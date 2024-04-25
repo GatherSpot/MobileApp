@@ -247,6 +247,9 @@ dependencies {
     androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.4.1")
     androidTestImplementation("com.google.firebase:firebase-database")
     androidTestImplementation("com.google.firebase:firebase-firestore")
+
+    // Image fetching library
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }
 tasks.withType<Test> {
     // Configure Jacoco for each tests
