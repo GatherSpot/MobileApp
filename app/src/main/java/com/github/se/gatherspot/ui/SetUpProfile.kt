@@ -62,18 +62,18 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   val interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
 
   LaunchedEffect(isClicked) {
-      if (isClicked) {
-          withContext(Dispatchers.Main) {
-              auth.currentUser?.reload()?.await()
-              isEmailVerified = auth.currentUser?.isEmailVerified ?: false
-              if (isEmailVerified) {
-                  UserFirebaseConnection().updateUserInterests(uid, interests.toList())
-                  nav.controller.navigate("events")
-              } else {
-                  emailText = "Please verify your email before continuing"
-              }
-          }
+    if (isClicked) {
+      withContext(Dispatchers.Main) {
+        auth.currentUser?.reload()?.await()
+        isEmailVerified = auth.currentUser?.isEmailVerified ?: false
+        if (isEmailVerified) {
+          UserFirebaseConnection().updateUserInterests(uid, interests.toList())
+          nav.controller.navigate("events")
+        } else {
+          emailText = "Please verify your email before continuing"
+        }
       }
+    }
   }
 
   Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpScreen")) {

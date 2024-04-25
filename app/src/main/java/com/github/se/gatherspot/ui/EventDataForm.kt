@@ -53,7 +53,6 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 private val WIDTH = 300.dp
@@ -322,14 +321,14 @@ fun EventDataForm(
                     errorMessage = e.message.toString()
                     showErrorDialog = true
                   }
-                  if (!showErrorDialog ){
-                      if ( eventAction == EventAction.CREATE) {
-                          // Go back to the list of events
-                          nav.controller.navigate("events")
-                      } else {
-                          // Go back to the event details
-                          nav.goBack()
-                      }
+                  if (!showErrorDialog) {
+                    if (eventAction == EventAction.CREATE) {
+                      // Go back to the list of events
+                      nav.controller.navigate("events")
+                    } else {
+                      // Go back to the event details
+                      nav.goBack()
+                    }
                   }
                 },
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),

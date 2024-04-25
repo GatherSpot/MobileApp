@@ -79,7 +79,7 @@ class EventUtilsTest {
     Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
-    //Keep a clean database: suppress immediately the event
+    // Keep a clean database: suppress immediately the event
     EventFirebaseConnection.delete(event.id)
   }
 
@@ -117,8 +117,8 @@ class EventUtilsTest {
     Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
-      //Keep a clean database: suppress immediately the event
-      EventFirebaseConnection.delete(event.id)
+    // Keep a clean database: suppress immediately the event
+    EventFirebaseConnection.delete(event.id)
   }
 
   @Test

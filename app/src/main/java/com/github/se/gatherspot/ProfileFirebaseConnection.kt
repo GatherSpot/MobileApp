@@ -25,9 +25,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   fun updateProfile(profile: Profile) {}
 
-  /**
-   * Returns the current user's UID, or null if the user is not logged in.
-   */
+  /** Returns the current user's UID, or null if the user is not logged in. */
   fun getCurrentUserUid(): String? {
     return FirebaseAuth.getInstance().currentUser?.uid
   }

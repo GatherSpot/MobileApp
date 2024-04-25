@@ -100,9 +100,9 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                 // Edit button
                 IconButton(
                     onClick = {
-                        val gson = Gson()
-                        val eventJson = gson.toJson(event)
-                        navActions.controller.navigate("event/$eventJson")
+                      val gson = Gson()
+                      val eventJson = gson.toJson(event)
+                      navActions.controller.navigate("event/$eventJson")
                     },
                     modifier = Modifier.testTag("editEventButton")) {
                       Icon(
@@ -192,12 +192,12 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                           .background(Color.Gray)
                           .testTag("mapView")) {
                     // Here should be the code to integrate the actual map
-                  event.location?.let { location ->
+                    event.location?.let { location ->
                       GeoMap(
                           userCoordinates = location,
                           interestsCoordinates = emptyList(),
                           mapViewModifier = Modifier.fillMaxWidth().height(200.dp))
-                  } ?: BasicText(text = "No location provided for this event")
+                    } ?: BasicText(text = "No location provided for this event")
                   }
               // Event Dates and Times
               Spacer(modifier = Modifier.height(16.dp))
@@ -355,29 +355,29 @@ fun ProfileIndicator(profile: Profile) {
 @Preview
 @Composable
 fun EventUIPreview() {
-    // Set global uid for testing
-    MainActivity.uid = "testProfileId"
-    val event =
-        Event(
-            id = "idTestEvent",
-            title = "Event Title",
-            description =
-            "Hello: I am a description of the event just saying that I would love to say" +
-                    "that Messi is not the best player in the world, but I can't. I am sorry.",
-            attendanceMaxCapacity = 5,
-            attendanceMinCapacity = 1,
-            categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2025, 4, 15),
-            eventStartDate = LocalDate.of(2025, 4, 10),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2025, 4, 1),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
-            registeredUsers = mutableListOf(),
-            timeBeginning = LocalTime.of(11,  0),
-            timeEnding = LocalTime.of(13, 0),
-            organizer = Profile("test", "Test User", "", "testProfileId", setOf())
-        )
-    val viewModel = EventRegistrationViewModel()
-    EventUI(event = event, navActions = NavigationActions(rememberNavController()), viewModel = viewModel)
+  // Set global uid for testing
+  MainActivity.uid = "testProfileId"
+  val event =
+      Event(
+          id = "idTestEvent",
+          title = "Event Title",
+          description =
+              "Hello: I am a description of the event just saying that I would love to say" +
+                  "that Messi is not the best player in the world, but I can't. I am sorry.",
+          attendanceMaxCapacity = 5,
+          attendanceMinCapacity = 1,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2025, 4, 15),
+          eventStartDate = LocalDate.of(2025, 4, 10),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2025, 4, 1),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(11, 0),
+          timeEnding = LocalTime.of(13, 0),
+          organizer = Profile("test", "Test User", "", "testProfileId", setOf()))
+  val viewModel = EventRegistrationViewModel()
+  EventUI(
+      event = event, navActions = NavigationActions(rememberNavController()), viewModel = viewModel)
 }

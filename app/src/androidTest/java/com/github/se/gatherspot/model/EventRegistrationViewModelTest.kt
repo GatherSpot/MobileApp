@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.model
 
+import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
@@ -79,5 +80,7 @@ class EventRegistrationViewModelTest {
       val error = viewModel.registrationState.value
       assertEquals(error, RegistrationState.Error("Already registered for this event"))
     }
+    // To keep a clean database delete the test event
+    EventFirebaseConnection().delete("idTestEvent")
   }
 }
