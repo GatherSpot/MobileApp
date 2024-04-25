@@ -8,18 +8,22 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.allTestCleanUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.allTestSetUp
 import com.github.se.gatherspot.MainActivity
-import com.github.se.gatherspot.UserFirebaseConnection
+import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.User
 import com.github.se.gatherspot.screens.LoginScreen
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.screens.SignUpScreen
+import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,7 +31,6 @@ import org.junit.runner.RunWith
 const val USERNAME = "AuthEndToEndTest"
 const val EMAIL = "AuthEndToEnd@test.com"
 const val PASSWORD = "AuthEndToEndTest,2024;"
-private val UserFirebaseConnection = UserFirebaseConnection()
 
 @RunWith(AndroidJUnit4::class)
 class AllTest : TestCase() {
@@ -37,14 +40,13 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    UserFirebaseConnection.delete(MainActivity.uid)
-    UserFirebaseConnection.deleteCurrentUser()
+    // for now nothing maybe some cleanup can still be put here
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun allTest() {
-
+    allTestSetUp(USERNAME, EMAIL)
     ComposeScreen.onComposeScreen<LoginScreen>(composeTestRule) { signUpButton { performClick() } }
     composeTestRule.waitForIdle()
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
@@ -102,18 +104,23 @@ class AllTest : TestCase() {
         performClick()
       }
     }
-    UserFirebaseConnection.updateUserInterests(MainActivity.uid, enumValues<Interests>().toList())
+    ProfileFirebaseConnection()
+        .update(
+            FirebaseAuth.getInstance().currentUser!!.uid,
+            "interests",
+            enumValues<Interests>().toList())
     runTest {
       async {
-            val user = UserFirebaseConnection.fetch(MainActivity.uid) as User?
-            assert(user != null)
-            assert(user!!.id == MainActivity.uid)
-            assert(user.username == USERNAME)
-            assert(user.email == EMAIL)
-            assert(user.password == PASSWORD)
+            val profile =
+                ProfileFirebaseConnection().fetch(FirebaseAuth.getInstance().currentUser!!.uid)
+            assertNotNull(profile)
+            assertEquals(profile!!.id, FirebaseAuth.getInstance().currentUser!!.uid)
+            assertEquals(USERNAME, profile.userName)
+            assertEquals(EMAIL, FirebaseAuth.getInstance().currentUser?.email)
             // assert(user.profile.interests == enumValues<Interests>().toSet())
           }
           .await()
     }
+    allTestCleanUp(USERNAME)
   }
 }

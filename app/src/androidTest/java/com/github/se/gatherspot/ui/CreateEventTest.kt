@@ -11,6 +11,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.screens.EventDataFormScreen
@@ -466,6 +468,7 @@ class CreateEventTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testLocationQueryResult() {
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
@@ -484,5 +487,6 @@ class CreateEventTest {
         assertTextContains("École Polytechnique Fédérale de Lausanne", substring = true)
       }
     }
+    testLoginCleanUp()
   }
 }
