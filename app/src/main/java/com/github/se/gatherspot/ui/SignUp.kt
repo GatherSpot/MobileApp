@@ -227,15 +227,15 @@ fun SignUp(nav: NavigationActions) {
         AlertDialog(
             modifier =
                 Modifier.testTag("verification").clickable {
-                    verifEmailSent = false
-                    ProfileFirebaseConnection.add(Profile(username,"","",
-                        Firebase.auth.currentUser!!.uid, setOf()))
-                    nav.controller.navigate("setup")
+                  verifEmailSent = false
+                  ProfileFirebaseConnection.add(
+                      Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
+                  nav.controller.navigate("setup")
                 },
             onDismissRequest = {
-                verifEmailSent = false
-                ProfileFirebaseConnection.add(Profile(username,"","","", setOf()))
-                nav.controller.navigate("setup")
+              verifEmailSent = false
+              ProfileFirebaseConnection.add(Profile(username, "", "", "", setOf()))
+              nav.controller.navigate("setup")
             },
             confirmButton = {},
             title = { Text("Verification Email Sent") },

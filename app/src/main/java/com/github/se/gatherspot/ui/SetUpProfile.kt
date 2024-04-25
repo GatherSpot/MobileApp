@@ -66,7 +66,7 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
       auth.currentUser?.reload()?.await()
       isEmailVerified = auth.currentUser?.isEmailVerified ?: false
       if (isEmailVerified) {
-        ProfileFirebaseConnection().update(uid, interests.toList())
+        ProfileFirebaseConnection().updateInterests(uid, interests)
         nav.controller.navigate("profile")
       } else {
         emailText = "Please verify your email before continuing"

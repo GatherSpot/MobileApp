@@ -19,7 +19,7 @@ class OwnProfileViewModel : ViewModel() {
   init {
     // TODO : Change this to hilt injection
     Firebase.auth.currentUser?.uid?.let { uid ->
-      _profile = ProfileFirebaseConnection().updateFromFirebase(uid) { update() }
+      _profile = ProfileFirebaseConnection().fetch(uid) { update() }
     }
         ?: run {
           _profile = Profile.testOrganizer()
@@ -44,7 +44,7 @@ class OwnProfileViewModel : ViewModel() {
     _profile.bio = _bio.value!!
     _profile.image = _image.value!!
     _profile.interests = _interests.value!!
-    ProfileFirebaseConnection().saveToFirebase(_profile)
+    ProfileFirebaseConnection().add(_profile)
   }
 
   fun update() {

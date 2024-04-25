@@ -27,10 +27,9 @@ import org.junit.runner.RunWith
 class SetUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
 
-
   @After
   fun cleanUp() {
-    //For now nothing
+    // For now nothing
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -40,7 +39,10 @@ class SetUpTest : TestCase() {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
         navigation(startDestination = "setup", route = "auth") {
-          composable("setup") { SetUpProfile(NavigationActions(navController), FirebaseAuth.getInstance().currentUser!!.uid) }
+          composable("setup") {
+            SetUpProfile(
+                NavigationActions(navController), FirebaseAuth.getInstance().currentUser!!.uid)
+          }
         }
       }
     }

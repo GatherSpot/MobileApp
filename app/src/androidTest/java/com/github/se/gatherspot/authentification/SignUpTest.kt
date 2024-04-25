@@ -25,8 +25,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
 
-
-
   @get:Rule val composeTestRule = createComposeRule()
 
   // The IntentsTestRule simply calls Intents.init() before the @Test block
@@ -36,7 +34,7 @@ class SignUpTest : TestCase() {
 
   @After
   fun cleanUp() {
-   // Maybe some more to omplement for now nothing
+    // Maybe some more to omplement for now nothing
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -50,10 +48,9 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(
-            NavigationActions(navController),
-            Firebase.auth.currentUser!!.uid
-          ) }
+          composable("setup") {
+            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
+          }
         }
       }
     }
@@ -99,10 +96,9 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(
-            NavigationActions(navController),
-            Firebase.auth.currentUser!!.uid
-          ) }
+          composable("setup") {
+            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
+          }
         }
       }
     }
@@ -143,10 +139,9 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(
-            NavigationActions(navController),
-            Firebase.auth.currentUser!!.uid
-          ) }
+          composable("setup") {
+            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
+          }
         }
       }
     }

@@ -30,12 +30,12 @@ import org.junit.runner.RunWith
 class ProfileInstrumentedTest {
   @Before
   fun setUp() {
-    ProfileFirebaseConnection().saveToFirebase(Profile.testOrganizer())
+    ProfileFirebaseConnection().add(Profile.testOrganizer())
   }
 
   @After
   fun cleanUp() {
-    ProfileFirebaseConnection().deleteFromFirebase("TEST")
+    ProfileFirebaseConnection().delete("TEST")
   }
 
   @get:Rule val composeTestRule = createComposeRule()

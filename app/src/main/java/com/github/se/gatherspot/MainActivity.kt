@@ -91,10 +91,10 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
               }
 
-              composable("setup") { SetUpProfile(
-                NavigationActions(navController),
-                FirebaseAuth.getInstance().currentUser!!.uid
-              ) }
+              composable("setup") {
+                SetUpProfile(
+                    NavigationActions(navController), FirebaseAuth.getInstance().currentUser!!.uid)
+              }
             }
           }
         }
