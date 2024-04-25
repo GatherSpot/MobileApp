@@ -58,6 +58,8 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.gson.Gson
 import java.time.LocalDate
 import java.time.LocalTime
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -67,7 +69,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
 
   val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
-  val isOrganizer = event.organizer.id == ProfileFirebaseConnection().getCurrentUserUid()!!
+  val isOrganizer = event.organizer.id == (ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST")
   val eventUtils = EventUtils()
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null

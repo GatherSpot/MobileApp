@@ -467,7 +467,7 @@ class EventUtilsTest {
             attendanceMaxCapacity = 10,
             attendanceMinCapacity = 1,
             categories = setOf(Interests.BASKETBALL),
-            organizer = Profile("", "", "", "organizer", setOf()),
+            organizer = Profile.testOrganizer(),
             eventEndDate = LocalDate.of(2024, 4, 15),
             eventStartDate = LocalDate.of(2024, 4, 14),
             globalRating = 4,

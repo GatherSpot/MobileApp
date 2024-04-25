@@ -36,7 +36,6 @@ import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -112,9 +111,8 @@ class MainActivity : ComponentActivity() {
 
               composable("chat") { Chat(NavigationActions(navController)) }
 
-              composable("profile") {
-                Profile(NavigationActions(navController), OwnProfileViewModel())
-              }
+              composable("profile") { Profile(NavigationActions(navController)) }
+
               composable("createEvent") {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
               }

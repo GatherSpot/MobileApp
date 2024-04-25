@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.model
 
+
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.model.event.Event
@@ -17,8 +18,6 @@ class EventRegistrationViewModelTest {
 
   @Test
   fun testRegisterForEventChangeEventListRegistered() {
-    // Set global uid
-    MainActivity.uid = "test"
     val viewModel = EventRegistrationViewModel()
 
     val event =
@@ -51,7 +50,6 @@ class EventRegistrationViewModelTest {
 
   @Test
   fun testAlreadyRegistered() {
-    MainActivity.uid = "testRR"
     val viewModel = EventRegistrationViewModel()
     val event =
         Event(
@@ -66,7 +64,7 @@ class EventRegistrationViewModelTest {
             eventEndDate = LocalDate.of(2024, 4, 15),
             eventStartDate = LocalDate.of(2024, 4, 14),
             location = null,
-            registeredUsers = mutableListOf("testRR"),
+            registeredUsers = mutableListOf("TEST"),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
             globalRating = null,
