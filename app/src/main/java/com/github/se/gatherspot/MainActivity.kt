@@ -23,6 +23,7 @@ import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.ui.Chat
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
+import com.github.se.gatherspot.ui.EditEvent
 import com.github.se.gatherspot.ui.EventUI
 import com.github.se.gatherspot.ui.Events
 import com.github.se.gatherspot.ui.LogIn
@@ -80,6 +81,17 @@ class MainActivity : ComponentActivity() {
                     navActions = NavigationActions(navController),
                     viewModel = EventRegistrationViewModel())
               }
+                composable("editEvent/{eventJson}") { backStackEntry ->
+                    val gson = Gson()
+                    val eventObject =
+                        gson.fromJson(
+                            backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+                    EditEvent(
+                        event = eventObject!!,
+                        eventUtils = EventUtils(),
+                        nav = NavigationActions(navController)
+                    )
+                }
 
               composable("map") { Map(NavigationActions(navController)) }
 
@@ -93,6 +105,7 @@ class MainActivity : ComponentActivity() {
               composable("createEvent") {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
               }
+
 
               composable("setup") { SetUpProfile(NavigationActions(navController), uid) }
             }
