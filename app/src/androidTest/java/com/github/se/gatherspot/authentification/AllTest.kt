@@ -8,6 +8,8 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.allTestSetUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
@@ -20,6 +22,8 @@ import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,7 +46,7 @@ class AllTest : TestCase() {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun allTest() {
-
+    allTestSetUp(USERNAME,EMAIL)
     ComposeScreen.onComposeScreen<LoginScreen>(composeTestRule) { signUpButton { performClick() } }
     composeTestRule.waitForIdle()
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
@@ -109,13 +113,14 @@ class AllTest : TestCase() {
       async {
             val profile =
                 ProfileFirebaseConnection().fetch(FirebaseAuth.getInstance().currentUser!!.uid)
-            assert(profile != null)
-            assert(profile!!.id == FirebaseAuth.getInstance().currentUser!!.uid)
-            assert(profile.userName == USERNAME)
-            assert(FirebaseAuth.getInstance().currentUser?.email == EMAIL)
+            assertNotNull(profile)
+            assertEquals(profile!!.id, FirebaseAuth.getInstance().currentUser!!.uid)
+            assertEquals(USERNAME, profile.userName)
+            assertEquals(EMAIL ,FirebaseAuth.getInstance().currentUser?.email)
             // assert(user.profile.interests == enumValues<Interests>().toSet())
           }
           .await()
     }
+    testLoginCleanUp()
   }
 }

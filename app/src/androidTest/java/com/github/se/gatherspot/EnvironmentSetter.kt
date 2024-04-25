@@ -63,10 +63,10 @@ class EnvironmentSetter {
                                 "to be Deleted 128 okay"
                             ).await()
                     }catch(e: FirebaseAuthUserCollisionException){
-                        Log.d("testsignUpSetUp", "User already exists you need to delete them manually from the database")
+                        Log.d("testSignUpSetUp", "User already exists you need to delete them manually from the database")
                         return@runTest //If the user already exists we can't do anything from here
                     } catch (e : FirebaseAuthInvalidCredentialsException){
-                        Log.d("testsignUpSetUp", "Invalid email")
+                        Log.d("testSignUpSetUp", "Invalid email")
                         return@runTest
                     }
 
@@ -91,5 +91,67 @@ class EnvironmentSetter {
                     async {profileFirebaseConnection.delete(toDelete.id)}.await()
             }
       }
+
+      fun allTestSetUp(userName: String, email: String){
+          runTest {
+              removeUserName(userName)
+              checkEmailNotUsed(email)
+          }
+      }
+
+      fun allTestCleanUp(userName: String){
+          runTest {
+              removeUserName(userName)
+              testLoginCleanUp()
+          }
+      }
+
+      private fun checkEmailNotUsed(email: String) {
+        runTest {
+
+          //Make sure the email is not in use
+          try {
+
+              Firebase.auth.createUserWithEmailAndPassword(
+                  email,
+                  "to_be_Deleted_128_okay"
+              ).await()
+          } catch (e: FirebaseAuthUserCollisionException) {
+              Log.d(
+                  "testSignUpSetUp",
+                  "User already exists you need to delete them manually from the database"
+              )
+              return@runTest //If the user already exists we can't do anything from here
+          } catch (e: FirebaseAuthInvalidCredentialsException) {
+              Log.d("testSignUpSetUp", "Invalid email")
+              return@runTest
+          }
+
+
+          //We just created a user with the email so now we delete him
+          if (Firebase.auth.currentUser == null)
+              async {
+                  Firebase.auth.signInWithEmailAndPassword(
+                      email,
+                      "to be Deleted 128 okay"
+                  )
+              }.await()
+          async { Firebase.auth.currentUser!!.delete() }.await()
+
+
+         }
+      }
+
+      suspend private fun removeUserName(userName: String) {
+        runTest {
+            async {
+                var toDelete: Profile? = null
+                async { toDelete = profileFirebaseConnection.fetchFromUserName(userName) }.await()
+                if (toDelete != null)
+                    profileFirebaseConnection.delete(toDelete!!.id)
+            }.await()
+        }
+
+    }
   }
 }
