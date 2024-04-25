@@ -1,20 +1,10 @@
 package com.github.se.gatherspot.model.chat
 
-import com.github.se.gatherspot.ChatFirebaseConnection
-import com.github.se.gatherspot.CollectionClass
-
-data class Chat(
-    override val id: String = ChatFirebaseConnection().getNewID(),
-    val peopleIDs: List<String>,
-    val eventID: String,
-    val messages: List<Message>
-) : CollectionClass() {
-
-  fun sendMessage(message: Message) {
-    ChatFirebaseConnection().addMessage(message, id)
-  }
-
-  fun markAllAsRead() {
-    messages.forEach { it.markAsRead() }
-  }
-}
+/**
+ * Represents a chat between multiple people in an event.
+ *
+ * @property peopleIDs List of profile IDs in the chat.
+ * @property eventID ID of the event the chat is associated with.
+ * @property messages List of messages in the chat.
+ */
+data class Chat(val peopleIDs: List<String>, val eventID: String, val messages: List<ChatMessage>)

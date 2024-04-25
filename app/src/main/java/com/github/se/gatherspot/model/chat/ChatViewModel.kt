@@ -1,53 +1,66 @@
 package com.github.se.gatherspot.model.chat
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.se.gatherspot.ChatFirebaseConnection
+import com.github.se.gatherspot.ChatMessagesFirebaseConnection
+import java.time.LocalDateTime
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel(private val eventId: String) : ViewModel() {
+  private val chatMessagesFirebase = ChatMessagesFirebaseConnection()
+  private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
+  val messages: StateFlow<List<ChatMessage>> = _messages
 
-  val PAGE_SIZE: Long = 9
-  private var _uiState = MutableStateFlow(ChatUIState())
-  val uiState: StateFlow<ChatUIState> = _uiState
-
-  // This init block needs to be deleted in real use!!!
-  // This is only to simulate the data fetching before the user class is well implemented in code
-  // and in Firebase
   init {
-    viewModelScope.launch {
-      val chats =
-          listOf(
-              ChatFirebaseConnection().fetch("-NvgK6Aqo7lV01S27jVp")!!,
-              ChatFirebaseConnection().fetch("-NvgLLs9rCbpvRhOeOfx")!!,
-              ChatFirebaseConnection().fetch("-NvgLa_oDM6QcBPzsHFo")!!,
-          )
+    fetchMessages()
+  }
 
-      val newChats =
-          _uiState.value.list.apply {
-            addAll(
-                chats.map {
-                  ChatWithIndicator(it, it.messages.count { message -> message.read == false })
-                })
-          }
-      _uiState.value = ChatUIState(newChats)
+  private fun fetchMessages() {
+    viewModelScope.launch {
+      try {
+        val fetchedMessages =
+            withContext(Dispatchers.IO) {
+              chatMessagesFirebase.fetchMessages(eventId, 50) // Fetch the latest 50 messages
+            }
+        _messages.value = fetchedMessages
+      } catch (e: Exception) {
+        // Handle exceptions
+        Log.w("ChatViewModel", "Failed to fetch messages", e)
+      }
     }
   }
 
-  suspend fun fetchNext() {
+  fun addMessage(messageId: String, senderId: String, messageText: String) {
+    val newMessage =
+        ChatMessage(
+            id = messageId,
+            senderId = senderId,
+            eventId = eventId,
+            message = messageText,
+            timestamp = LocalDateTime.now())
+    _messages.value = _messages.value.plus(newMessage)
+    viewModelScope.launch {
+      try {
+        chatMessagesFirebase.addMessage(eventId, newMessage)
+      } catch (e: Exception) {
+        Log.e("ChatViewModel", "Failed to add message", e)
+      }
+    }
+  }
 
-    val chats = ChatFirebaseConnection().fetchNextChats(PAGE_SIZE)
-    val newChats =
-        _uiState.value.list.apply {
-          addAll(
-              chats.map {
-                ChatWithIndicator(it, it.messages.count { message -> message.read == false })
-              })
-        }
-    _uiState.value = ChatUIState(newChats)
+  fun removeMessage(messageId: String) {
+    viewModelScope.launch {
+      try {
+        _messages.value = _messages.value.filter { it.id != messageId }
+        withContext(Dispatchers.IO) { chatMessagesFirebase.removeMessage(eventId, messageId) }
+      } catch (e: Exception) {
+        Log.e("ChatViewModel", "Failed to remove message", e)
+      }
+    }
   }
 }
-
-data class ChatUIState(val list: MutableSet<ChatWithIndicator> = mutableSetOf())
