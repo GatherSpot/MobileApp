@@ -20,6 +20,10 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.utils.LocalDateDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateSerializer
+import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
 import com.github.se.gatherspot.ui.Chat
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
@@ -36,6 +40,9 @@ import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class MainActivity : ComponentActivity() {
   companion object {
@@ -72,7 +79,13 @@ class MainActivity : ComponentActivity() {
             navigation(startDestination = "events", route = "home") {
               composable("events") { Events(eventsViewModel, NavigationActions(navController)) }
               composable("event/{eventJson}") { backStackEntry ->
-                val gson = Gson()
+                  // Create a new Gson instance with the custom serializers and deserializers
+                  val gson: Gson = GsonBuilder()
+                      .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                      .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                      .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+                      .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+                      .create()
                 val eventObject =
                     gson.fromJson(
                         backStackEntry.arguments?.getString("eventJson"), Event::class.java)
