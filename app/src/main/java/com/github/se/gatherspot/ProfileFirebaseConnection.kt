@@ -9,7 +9,7 @@ import com.google.firebase.firestore.firestore
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
-  override val COLLECTION = FirebaseCollection.PROFILES.toString()
+  override val COLLECTION = FirebaseCollection.PROFILES.toString().lowercase()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
 
   /**
@@ -45,7 +45,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     return profile
   }
 
-  fun ifUsernameExists(username: String, onComplete: (Boolean) -> Unit) {
+  fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
 
     var res = false
     Firebase.firestore
@@ -53,7 +53,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .get()
         .addOnSuccessListener { result ->
           for (document in result) {
-            if (document.get("username") == username) {
+            if (document.get("userName") == userName) {
               res = true
             }
             if (res) {
@@ -73,7 +73,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
             "image" to element.image,
             "interests" to Interests.toCompressedString(element.interests))
     Firebase.firestore
-        .collection(TAG)
+        .collection(COLLECTION)
         .document(element.id)
         .set(data)
         .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }

@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
@@ -89,6 +90,7 @@ class SignUpTest : TestCase() {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUpError() {
+    signUpErrorSetUp()
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
@@ -128,6 +130,7 @@ class SignUpTest : TestCase() {
       badPassword.assertIsDisplayed()
     }
   }
+
 
   @OptIn(ExperimentalTestApi::class)
   @Test
