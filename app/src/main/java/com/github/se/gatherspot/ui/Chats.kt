@@ -38,9 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.chat.ChatViewModel
-import com.github.se.gatherspot.model.chat.ChatWithIndicator
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
@@ -126,13 +126,20 @@ fun Chats(viewModel: ChatViewModel, nav: NavigationActions) {
 }
 
 @Composable
-fun ChatRow(chatWithIndicator: ChatWithIndicator, navigation: NavigationActions) {
+fun ChatRow(eventID: String, navigation: NavigationActions) {
+
+  var eventName by remember { mutableStateOf("") }
+
+  LaunchedEffect(eventID) {
+    EventFirebaseConnection().fetch(eventID)?.let { eventName = it.title }
+    eventName = "Event: $eventName"
+  }
 
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
             val gson = Gson()
-            val chatJson = gson.toJson(chatWithIndicator.chat)
+            val chatJson = gson.toJson(eventID)
             navigation.controller.navigate("chat/$chatJson")
           },
       verticalAlignment = Alignment.CenterVertically) {
@@ -144,35 +151,36 @@ fun ChatRow(chatWithIndicator: ChatWithIndicator, navigation: NavigationActions)
         }
 
         Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
-          if (chatWithIndicator.chat.peopleIDs.size > 2) {
-
-            Text(
-                text = "Chat between ${chatWithIndicator.chat.peopleIDs.size} people",
-                fontWeight = FontWeight.Bold,
-                fontSize = 10.sp)
-          } else {
-            Text(
-                text =
-                    "Chat between ${chatWithIndicator.chat.peopleIDs[0]} and ${chatWithIndicator.chat.peopleIDs[1]}", // TODO: change with usernames
-                fontWeight = FontWeight.Bold,
-                fontSize = 10.sp)
-          }
+          //          if (chatWithIndicator.chat.peopleIDs.size > 2) {
+          //
+          //            Text(
+          //                text = "Chat between ${chatWithIndicator.chat.peopleIDs.size} people",
+          //                fontWeight = FontWeight.Bold,
+          //                fontSize = 10.sp)
+          //          } else {
+          //            Text(
+          //                text =
+          //                    "Chat between ${chatWithIndicator.chat.peopleIDs[0]} and
+          // ${chatWithIndicator.chat.peopleIDs[1]}", // TODO: change with usernames
+          //                fontWeight = FontWeight.Bold,
+          //                fontSize = 10.sp)
+          //          }
           Text(
-              text = "Event: ${chatWithIndicator.chat.eventID}", // TODO: change with event name
+              text = eventName, // TODO: change with event name
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
         }
 
         Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
           Row(verticalAlignment = Alignment.CenterVertically) {
-            when (chatWithIndicator.unreadMessages) {
-              0 -> Text("", color = Color(0xFF00668A), fontSize = 14.sp)
-              else ->
-                  Text(
-                      "${chatWithIndicator.unreadMessages} new messages",
-                      color = Color(255, 165, 0),
-                      fontSize = 14.sp)
-            }
+            //            when (chatWithIndicator.unreadMessages) {
+            //              0 -> Text("", color = Color(0xFF00668A), fontSize = 14.sp)
+            //              else ->
+            //                  Text(
+            //                      "${chatWithIndicator.unreadMessages} new messages",
+            //                      color = Color(255, 165, 0),
+            //                      fontSize = 14.sp)
+            //            }
             Icon(
                 painter = painterResource(R.drawable.arrow_right),
                 contentDescription = null,

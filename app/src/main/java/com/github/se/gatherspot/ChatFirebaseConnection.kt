@@ -5,11 +5,8 @@ import com.github.se.gatherspot.model.chat.Chat
 import com.github.se.gatherspot.model.chat.Message
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.tasks.await
 
 class ChatFirebaseConnection : FirebaseConnectionInterface<Chat> {
 
@@ -44,44 +41,44 @@ class ChatFirebaseConnection : FirebaseConnectionInterface<Chat> {
         messages = messages)
   }
 
-  suspend fun fetchNextChats(number: Long): MutableList<Chat> {
-    val userID = FirebaseAuth.getInstance().currentUser?.uid!!
-    val listOfChatsIDs = ProfileFirebaseConnection().fetch(userID)?.chats!!
-    val querySnapshot: QuerySnapshot =
-        if (offset == null) {
-          Firebase.firestore
-              .collection(CHATS)
-              .orderBy("id")
-              .whereIn("id", listOfChatsIDs)
-              .limit(number)
-              .get()
-              .await()
-        } else {
-          Firebase.firestore
-              .collection(CHATS)
-              .orderBy("id")
-              .startAfter(offset!!.get("id"))
-              .whereIn("id", listOfChatsIDs)
-              .limit(number)
-              .get()
-              .await()
-        }
-
-    if (querySnapshot.documents.isNotEmpty()) {
-      offset = querySnapshot.documents.last()
-    }
-
-    val listOfMaps = querySnapshot.documents.map { it.data!! }
-    val listOfChats = mutableListOf<Chat>()
-
-    listOfMaps.forEach { map ->
-      val uid = map["id"] as String
-      val chat = fetch(uid)
-      chat?.let { listOfChats.add(it) }
-    }
-
-    return listOfChats
-  }
+  //  suspend fun fetchNextChats(number: Long): MutableList<Chat> {
+  //    val userID = FirebaseAuth.getInstance().currentUser?.uid!!
+  //    val listOfChatsIDs = ProfileFirebaseConnection().fetch(userID)?.chats!!
+  //    val querySnapshot: QuerySnapshot =
+  //        if (offset == null) {
+  //          Firebase.firestore
+  //              .collection(CHATS)
+  //              .orderBy("id")
+  //              .whereIn("id", listOfChatsIDs)
+  //              .limit(number)
+  //              .get()
+  //              .await()
+  //        } else {
+  //          Firebase.firestore
+  //              .collection(CHATS)
+  //              .orderBy("id")
+  //              .startAfter(offset!!.get("id"))
+  //              .whereIn("id", listOfChatsIDs)
+  //              .limit(number)
+  //              .get()
+  //              .await()
+  //        }
+  //
+  //    if (querySnapshot.documents.isNotEmpty()) {
+  //      offset = querySnapshot.documents.last()
+  //    }
+  //
+  //    val listOfMaps = querySnapshot.documents.map { it.data!! }
+  //    val listOfChats = mutableListOf<Chat>()
+  //
+  //    listOfMaps.forEach { map ->
+  //      val uid = map["id"] as String
+  //      val chat = fetch(uid)
+  //      chat?.let { listOfChats.add(it) }
+  //    }
+  //
+  //    return listOfChats
+  //  }
 
   override fun add(element: Chat) {
     val userMap: HashMap<String, Any?> =

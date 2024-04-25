@@ -57,6 +57,9 @@ class Profile(
       _interests = value
     }
 
+  var registeredEvents: Set<String> = setOf()
+  var organizingEvents: Set<String> = setOf()
+
   companion object {
     fun testOrganizer(): Profile {
       return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))
