@@ -36,7 +36,7 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-   // for now nothing maybe some cleanup can still be put here
+    // for now nothing maybe some cleanup can still be put here
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -100,10 +100,15 @@ class AllTest : TestCase() {
         performClick()
       }
     }
-    ProfileFirebaseConnection().update(FirebaseAuth.getInstance().currentUser!!.uid, enumValues<Interests>().toList())
+    ProfileFirebaseConnection()
+        .update(
+            FirebaseAuth.getInstance().currentUser!!.uid,
+            "interests",
+            enumValues<Interests>().toList())
     runTest {
       async {
-            val profile = ProfileFirebaseConnection().fetch(FirebaseAuth.getInstance().currentUser!!.uid)
+            val profile =
+                ProfileFirebaseConnection().fetch(FirebaseAuth.getInstance().currentUser!!.uid)
             assert(profile != null)
             assert(profile!!.id == FirebaseAuth.getInstance().currentUser!!.uid)
             assert(profile.userName == USERNAME)

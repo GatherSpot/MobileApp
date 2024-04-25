@@ -275,7 +275,7 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testUnableToRegisterToAFullEvent() {
-    
+
     testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
