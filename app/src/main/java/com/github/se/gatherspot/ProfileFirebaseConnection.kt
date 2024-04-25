@@ -2,6 +2,7 @@ package com.github.se.gatherspot
 
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
@@ -23,6 +24,13 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   fun updateProfile(profile: Profile) {}
+
+  /**
+   * Returns the current user's UID, or null if the user is not logged in.
+   */
+  fun getCurrentUserUid(): String? {
+    return FirebaseAuth.getInstance().currentUser?.uid
+  }
   // THE NEXT THREE ARE USED FOR TESTS
   private lateinit var dummyProfile: Profile
 

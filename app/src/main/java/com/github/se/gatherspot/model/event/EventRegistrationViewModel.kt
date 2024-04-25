@@ -25,9 +25,7 @@ class EventRegistrationViewModel : ViewModel() {
   val displayAlertDeletion: LiveData<Boolean> = _displayAlertDeletion
 
   // Profile of the user, is needed to add the event to the user's registered events
-  // We should have a function in the ProfileFirebaseConnection to return current user ID
-  // It's here only in a temporary way
-  private val uid = FirebaseAuth.getInstance().currentUser?.uid
+  private val uid = ProfileFirebaseConnection().getCurrentUserUid()
   private val profile = ProfileFirebaseConnection().fetchProfile(uid!!)
 
   /** Registers the user for the given event */
