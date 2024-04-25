@@ -63,10 +63,10 @@ class EnvironmentSetter {
                                 "to be Deleted 128 okay"
                             ).await()
                     }catch(e: FirebaseAuthUserCollisionException){
-                        Log.d("signUpSetUp", "User already exists you need to delete them manually from the database")
+                        Log.d("testsignUpSetUp", "User already exists you need to delete them manually from the database")
                         return@runTest //If the user already exists we can't do anything from here
                     } catch (e : FirebaseAuthInvalidCredentialsException){
-                        Log.d("signUpSetUp", "Invalid email")
+                        Log.d("testsignUpSetUp", "Invalid email")
                         return@runTest
                     }
 
