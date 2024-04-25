@@ -9,7 +9,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpSetUp
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
@@ -22,6 +24,7 @@ import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
 
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
@@ -41,7 +44,9 @@ class SignUpTest : TestCase() {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUp() {
-
+    val email = "gatherspot2024@gmail.com"
+    val userName = "GatherSpot"
+    signUpSetUp(userName, email)
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
@@ -56,16 +61,17 @@ class SignUpTest : TestCase() {
       }
     }
 
+
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField {
         assertExists()
         assertIsDisplayed()
-        performTextInput("GatherSpot")
+        performTextInput(userName)
       }
       emailField {
         assertExists()
         assertIsDisplayed()
-        performTextInput("gatherspot2024@gmail.com")
+        performTextInput(email)
       }
       passwordField {
         assertExists()
@@ -85,6 +91,8 @@ class SignUpTest : TestCase() {
       verifDialog.assertIsDisplayed()
       verifDialog.performClick()
     }
+
+    signUpCleanUp(userName)
   }
 
   @OptIn(ExperimentalTestApi::class)

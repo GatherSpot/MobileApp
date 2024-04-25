@@ -15,14 +15,13 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   /**
    * Fetches the profile from the database
    *
-   * @param uid the id of the user
+   * @param id the id of the user
    * @param onSuccess lambda returned when fetched, useful to update the viewModel
    * @return the profile NOTE : The profile will be initially empty, to use it in a view, you need
    *   to update the view using with a lambda function that updates the view
    */
-  fun fetch(uid: String?, onSuccess: () -> Unit): Profile {
-    Log.d(TAG, "uid: $uid")
-    val id = uid ?: "TEST"
+  fun fetch(id: String, onSuccess: () -> Unit): Profile {
+    Log.d(TAG, "id: $id")
     val profile = Profile("", "", "", id, Interests.new())
     Firebase.firestore
         .collection(TAG)
@@ -63,6 +62,22 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
           onComplete(res)
         }
         .addOnFailureListener { onComplete(true) }
+  }
+
+fun fetchFromUserName(userName : String) : Profile? {
+    var profile : Profile? = null
+    Firebase.firestore
+        .collection(COLLECTION)
+        .get()
+        .addOnSuccessListener { result ->
+          for (document in result) {
+            if (document.get("userName") == userName) {
+              profile = getFromDocument(document)
+            }
+          }
+        }
+        .addOnFailureListener { Log.d(TAG, "Error getting documents: ", it) }
+    return profile
   }
 
   override fun add(element: Profile) {
@@ -116,10 +131,10 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     this.add(profile)
   }
 
-  fun updateInterests(uid: String, interests: Set<Interests>) {
+  fun updateInterests(id: String, interests: Set<Interests>) {
     Firebase.firestore
         .collection(TAG)
-        .document(uid)
+        .document(id)
         .update("interests", Interests.toCompressedString(interests))
         .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
         .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
