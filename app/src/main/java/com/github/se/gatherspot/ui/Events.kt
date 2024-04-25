@@ -61,10 +61,10 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.delay
 
 /** Composable that displays events * */
 
@@ -208,13 +208,14 @@ fun EventRow(event: Event, navigation: NavigationActions) {
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
-              // Create a new Gson instance with the custom serializers and deserializers
-              val gson: Gson = GsonBuilder()
-                  .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                  .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                  .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-                  .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
-                  .create()
+            // Create a new Gson instance with the custom serializers and deserializers
+            val gson: Gson =
+                GsonBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+                    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+                    .create()
 
             val eventJson = gson.toJson(event)
             Log.e("Display", "eventJson = $eventJson")

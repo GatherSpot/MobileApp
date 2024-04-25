@@ -79,13 +79,14 @@ class MainActivity : ComponentActivity() {
             navigation(startDestination = "events", route = "home") {
               composable("events") { Events(eventsViewModel, NavigationActions(navController)) }
               composable("event/{eventJson}") { backStackEntry ->
-                  // Create a new Gson instance with the custom serializers and deserializers
-                  val gson: Gson = GsonBuilder()
-                      .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                      .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                      .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-                      .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
-                      .create()
+                // Create a new Gson instance with the custom serializers and deserializers
+                val gson: Gson =
+                    GsonBuilder()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+                        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+                        .create()
                 val eventObject =
                     gson.fromJson(
                         backStackEntry.arguments?.getString("eventJson"), Event::class.java)
