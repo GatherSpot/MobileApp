@@ -1,4 +1,4 @@
-package com.github.se.gatherspot
+/*package com.github.se.gatherspot
 
 import android.util.Log
 import com.github.se.gatherspot.model.chat.Chat
@@ -126,3 +126,4 @@ class ChatFirebaseConnection : FirebaseConnectionInterface<Chat> {
         .addOnFailureListener { exception -> Log.e(TAG, "Error deleting message", exception) }
   }
 }
+*/

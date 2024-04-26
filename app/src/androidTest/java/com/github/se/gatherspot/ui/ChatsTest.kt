@@ -8,13 +8,19 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.chat.ChatViewModel
+import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.screens.ChatsScreen
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.async
+import kotlinx.coroutines.test.runTest
+import okhttp3.internal.wait
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,7 +34,7 @@ class ChatsTest {
     @Test
     fun testEverythingExists() {
         composeTestRule.setContent {
-            val viewModel = ChatViewModel()
+            val viewModel = ChatsListViewModel()
             val nav = NavigationActions(rememberNavController())
             Chats(viewModel = viewModel, nav = nav)
         }
@@ -55,8 +61,18 @@ class ChatsTest {
     @OptIn(ExperimentalTestApi::class, ExperimentalTestApi::class)
     @Test
     fun chatsAreDisplayedAndScrollable() {
+
+        runTest {
+            async {
+                FirebaseAuth.getInstance().signInWithEmailAndPassword("mathurinsky@gmail.com", "azerty123A")
+            }.await()
+        }
+
+
+        ProfileFirebaseConnection().update(FirebaseAuth.getInstance().currentUser?.uid!!, "registeredEvents", setOf("-NwJSmLmQDUlF9booiq7"))
+
         composeTestRule.setContent {
-            val viewModel = ChatViewModel()
+            val viewModel = ChatsListViewModel()
             val nav = NavigationActions(rememberNavController())
             Chats(viewModel = viewModel, nav = nav)
         }

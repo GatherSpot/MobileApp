@@ -124,7 +124,8 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         }
       }
         "registeredEvents" -> {
-          updateRegisteredEvents(id, value as String)
+          updateRegisteredEvents(id, value as Set<String>)
+            return
         }
     }
 
@@ -144,11 +145,11 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
   }
 
-    fun updateRegisteredEvents(id: String, eventID: String) {
+    fun updateRegisteredEvents(id: String, eventIDs: Set<String>) {
         Firebase.firestore
             .collection(TAG)
             .document(id)
-            .update("registeredEvents", FieldValue.arrayUnion(eventID))
+            .update("registeredEvents", FieldValue.arrayUnion(eventIDs))
             .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
             .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
     }

@@ -19,8 +19,10 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.ui.Chats
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
 import com.github.se.gatherspot.ui.EventUI
@@ -84,7 +86,7 @@ class MainActivity : ComponentActivity() {
 
               composable("community") { Community(NavigationActions(navController)) }
 
-              // composable("chats") { Chats(chatViewModel, NavigationActions(navController)) }
+              composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
 
               composable("profile") { Profile(NavigationActions(navController)) }
 

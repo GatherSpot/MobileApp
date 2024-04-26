@@ -41,6 +41,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.chat.ChatViewModel
+import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
@@ -48,7 +49,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.delay
 
 @Composable
-fun Chats(viewModel: ChatViewModel, nav: NavigationActions) {
+fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
 
   val state = viewModel.uiState.collectAsState()
   var previousScrollPosition by remember { mutableIntStateOf(0) }
@@ -194,5 +195,5 @@ fun ChatRow(eventID: String, navigation: NavigationActions) {
 @Preview
 @Composable
 fun ChatPreview() {
-  Chats(ChatViewModel(), NavigationActions(rememberNavController()))
+  Chats(ChatsListViewModel(), NavigationActions(rememberNavController()))
 }
