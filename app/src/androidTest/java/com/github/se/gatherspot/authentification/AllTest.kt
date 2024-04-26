@@ -8,8 +8,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter.Companion.allTestCleanUp
-import com.github.se.gatherspot.EnvironmentSetter.Companion.allTestSetUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
@@ -40,13 +39,13 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    // for now nothing maybe some cleanup can still be put here
+    ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
+    testLoginCleanUp()
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun allTest() {
-    allTestSetUp(USERNAME, EMAIL)
     ComposeScreen.onComposeScreen<LoginScreen>(composeTestRule) { signUpButton { performClick() } }
     composeTestRule.waitForIdle()
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
@@ -116,11 +115,9 @@ class AllTest : TestCase() {
             assertNotNull(profile)
             assertEquals(profile!!.id, FirebaseAuth.getInstance().currentUser!!.uid)
             assertEquals(USERNAME, profile.userName)
-            assertEquals(EMAIL, FirebaseAuth.getInstance().currentUser?.email)
-            // assert(user.profile.interests == enumValues<Interests>().toSet())
+            assertEquals(EMAIL.lowercase(), FirebaseAuth.getInstance().currentUser?.email)
           }
           .await()
     }
-    allTestCleanUp(USERNAME)
   }
 }
