@@ -9,14 +9,17 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpSetUp
+import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -37,7 +40,11 @@ class SignUpTest : TestCase() {
 
   @After
   fun cleanUp() {
-    // Maybe some more to omplement for now nothing
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    if (currentUser != null) {
+      ProfileFirebaseConnection().delete(currentUser.uid)
+      EnvironmentSetter.testLoginCleanUp()
+    }
   }
 
   @OptIn(ExperimentalTestApi::class)
