@@ -9,13 +9,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.MainActivity
-import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.model.User
+import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpSetUp
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After
@@ -26,8 +28,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
 
-  val UserFirebaseConnection = UserFirebaseConnection()
-
   @get:Rule val composeTestRule = createComposeRule()
 
   // The IntentsTestRule simply calls Intents.init() before the @Test block
@@ -37,17 +37,15 @@ class SignUpTest : TestCase() {
 
   @After
   fun cleanUp() {
-    try {
-      UserFirebaseConnection.delete(MainActivity.uid)
-    } catch (_: Exception) {}
-    UserFirebaseConnection.delete("test")
-    UserFirebaseConnection.deleteCurrentUser()
+    // Maybe some more to omplement for now nothing
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUp() {
-
+    val email = "gatherspot2024@gmail.com"
+    val userName = "GatherSpot"
+    signUpSetUp(userName, email)
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
@@ -55,7 +53,9 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(NavigationActions(navController), MainActivity.uid) }
+          composable("setup") {
+            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
+          }
         }
       }
     }
@@ -64,12 +64,12 @@ class SignUpTest : TestCase() {
       usernameField {
         assertExists()
         assertIsDisplayed()
-        performTextInput("GatherSpot")
+        performTextInput(userName)
       }
       emailField {
         assertExists()
         assertIsDisplayed()
-        performTextInput("gatherspot2024@gmail.com")
+        performTextInput(email)
       }
       passwordField {
         assertExists()
@@ -89,11 +89,14 @@ class SignUpTest : TestCase() {
       verifDialog.assertIsDisplayed()
       verifDialog.performClick()
     }
+
+    signUpCleanUp(userName)
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUpError() {
+    signUpErrorSetUp()
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
@@ -101,12 +104,13 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(NavigationActions(navController), MainActivity.uid) }
+          composable("setup") {
+            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
+          }
         }
       }
     }
 
-    UserFirebaseConnection.add(User("test", "test", "test", "test"))
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField {
         performTextInput("test")
@@ -143,7 +147,9 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(NavigationActions(navController), MainActivity.uid) }
+          composable("setup") {
+            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
+          }
         }
       }
     }
