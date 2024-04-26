@@ -14,15 +14,13 @@ class ChatsListViewModel : ViewModel() {
     private var _uiState = MutableStateFlow(ChatUIState())
     val uiState: StateFlow<ChatUIState> = _uiState
 
-    suspend fun fetchNext() {
-        val chats =
-            ProfileFirebaseConnection()
-                .fetch(FirebaseAuth.getInstance().currentUser!!.uid)!!
-                .registeredEvents
-                .union(
-                    ProfileFirebaseConnection()
-                        .fetch(FirebaseAuth.getInstance().currentUser!!.uid)!!
-                        .organizingEvents)
+    suspend fun fetchNext(uid: String) {
+        val chats = emptySet<String>()
+            val profile = ProfileFirebaseConnection().fetch(uid)
+
+                val events = profile?.registeredEvents ?: setOf<String>().union(
+                ProfileFirebaseConnection()
+                    .fetch(uid)?.organizingEvents?: setOf())
         val newChats = _uiState.value.list.apply { addAll(chats) }
         _uiState.value = ChatUIState(newChats)
     }

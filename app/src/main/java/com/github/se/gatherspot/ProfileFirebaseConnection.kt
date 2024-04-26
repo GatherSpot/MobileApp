@@ -3,6 +3,7 @@ package com.github.se.gatherspot
 import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
+import com.google.common.collect.Lists
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -138,7 +139,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   fun updateInterests(id: String, interests: Set<Interests>) {
     Firebase.firestore
-        .collection(TAG)
+        .collection(COLLECTION)
         .document(id)
         .update("interests", Interests.toCompressedString(interests))
         .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
@@ -146,10 +147,12 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
     fun updateRegisteredEvents(id: String, eventIDs: Set<String>) {
+
+
         Firebase.firestore
-            .collection(TAG)
+            .collection(COLLECTION)
             .document(id)
-            .update("registeredEvents", FieldValue.arrayUnion(eventIDs))
+            .update("registeredEvents", FieldValue.arrayUnion(*eventIDs.toTypedArray()))
             .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
             .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
     }
@@ -165,6 +168,8 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     val bio = d.getString("bio")
     val image = d.getString("image")
     val interests = Interests.fromCompressedString(d.getString("interests") ?: "")
-    return Profile(userName, bio ?: "", image ?: "", d.id, interests)
+      val registeredEvents = d.get("registeredEvents") as? List<String>
+        val organizingEvents = d.get("organizingEvents") as? List<String>
+    return Profile(userName, bio ?: "", image ?: "", d.id, interests, registeredEvents?.toSet(), organizingEvents?.toSet())
   }
 }
