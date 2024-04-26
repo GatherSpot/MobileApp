@@ -62,7 +62,7 @@ fun Chats(viewModel: ChatViewModel, nav: NavigationActions) {
               horizontalArrangement = Arrangement.Center,
               verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = "Add chat", fontSize = 18.sp, modifier = Modifier.testTag("AddChat"))
+                Text(text = "Add chat", fontSize = 18.sp, modifier = Modifier.testTag("AddChatText"))
                 Spacer(modifier = Modifier.width(10.dp))
                 Box {
                   Icon(
@@ -96,7 +96,7 @@ fun Chats(viewModel: ChatViewModel, nav: NavigationActions) {
               Box(
                   modifier = Modifier.fillMaxWidth().padding(paddingValues),
                   contentAlignment = Alignment.TopStart) {
-                    Text(text = "Loading...", color = Color.Black)
+                    Text(text = "Loading...", color = Color.Black, modifier = Modifier.testTag("emptyText"))
                   }
           else -> {
             LazyColumn(

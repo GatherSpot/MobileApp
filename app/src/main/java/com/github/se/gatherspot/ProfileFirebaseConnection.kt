@@ -5,6 +5,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
@@ -122,6 +123,9 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
           }
         }
       }
+        "registeredEvents" -> {
+          updateRegisteredEvents(id, value as String)
+        }
     }
 
     super.update(id, field, value)
@@ -139,6 +143,16 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
         .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
   }
+
+    fun updateRegisteredEvents(id: String, eventID: String) {
+        Firebase.firestore
+            .collection(TAG)
+            .document(id)
+            .update("registeredEvents", FieldValue.arrayUnion(eventID))
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+    }
+
 
   override fun delete(id: String) {
     // delete associated data from other collection TODO
