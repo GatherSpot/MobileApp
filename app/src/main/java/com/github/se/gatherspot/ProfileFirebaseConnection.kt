@@ -17,9 +17,8 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param id the id of the user
    * @param onSuccess lambda returned when fetched, useful to update the viewModel
-   * @return the profile
-   * NOTE : The profile will be initially empty, to use it in a view, you need
-   * to update the view using with a lambda function that updates the view
+   * @return the profile NOTE : The profile will be initially empty, to use it in a view, you need
+   *   to update the view using with a lambda function that updates the view
    */
   fun fetch(id: String, onSuccess: () -> Unit): Profile {
     Log.d(TAG, "id: $id")
