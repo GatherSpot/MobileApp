@@ -37,6 +37,16 @@ interface FirebaseConnectionInterface<T : CollectionClass> {
   // Find a way to make this work for all classes generically
   fun add(element: T)
 
+  fun update(id: String, field: String, value: Any) {
+    Firebase.firestore
+        .collection(COLLECTION.lowercase())
+        .document(id)
+        .update(field, value)
+        .addOnFailureListener { exception ->
+          Log.e(TAG, "Error updating ${COLLECTION.lowercase()}", exception)
+        }
+  }
+
   fun delete(id: String) {
     Firebase.firestore
         .collection(COLLECTION.lowercase())
