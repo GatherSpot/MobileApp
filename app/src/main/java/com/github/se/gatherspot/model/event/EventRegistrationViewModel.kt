@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.FirebaseCollection
-import com.github.se.gatherspot.IdListFirebaseConnection
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.FirebaseCollection
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch

@@ -1,12 +1,12 @@
-package com.github.se.gatherspot
+package com.github.se.gatherspot.firebase
 
 import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
-import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 interface FirebaseConnectionInterface<T : CollectionClass> {
 

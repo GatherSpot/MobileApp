@@ -1,6 +1,6 @@
 package com.github.se.gatherspot.model
 
-import com.github.se.gatherspot.CollectionClass
+import com.github.se.gatherspot.firebase.CollectionClass
 
 // NOTE : I will add interests once theses are pushed
 /**

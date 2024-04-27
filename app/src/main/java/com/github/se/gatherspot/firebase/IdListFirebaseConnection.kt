@@ -1,4 +1,4 @@
-package com.github.se.gatherspot
+package com.github.se.gatherspot.firebase
 
 import android.util.Log
 import com.github.se.gatherspot.model.IdList
@@ -18,7 +18,7 @@ class IdListFirebaseConnection {
    * @return the IdList NOTE : The IdList will be initially empty, to use it in a view, you need to
    *   update the view using with a lambda function that updates the view
    */
-  fun fetchFromFirebase(id: String, category: FirebaseCollection, update: () -> Unit): IdList {
+  fun fetchFromFirebase(id: String, category: FirebaseCollection, onSuccess: () -> Unit): IdList {
     val tag = category.name
     val idSet = IdList.empty(id, category)
     db.collection(tag)
@@ -35,7 +35,7 @@ class IdListFirebaseConnection {
           } else {
             Log.d(logTag, "No such document")
           }
-          update()
+          onSuccess()
         }
         .addOnFailureListener { exception -> Log.d(logTag, "get failed with ", exception) }
     return idSet
@@ -49,12 +49,14 @@ class IdListFirebaseConnection {
     val tag = idSet.collection.name
     val id = idSet.id
     // TODO : check if this good way to store data
-    val data = hashMapOf("ids" to idSet.events.toList())
-    db.collection(tag)
-        .document(id)
-        .set(data)
-        .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully written!") }
-        .addOnFailureListener { e -> Log.w(logTag, "Error writing document", e) }
+    idSet.events.forEach {
+      val data = hashMapOf(it to true)
+        db.collection(tag)
+            .document(id)
+            .set(data)
+            .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully written!") }
+            .addOnFailureListener { e -> Log.w(logTag, "Error writing document", e) }
+    }
   }
   /**
    * Deletes the IdList from Firebase

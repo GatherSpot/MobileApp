@@ -1,6 +1,6 @@
 package com.github.se.gatherspot.model
 
-import com.github.se.gatherspot.FirebaseCollection
+import com.github.se.gatherspot.firebase.FirebaseCollection
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 

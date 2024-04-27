@@ -1,5 +1,6 @@
 package com.github.se.gatherspot
 
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -9,7 +10,6 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlinx.coroutines.async
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals

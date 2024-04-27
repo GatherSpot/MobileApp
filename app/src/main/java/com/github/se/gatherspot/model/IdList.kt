@@ -1,7 +1,7 @@
 package com.github.se.gatherspot.model
 
-import com.github.se.gatherspot.CollectionClass
-import com.github.se.gatherspot.FirebaseCollection
+import com.github.se.gatherspot.firebase.FirebaseCollection
+import com.github.se.gatherspot.firebase.CollectionClass
 
 /**
  * A list of ids owned by a user that will be stored in a certain firebase collection

@@ -1,4 +1,4 @@
-package com.github.se.gatherspot
+package com.github.se.gatherspot.firebase
 
 import android.util.Log
 import com.github.se.gatherspot.model.Interests
