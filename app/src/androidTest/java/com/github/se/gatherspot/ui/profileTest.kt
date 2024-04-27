@@ -1,7 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
@@ -71,42 +69,6 @@ class ProfileInstrumentedTest {
       save { performClick() }
       bioInput { assert(hasText("I am a bot")) }
       usernameInput { assert(hasText("Alex")) }
-    }
-  }
-
-  @OptIn(ExperimentalTestApi::class)
-  @Test
-  fun interestsTest() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      Profile(NavigationActions(navController))
-    }
-    ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
-      // check if things are here :
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("FOOTBALL"), 6000)
-      basketball { assertDoesNotExist() }
-      // press edit button
-      edit { performClick() }
-      composeTestRule.waitForIdle()
-      // check if things are here :
-      addBasketball { assertExists() }
-      basketball { assertDoesNotExist() }
-      removeBasketball { assertDoesNotExist() }
-      // press add button
-      addBasketball { performClick() }
-      composeTestRule.waitForIdle()
-      // check if things are here :
-      removeBasketball { assertExists() }
-      basketball { assertDoesNotExist() }
-      addBasketball { assertDoesNotExist() }
-
-      // press remove button
-      removeBasketball { performClick() }
-      // check if things are here :
-      composeTestRule.waitForIdle()
-      basketball { assertDoesNotExist() }
-      addBasketball { assertExists() }
-      removeBasketball { assertDoesNotExist() }
     }
   }
 

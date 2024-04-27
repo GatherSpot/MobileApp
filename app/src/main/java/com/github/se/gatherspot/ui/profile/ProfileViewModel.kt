@@ -67,12 +67,7 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun flipInterests(interest: Interests) {
-    _interests.value =
-        if (interest in _interests.value!!) {
-          interests.value!!.minus(interest)
-        } else {
-          interests.value!!.plus(interest)
-        }
+    _interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
 
   fun isInterestsSelected(interest: Interests): Boolean {

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
@@ -177,7 +178,7 @@ class ProfileView {
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
         InterestsView().ShowInterests(interests)
-        Spacer(modifier = Modifier.height(56.dp)) // TODO check if good size
+        Spacer(modifier = Modifier.height(56.dp))
       }
     }
   }
@@ -200,8 +201,10 @@ class ProfileView {
         ProfileImage(imageUri, updateImageUri, true)
         UsernameField(username, updateUsername, true)
         BioField(bio, updateBio, true)
-        InterestsView().EditInterests(viewModel)
-        Spacer(modifier = Modifier.height(16.dp)) // TODO check if good size
+        InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
+          viewModel.flipInterests(it)
+        }
+        Spacer(modifier = Modifier.height(56.dp))
       }
     }
   }
@@ -223,6 +226,7 @@ class ProfileView {
       UsernameField(username, {}, false)
       BioField(bio, {}, false)
       InterestsView().ShowInterests(interests)
+      Spacer(modifier = Modifier.height(56.dp))
     }
   }
 }
