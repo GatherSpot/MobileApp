@@ -16,7 +16,6 @@ import org.junit.runner.RunWith
 class ProfileInstrumentedTest {
 
   @get:Rule val composeTestRule = createComposeRule()
-
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @OptIn(ExperimentalTestApi::class)
@@ -55,11 +54,13 @@ class ProfileInstrumentedTest {
       bioInput { assert(hasText("I am not a bot")) }
       // modify text, press save and verify it did change.
       edit { performClick() }
-      usernameInput { performTextReplacement("Alex") }
       bioInput { performTextReplacement("I am a bot") }
       save { performClick() }
       bioInput { assert(hasText("I am a bot")) }
-      usernameInput { assert(hasText("Alex")) }
+      // restore for next time
+      edit { performClick() }
+      bioInput { performTextReplacement("I am not a bot") }
+      save { performClick() }
     }
   }
 

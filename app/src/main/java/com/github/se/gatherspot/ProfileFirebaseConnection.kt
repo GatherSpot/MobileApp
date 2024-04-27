@@ -24,7 +24,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     Log.d(TAG, "id: $id")
     val profile = Profile("", "", "", id, Interests.new())
     Firebase.firestore
-        .collection(TAG)
+        .collection(COLLECTION)
         .document(id)
         .get()
         .addOnSuccessListener { document ->
