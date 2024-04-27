@@ -18,8 +18,8 @@ class Profile(
     private var _image: String,
     override val id: String,
     private var _interests: Set<Interests>,
-  private var _registeredEvents: Set<String> ?= emptySet(),
-    private var _organizingEvents: Set<String> ?= emptySet()
+    private var _registeredEvents: Set<String>? = emptySet(),
+    private var _organizingEvents: Set<String>? = emptySet()
 ) : CollectionClass() {
   var userName: String
     get() = _userName
@@ -60,15 +60,17 @@ class Profile(
     }
 
   var registeredEvents: Set<String>
-    get() = _registeredEvents?: emptySet()
+    get() = _registeredEvents ?: emptySet()
     set(value) {
       _registeredEvents = value
     }
+
   var organizingEvents: Set<String>
-    get() = _organizingEvents?: emptySet()
+    get() = _organizingEvents ?: emptySet()
     set(value) {
       _organizingEvents = value
     }
+
   companion object {
     fun testOrganizer(): Profile {
       return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))

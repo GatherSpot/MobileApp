@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.content.ContentValues
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,51 +41,54 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.ProfileFirebaseConnection
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 @Composable
 fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
-
-
-
 
   val state = viewModel.uiState.collectAsState()
   var previousScrollPosition by remember { mutableIntStateOf(0) }
   var loading by remember { mutableStateOf(false) }
   var fetched by remember { mutableStateOf(false) }
+  var fetch by remember { mutableStateOf(true) }
 
+  LaunchedEffect(fetch) {
+    if (fetch) {
+      Log.d(ContentValues.TAG, "entered")
+      try {
+        viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid ?: "")
+      } catch (e: Exception) {
+        Log.d("ptdr", "Error fetching chats: $e")
+      }
+      fetch = false
+    }
+  }
 
   Scaffold(
       topBar = {
         Column {
           Row(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 10.dp),
+              modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
               horizontalArrangement = Arrangement.Center,
               verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = "Add chat", fontSize = 18.sp, modifier = Modifier.testTag("AddChatText"))
+                Text(
+                    text = "Add chat", fontSize = 18.sp, modifier = Modifier.testTag("AddChatText"))
                 Spacer(modifier = Modifier.width(10.dp))
                 Box {
                   Icon(
                       imageVector = Icons.Default.Add,
                       contentDescription = null,
                       modifier =
-                      Modifier
-                          .clickable { nav.controller.navigate("createChat") }
-                          .testTag("createChatMenu"))
+                          Modifier.clickable { nav.controller.navigate("createChat") }
+                              .testTag("createChatMenu"))
                 }
                 Spacer(modifier = Modifier.width(10.dp))
 
@@ -103,23 +107,27 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
             tabList = TOP_LEVEL_DESTINATIONS,
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
       }) { paddingValues ->
+        if (fetch) {
+          Text(
+              modifier = Modifier.testTag("fetch").padding(vertical = 30.dp),
+              text = "Fetching chats...")
+        }
         val chats = state.value.list.toList()
         val lazyState = rememberLazyListState()
         when {
           chats.isEmpty() ->
               Box(
-                  modifier = Modifier
-                      .fillMaxWidth()
-                      .padding(paddingValues),
+                  modifier = Modifier.fillMaxWidth().padding(paddingValues),
                   contentAlignment = Alignment.TopStart) {
-                    Text(text = "Loading...", color = Color.Black, modifier = Modifier.testTag("emptyText"))
+                    Text(
+                        text = "Loading...",
+                        color = Color.Black,
+                        modifier = Modifier.testTag("emptyText"))
                   }
           else -> {
             LazyColumn(
                 state = lazyState,
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .testTag("chatsList")) {
+                modifier = Modifier.padding(paddingValues).testTag("chatsList")) {
                   items(chats) { chat -> ChatRow(chat, nav) }
                 }
 
@@ -138,14 +146,14 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
                 fetched = true
               }
             }
-//              LaunchedEffect(key1 = FirebaseAuth.getInstance().currentUser?.uid) {
-//                  try {
-//                      viewModel.fetchNext()
-//                  }
-//                  catch (e: Exception) {
-//                        Log.d("ptdr","Error fetching chats: $e")
-//                  }
-//              }
+            //              LaunchedEffect(key1 = FirebaseAuth.getInstance().currentUser?.uid) {
+            //                  try {
+            //                      viewModel.fetchNext()
+            //                  }
+            //                  catch (e: Exception) {
+            //                        Log.d("ptdr","Error fetching chats: $e")
+            //                  }
+            //              }
           }
         }
       }
@@ -154,22 +162,13 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
 @Composable
 fun ChatRow(eventID: String, navigation: NavigationActions) {
 
-  var eventName by remember { mutableStateOf("") }
-
-  LaunchedEffect(eventID) {
-    EventFirebaseConnection().fetch(eventID)?.let { eventName = it.title }
-    eventName = "Event: $eventName"
-  }
-
+  val EventFirebaseConnection = com.github.se.gatherspot.EventFirebaseConnection()
   Row(
       modifier =
-      Modifier
-          .fillMaxWidth()
-          .padding(vertical = 16.dp, horizontal = 10.dp)
-          .clickable {
-              val gson = Gson()
-              val chatJson = gson.toJson(eventID)
-              navigation.controller.navigate("chat/$chatJson")
+          Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
+            val gson = Gson()
+            val chatJson = gson.toJson(eventID)
+            navigation.controller.navigate("chat/$chatJson")
           },
       verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
@@ -179,9 +178,7 @@ fun ChatRow(eventID: String, navigation: NavigationActions) {
               modifier = Modifier.size(24.dp))
         }
 
-        Column(modifier = Modifier
-            .weight(1f)
-            .padding(end = 1.dp)) {
+        Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
           //          if (chatWithIndicator.chat.peopleIDs.size > 2) {
           //
           //            Text(
@@ -197,7 +194,7 @@ fun ChatRow(eventID: String, navigation: NavigationActions) {
           //                fontSize = 10.sp)
           //          }
           Text(
-              text = eventName, // TODO: change with event name
+              text = eventID, // TODO: change with event name
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
         }
@@ -215,10 +212,7 @@ fun ChatRow(eventID: String, navigation: NavigationActions) {
             Icon(
                 painter = painterResource(R.drawable.arrow_right),
                 contentDescription = null,
-                modifier = Modifier
-                    .width(24.dp)
-                    .height(24.dp)
-                    .clickable {})
+                modifier = Modifier.width(24.dp).height(24.dp).clickable {})
           }
         }
       }

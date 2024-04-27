@@ -163,7 +163,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
               modifier = Modifier.testTag("fetch").padding(vertical = 30.dp),
               text = "Fetching new events...")
         }
-        val events = state.value.list
+        val events = state.value.list.toList()
         val lazyState = rememberLazyListState()
         Log.d(TAG, "size = " + events.size.toString())
         when {

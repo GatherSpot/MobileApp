@@ -3,7 +3,6 @@ package com.github.se.gatherspot
 import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
-import com.google.common.collect.Lists
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -124,10 +123,10 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
           }
         }
       }
-        "registeredEvents" -> {
-          updateRegisteredEvents(id, value as Set<String>)
-            return
-        }
+      "registeredEvents" -> {
+        updateRegisteredEvents(id, value as Set<String>)
+        return
+      }
     }
 
     super.update(id, field, value)
@@ -146,17 +145,15 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
   }
 
-    fun updateRegisteredEvents(id: String, eventIDs: Set<String>) {
+  fun updateRegisteredEvents(id: String, eventIDs: Set<String>) {
 
-
-        Firebase.firestore
-            .collection(COLLECTION)
-            .document(id)
-            .update("registeredEvents", FieldValue.arrayUnion(*eventIDs.toTypedArray()))
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
-    }
-
+    Firebase.firestore
+        .collection(COLLECTION)
+        .document(id)
+        .update("registeredEvents", FieldValue.arrayUnion(*eventIDs.toTypedArray()))
+        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
+        .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+  }
 
   override fun delete(id: String) {
     // delete associated data from other collection TODO
@@ -168,8 +165,15 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     val bio = d.getString("bio")
     val image = d.getString("image")
     val interests = Interests.fromCompressedString(d.getString("interests") ?: "")
-      val registeredEvents = d.get("registeredEvents") as? List<String>
-        val organizingEvents = d.get("organizingEvents") as? List<String>
-    return Profile(userName, bio ?: "", image ?: "", d.id, interests, registeredEvents?.toSet(), organizingEvents?.toSet())
+    val registeredEvents = d.get("registeredEvents") as? List<String>
+    val organizingEvents = d.get("organizingEvents") as? List<String>
+    return Profile(
+        userName,
+        bio ?: "",
+        image ?: "",
+        d.id,
+        interests,
+        registeredEvents?.toSet(),
+        organizingEvents?.toSet())
   }
 }
