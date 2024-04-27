@@ -106,7 +106,7 @@ class EventsTest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun dropdownMenuFunctional() {
+  fun testDropdownMenuFunctional() {
     composeTestRule.setContent {
       val viewModel = EventsViewModel()
       val nav = NavigationActions(rememberNavController())
@@ -138,7 +138,7 @@ class EventsTest {
   }
 
   @Test
-  fun filterWorks() {
+  fun testFilterWorks() {
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
     composeTestRule.setContent {
@@ -168,6 +168,65 @@ class EventsTest {
       composeTestRule.waitForIdle()
       assert(
           viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.SPORT) ?: true })
+    }
+  }
+
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun testRefreshButtonFunctionalWithFilter() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
+    composeTestRule.setContent {
+      val nav = NavigationActions(rememberNavController())
+      Events(viewModel = viewModel, nav = nav)
+    }
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      dropdown { assertIsDisplayed() }
+
+      val indexBasketball = Interests.BASKETBALL.ordinal
+      val indexChess = Interests.CHESS.ordinal
+
+      categories[indexBasketball] {
+        composeTestRule
+            .onNodeWithTag("dropdown")
+            .performScrollToNode(
+                hasTestTag(enumValues<Interests>().toList()[indexBasketball].toString()))
+        assertExists()
+        performClick()
+      }
+
+      categories[indexChess] {
+        composeTestRule
+            .onNodeWithTag("dropdown")
+            .performScrollToNode(
+                hasTestTag(enumValues<Interests>().toList()[indexChess].toString()))
+        assertExists()
+        performClick()
+      }
+
+      filterMenu { performClick() }
+
+      composeTestRule.waitForIdle()
+
+      refresh { performClick() }
+
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 5000)
+      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 5000)
+
+      assert(
+          viewModel.uiState.value.list.all { e ->
+            if (e.categories == null) {
+              false
+            } else {
+              e.categories!!.contains(Interests.BASKETBALL) ||
+                  e.categories!!.contains(Interests.CHESS)
+            }
+          })
     }
   }
 }
