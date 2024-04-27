@@ -17,13 +17,8 @@ class OwnProfileViewModel : ViewModel() {
   private val _interests = MutableLiveData<Set<Interests>>()
 
   init {
-    Firebase.auth.currentUser?.uid?.let { uid ->
-      _profile = ProfileFirebaseConnection().fetch(uid) { update() }
-    }
-        ?: run {
-          _profile = Profile.testOrganizer()
-          update()
-        }
+    // TODO: replace this with hilt injection
+    _profile = ProfileFirebaseConnection().fetch(Firebase.auth.uid ?: "TEST") { update() }
   }
 
   val username: LiveData<String>
@@ -41,7 +36,7 @@ class OwnProfileViewModel : ViewModel() {
   fun save() {
     _profile.userName = _username.value!!
     _profile.bio = _bio.value!!
-    _profile.image = _image.value!!
+    _profile.image = _image.value ?: ""
     _profile.interests = _interests.value!!
     ProfileFirebaseConnection().add(_profile)
   }

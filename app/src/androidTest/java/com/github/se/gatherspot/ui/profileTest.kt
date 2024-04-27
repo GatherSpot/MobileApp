@@ -1,36 +1,25 @@
 package com.github.se.gatherspot.ui
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.ProfileFirebaseConnection
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
-  @Before
-  fun setUp() {
-    ProfileFirebaseConnection().add(Profile.testOrganizer())
-  }
-
-  @After
-  fun cleanUp() {
-    ProfileFirebaseConnection().delete("TEST")
-  }
 
   @get:Rule val composeTestRule = createComposeRule()
 
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
@@ -38,6 +27,8 @@ class ProfileInstrumentedTest {
       Profile(NavigationActions(navController))
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
+      // wait for update
+      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 6000)
       // check if things are here :
       usernameInput { assertExists() }
       bioInput { assertExists() }
@@ -72,6 +63,7 @@ class ProfileInstrumentedTest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun viewProfileTest() {
     composeTestRule.setContent {
@@ -79,7 +71,8 @@ class ProfileInstrumentedTest {
       ViewProfile(NavigationActions(navController), "TEST")
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
-      // check if things are here :
+      // wait for update :
+      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 6000)
       usernameInput { assertExists() }
       bioInput { assertExists() }
       profileImage { assertExists() }
