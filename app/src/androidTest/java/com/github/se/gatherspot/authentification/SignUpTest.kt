@@ -13,7 +13,7 @@ import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpSetUp
-import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
