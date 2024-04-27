@@ -70,3 +70,4 @@ class IdListFirebaseConnection {
         .addOnFailureListener { e -> Log.w(logTag, "Error deleting document", e) }
   }
 }
+

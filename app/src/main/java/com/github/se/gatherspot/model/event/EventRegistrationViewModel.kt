@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.FirebaseCollection
 import com.github.se.gatherspot.IdListFirebaseConnection
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
@@ -44,6 +44,7 @@ class EventRegistrationViewModel : ViewModel() {
         }
       }
       // Check if the user is already registered for the event
+
       if (event.registeredUsers.contains(userId)) {
         _registrationState.value = RegistrationState.Error("Already registered for this event")
         return@launch

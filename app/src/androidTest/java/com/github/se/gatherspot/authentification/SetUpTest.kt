@@ -11,8 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.MainActivity
-import com.github.se.gatherspot.UserFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
@@ -28,23 +26,19 @@ import org.junit.runner.RunWith
 class SetUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
 
-  val UserFirebaseConnection = UserFirebaseConnection()
-
   @After
   fun cleanUp() {
-    UserFirebaseConnection.delete(MainActivity.uid)
-    UserFirebaseConnection.deleteCurrentUser()
+    // For now nothing
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun setUp() {
-    MainActivity.uid = "test"
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
         navigation(startDestination = "setup", route = "auth") {
-          composable("setup") { SetUpProfile(NavigationActions(navController), MainActivity.uid) }
+          composable("setup") { SetUpProfile(NavigationActions(navController), "SetUpTest") }
         }
       }
     }
