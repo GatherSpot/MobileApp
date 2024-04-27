@@ -16,6 +16,7 @@ class EventsScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val eventsList: KNode = onNode { hasTestTag("eventsList") }
   val dropdown: KNode = onNode { hasTestTag("dropdown") }
   val refresh: KNode = onNode { hasTestTag("refresh") }
+  val fetchingText: KNode = onNode { hasTestTag("fetch") }
   val categories: List<KNode> =
       enumValues<Interests>().toList().map { i -> onNode { hasTestTag(i.toString()) } }
 }
