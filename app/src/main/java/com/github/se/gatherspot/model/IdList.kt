@@ -1,7 +1,8 @@
 package com.github.se.gatherspot.model
 
-import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.CollectionClass
+import com.github.se.gatherspot.firebase.FirebaseCollection
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 
 /**
  * A list of ids owned by a user that will be stored in a certain firebase collection
@@ -18,10 +19,12 @@ class IdList(
 ) : CollectionClass() {
   fun add(eventId: String) {
     events = events.plus(eventId)
+    IdListFirebaseConnection().addElement(id, collection, eventId)
   }
 
   fun remove(eventId: String) {
     events = events.minus(eventId)
+    IdListFirebaseConnection().deleteElement(id, collection, eventId)
   }
 
   companion object {
@@ -34,5 +37,6 @@ class IdList(
      *   blocking access to the list
      */
     fun empty(id: String, collection: FirebaseCollection) = IdList(id, listOf(), collection)
+    fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) = IdListFirebaseConnection().fetch(id, collection){}
   }
 }
