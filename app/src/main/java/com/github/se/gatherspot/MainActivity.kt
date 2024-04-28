@@ -30,6 +30,7 @@ import com.github.se.gatherspot.ui.Map
 import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
+import com.github.se.gatherspot.ui.ViewProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -86,7 +87,11 @@ class MainActivity : ComponentActivity() {
               composable("chat") { Chat(NavigationActions(navController)) }
 
               composable("profile") { Profile(NavigationActions(navController)) }
-
+              composable("viewProfile/{uid}") { backstackEntry ->
+                backstackEntry.arguments?.getString("uid")?.let {
+                  ViewProfile(NavigationActions(navController), it)
+                }
+              }
               composable("createEvent") {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
               }

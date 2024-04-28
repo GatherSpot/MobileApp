@@ -9,7 +9,7 @@ import com.google.firebase.firestore.firestore
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
-  override val COLLECTION = FirebaseCollection.PROFILES.toString().lowercase()
+  override val COLLECTION = FirebaseCollection.PROFILES.toString()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
 
   /**
@@ -24,7 +24,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     Log.d(TAG, "id: $id")
     val profile = Profile("", "", "", id, Interests.new())
     Firebase.firestore
-        .collection(TAG)
+        .collection(COLLECTION)
         .document(id)
         .get()
         .addOnSuccessListener { document ->
