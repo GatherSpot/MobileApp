@@ -103,6 +103,7 @@ class AllTest : TestCase() {
         performClick()
       }
     }
+
     ProfileFirebaseConnection()
         .update(
             FirebaseAuth.getInstance().currentUser!!.uid,

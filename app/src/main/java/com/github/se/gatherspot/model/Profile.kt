@@ -57,6 +57,8 @@ class Profile(
       _interests = value
     }
 
+  val registeredEvents = mutableListOf<String>() // list of event ids
+
   companion object {
     fun testOrganizer(): Profile {
       return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))

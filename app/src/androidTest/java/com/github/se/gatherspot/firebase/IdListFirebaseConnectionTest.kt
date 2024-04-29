@@ -1,7 +1,5 @@
-package com.github.se.gatherspot
+package com.github.se.gatherspot.firebase
 
-import com.github.se.gatherspot.firebase.FirebaseCollection
-import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.model.IdList
 import junit.framework.Assert.assertEquals
 import kotlin.random.Random

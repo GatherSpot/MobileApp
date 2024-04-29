@@ -78,6 +78,9 @@ class EventUtilsTest {
     Assert.assertEquals(10, event.attendanceMinCapacity)
     Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
+
+    // Keep a clean database: suppress immediately the event
+    EventFirebaseConnection.delete(event.id)
   }
 
   @Test
@@ -113,6 +116,9 @@ class EventUtilsTest {
     Assert.assertEquals(10, event.attendanceMinCapacity)
     Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
+
+    // Keep a clean database: suppress immediately the event
+    EventFirebaseConnection.delete(event.id)
   }
 
   @Test
@@ -188,7 +194,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_OnlyMandatoryFields_returnsTrue() {
+  fun validateEventData_withInvalidEndTime_returnsFalse() {
     // validate data parse strings
     try {
       val result =
