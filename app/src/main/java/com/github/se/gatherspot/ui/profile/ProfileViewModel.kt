@@ -79,7 +79,7 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
   private val _image = MutableLiveData<String>()
   private val _interests = MutableLiveData<Set<Interests>>()
   private val _id = Firebase.auth.uid ?: "TEST"
-  private val _isFollowing = FollowList.isFollowing(_id,_target)
+  private val _isFollowing = FollowList.isFollowing(_id, _target)
   val username: LiveData<String>
     get() = _username
 
@@ -91,12 +91,14 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
 
   val interests: LiveData<Set<Interests>>
     get() = _interests
+
   val isFollowing: LiveData<Boolean>
     get() = _isFollowing
 
-    init {
-      let { _profile = ProfileFirebaseConnection().fetch(_target) { update() } }
-    }
+  init {
+    let { _profile = ProfileFirebaseConnection().fetch(_target) { update() } }
+  }
+
   private fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
@@ -104,19 +106,27 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
     _interests.value = _profile.interests.toMutableSet()
   }
 
-  //TODO : replace ?: with hilt injection
+  // TODO : replace ?: with hilt injection
   fun follow() {
+    println("follow clicked")
+    // unsure we disable functionality if we didn't fetch data yet, makes null asserted safe as a
+    // bonus
     if (_isFollowing.isInitialized) {
+      println("follow clicked 2")
       if (_isFollowing.value!!) FollowList.unfollow(_id, _target)
       else FollowList.follow(_id, _target)
       _isFollowing.value = !(_isFollowing.value!!)
     }
   }
+
   fun requestFriend() {
-    // TODO : this will be done later, I want a working follow button and starting to add this to other screens before I add this
+    // TODO : even if implemented this will not be visible until we add a friendrequest view, hence
+    // I prefer to add ViewProfile functionality to other classes first
   }
+
   fun back() {
-    // TODO : need to test this with either end to end test or manually when someone actually uses this class
+    // TODO : need to test this with either end to end test or manually when someone actually uses
+    // this class
     nav.goBack()
   }
 }

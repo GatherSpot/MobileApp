@@ -50,7 +50,7 @@ class EventRegistrationViewModel : ViewModel() {
       }
       event.registeredUsers.add(userId)
 
-      registeredEventsList.add(event.id)
+      registeredEventsList.value?.add(event.id)
       // Notify the UI that registration was successful
       _registrationState.value = RegistrationState.Success
     }

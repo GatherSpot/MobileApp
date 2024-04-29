@@ -2,19 +2,20 @@ package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
+import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
-import java.io.IOException
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 private const val ELEMENTS_TO_DISPLAY = 5
 
@@ -88,10 +89,10 @@ class EventUtils {
    */
   fun deleteEvent(event: Event) {
     // Remove the event from all the users who registered for it
-    //TODO: do it in batch
+    // TODO: do it in batch
     event.registeredUsers.forEach { userID ->
-      val registeredEvents = IdList.fromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
-      registeredEvents.remove(event.id)
+      IdListFirebaseConnection().deleteElement(
+          userID, FirebaseCollection.REGISTERED_EVENTS, event.id) {}
     }
     EventFirebaseConnection.delete(event.id)
   }

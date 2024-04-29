@@ -5,9 +5,12 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +21,14 @@ class ProfileInstrumentedTest {
   @get:Rule val composeTestRule = createComposeRule()
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
+  @Before
+  fun setUp() {
+    ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
+    ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testParticipant())
+    IdListFirebaseConnection().delete(
+        "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING) {}
+  }
+
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun editableProfileScreenTest() {
@@ -57,10 +68,6 @@ class ProfileInstrumentedTest {
       bioInput { performTextReplacement("I am a bot") }
       save { performClick() }
       bioInput { assert(hasText("I am a bot")) }
-      // restore for next time
-      edit { performClick() }
-      bioInput { performTextReplacement("I am not a bot") }
-      save { performClick() }
     }
   }
 
@@ -69,17 +76,21 @@ class ProfileInstrumentedTest {
   fun viewProfileTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      ViewProfile(NavigationActions(navController), "TEST")
+      ViewProfile(NavigationActions(navController), "TEST2")
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update :
-      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasText("Steeve"), 6000)
       usernameInput { assertExists() }
       bioInput { assertExists() }
       profileImage { assertExists() }
       edit { assertDoesNotExist() }
       save { assertDoesNotExist() }
       cancel { assertDoesNotExist() }
+      follow { hasText("Follow") }
+      addFriend { assertExists() }
+      follow { performClick() }
+      composeTestRule.waitUntilAtLeastOneExists(hasText("Unfollow"), 6000)
     }
   }
 }

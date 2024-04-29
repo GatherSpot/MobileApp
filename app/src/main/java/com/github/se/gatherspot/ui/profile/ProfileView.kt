@@ -129,7 +129,12 @@ class ProfileView {
   // TODO: add state for the buttons for better ui when we have time, I want to catch up to
   // propagate functionalities first
   @Composable
-  private fun FollowButtons(back: () -> Unit, follow: () -> Unit, following : Boolean, addFriend: () -> Unit) {
+  private fun FollowButtons(
+      back: () -> Unit,
+      follow: () -> Unit,
+      following: Boolean,
+      addFriend: () -> Unit
+  ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
@@ -146,8 +151,11 @@ class ProfileView {
 
             Text(text = "Add Friend")
           }
-          // TODO : make if so it does not move add friend around (make if either a chip or put it in a fixed size box)
-          Text(text = if (following) "Unfollow" else "  Follow", modifier = Modifier.clickable { follow() }.testTag("follow"))
+          // TODO : make if so it does not move add friend around (make if either a chip or put it
+          // in a fixed size box)
+          Text(
+              text = if (following) "Unfollow" else "  Follow",
+              modifier = Modifier.clickable { follow() }.testTag("follow"))
         }
   }
 

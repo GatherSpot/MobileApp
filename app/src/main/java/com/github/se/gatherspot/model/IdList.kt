@@ -18,13 +18,13 @@ class IdList(
     val collection: FirebaseCollection
 ) : CollectionClass() {
   fun add(eventId: String) {
-    events = events.plus(eventId)
-    IdListFirebaseConnection().addElement(id, collection, eventId)
+    IdListFirebaseConnection().addElement(id, collection, eventId) { events = events.plus(eventId) }
   }
 
   fun remove(eventId: String) {
-    events = events.minus(eventId)
-    IdListFirebaseConnection().deleteElement(id, collection, eventId)
+    IdListFirebaseConnection().deleteElement(id, collection, eventId) {
+      events = events.minus(eventId)
+    }
   }
 
   companion object {
@@ -36,7 +36,10 @@ class IdList(
      * @return an empty IdList useful for tests, the creation of a new list, and enabling non
      *   blocking access to the list
      */
-    fun empty(id: String, collection: FirebaseCollection) = IdList(id, listOf(), collection)
-    fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) = IdListFirebaseConnection().fetch(id, collection){}
+    fun new(id: String, collection: FirebaseCollection, elements: List<String>) =
+        IdListFirebaseConnection().add(id, collection, elements) {}
+
+    fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) =
+        IdListFirebaseConnection().fetch(id, collection) { onSuccess() }
   }
 }
