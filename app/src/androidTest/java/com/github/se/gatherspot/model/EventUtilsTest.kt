@@ -1,4 +1,4 @@
-import com.github.se.gatherspot.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
