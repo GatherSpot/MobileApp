@@ -9,8 +9,9 @@ import com.google.firebase.ktx.Firebase
 class IdListFirebaseConnection {
   private val COLLECTION = "ID_LIST"
   private val TAG = "IdListFirebaseConnection"
-  private val db = Firebase.firestore
-
+  private val db = Firebase.firestore.collection(COLLECTION)
+  private val batchErrorMsg = "Error writing batch"
+  private val getErrorMsg = "get failed with :"
   /**
    * Creates a new list
    *
@@ -25,10 +26,10 @@ class IdListFirebaseConnection {
       elements: List<String>,
       onSuccess: () -> Unit
   ): MutableLiveData<IdList> {
-    val batch = db.batch()
+    val batch = Firebase.firestore.batch()
     val data = MutableLiveData<IdList>()
     elements.forEach { event ->
-      val docRef = db.collection(COLLECTION).document(tag.name).collection(id).document(event)
+      val docRef = db.document(tag.name).collection(id).document(event)
       batch.set(docRef, mapOf<String, Any>())
     }
     batch
@@ -38,7 +39,7 @@ class IdListFirebaseConnection {
           data.value = IdList(id, elements, tag)
           onSuccess()
         }
-        .addOnFailureListener { e -> Log.w(TAG, "Error writing batch", e) }
+        .addOnFailureListener { e -> Log.w(TAG, batchErrorMsg, e) }
     return data
   }
 
@@ -49,8 +50,7 @@ class IdListFirebaseConnection {
   ): MutableLiveData<IdList> {
     val tag = category.name
     val data = MutableLiveData<IdList>()
-    db.collection(COLLECTION)
-        .document(tag)
+    db.document(tag)
         .collection(id)
         .get()
         .addOnSuccessListener { result ->
@@ -58,7 +58,7 @@ class IdListFirebaseConnection {
           onSuccess()
           Log.d(TAG, "DocumentSnapshot data: ${result.documents}")
         }
-        .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
+        .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
     return data
   }
 
@@ -77,8 +77,7 @@ class IdListFirebaseConnection {
       onSuccess: () -> Unit
   ) {
     val tag = category.name
-    db.collection(COLLECTION)
-        .document(tag)
+    db.document(tag)
         .collection(id)
         .document(element)
         .delete()
@@ -86,7 +85,7 @@ class IdListFirebaseConnection {
           Log.d(TAG, "Element successfully deleted!")
           onSuccess()
         }
-        .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
+        .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
   }
 
   /**
@@ -99,8 +98,7 @@ class IdListFirebaseConnection {
    */
   fun addElement(id: String, category: FirebaseCollection, element: String, onSuccess: () -> Unit) {
     val tag = category.name
-    db.collection(COLLECTION)
-        .document(tag)
+    db.document(tag)
         .collection(id)
         .document(element)
         .set(mapOf<String, Any>())
@@ -108,7 +106,7 @@ class IdListFirebaseConnection {
           Log.d(TAG, "Element successfully added!")
           onSuccess()
         }
-        .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
+        .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
   }
 
   /**
@@ -135,9 +133,9 @@ class IdListFirebaseConnection {
   ) {
     val tag1 = category1.name
     val tag2 = category2.name
-    val batch = db.batch()
-    val docRef1 = db.collection(COLLECTION).document(tag1).collection(id1).document(element1)
-    val docRef2 = db.collection(COLLECTION).document(tag2).collection(id2).document(element2)
+    val batch = Firebase.firestore.batch()
+    val docRef1 = db.document(tag1).collection(id1).document(element1)
+    val docRef2 = db.document(tag2).collection(id2).document(element2)
     batch.set(docRef1, mapOf<String, Any>())
     batch.set(docRef2, mapOf<String, Any>())
     batch
@@ -146,7 +144,7 @@ class IdListFirebaseConnection {
           Log.d(TAG, "Batch write succeeded.")
           onSuccess()
         }
-        .addOnFailureListener { e -> Log.w(TAG, "Error writing batch", e) }
+        .addOnFailureListener { e -> Log.w(TAG, batchErrorMsg, e) }
   }
   /**
    * Removes two elements from two different lists in a single batch
@@ -170,9 +168,9 @@ class IdListFirebaseConnection {
   ) {
     val tag1 = category1.name
     val tag2 = category2.name
-    val batch = db.batch()
-    val docRef1 = db.collection(COLLECTION).document(tag1).collection(id1).document(element1)
-    val docRef2 = db.collection(COLLECTION).document(tag2).collection(id2).document(element2)
+    val batch = Firebase.firestore.batch()
+    val docRef1 = db.document(tag1).collection(id1).document(element1)
+    val docRef2 = db.document(tag2).collection(id2).document(element2)
     batch.delete(docRef1)
     batch.delete(docRef2)
     batch
@@ -181,7 +179,7 @@ class IdListFirebaseConnection {
           Log.d(TAG, "Batch write succeeded.")
           onSuccess()
         }
-        .addOnFailureListener { e -> Log.w(TAG, "Error writing batch", e) }
+        .addOnFailureListener { e -> Log.w(TAG, batchErrorMsg, e) }
   }
   /**
    * Checks if an element exists in the list
@@ -200,8 +198,7 @@ class IdListFirebaseConnection {
   ): MutableLiveData<Boolean> {
     val tag = category.name
     val data = MutableLiveData<Boolean>()
-    db.collection(COLLECTION)
-        .document(tag)
+    db.document(tag)
         .collection(id)
         .document(element)
         .get()
@@ -209,7 +206,7 @@ class IdListFirebaseConnection {
           data.value = d.exists()
           onSuccess()
         }
-        .addOnFailureListener { e -> Log.d(TAG, "get failed with :", e) }
+        .addOnFailureListener { e -> Log.d(TAG, getErrorMsg, e) }
     return data
   }
   // TODO : keep an eye on this function as it might create problems in the future
@@ -222,12 +219,11 @@ class IdListFirebaseConnection {
    */
   fun delete(id: String, category: FirebaseCollection, onSuccess: () -> Unit) {
     val tag = category.name
-    db.collection(COLLECTION)
-        .document(tag)
+    db.document(tag)
         .collection(id)
         .get()
         .addOnSuccessListener { result ->
-          val batch = db.batch()
+          val batch = Firebase.firestore.batch()
           result.documents.forEach { doc -> batch.delete(doc.reference) }
           batch
               .commit()
@@ -235,8 +231,8 @@ class IdListFirebaseConnection {
                 Log.d(TAG, "Batch write succeeded.")
                 onSuccess()
               }
-              .addOnFailureListener { e -> Log.w(TAG, "Error writing batch", e) }
+              .addOnFailureListener { e -> Log.w(TAG, batchErrorMsg, e) }
         }
-        .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
+        .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
   }
 }
