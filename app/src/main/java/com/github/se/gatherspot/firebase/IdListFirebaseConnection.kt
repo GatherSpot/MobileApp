@@ -12,13 +12,12 @@ class IdListFirebaseConnection {
   private val db = Firebase.firestore
 
   /**
-   * Fetches the IdList from Firebase
+   * Creates a new list
    *
    * @param id The id of the owner of the list (can be owned by a user, event, etc..).
-   * @param category The category of the IdList.
-   * @param update lambda returned when fetched, useful to update the viewModel
-   * @return the IdList NOTE : The IdList will be initially empty, to use it in a view, you need to
-   *   update the view using with a lambda function that updates the view
+   * @param tag The category of the IdList.
+   * @param elements The elements to add to the list. @onSuccess a lambda function called on success
+   * @return MutableLiveData<IdList> that returns the IdList created. Can be directly observed
    */
   fun add(
       id: String,
@@ -69,8 +68,7 @@ class IdListFirebaseConnection {
    * @param id The id of the owner of the list (can be owned by a user, event, etc..).
    * @param category The category of the IdList.
    * @param element The element to delete from the list.
-   * @return Task<Boolean> that returns true if the element was deleted successfully, false
-   *   otherwise.
+   * @param onSuccess a lambda function called on success
    */
   fun deleteElement(
       id: String,
@@ -97,7 +95,7 @@ class IdListFirebaseConnection {
    * @param id The id of the owner of the list (can be owned by a user, event, etc..).
    * @param category The category of the IdList.
    * @param element The element to add to the list.
-   * @return Task<Boolean> that returns true if the element was added successfully, false otherwise.
+   * @param onSuccess a lambda function called on success
    */
   fun addElement(id: String, category: FirebaseCollection, element: String, onSuccess: () -> Unit) {
     val tag = category.name
@@ -159,9 +157,7 @@ class IdListFirebaseConnection {
    * @param id2 The id of the owner of the second list.
    * @param category2 The category of the second list.
    * @param element2 The element to remove from the second list.
-   * @return Task<Boolean> that returns true if the elements were removed successfully, false
-   *   otherwise. This is useful for example when unfollowing someone, this ensures we removed the
-   *   user from the followers list and the user removed us from their following list.
+   * @param onSuccess a lambda function called on success
    */
   fun removeTwoInSingleBatch(
       id1: String,
@@ -193,7 +189,8 @@ class IdListFirebaseConnection {
    * @param id The id of the owner of the list.
    * @param category The category of the list.
    * @param element The element to check if it exists in the list.
-   * @return Boolean true if the element exists in the list, false otherwise.
+   * @return MutableLiveData<Boolean> that returns true if the element exists in the list, false
+   *   otherwise, can be directly observed
    */
   fun exists(
       id: String,
@@ -216,6 +213,13 @@ class IdListFirebaseConnection {
     return data
   }
   // TODO : keep an eye on this function as it might create problems in the future
+  /**
+   * Deletes a list
+   *
+   * @param id The id of the owner of the list.
+   * @param category The category of the list.
+   * @param onSuccess a lambda function called on success
+   */
   fun delete(id: String, category: FirebaseCollection, onSuccess: () -> Unit) {
     val tag = category.name
     db.collection(COLLECTION)
