@@ -34,7 +34,6 @@ interface FirebaseConnectionInterface<T : CollectionClass> {
 
   fun getFromDocument(d: DocumentSnapshot): T?
 
-  // Find a way to make this work for all classes generically
   fun add(element: T)
 
   fun update(id: String, field: String, value: Any) {
