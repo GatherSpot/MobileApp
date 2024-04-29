@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
