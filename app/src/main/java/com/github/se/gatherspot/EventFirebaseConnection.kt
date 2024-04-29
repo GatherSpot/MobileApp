@@ -108,7 +108,20 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         images = images,
         globalRating = globalRating,
         // TODO: Add organizer
-        organizer = Profile("null", "null", "null", "null", setOf()))
+        organizer = Profile("TEST"))
+  }
+
+  private suspend fun eventsFromQuerySnaphot(querySnapshot: QuerySnapshot): MutableList<Event> {
+    val listOfMaps = querySnapshot.documents.map { it.data!! }
+    val listOfEvents = mutableListOf<Event>()
+
+    listOfMaps.forEach { map ->
+      val uid = map["eventID"] as String
+      val event = super.fetch(uid)
+      event?.let { listOfEvents.add(it as Event) }
+    }
+
+    return listOfEvents
   }
 
   /**
@@ -135,16 +148,33 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
       offset = querySnapshot.documents.last()
     }
 
-    val listOfMaps = querySnapshot.documents.map { it.data!! }
-    val listOfEvents = mutableListOf<Event>()
+    return eventsFromQuerySnaphot(querySnapshot)
+  }
 
-    listOfMaps.forEach { map ->
-      val uid = map["eventID"] as String
-      val event = super.fetch(uid)
-      event?.let { listOfEvents.add(it as Event) }
+  suspend fun fetchEventsBasedOnInterests(number: Long, l: List<Interests>): MutableList<Event> {
+    val querySnapshot: QuerySnapshot =
+        if (offset == null) {
+          Firebase.firestore
+              .collection(EVENTS)
+              .orderBy("eventID")
+              .whereArrayContainsAny("categories", l.map { it.name })
+              .limit(number)
+              .get()
+              .await()
+        } else {
+          Firebase.firestore
+              .collection(EVENTS)
+              .orderBy("eventID")
+              .whereArrayContainsAny("categories", l.map { it.name })
+              .startAfter(offset!!.get("eventID"))
+              .limit(number)
+              .get()
+              .await()
+        }
+    if (querySnapshot.documents.isNotEmpty()) {
+      offset = querySnapshot.documents.last()
     }
-
-    return listOfEvents
+    return eventsFromQuerySnaphot(querySnapshot)
   }
 
   /**

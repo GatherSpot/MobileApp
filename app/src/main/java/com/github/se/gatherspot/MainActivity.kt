@@ -30,15 +30,14 @@ import com.github.se.gatherspot.ui.Map
 import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
+import com.github.se.gatherspot.ui.ViewProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 
 class MainActivity : ComponentActivity() {
   companion object {
-    lateinit var uid: String
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
   }
 
@@ -88,14 +87,20 @@ class MainActivity : ComponentActivity() {
 
               // composable("chats") { Chats(chatViewModel, NavigationActions(navController)) }
 
-              composable("profile") {
-                Profile(NavigationActions(navController), OwnProfileViewModel())
+              composable("profile") { Profile(NavigationActions(navController)) }
+              composable("viewProfile/{uid}") { backstackEntry ->
+                backstackEntry.arguments?.getString("uid")?.let {
+                  ViewProfile(NavigationActions(navController), it)
+                }
               }
               composable("createEvent") {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
               }
 
-              composable("setup") { SetUpProfile(NavigationActions(navController), uid) }
+              composable("setup") {
+                SetUpProfile(
+                    NavigationActions(navController), FirebaseAuth.getInstance().currentUser!!.uid)
+              }
             }
           }
         }
