@@ -52,21 +52,11 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
 
-    var res = false
     Firebase.firestore
         .collection(COLLECTION)
+        .whereEqualTo("userName", userName)
         .get()
-        .addOnSuccessListener { result ->
-          for (document in result) {
-            if (document.get("userName") == userName) {
-              res = true
-            }
-            if (res) {
-              break
-            }
-          }
-          onComplete(res)
-        }
+        .addOnSuccessListener { result -> onComplete(result.documents.isNotEmpty()) }
         .addOnFailureListener { onComplete(true) }
   }
 
