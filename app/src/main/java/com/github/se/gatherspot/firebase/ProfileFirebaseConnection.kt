@@ -10,7 +10,7 @@ import com.google.firebase.firestore.firestore
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
-  override val COLLECTION = FirebaseCollection.PROFILES.toString()
+  override val COLLECTION = FirebaseCollection.PROFILES.toString().lowercase()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
 
   /**
