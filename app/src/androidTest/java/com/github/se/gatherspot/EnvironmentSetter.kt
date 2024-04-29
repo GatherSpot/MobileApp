@@ -46,6 +46,7 @@ class EnvironmentSetter {
       }
     }
 
+    // not used for now
     fun signUpSetUp(userName: String, email: String) {
       runTest {
         async {
