@@ -69,11 +69,15 @@ fun SignUp(nav: NavigationActions) {
   val ProfileFirebaseConnection = ProfileFirebaseConnection()
 
   LaunchedEffect(isClicked) {
+    Log.d(TAG, "???1")
     if (isClicked) {
       try {
         withContext(Dispatchers.IO) {
+          Log.d(TAG, "Before checkCredentials() call")
           val success = checkCredentials(email, password, t)
+          Log.d(TAG, "checkCredentials() result: $success")
           if (success) {
+            Log.d(TAG, "???")
             FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
             verifEmailSent = true
           } else {
@@ -234,7 +238,8 @@ fun SignUp(nav: NavigationActions) {
                 },
             onDismissRequest = {
               verifEmailSent = false
-              ProfileFirebaseConnection.add(Profile(username, "", "", "", setOf()))
+              ProfileFirebaseConnection.add(
+                  Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
               nav.controller.navigate("setup")
             },
             confirmButton = {},

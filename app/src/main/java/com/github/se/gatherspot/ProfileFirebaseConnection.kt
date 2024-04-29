@@ -9,7 +9,7 @@ import com.google.firebase.firestore.firestore
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
-  override val COLLECTION = FirebaseCollection.PROFILES.toString()
+  override val COLLECTION = FirebaseCollection.PROFILES.toString().lowercase()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
 
   /**
@@ -46,22 +46,24 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
 
-    var res = false
     Firebase.firestore
         .collection(COLLECTION)
+        .whereEqualTo("userName", userName)
         .get()
-        .addOnSuccessListener { result ->
-          for (document in result) {
-            if (document.get("userName") == userName) {
-              res = true
-            }
-            if (res) {
-              break
-            }
-          }
-          onComplete(res)
-        }
-        .addOnFailureListener { onComplete(true) }
+        .addOnSuccessListener { result -> onComplete(result.documents.isNotEmpty()) }
+    // .get()
+    //  .addOnSuccessListener { result ->
+    //    for (document in result) {
+    ///      if (document.get("userName") == userName) {
+    //        res = true
+    //      }
+    //      if (res) {
+    //        break
+    //      }
+    //    }
+    //    onComplete(res)
+    //  }
+    //   .addOnFailureListener { onComplete(true) }
   }
 
   fun fetchFromUserName(userName: String): Profile? {

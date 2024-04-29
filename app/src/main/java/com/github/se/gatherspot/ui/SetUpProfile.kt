@@ -62,14 +62,17 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   val interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
 
   LaunchedEffect(isClicked) {
-    withContext(Dispatchers.Main) {
-      auth.currentUser?.reload()?.await()
-      isEmailVerified = auth.currentUser?.isEmailVerified ?: false
-      if (isEmailVerified) {
-        ProfileFirebaseConnection().updateInterests(uid, interests)
-        nav.controller.navigate("profile")
-      } else {
-        emailText = "Please verify your email before continuing"
+    if (isClicked) {
+      withContext(Dispatchers.Main) {
+        auth.currentUser?.reload()?.await()
+        isEmailVerified = auth.currentUser?.isEmailVerified ?: false
+        if (isEmailVerified) {
+          ProfileFirebaseConnection().updateInterests(uid, interests)
+          nav.controller.navigate("profile")
+        } else {
+          emailText = "Please verify your email before continuing"
+          isClicked = false
+        }
       }
     }
   }

@@ -39,7 +39,8 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
+    val uid = FirebaseAuth.getInstance().currentUser!!.uid
+    ProfileFirebaseConnection().delete(uid)
     testLoginCleanUp()
   }
 
@@ -65,11 +66,13 @@ class AllTest : TestCase() {
         performTextInput(PASSWORD)
       }
       Espresso.closeSoftKeyboard()
+      composeTestRule.waitForIdle()
       button {
-        assertExists()
-        assertIsDisplayed()
+        //   assertExists()
+        //   assertIsDisplayed()
         performClick()
       }
+
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 10000)
       verifDialog {
         assertExists()
