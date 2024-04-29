@@ -58,8 +58,6 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.gson.Gson
 import java.time.LocalDate
 import java.time.LocalTime
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -359,7 +357,6 @@ fun ProfileIndicator(profile: Profile) {
 @Composable
 fun EventUIPreview() {
   // Set global uid for testing
-  MainActivity.uid = "testProfileId"
   val event =
       Event(
           id = "idTestEvent",

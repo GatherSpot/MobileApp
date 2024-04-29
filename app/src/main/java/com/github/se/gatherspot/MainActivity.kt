@@ -25,7 +25,6 @@ import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
-import com.github.se.gatherspot.ui.Chat
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
 import com.github.se.gatherspot.ui.EditEvent

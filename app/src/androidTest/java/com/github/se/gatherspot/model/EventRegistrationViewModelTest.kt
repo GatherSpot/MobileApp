@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model
 
-
 import android.util.Log
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp

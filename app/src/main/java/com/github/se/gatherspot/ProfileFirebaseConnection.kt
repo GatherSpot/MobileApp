@@ -3,13 +3,10 @@ package com.github.se.gatherspot
 import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
-
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
@@ -47,7 +44,6 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
     return profile
   }
-
 
   /** Returns the current user's UID, or null if the user is not logged in. */
   fun getCurrentUserUid(): String? {
