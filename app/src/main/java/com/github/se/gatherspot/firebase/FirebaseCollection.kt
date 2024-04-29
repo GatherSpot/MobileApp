@@ -1,4 +1,4 @@
-package com.github.se.gatherspot
+package com.github.se.gatherspot.firebase
 
 enum class FirebaseCollection {
   PROFILES,

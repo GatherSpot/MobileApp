@@ -207,7 +207,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
-  val eventFirebaseConnection = com.github.se.gatherspot.EventFirebaseConnection()
+  val eventFirebaseConnection = com.github.se.gatherspot.firebase.EventFirebaseConnection()
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
