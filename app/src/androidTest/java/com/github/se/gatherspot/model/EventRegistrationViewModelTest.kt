@@ -3,6 +3,7 @@ package com.github.se.gatherspot.model
 import android.util.Log
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
@@ -16,7 +17,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 class EventRegistrationViewModelTest {
-  // This test is working locally but not on the CI. For now, it is commented out.
 
   @Test
   fun testRegisterForEventChangeEventListRegistered() {
@@ -86,6 +86,9 @@ class EventRegistrationViewModelTest {
       val error = viewModel.registrationState.value
       assertEquals(RegistrationState.Error("Already registered for this event"), error)
     }
+
+    // To keep a clean database delete the test event
+    EventFirebaseConnection().delete("idTestEvent")
     testLoginCleanUp()
   }
 }

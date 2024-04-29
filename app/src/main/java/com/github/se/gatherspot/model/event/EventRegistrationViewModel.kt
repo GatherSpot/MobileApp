@@ -7,14 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
 class EventRegistrationViewModel : ViewModel() {
   // TODO : use hilt injection instead of hardcoded userId to remove this test handle in production
-  private val userId = Firebase.auth.currentUser?.uid ?: "TEST"
+  private val userId = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
 
   // LiveData for holding registration state
   private val _registrationState = MutableLiveData<RegistrationState>()

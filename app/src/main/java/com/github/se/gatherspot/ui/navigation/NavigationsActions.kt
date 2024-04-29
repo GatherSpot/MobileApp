@@ -27,7 +27,7 @@ class NavigationActions(val controller: NavHostController) {
 object Route {
   const val EVENTS = "events"
   const val COMMUNITY = "community"
-  const val CHAT = "chat"
+  const val CHATS = "chats"
   const val PROFILE = "profile"
 }
 
@@ -35,5 +35,5 @@ val TOP_LEVEL_DESTINATIONS =
     listOf(
         TopLevelDestination(Route.EVENTS, R.drawable.event, R.string.events),
         TopLevelDestination(Route.COMMUNITY, R.drawable.community, R.string.community),
-        TopLevelDestination(Route.CHAT, R.drawable.chat, R.string.chat),
+        TopLevelDestination(Route.CHATS, R.drawable.chat, R.string.chats),
         TopLevelDestination(Route.PROFILE, R.drawable.profile, R.string.profile))

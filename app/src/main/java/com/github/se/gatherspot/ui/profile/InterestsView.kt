@@ -13,31 +13,38 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.model.Interests
 
 public class InterestsView {
   @Preview
   @Composable
   fun InterestsPreview() {
-    EditInterests(OwnProfileViewModel())
+    val interests = MutableLiveData(Interests.addInterest(Interests.new(), Interests.FOOTBALL))
+    EditInterests(
+        interestList = Interests.toList(),
+        interests = interests.observeAsState(),
+    ) {
+      interests.value = Interests.flipInterest(interests.value ?: setOf(), it)
+    }
   }
 
   @OptIn(ExperimentalLayoutApi::class)
   @Composable
-  fun EditInterests(viewModel: OwnProfileViewModel) {
-    val interestList = enumValues<Interests>().toList()
-    val set by viewModel.interests.observeAsState(emptySet())
-    val swap = viewModel::flipInterests
+  fun EditInterests(
+      interestList: List<Interests>,
+      interests: State<Set<Interests>?>,
+      swap: (Interests) -> Unit
+  ) {
     FlowRow() {
-      // This needs to be computed here since it needs to be recomputed when we change the set,
-      // maybe we can make it a lambda or adapt the viewmodel to make it more elegant
       interestList.forEach { interest ->
-        val selected = set.contains(interest)
+        val selected = interests.value?.contains(interest) ?: false
         EditableInterest(interest, selected) { swap(interest) }
       }
     }
@@ -61,16 +68,18 @@ public class InterestsView {
           if (selected) {
             Icon(
                 imageVector = Icons.Filled.Done,
-                contentDescription = "Done icon",
+                contentDescription = "remove ${interest.name}",
                 modifier = Modifier.size(FilterChipDefaults.IconSize))
           } else {
             Icon(
                 imageVector = Icons.Filled.Add,
-                contentDescription = "Add icon",
+                contentDescription = "add ${interest.name}",
                 modifier = Modifier.size(FilterChipDefaults.IconSize))
           }
         },
-        modifier = Modifier.padding(horizontal = 4.dp))
+        modifier =
+            Modifier.padding(horizontal = 4.dp)
+                .testTag(if (selected) "remove ${interest.name}" else "add ${interest.name}"))
   }
 
   @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +90,7 @@ public class InterestsView {
           onClick = {},
           label = { Text(interest.name) },
           selected = true,
-          modifier = Modifier.padding(horizontal = 4.dp))
+          modifier = Modifier.padding(horizontal = 4.dp).testTag(interest.name))
     }
   }
 }
