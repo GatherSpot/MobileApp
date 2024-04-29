@@ -134,9 +134,9 @@ fun FilterChipCompose(interest: Interests, interests: MutableSet<Interests>, mod
             fontSize = 20.sp,
             color = Color.Black)
       },
-      selected = selected,
+      selected = selected || interests.contains(interest),
       leadingIcon = {
-        if (selected) {
+        if (selected || interests.contains(interest)) {
           Icon(
               imageVector = Icons.Filled.Done,
               contentDescription = "Done icon",
