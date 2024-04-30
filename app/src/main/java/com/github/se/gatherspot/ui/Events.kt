@@ -3,6 +3,7 @@ package com.github.se.gatherspot.ui
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,10 +18,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Divider
@@ -59,8 +62,11 @@ import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -80,6 +86,15 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
   val filters = enumValues<Interests>().toList()
   var interestsSelected = mutableListOf<Interests>()
   var fetch by remember { mutableStateOf(false) }
+  var init by remember { mutableStateOf(false) }
+
+  LaunchedEffect(init) {
+    if (!init) {
+      viewModel.fetchMyEvents()
+      viewModel.fetchRegisteredTo()
+      init = true
+    }
+  }
 
   Scaffold(
       modifier = Modifier.testTag("EventsScreen"),
@@ -121,6 +136,24 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.Clear, "clear") })
+
+                        DropdownMenuItem(
+                            text = { Text("YOUR EVENTS") },
+                            onClick = {
+                              interestsSelected = mutableListOf()
+                              viewModel.displayMyEvents()
+                              showDropdownMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Filled.Info, "yourEvents") })
+
+                        DropdownMenuItem(
+                            text = { Text("REGISTERED TO") },
+                            onClick = {
+                              interestsSelected = mutableListOf()
+                              viewModel.displayRegisteredTo()
+                              showDropdownMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Filled.Info, "registeredTo") })
 
                         filters.forEach { s -> StatefulDropdownItem(s, interestsSelected) }
                       }
@@ -208,59 +241,83 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
   val eventFirebaseConnection = com.github.se.gatherspot.firebase.EventFirebaseConnection()
-  Row(
+  Box(
       modifier =
-          Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
-            // Create a new Gson instance with the custom serializers and deserializers
-            val gson: Gson =
-                GsonBuilder()
-                    .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                    .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-                    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
-                    .create()
+          Modifier.background(
+                  color =
+                      if (event.organizer.id == FirebaseAuth.getInstance().currentUser!!.uid) {
+                        Color(80, 50, 200, 120)
+                      } else {
+                        Color.White
+                      },
+                  shape = RoundedCornerShape(5.dp))
+              .fillMaxSize()) {
+        Row(
+            modifier =
+                Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
+                  // Create a new Gson instance with the custom serializers and deserializers
+                  val gson: Gson =
+                      GsonBuilder()
+                          .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                          .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                          .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+                          .registerTypeAdapter(
+                              LocalDateTime::class.java, LocalDateTimeDeserializer())
+                          .create()
 
-            val eventJson = gson.toJson(event)
-            Log.e("Display", "eventJson = $eventJson")
-            navigation.controller.navigate("event/$eventJson")
-          },
-      verticalAlignment = Alignment.CenterVertically) {
-        Column(modifier = Modifier.weight(1f)) {
-          Image(
-              bitmap = event.images ?: ImageBitmap(120, 120, config = ImageBitmapConfig.Rgb565),
-              contentDescription = null)
-        }
+                  val eventJson = gson.toJson(event)
+                  val eventJsonWellFormed =
+                      URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString())
+                          .replace("+", "%20")
+                  navigation.controller.navigate("event/$eventJsonWellFormed")
+                },
+            verticalAlignment = Alignment.CenterVertically) {
+              Column(modifier = Modifier.weight(1f)) {
+                Image(
+                    bitmap =
+                        event.images ?: ImageBitmap(120, 120, config = ImageBitmapConfig.Rgb565),
+                    contentDescription = null)
+              }
 
-        Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
-          Text(
-              text =
-                  "Start date: ${event.eventStartDate?.
-                format(DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT))}",
-              fontWeight = FontWeight.Bold,
-              fontSize = 10.sp)
-          Text(
-              text =
-                  "End date: ${event.eventEndDate?.
-                format(DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT))}",
-              fontWeight = FontWeight.Bold,
-              fontSize = 10.sp)
-          Text(text = event.title, fontSize = 14.sp)
-        }
+              Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
+                Text(
+                    text =
+                        "Start date: ${
+                      event.eventStartDate?.format(
+                          DateTimeFormatter.ofPattern(
+                              eventFirebaseConnection.DATE_FORMAT
+                          )
+                      )
+                  }",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp)
+                Text(
+                    text =
+                        "End date: ${
+                      event.eventEndDate?.format(DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT))
+                  }",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp)
+                Text(text = event.title, fontSize = 14.sp)
+              }
 
-        Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            when (event.eventStatus) {
-              EventStatus.CREATED -> Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
-              EventStatus.ON_GOING -> Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
-              EventStatus.DRAFT -> Text("Draft", color = Color(0xFF1FC959), fontSize = 14.sp)
-              EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
+              Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                  when (event.eventStatus) {
+                    EventStatus.CREATED ->
+                        Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
+                    EventStatus.ON_GOING ->
+                        Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
+                    EventStatus.DRAFT -> Text("Draft", color = Color(0xFF1FC959), fontSize = 14.sp)
+                    EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
+                  }
+                  Icon(
+                      painter = painterResource(R.drawable.arrow_right),
+                      contentDescription = null,
+                      modifier = Modifier.width(24.dp).height(24.dp).clickable {})
+                }
+              }
             }
-            Icon(
-                painter = painterResource(R.drawable.arrow_right),
-                contentDescription = null,
-                modifier = Modifier.width(24.dp).height(24.dp).clickable {})
-          }
-        }
       }
   Divider(color = Color.Black, thickness = 1.dp)
 }

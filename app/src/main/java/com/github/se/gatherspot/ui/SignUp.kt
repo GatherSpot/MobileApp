@@ -234,7 +234,8 @@ fun SignUp(nav: NavigationActions) {
                 },
             onDismissRequest = {
               verifEmailSent = false
-              ProfileFirebaseConnection.add(Profile(username, "", "", "", setOf()))
+              ProfileFirebaseConnection.add(
+                  Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
               nav.controller.navigate("setup")
             },
             confirmButton = {},
