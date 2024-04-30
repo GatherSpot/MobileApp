@@ -14,18 +14,18 @@ class ChatsListViewModel : ViewModel() {
 
   suspend fun fetchNext(uid: String) {
 
-      val profile : Profile?
-    try {
-        profile = ProfileFirebaseConnection().fetch(uid)
-    }
-    catch (e: Exception) {
-        println("Error fetching chats: $e")
-        return
-    }
+      val profile : Profile? = try {
+          ProfileFirebaseConnection().fetch(uid)
+      }
+      catch (e: Exception) {
+          println("Error fetching chats: $e")
+            null
+      }
+
     val chats =
         profile?.registeredEvents
             ?: setOf<String>()
-                .union(ProfileFirebaseConnection().fetch(uid)?.organizingEvents ?: setOf())
+                .union(ProfileFirebaseConnection().fetch(uid)?.organizingEvents ?: setOf<String>())
     val newChats = _uiState.value.list.apply { addAll(chats) }
     _uiState.value = ChatUIState(newChats)
   }

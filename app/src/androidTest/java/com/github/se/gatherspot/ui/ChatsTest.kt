@@ -15,6 +15,8 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -25,74 +27,89 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ChatsTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule
+  val composeTestRule = createComposeRule()
 
   @Before
   fun setUp() {
-    EnvironmentSetter.signUpSetUp("GatherSpotTest", "test@test1.com")
+    FirebaseAuth.getInstance().signOut()
   }
 
   @After
-  fun cleanUp() {
-    EnvironmentSetter.signUpCleanUp("GatherSpotTest")
+  fun tearDown() {
+    FirebaseAuth.getInstance().signOut()
   }
+    @Test
+    fun testEverythingExists() {
+      composeTestRule.setContent {
+        val viewModel = ChatsListViewModel()
+        val nav = NavigationActions(rememberNavController())
+        Chats(viewModel = viewModel, nav = nav)
+      }
 
-  @Test
-  fun testEverythingExists() {
-    composeTestRule.setContent {
+      ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
+        createText {
+          assertExists()
+          assertIsDisplayed()
+        }
+
+        createMenu {
+          assertExists()
+          assertIsDisplayed()
+          assertHasClickAction()
+        }
+
+        empty {
+          assertExists()
+          assertIsDisplayed()
+        }
+      }
+    }
+
+    @OptIn(ExperimentalTestApi::class, ExperimentalTestApi::class)
+    @Test
+    fun chatsAreDisplayedAndScrollable() {
+      val firebase = FirebaseAuth.getInstance()
+
+      firebase.signOut()
+      firebase.createUserWithEmailAndPassword("GatherSpotTest", "azerty123A")
+      firebase.signInWithEmailAndPassword("GatherSpotTest", "azerty123A")
+      var uid = firebase.currentUser?.uid ?: ""
+      runBlocking {
+        async {
+          firebase
+            .signInWithEmailAndPassword("mathurinsky@gmail.com", "azerty123A")
+        }.await()
+        firebase.updateCurrentUser(firebase.currentUser!!)
+
+        uid = firebase.currentUser?.uid!!
+
+        ProfileFirebaseConnection()
+          .add(
+            com.github.se.gatherspot.model.Profile(
+              "GatherSpotTest", "", "", uid, setOf(Interests.ART)
+            )
+          )
+
+        ProfileFirebaseConnection().update(uid, "registeredEvents", setOf("-NwJSmLmQDUlF9booiq7"))
+      }
+
+
       val viewModel = ChatsListViewModel()
-      val nav = NavigationActions(rememberNavController())
-      Chats(viewModel = viewModel, nav = nav)
-    }
-
-    ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
-      createText {
-        assertExists()
-        assertIsDisplayed()
+      composeTestRule.setContent {
+        val nav = NavigationActions(rememberNavController())
+        Chats(viewModel = viewModel, nav = nav)
       }
 
-      createMenu {
-        assertExists()
-        assertIsDisplayed()
-        assertHasClickAction()
+      runTest { viewModel.fetchNext(uid) }
+      ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 20000)
+        eventsList {
+          assertExists()
+          assertIsDisplayed()
+          performGesture { swipeUp(400F, 0F, 1000) }
+        }
       }
-
-      empty {
-        assertExists()
-        assertIsDisplayed()
-      }
+      FirebaseAuth.getInstance().signOut()
     }
   }
-
-  @OptIn(ExperimentalTestApi::class, ExperimentalTestApi::class)
-  @Test
-  fun chatsAreDisplayedAndScrollable() {
-
-    val uid = FirebaseAuth.getInstance().currentUser?.uid!!
-    runTest {
-      async {
-            ProfileFirebaseConnection()
-                .add(
-                    com.github.se.gatherspot.model.Profile(
-                        "GatherSpotTest", "", "", uid, setOf(Interests.ART)))
-          }
-          .await()
-      ProfileFirebaseConnection().update(uid, "registeredEvents", setOf("-NwJSmLmQDUlF9booiq7"))
-    }
-
-    val viewModel = ChatsListViewModel()
-    composeTestRule.setContent {
-      val nav = NavigationActions(rememberNavController())
-      Chats(viewModel = viewModel, nav = nav)
-    }
-
-    ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 20000)
-      eventsList {
-        assertExists()
-        assertIsDisplayed()
-        performGesture { swipeUp(400F, 0F, 1000) }
-      }
-    }
-  }
-}

@@ -19,12 +19,14 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
+import com.github.se.gatherspot.ui.Chats
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
 import com.github.se.gatherspot.ui.EditEvent
@@ -118,6 +120,7 @@ class MainActivity : ComponentActivity() {
                   ViewProfile(NavigationActions(navController), it)
                 }
               }
+                composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
               composable("createEvent") {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
               }

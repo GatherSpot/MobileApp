@@ -59,7 +59,7 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
   var previousScrollPosition by remember { mutableIntStateOf(0) }
   var loading by remember { mutableStateOf(false) }
   var fetched by remember { mutableStateOf(false) }
-  var fetch by remember { mutableStateOf(true) }
+  var fetch by remember { mutableStateOf(false) }
 
   LaunchedEffect(fetch) {
     if (fetch) {
@@ -118,6 +118,7 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
         val lazyState = rememberLazyListState()
         when {
           chats.isEmpty() ->
+          {
               Box(
                   modifier = Modifier.fillMaxWidth().padding(paddingValues),
                   contentAlignment = Alignment.TopStart) {
@@ -126,7 +127,10 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
                         color = Color.Black,
                         modifier = Modifier.testTag("emptyText"))
                   }
-          else -> {
+              fetch = true
+          }
+
+            else -> {
             LazyColumn(
                 state = lazyState,
                 modifier = Modifier.padding(paddingValues).testTag("chatsList")) {
@@ -173,6 +177,7 @@ fun ChatRow(eventID: String, navigation: NavigationActions) {
             val gson = Gson()
             val chatJson = gson.toJson(eventID)
             navigation.controller.navigate("chat/$chatJson")
+              Log.e("Display", "eventJson = $chatJson")
           },
       verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
