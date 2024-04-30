@@ -3,7 +3,7 @@ package com.github.se.gatherspot.ui.profile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
@@ -17,14 +17,8 @@ class OwnProfileViewModel : ViewModel() {
   private val _interests = MutableLiveData<Set<Interests>>()
 
   init {
-    // TODO : Change this to hilt injection
-    Firebase.auth.currentUser?.uid?.let { uid ->
-      _profile = ProfileFirebaseConnection().fetch(uid) { update() }
-    }
-        ?: run {
-          _profile = Profile.testOrganizer()
-          update()
-        }
+    // TODO: replace this with hilt injection
+    _profile = ProfileFirebaseConnection().fetch(Firebase.auth.uid ?: "TEST") { update() }
   }
 
   val username: LiveData<String>
@@ -42,7 +36,7 @@ class OwnProfileViewModel : ViewModel() {
   fun save() {
     _profile.userName = _username.value!!
     _profile.bio = _bio.value!!
-    _profile.image = _image.value!!
+    _profile.image = _image.value ?: ""
     _profile.interests = _interests.value!!
     ProfileFirebaseConnection().add(_profile)
   }
@@ -68,12 +62,7 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun flipInterests(interest: Interests) {
-    _interests.value =
-        if (interest in _interests.value!!) {
-          interests.value!!.minus(interest)
-        } else {
-          interests.value!!.plus(interest)
-        }
+    _interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
 
   fun isInterestsSelected(interest: Interests): Boolean {
@@ -81,9 +70,29 @@ class OwnProfileViewModel : ViewModel() {
   }
 }
 
-class ProfileViewModel(profile: Profile) {
-  val username: String = profile.userName
-  val bio: String = profile.bio
-  val image: String = profile.image
-  val interests: Set<Interests> = profile.interests
+class ProfileViewModel(uid: String) {
+  private val _profile = ProfileFirebaseConnection().fetch(uid) { update() }
+  private val _username = MutableLiveData<String>()
+  private val _bio = MutableLiveData<String>()
+  private val _image = MutableLiveData<String>()
+  private val _interests = MutableLiveData<Set<Interests>>()
+
+  val username: LiveData<String>
+    get() = _username
+
+  val bio: LiveData<String>
+    get() = _bio
+
+  val image: LiveData<String>
+    get() = _image
+
+  val interests: LiveData<Set<Interests>>
+    get() = _interests
+
+  private fun update() {
+    _username.value = _profile.userName
+    _bio.value = _profile.bio
+    _image.value = _profile.image
+    _interests.value = _profile.interests.toMutableSet()
+  }
 }

@@ -27,13 +27,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
@@ -98,10 +98,7 @@ class ProfileView {
       Icon(
           painter = painterResource(R.drawable.edit),
           contentDescription = "edit",
-          modifier =
-              Modifier.clickable { nav.navigate("edit") }
-                  .size(24.dp)
-                  .semantics { contentDescription = "edit" })
+          modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
     }
   }
 
@@ -117,7 +114,7 @@ class ProfileView {
                         cancel()
                         nav.navigate("view")
                       }
-                      .semantics { contentDescription = "cancel" })
+                      .testTag("cancel"))
           Text(
               text = "Save",
               modifier =
@@ -125,15 +122,14 @@ class ProfileView {
                         save()
                         nav.navigate("view")
                       }
-                      .semantics { contentDescription = "save" })
+                      .testTag("save"))
         }
   }
 
   @Composable
   private fun UsernameField(username: String, updateUsername: (String) -> Unit, edit: Boolean) {
     OutlinedTextField(
-        modifier =
-            Modifier.fillMaxWidth().padding(8.dp).semantics { contentDescription = "username" },
+        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
         label = { Text("username") },
         value = username,
         readOnly = !edit,
@@ -147,10 +143,7 @@ class ProfileView {
         value = bio,
         onValueChange = { updateBio(it) },
         readOnly = !edit,
-        modifier =
-            Modifier.height(150.dp).fillMaxWidth().padding(8.dp).semantics {
-              contentDescription = "bio"
-            })
+        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
   }
 
   @Composable
@@ -163,7 +156,7 @@ class ProfileView {
             Image(
                 painter = painter,
                 contentDescription = "profile image",
-                modifier = Modifier.clickable { /*select image*/},
+                modifier = Modifier.clickable { /*select image*/}.testTag("profileImage"),
                 contentScale = ContentScale.Crop)
           }
           if (edit) Text(text = "Change profile picture")
@@ -185,7 +178,7 @@ class ProfileView {
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
         InterestsView().ShowInterests(interests)
-        Spacer(modifier = Modifier.height(56.dp)) // TODO check if good size
+        Spacer(modifier = Modifier.height(56.dp))
       }
     }
   }
@@ -208,8 +201,10 @@ class ProfileView {
         ProfileImage(imageUri, updateImageUri, true)
         UsernameField(username, updateUsername, true)
         BioField(bio, updateBio, true)
-        InterestsView().EditInterests(viewModel)
-        Spacer(modifier = Modifier.height(16.dp)) // TODO check if good size
+        InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
+          viewModel.flipInterests(it)
+        }
+        Spacer(modifier = Modifier.height(56.dp))
       }
     }
   }
@@ -221,16 +216,17 @@ class ProfileView {
    */
   @Composable
   fun ProfileScreen(viewModel: ProfileViewModel) {
-    val username = viewModel.username
-    val bio = viewModel.bio
-    val imageUri = viewModel.image
-    val interests = viewModel.interests
+    val username = viewModel.username.observeAsState("").value
+    val bio = viewModel.bio.observeAsState("").value
+    val imageUri = viewModel.image.observeAsState("").value
+    val interests = viewModel.interests.observeAsState(setOf()).value
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       ProfileImage(imageUri, {}, false)
       UsernameField(username, {}, false)
       BioField(bio, {}, false)
       InterestsView().ShowInterests(interests)
+      Spacer(modifier = Modifier.height(56.dp))
     }
   }
 }

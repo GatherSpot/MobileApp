@@ -1,9 +1,10 @@
-package com.github.se.gatherspot
+package com.github.se.gatherspot.firebase
 
 import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
@@ -25,7 +26,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     Log.d(TAG, "id: $id")
     val profile = Profile("", "", "", id, Interests.new())
     Firebase.firestore
-        .collection(TAG)
+        .collection(COLLECTION)
         .document(id)
         .get()
         .addOnSuccessListener { document ->
@@ -45,23 +46,18 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     return profile
   }
 
+  /** Returns the current user's UID, or null if the user is not logged in. */
+  fun getCurrentUserUid(): String? {
+    return FirebaseAuth.getInstance().currentUser?.uid
+  }
+
   fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
 
-    var res = false
     Firebase.firestore
         .collection(COLLECTION)
+        .whereEqualTo("userName", userName)
         .get()
-        .addOnSuccessListener { result ->
-          for (document in result) {
-            if (document.get("userName") == userName) {
-              res = true
-            }
-            if (res) {
-              break
-            }
-          }
-          onComplete(res)
-        }
+        .addOnSuccessListener { result -> onComplete(result.documents.isNotEmpty()) }
         .addOnFailureListener { onComplete(true) }
   }
 
