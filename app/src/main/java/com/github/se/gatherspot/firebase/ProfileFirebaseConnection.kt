@@ -169,7 +169,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         image ?: "",
         d.id,
         interests,
-        registeredEvents?.toSet(),
-        organizingEvents?.toSet())
+        registeredEvents?.toMutableList(),
+        organizingEvents?.toMutableList())
   }
 }

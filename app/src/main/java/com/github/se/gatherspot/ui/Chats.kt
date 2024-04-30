@@ -40,15 +40,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
+import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
@@ -162,7 +164,9 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
 @Composable
 fun ChatRow(eventID: String, navigation: NavigationActions) {
 
-  val EventFirebaseConnection = com.github.se.gatherspot.EventFirebaseConnection()
+  val EventFirebaseConnection = EventFirebaseConnection()
+    var event: Event?
+    runBlocking { event = EventFirebaseConnection.fetch(eventID) }
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
@@ -194,7 +198,7 @@ fun ChatRow(eventID: String, navigation: NavigationActions) {
           //                fontSize = 10.sp)
           //          }
           Text(
-              text = eventID, // TODO: change with event name
+              text = event?.title?:"Unknown Event", // TODO: change with event name
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
         }

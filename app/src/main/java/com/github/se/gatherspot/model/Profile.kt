@@ -18,6 +18,8 @@ class Profile(
     private var _image: String,
     override val id: String,
     private var _interests: Set<Interests>,
+    private var _registeredEvents: MutableList<String>? = mutableListOf(),
+    private var _organizingEvents: MutableList<String>? = mutableListOf()
 ) : CollectionClass() {
   var userName: String
     get() = _userName
@@ -57,7 +59,17 @@ class Profile(
       _interests = value
     }
 
-  val registeredEvents = mutableListOf<String>() // list of event ids
+  var registeredEvents: MutableList<String>?
+    get() = _registeredEvents
+    set(value) {
+      _registeredEvents = value
+    }
+
+  var organizingEvents: MutableList<String>?
+    get() = _organizingEvents
+    set(value) {
+      _organizingEvents = value
+    }
 
   companion object {
     fun testOrganizer(): Profile {

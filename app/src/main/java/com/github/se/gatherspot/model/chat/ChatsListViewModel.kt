@@ -1,7 +1,8 @@
 package com.github.se.gatherspot.model.chat
 
 import androidx.lifecycle.ViewModel
-import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.Profile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -13,7 +14,14 @@ class ChatsListViewModel : ViewModel() {
 
   suspend fun fetchNext(uid: String) {
 
-    val profile = ProfileFirebaseConnection().fetch(uid)
+      val profile : Profile?
+    try {
+        profile = ProfileFirebaseConnection().fetch(uid)
+    }
+    catch (e: Exception) {
+        println("Error fetching chats: $e")
+        return
+    }
     val chats =
         profile?.registeredEvents
             ?: setOf<String>()

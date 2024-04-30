@@ -7,7 +7,7 @@ import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter
-import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.screens.ChatsScreen
@@ -68,7 +68,6 @@ class ChatsTest {
   @Test
   fun chatsAreDisplayedAndScrollable() {
 
-    EnvironmentSetter.signUpSetUp("GatherSpotTest", "test@test1.com")
     val uid = FirebaseAuth.getInstance().currentUser?.uid!!
     runTest {
       async {
