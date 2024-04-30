@@ -15,6 +15,7 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
+import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -36,7 +37,7 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -133,7 +134,7 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -185,7 +186,7 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -208,7 +209,7 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -245,7 +246,7 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if the button is disabled
@@ -282,7 +283,7 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Fill every field
@@ -325,7 +326,7 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Fill every field
@@ -365,7 +366,7 @@ class CreateEventTest {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
 
     // Check if the location field is enabled for text input
@@ -377,7 +378,7 @@ class CreateEventTest {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -472,7 +473,7 @@ class CreateEventTest {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {

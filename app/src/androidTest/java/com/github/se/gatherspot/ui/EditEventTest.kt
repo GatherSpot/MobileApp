@@ -6,6 +6,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
+import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -59,7 +60,10 @@ class EditEventTest {
       val navController = rememberNavController()
 
       EditEvent(
-          nav = NavigationActions(navController), eventUtils = EventUtils(), event = testEvent)
+          nav = NavigationActions(navController),
+          eventUtils = EventUtils(),
+          event = testEvent,
+          EventsViewModel())
     }
 
     // Check that every field is displayed
@@ -128,7 +132,10 @@ class EditEventTest {
       val navController = rememberNavController()
 
       EditEvent(
-          nav = NavigationActions(navController), eventUtils = EventUtils(), event = testEvent)
+          nav = NavigationActions(navController),
+          eventUtils = EventUtils(),
+          event = testEvent,
+          EventsViewModel())
     }
 
     // Check that every field is displayed
@@ -176,7 +183,10 @@ class EditEventTest {
       val navController = rememberNavController()
 
       EditEvent(
-          nav = NavigationActions(navController), eventUtils = EventUtils(), event = testEvent)
+          nav = NavigationActions(navController),
+          eventUtils = EventUtils(),
+          event = testEvent,
+          EventsViewModel())
     }
 
     // Check that every field is displayed
