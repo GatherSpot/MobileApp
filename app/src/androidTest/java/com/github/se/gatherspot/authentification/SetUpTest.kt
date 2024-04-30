@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.authentification
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -50,6 +51,12 @@ class SetUpTest : TestCase() {
         assertIsDisplayed()
       }
       composeTestRule.waitForIdle()
+      allCategories.toList()[0] {
+        composeTestRule
+            .onNodeWithTag("lazyColumn")
+            .performScrollToNode(hasTestTag(enumValues<Interests>().toList()[0].toString()))
+        performClick()
+      }
       var c = 0
       for (category in allCategories) {
         category {
@@ -61,6 +68,11 @@ class SetUpTest : TestCase() {
           performClick() // Deselect the category
           c++
         }
+      }
+      allCategories.toList()[0] {
+        composeTestRule
+            .onNodeWithTag("lazyColumn")
+            .performScrollToNode(hasTestTag(enumValues<Interests>().toList()[0].toString()))
       }
 
       save {
