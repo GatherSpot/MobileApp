@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.ChatMessagesFirebaseConnection
+import com.github.se.gatherspot.EventFirebaseConnection
+import com.github.se.gatherspot.model.event.Event
+import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,28 +14,52 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ChatViewModel(private val eventId: String) : ViewModel() {
-  private val chatMessagesFirebase = ChatMessagesFirebaseConnection()
+class ChatViewModel(val eventId: String) : ViewModel() {
+  val chatMessagesFirebase = ChatMessagesFirebaseConnection()
   private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
   val messages: StateFlow<List<ChatMessage>> = _messages
+  var event: Event? = null
 
   init {
-    fetchMessages()
+    fetchMessagesAndEvent()
+    listenToMessages()
   }
 
-  private fun fetchMessages() {
+  private fun fetchMessagesAndEvent() {
     viewModelScope.launch {
       try {
         val fetchedMessages =
             withContext(Dispatchers.IO) {
               chatMessagesFirebase.fetchMessages(eventId, 50) // Fetch the latest 50 messages
             }
+        val eventValue = withContext(Dispatchers.IO) { EventFirebaseConnection().fetch(eventId) }
         _messages.value = fetchedMessages
+        event = eventValue
       } catch (e: Exception) {
         // Handle exceptions
         Log.w("ChatViewModel", "Failed to fetch messages", e)
       }
     }
+  }
+
+  fun listenToMessages() {
+    FirebaseFirestore.getInstance()
+        .collection(chatMessagesFirebase.CHATS)
+        .document(eventId)
+        .collection(chatMessagesFirebase.MESSAGES)
+        .orderBy("timestamp")
+        .addSnapshotListener { snapshot, e ->
+          if (e != null) {
+            Log.w("ChatViewModel", "Listen failed.", e)
+            return@addSnapshotListener
+          }
+
+          val fetchedMessages = mutableListOf<ChatMessage>()
+          snapshot?.documents?.forEach { document ->
+            document.let { fetchedMessages.add(chatMessagesFirebase.getFromDocument(it)!!) }
+          }
+          _messages.value = fetchedMessages
+        }
   }
 
   fun addMessage(messageId: String, senderId: String, messageText: String) {
