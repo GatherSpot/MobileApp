@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -9,12 +10,15 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
@@ -44,6 +48,7 @@ class CreateEventTest {
       eventScaffold { assertExists() }
       topBar { assertExists() }
       backButton { assertExists() }
+      clearButton { assertExists() }
       formColumn { assertExists() }
       eventTitle {
         assertExists()
@@ -141,6 +146,7 @@ class CreateEventTest {
       eventScaffold { assertIsDisplayed() }
       topBar { assertIsDisplayed() }
       backButton { assertIsDisplayed() }
+      clearButton { assertIsDisplayed() }
       eventTitle { assertIsDisplayed() }
       eventDescription { assertIsDisplayed() }
       eventStartDate { assertIsDisplayed() }
@@ -488,5 +494,84 @@ class CreateEventTest {
       }
     }
     testLoginCleanUp()
+  }
+
+  @Test
+  fun testClearButton() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventUtils = EventUtils()
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
+    }
+
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+      eventTitle.performTextInput("Test Event")
+      eventDescription.performTextInput("This is a test event")
+      eventStartDate.performTextInput("12/04/2026")
+      eventEndDate.performTextInput("12/05/2026")
+      eventTimeStart.performTextInput("10:00")
+      eventTimeEnd.performTextInput("12:00")
+      eventMaxAttendees.performTextInput("100")
+      eventMinAttendees.performTextInput("10")
+      eventInscriptionLimitDate.performTextInput("10/04/2025")
+      eventInscriptionLimitTime.performTextInput("09:00")
+
+      clearButton.performClick()
+
+      eventTitle.assert(hasText(""))
+      eventDescription.assert(hasText(""))
+      eventStartDate.assert(hasText(""))
+      eventEndDate.assert(hasText(""))
+      eventTimeStart.assert(hasText(""))
+      eventTimeEnd.assert(hasText(""))
+      eventLocation.assert(hasText(""))
+      eventMaxAttendees.assert(hasText(""))
+      eventMinAttendees.assert(hasText(""))
+      eventInscriptionLimitDate.assert(hasText(""))
+      eventInscriptionLimitTime.assert(hasText(""))
+    }
+  }
+
+  @Test
+  fun testDraftEventIsDisplay() {
+    // Create a draft event
+    // Save the draft
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    EventUtils()
+        .saveDraftEvent(
+            "title",
+            "description",
+            Location(0.0, 0.0, "Malibu"),
+            "12/04/2026",
+            "12/05/2026",
+            "10:00",
+            "12:00",
+            "100",
+            "10",
+            "10/04/2025",
+            "09:00",
+            setOf(Interests.TENNIS, Interests.BASKETBALL),
+            null,
+            context = context)
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventUtils = EventUtils()
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
+    }
+
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+        // Check if the draft event is displayed
+        eventTitle.assert(hasText("title"))
+        eventDescription.assert(hasText("description"))
+        eventStartDate.assert(hasText("12/04/2026"))
+        eventEndDate.assert(hasText("12/05/2026"))
+        eventTimeStart.assert(hasText("10:00"))
+        eventTimeEnd.assert(hasText("12:00"))
+        eventMaxAttendees.assert(hasText("100"))
+        eventMinAttendees.assert(hasText("10"))
+        eventInscriptionLimitDate.assert(hasText("10/04/2025"))
+        eventInscriptionLimitTime.assert(hasText("09:00"))
+    }
+    EventUtils().deleteDraft(context)
   }
 }
