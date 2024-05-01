@@ -3,7 +3,7 @@ package com.github.se.gatherspot.model.chat
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.se.gatherspot.ChatMessagesFirebaseConnection
+import com.github.se.gatherspot.firebase.ChatMessagesFirebaseConnection
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.firestore.FirebaseFirestore

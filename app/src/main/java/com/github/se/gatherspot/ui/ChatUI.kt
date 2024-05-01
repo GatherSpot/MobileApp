@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -37,19 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.chat.ChatMessage
 import com.github.se.gatherspot.model.chat.ChatViewModel
-import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventStatus
-import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlinx.coroutines.launch
 
@@ -162,46 +152,4 @@ fun MessageInputField(text: String, onTextChange: (String) -> Unit, onSend: () -
               Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
             }
       }
-}
-
-@SuppressLint("SuspiciousIndentation")
-@Preview(showBackground = true)
-@Composable
-fun PreviewChatScreen() {
-  val eventid = "886856f1-f709-41cf-b3c3-fb872c59eb91"
-  val eventFirebaseConnection = com.github.se.gatherspot.firebase.EventFirebaseConnection()
-  val event =
-      Event(
-          id = eventid,
-          title = "Test Event",
-          description = "This is a test event",
-          location = Location(0.0, 0.0, "Test Location"),
-          eventStartDate =
-              LocalDate.parse(
-                  "12/04/2026", DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT)),
-          eventEndDate =
-              LocalDate.parse(
-                  "12/05/2026", DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT)),
-          timeBeginning =
-              LocalTime.parse(
-                  "10:00", DateTimeFormatter.ofPattern(eventFirebaseConnection.TIME_FORMAT)),
-          timeEnding =
-              LocalTime.parse(
-                  "12:00", DateTimeFormatter.ofPattern(eventFirebaseConnection.TIME_FORMAT)),
-          attendanceMaxCapacity = 100,
-          attendanceMinCapacity = 10,
-          inscriptionLimitDate =
-              LocalDate.parse(
-                  "10/04/2025", DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT)),
-          inscriptionLimitTime =
-              LocalTime.parse(
-                  "09:00", DateTimeFormatter.ofPattern(eventFirebaseConnection.TIME_FORMAT)),
-          eventStatus = EventStatus.DRAFT,
-          categories = setOf(Interests.CHESS),
-          registeredUsers = mutableListOf("my_id"),
-          finalAttendees = emptyList(),
-          images = null,
-          globalRating = null)
-  eventFirebaseConnection.add(event)
-  ChatUI(ChatViewModel(eventid), "my_id", NavigationActions(rememberNavController()))
 }
