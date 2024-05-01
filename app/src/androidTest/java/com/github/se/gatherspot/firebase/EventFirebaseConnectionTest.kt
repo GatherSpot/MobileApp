@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.firebase
 
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -140,6 +142,7 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchNextBasedOnInterestReturnsCorrectEvents() =
       runTest(timeout = Duration.parse("20s")) {
+        testLogin()
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
@@ -156,13 +159,14 @@ class EventFirebaseConnectionTest {
               listOfEvents2[i].categories!!.contains(interests[0]) ||
                   listOfEvents2[i].categories!!.contains(interests[1]))
         }
-
+        testLoginCleanUp()
         EventFirebaseConnection.offset = null
       }
 
   @Test
   fun fetchNextBasedOnInterestReturnsDistinctEvents() =
       runTest(timeout = Duration.parse("20s")) {
+        testLogin()
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
@@ -174,7 +178,7 @@ class EventFirebaseConnectionTest {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
-
+        testLoginCleanUp()
         EventFirebaseConnection.offset = null
       }
 

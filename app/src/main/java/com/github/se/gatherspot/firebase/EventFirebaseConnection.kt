@@ -131,6 +131,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
    * @param number: the number of events to fetch
    * @return list of events
    */
+  // to be changed, Firebase not clear, I want to filter out events created by current user
   suspend fun fetchNextEvents(number: Long): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
         if (offset == null) {
@@ -158,14 +159,14 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
     return eventsFromQuerySnapshot(querySnapshot)
   }
-
+  // likewise
   suspend fun fetchEventsBasedOnInterests(number: Long, l: List<Interests>): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
         if (offset == null) {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
-              .whereNotEqualTo("eventID", FirebaseAuth.getInstance().currentUser!!.uid)
+              //  .whereNotEqualTo("eventID", FirebaseAuth.getInstance().currentUser!!.uid)
               .whereArrayContainsAny("categories", l.map { it.name })
               .limit(number)
               .get()
@@ -174,7 +175,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
-              .whereNotEqualTo("eventID", FirebaseAuth.getInstance().currentUser!!.uid)
+              //     .whereNotEqualTo("eventID", FirebaseAuth.getInstance().currentUser!!.uid)
               .whereArrayContainsAny("categories", l.map { it.name })
               .startAfter(offset!!.get("eventID"))
               .limit(number)

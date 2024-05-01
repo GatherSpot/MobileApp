@@ -8,11 +8,16 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,6 +25,17 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
+
+  @Before
+  fun setUp() {
+    testLogin()
+    Thread.sleep(5000)
+  }
+
+  @After
+  fun cleanUp() {
+    testLoginCleanUp()
+  }
 
   @Test
   fun testEverythingExists() {
@@ -107,6 +123,7 @@ class EventsTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testDropdownMenuFunctional() {
+    //  testLogin()
     composeTestRule.setContent {
       val viewModel = EventsViewModel()
       val nav = NavigationActions(rememberNavController())
@@ -135,10 +152,12 @@ class EventsTest {
         }
       }
     }
+    // testLoginCleanUp()
   }
 
   @Test
   fun testFilterWorks() {
+    // testLogin()
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
     composeTestRule.setContent {
@@ -169,11 +188,16 @@ class EventsTest {
       assert(
           viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.SPORT) ?: true })
     }
+
+    //  testLoginCleanUp()
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testRefreshButtonFunctionalWithFilter() {
+    // testLogin()
+    // Thread.sleep(5000)
+    assert(FirebaseAuth.getInstance().currentUser != null)
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
     composeTestRule.setContent {
@@ -228,5 +252,6 @@ class EventsTest {
             }
           })
     }
+    // testLoginCleanUp()
   }
 }
