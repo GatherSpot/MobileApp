@@ -66,6 +66,7 @@ class SetUpTest : TestCase() {
         assertExists()
         performClick()
       }
+      composeTestRule.waitForIdle()
       setUpBio { assertExists() }
       bioInput {
         assertExists()
@@ -75,6 +76,7 @@ class SetUpTest : TestCase() {
         assertExists()
         performClick()
       }
+      composeTestRule.waitForIdle()
       setUpImage { assertExists() }
       next {
         assertExists()
