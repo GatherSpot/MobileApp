@@ -42,7 +42,6 @@ class LocalStorageTest {
     val localStorage = LocalStorage(context)
     val draftEvent =
         DraftEvent(
-            "organiserId",
             "title",
             "description",
             null,
