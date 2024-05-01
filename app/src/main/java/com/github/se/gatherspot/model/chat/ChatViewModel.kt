@@ -30,7 +30,10 @@ class ChatViewModel(val eventId: String) : ViewModel() {
       try {
         val fetchedMessages =
             withContext(Dispatchers.IO) {
-              chatMessagesFirebase.fetchMessages(eventId, 50) // Fetch the latest 50 messages
+              chatMessagesFirebase.fetchMessages(
+                  eventId,
+                  100) // Fetch the latest 100 messages since fetching every x messages does not
+                       // work with listeners
             }
         val eventValue = withContext(Dispatchers.IO) { EventFirebaseConnection().fetch(eventId) }
         _messages.value = fetchedMessages
