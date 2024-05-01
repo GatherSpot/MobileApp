@@ -169,7 +169,7 @@ fun MessageInputField(text: String, onTextChange: (String) -> Unit, onSend: () -
 @Composable
 fun PreviewChatScreen() {
   val eventid = "886856f1-f709-41cf-b3c3-fb872c59eb91"
-  val eventFirebaseConnection = com.github.se.gatherspot.EventFirebaseConnection()
+  val eventFirebaseConnection = com.github.se.gatherspot.firebase.EventFirebaseConnection()
   val event =
       Event(
           id = eventid,

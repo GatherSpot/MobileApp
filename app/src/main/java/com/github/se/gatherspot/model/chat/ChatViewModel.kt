@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.ChatMessagesFirebaseConnection
-import com.github.se.gatherspot.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDateTime
