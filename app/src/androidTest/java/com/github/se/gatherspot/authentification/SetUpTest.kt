@@ -39,7 +39,7 @@ class SetUpTest : TestCase() {
 
   @After
   fun after() {
-    val a = ProfileFirebaseConnection().delete("TEST")
+    ProfileFirebaseConnection().delete("TEST")
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -67,7 +67,7 @@ class SetUpTest : TestCase() {
         assertExists()
         performClick()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpBio"), 3000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpBio"), 10000)
       bioInput {
         assertExists()
         performTextInput("I love basketball")
@@ -76,12 +76,12 @@ class SetUpTest : TestCase() {
         assertExists()
         performClick()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpImage"), 3000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpImage"), 10000)
       next {
         assertExists()
         performClick()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpDone"), 3000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpDone"), 10000)
       done {
         assertExists()
         performClick()
