@@ -52,50 +52,55 @@ fun DoneButton(next: () -> Unit) {
 }
 
 @Composable
-fun SetUpView(vm: SetUpViewModel) {
+fun SetUpInterests(vm: SetUpViewModel) {
   val interests = vm.interests.observeAsState()
-  val currentState = vm.currentState.observeAsState()
-  val bio = vm.bio.observeAsState()
   val flipInterests = vm::flipInterests
   val next = vm::next
+  Column(
+      modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpInterests")) {
+        // TODO : add scroll ???
+        // TODO : add condition minimum 3 interests ?
+        Text(text = "Choose your interests", fontSize = 30.sp)
+        Spacer(modifier = Modifier.height(30.dp))
+        InterestsView().EditInterests(Interests.toList(), interests, flipInterests)
+        NextButton(next)
+      }
+}
+
+@Composable
+fun SetUpBio(vm: SetUpViewModel) {
+  val bio = vm.bio.observeAsState()
+  val next = vm::next
   val setBio = vm::setBio
+  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpBio")) {
+    Text(text = "Tell us about yourself", fontSize = 30.sp)
+    Spacer(modifier = Modifier.height(30.dp))
+    ProfileView().BioField(bio = bio.value!!, updateBio = { setBio(it) }, edit = true)
+    NextButton(next)
+  }
+}
+
+@Composable
+fun SetUpImage(vm: SetUpViewModel) {
+  val next = vm::next
+
+  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpImage")) {
+    Text(text = "Choose a profile picture", fontSize = 30.sp)
+    Spacer(modifier = Modifier.height(30.dp))
+    // TODO : add image picker
+    Text(text = "Not implemented yet, maybe in v3 :)")
+    NextButton(next)
+  }
+}
+
+@Composable
+fun SetUpDone(vm: SetUpViewModel) {
   val done = vm::done
-  if (currentState.value == SetUpViewModel.Phases.INTERESTS) {
-    Column(
-        modifier =
-            Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpInterests")) {
-          // TODO : add scroll ???
-          // TODO : add condition minimum 3 interests ?
-          Text(text = "Choose your interests", fontSize = 30.sp)
-          Spacer(modifier = Modifier.height(30.dp))
-          InterestsView().EditInterests(Interests.toList(), interests, flipInterests)
-          NextButton(next)
-        }
-  }
-  if (currentState.value == SetUpViewModel.Phases.BIO) {
-    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpBio")) {
-      Text(text = "Tell us about yourself", fontSize = 30.sp)
-      Spacer(modifier = Modifier.height(30.dp))
-      ProfileView().BioField(bio = bio.value!!, updateBio = { setBio(it) }, edit = true)
-      NextButton(next)
-    }
-  }
-  if (currentState.value == SetUpViewModel.Phases.IMAGE) {
-    Column(
-        modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpImage")) {
-          Text(text = "Choose a profile picture", fontSize = 30.sp)
-          Spacer(modifier = Modifier.height(30.dp))
-          // TODO : add image picker
-          Text(text = "Not implemented yet, maybe in v3 :)")
-          NextButton(next)
-        }
-  }
-  if (currentState.value == SetUpViewModel.Phases.DONE) {
-    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpDone")) {
-      Text(text = "You're all set!", fontSize = 30.sp)
-      Spacer(modifier = Modifier.height(30.dp))
-      Text(text = "Welcome and have fun using GatherSpot !!!", fontSize = 20.sp)
-      DoneButton(done)
-    }
+
+  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpDone")) {
+    Text(text = "You're all set!", fontSize = 30.sp)
+    Spacer(modifier = Modifier.height(30.dp))
+    Text(text = "Welcome and have fun using GatherSpot !!!", fontSize = 20.sp)
+    DoneButton(done)
   }
 }

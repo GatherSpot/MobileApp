@@ -11,7 +11,7 @@ import com.google.firebase.ktx.Firebase
 class SetUpViewModel(val nav: NavigationActions) : ViewModel() {
   var profile = ProfileFirebaseConnection().fetch(Firebase.auth.uid ?: "TEST") {}
   var interests = MutableLiveData(Interests.new())
-  var currentState = MutableLiveData(Phases.INTERESTS)
+  var currentState = Phases.INTERESTS
   var bio = MutableLiveData("")
   var image = MutableLiveData("")
 
@@ -27,10 +27,19 @@ class SetUpViewModel(val nav: NavigationActions) : ViewModel() {
   }
 
   fun next() {
-    when (currentState.value) {
-      Phases.INTERESTS -> currentState.value = Phases.BIO
-      Phases.BIO -> currentState.value = Phases.IMAGE
-      Phases.IMAGE -> currentState.value = Phases.DONE
+    when (currentState) {
+      Phases.INTERESTS -> {
+        currentState = Phases.BIO
+        nav.controller.navigate("Bio")
+      }
+      Phases.BIO -> {
+        currentState = Phases.IMAGE
+        nav.controller.navigate("Image")
+      }
+      Phases.IMAGE -> {
+        currentState = Phases.DONE
+        nav.controller.navigate("Done")
+      }
       else -> {}
     }
   }

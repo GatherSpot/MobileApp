@@ -2,9 +2,14 @@ package com.github.se.gatherspot.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.setUp.SetUpView
+import com.github.se.gatherspot.ui.setUp.SetUpBio
+import com.github.se.gatherspot.ui.setUp.SetUpDone
+import com.github.se.gatherspot.ui.setUp.SetUpImage
+import com.github.se.gatherspot.ui.setUp.SetUpInterests
 import com.github.se.gatherspot.ui.setUp.SetUpViewModel
 
 @Preview
@@ -16,8 +21,17 @@ fun SetUpProfilePreview() {
 
 @Composable
 fun SetUpProfile(nav: NavigationActions) {
-  val vm = SetUpViewModel(nav)
-  SetUpView(vm)
+  val navController = rememberNavController()
+  val viewModel = SetUpViewModel(NavigationActions(navController))
+  NavHost(navController, startDestination = "Interests") {
+    composable("Interests") { SetUpInterests(viewModel) }
+    composable("Bio") { SetUpBio(viewModel) }
+    composable("Image") { SetUpImage(viewModel) }
+    composable("Done") { SetUpDone(viewModel) }
+  }
+
+  //  val vm = SetUpViewModel(nav)
+  //  SetUpInterests(vm)
   //  val auth = FirebaseAuth.getInstance()
   //  var isEmailVerified by remember { mutableStateOf(false) }
   //  var emailText by remember { mutableStateOf("") }
