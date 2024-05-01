@@ -43,7 +43,9 @@ class SetUpTest : TestCase() {
       NavHost(navController = navController, startDestination = "setUp") {
         navigation(route = "setUp", startDestination = "setUpProfile") {
           composable("setUpProfile") { SetUpProfile(NavigationActions(navController)) }
-          composable("home"){ com.github.se.gatherspot.ui.Profile(NavigationActions(navController))}
+          composable("home") {
+            com.github.se.gatherspot.ui.Profile(NavigationActions(navController))
+          }
         }
       }
     }
