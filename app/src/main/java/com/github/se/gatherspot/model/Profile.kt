@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.firebase.CollectionClass
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 
 // NOTE : I will add interests once theses are pushed
 /**
@@ -67,6 +68,7 @@ class Profile(
     fun testParticipant(): Profile {
       return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
     }
+    fun add(username: String,id: String) = ProfileFirebaseConnection().add(Profile(username, id ,"","", Interests.new()))
   }
 
   constructor(id: String) : this("", "", "", id, setOf())
