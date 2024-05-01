@@ -12,6 +12,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -90,12 +91,16 @@ class EventUtils {
   fun deleteEvent(event: Event) {
     // Remove the event from all the users who registered for it
     val idListFirebase = IdListFirebaseConnection()
-    event.registeredUsers.forEach { userID ->
-      val registeredEvents =
-          idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
-      registeredEvents.remove(event.id)
-      idListFirebase.saveToFirebase(registeredEvents)
-    }
+      runBlocking {
+          event.registeredUsers.forEach { userID ->
+              val registeredEvents = idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
+              registeredEvents?.remove(event.id)
+              if (registeredEvents != null) {
+                  idListFirebase.saveToFirebase(registeredEvents)
+              }
+          }
+
+      }
     EventFirebaseConnection.delete(event.id)
   }
 

@@ -4,6 +4,9 @@ import android.util.Log
 import com.github.se.gatherspot.model.IdList
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 class IdListFirebaseConnection {
   private val db = Firebase.firestore
@@ -18,27 +21,31 @@ class IdListFirebaseConnection {
    * @return the IdList NOTE : The IdList will be initially empty, to use it in a view, you need to
    *   update the view using with a lambda function that updates the view
    */
-  fun fetchFromFirebase(id: String, category: FirebaseCollection, update: () -> Unit): IdList {
-    val tag = category.name
-    val idSet = IdList.empty(id, category)
-    db.collection(tag)
-        .document(id)
-        .get()
-        .addOnSuccessListener { document ->
-          if (document != null) {
-            val data = document.data
-            if (data != null) {
-              val ids = data["ids"]
-              idSet.events = ids as List<String>
-            }
-            Log.d(logTag, "DocumentSnapshot data: ${document.data}")
-          } else {
-            Log.d(logTag, "No such document")
+  suspend fun fetchFromFirebase(id: String, category: FirebaseCollection, update: () -> Unit): IdList? = suspendCancellableCoroutine { continuation ->
+      val tag = category.name
+      val idSet = IdList.empty(id, category)
+      db.collection(tag)
+          .document(id)
+          .get()
+          .addOnSuccessListener { document ->
+              if (document != null) {
+                  val data = document.data
+                  if (data != null) {
+                      val ids = data["ids"]
+                      idSet.events = ids as List<String>
+                  }
+                  Log.d(logTag, "DocumentSnapshot data: ${document.data}")
+
+              } else {
+                  Log.d(logTag, "No such document")
+              }
+              update()
+              continuation.resume(idSet)
           }
-          update()
-        }
-        .addOnFailureListener { exception -> Log.d(logTag, "get failed with ", exception) }
-    return idSet
+          .addOnFailureListener { exception ->
+              Log.d(logTag, "get failed with ", exception)
+              continuation.resume(null)
+          }
   }
   /**
    * Saves the IdList to Firebase

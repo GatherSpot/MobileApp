@@ -64,11 +64,9 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
   LaunchedEffect(fetch) {
     if (fetch) {
       Log.d(ContentValues.TAG, "entered")
-      try {
+
         viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid ?: "")
-      } catch (e: Exception) {
-        Log.d("ptdr", "Error fetching chats: $e")
-      }
+
       fetch = false
     }
   }
@@ -114,6 +112,8 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
               modifier = Modifier.testTag("fetch").padding(vertical = 30.dp),
               text = "Fetching chats...")
         }
+
+
         val chats = state.value.list.toList()
         val lazyState = rememberLazyListState()
         when {

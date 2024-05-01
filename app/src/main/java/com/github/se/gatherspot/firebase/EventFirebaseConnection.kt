@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.firebase
 
 import android.util.Log
+import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
@@ -152,22 +153,24 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
 
-    suspend fun fetchNextEvents(uid: String, number: Long): MutableList<Event> {
-        val user = IdListFirebaseConnection().fetchFromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS) {
-            return@fetchFromFirebase
-        }
+    suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
+
         val querySnapshot: QuerySnapshot =
             if (offset == null) {
-                Firebase.firestore.collection(EVENTS).orderBy("eventID").whereIn("eventID", user.events).limit(number).get().await()
+                Firebase.firestore.collection(EVENTS).orderBy("eventID").whereIn("eventID", idlist?.events?:listOf()).limit(number).get().await()
             } else {
                 Firebase.firestore
                     .collection(EVENTS)
                     .orderBy("eventID")
+                    .whereIn("eventID", idlist?.events?:listOf())
                     .startAfter(offset!!.get("eventID"))
                     .limit(number)
                     .get()
                     .await()
             }
+        if (querySnapshot.documents.isNotEmpty()) {
+            offset = querySnapshot.documents.last()
+        }
         return eventsFromQuerySnaphot(querySnapshot)
     }
 
