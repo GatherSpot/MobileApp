@@ -166,16 +166,13 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
 }
 
 @Composable
-fun ChatRow(eventID: String, navigation: NavigationActions) {
+fun ChatRow(event: Event, navigation: NavigationActions) {
 
-  val EventFirebaseConnection = EventFirebaseConnection()
-    var event: Event?
-    runBlocking { event = EventFirebaseConnection.fetch(eventID) }
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
             val gson = Gson()
-            val chatJson = gson.toJson(eventID)
+            val chatJson = gson.toJson(event.id)
             navigation.controller.navigate("chat/$chatJson")
               Log.e("Display", "eventJson = $chatJson")
           },
@@ -203,7 +200,7 @@ fun ChatRow(eventID: String, navigation: NavigationActions) {
           //                fontSize = 10.sp)
           //          }
           Text(
-              text = event?.title?:"Unknown Event", // TODO: change with event name
+              text = event.title, // TODO: change with event name
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
         }
