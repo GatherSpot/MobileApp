@@ -25,6 +25,12 @@ class EnvironmentSetter {
       Firebase.auth.signOut()
     }
 
+    fun testDelete() {
+      if (Firebase.auth.currentUser != null) {
+        Firebase.auth.currentUser!!.delete()
+      }
+    }
+
     fun signUpErrorSetUp() {
       runTest {
         // Make sure the "test" username is already in use
