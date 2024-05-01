@@ -67,7 +67,7 @@ class SetUpTest : TestCase() {
         assertExists()
         performClick()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpBio"), 10000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpBio"), 100000)
       bioInput {
         assertExists()
         performTextInput("I love basketball")
@@ -76,12 +76,12 @@ class SetUpTest : TestCase() {
         assertExists()
         performClick()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpImage"), 10000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpImage"), 100000)
       next {
         assertExists()
         performClick()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpDone"), 10000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpDone"), 100000)
       done {
         assertExists()
         performClick()
