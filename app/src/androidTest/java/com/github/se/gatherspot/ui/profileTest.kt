@@ -5,10 +5,12 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,6 +21,16 @@ class ProfileInstrumentedTest {
   @get:Rule val composeTestRule = createComposeRule()
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
+  @OptIn(ExperimentalTestApi::class)
+  @Before
+  fun setUp() {
+    var lock = true
+    ProfileFirebaseConnection().add(Profile.testOrganizer()) { lock = false }
+    while (lock) {
+      {}
+    }
+  }
+
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun editableProfileScreenTest() {

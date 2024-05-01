@@ -27,12 +27,18 @@ class SetUpTest : TestCase() {
 
   @Before
   fun before() {
-    ProfileFirebaseConnection().add(Profile("John Doe", "", "", "TEST", Interests.new()))
+    var lock = true
+    ProfileFirebaseConnection().add(Profile("John Doe", "", "", "TEST", Interests.new())) {
+      lock = false
+    }
+    while (lock) {
+      {}
+    }
   }
 
   @After
   fun after() {
-    ProfileFirebaseConnection().delete("TEST")
+    val a = ProfileFirebaseConnection().delete("TEST")
   }
 
   @OptIn(ExperimentalTestApi::class)

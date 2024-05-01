@@ -32,8 +32,14 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
+    var lock = true
+    ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid) {
+      lock = false
+    }
     testLoginCleanUp()
+    while (lock) {
+      {}
+    }
   }
 
   @OptIn(ExperimentalTestApi::class)

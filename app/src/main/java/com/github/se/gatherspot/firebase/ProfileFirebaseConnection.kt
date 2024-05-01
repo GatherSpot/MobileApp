@@ -100,7 +100,24 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
         .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
   }
-
+  // Note: will change this one later on, for now it is used to fix timing issues during tests
+  fun add(element: Profile, onSuccess: () -> Unit) {
+    val data =
+        hashMapOf(
+            "userName" to element.userName,
+            "bio" to element.bio,
+            "image" to element.image,
+            "interests" to Interests.toCompressedString(element.interests))
+    Firebase.firestore
+        .collection(COLLECTION)
+        .document(element.id)
+        .set(data)
+        .addOnSuccessListener {
+          Log.d(TAG, "DocumentSnapshot successfully written!")
+          onSuccess()
+        }
+        .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+  }
   // Note: I don't wanna bother to verify but pretty sure I cant write on my own profile if I dont
   // change username using this
   //  override fun update(id: String, field: String, value: Any) {
@@ -152,6 +169,18 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   override fun delete(id: String) {
     // delete associated data from other collection TODO
     super.delete(id)
+  }
+  // used due to timing issues in tests will be removed when i refactor this class a bit
+  fun delete(id: String, onSuccess: () -> Unit) {
+    Firebase.firestore
+        .collection(COLLECTION)
+        .document(id)
+        .delete()
+        .addOnSuccessListener {
+          Log.d(TAG, "DocumentSnapshot successfully deleted!")
+          onSuccess()
+        }
+        .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
   }
 
   override fun getFromDocument(d: DocumentSnapshot): Profile? {
