@@ -67,7 +67,9 @@ class SetUpTest : TestCase() {
         performClick()
       }
       composeTestRule.waitForIdle()
+      setUpBio { assertExists() }
       bioInput {
+        performScrollTo()
         assertExists()
         performTextInput("I love basketball")
       }
