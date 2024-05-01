@@ -574,4 +574,44 @@ class CreateEventTest {
     }
     EventUtils().deleteDraft(context)
   }
+
+  @Test
+  fun testClickOnSaveDraft() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventUtils = EventUtils()
+      CreateEvent(nav = NavigationActions(navController), eventUtils)
+    }
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+      eventTitle.performTextInput("Test Event")
+      eventDescription.performTextInput("This is a test event")
+      eventStartDate.performTextInput("12/04/2026")
+      eventEndDate.performTextInput("12/05/2026")
+      eventTimeStart.performTextInput("10:00")
+      eventTimeEnd.performTextInput("12:00")
+      eventMaxAttendees.performTextInput("100")
+      eventMinAttendees.performTextInput("10")
+      eventInscriptionLimitDate.performTextInput("10/04/2025")
+      eventInscriptionLimitTime.performTextInput("09:00")
+
+      saveDraftButton {
+        assertExists()
+        performClick()
+      }
+      // Check if the draft event is displayed
+      eventTitle.assert(hasText("Test Event"))
+      eventDescription.assert(hasText("This is a test event"))
+      eventStartDate.assert(hasText("12/04/2026"))
+      eventEndDate.assert(hasText("12/05/2026"))
+      eventTimeStart.assert(hasText("10:00"))
+      eventTimeEnd.assert(hasText("12:00"))
+      eventMaxAttendees.assert(hasText("100"))
+      eventMinAttendees.assert(hasText("10"))
+      eventInscriptionLimitDate.assert(hasText("10/04/2025"))
+      eventInscriptionLimitTime.assert(hasText("09:00"))
+    }
+    EventUtils().retrieveFromDraft(context)!!
+    EventUtils().deleteDraft(context)
+  }
 }

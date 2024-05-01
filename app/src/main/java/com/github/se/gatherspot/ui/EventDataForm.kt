@@ -45,9 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
@@ -502,12 +500,6 @@ fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
         Button(onClick = onDismiss, modifier = Modifier.testTag("alertButton")) { Text("OK") }
       },
       dismissButton = {})
-}
-
-@Preview
-@Composable
-fun EventDataFormPreview() {
-  EventDataForm(EventUtils(), NavigationActions(rememberNavController()), EventAction.CREATE)
 }
 
 enum class EventAction {
