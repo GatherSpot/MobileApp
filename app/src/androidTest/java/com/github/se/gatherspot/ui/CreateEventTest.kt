@@ -560,17 +560,17 @@ class CreateEventTest {
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-        // Check if the draft event is displayed
-        eventTitle.assert(hasText("title"))
-        eventDescription.assert(hasText("description"))
-        eventStartDate.assert(hasText("12/04/2026"))
-        eventEndDate.assert(hasText("12/05/2026"))
-        eventTimeStart.assert(hasText("10:00"))
-        eventTimeEnd.assert(hasText("12:00"))
-        eventMaxAttendees.assert(hasText("100"))
-        eventMinAttendees.assert(hasText("10"))
-        eventInscriptionLimitDate.assert(hasText("10/04/2025"))
-        eventInscriptionLimitTime.assert(hasText("09:00"))
+      // Check if the draft event is displayed
+      eventTitle.assert(hasText("title"))
+      eventDescription.assert(hasText("description"))
+      eventStartDate.assert(hasText("12/04/2026"))
+      eventEndDate.assert(hasText("12/05/2026"))
+      eventTimeStart.assert(hasText("10:00"))
+      eventTimeEnd.assert(hasText("12:00"))
+      eventMaxAttendees.assert(hasText("100"))
+      eventMinAttendees.assert(hasText("10"))
+      eventInscriptionLimitDate.assert(hasText("10/04/2025"))
+      eventInscriptionLimitTime.assert(hasText("09:00"))
     }
     EventUtils().deleteDraft(context)
   }
