@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.screens
 
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
-import com.github.se.gatherspot.model.Interests
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.github.kakaocup.compose.node.element.KNode
 
@@ -10,12 +9,13 @@ class SetUpScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         semanticsProvider = semanticsProvider, viewBuilderAction = { hasTestTag("setUpScreen") }) {
 
   // Structural elements of the UI
-  val save: KNode = onNode { hasTestTag("saveButton") }
-  val lazyColumn: KNode = onNode { hasTestTag("lazyColumn") }
-  val allCategories: Set<KNode> =
-      enumValues<Interests>()
-          .toList()
-          .map { category -> onNode { hasTestTag(category.toString()) } }
-          .toSet()
-  val emailText: KNode = onNode { hasTestTag("emailText") }
+  val next: KNode = onNode { hasTestTag("nextButton") }
+  val done: KNode = onNode { hasTestTag("doneButton") }
+  val bio: KNode = onNode { hasTestTag("bio") }
+  val setUpInterests: KNode = onNode { hasTestTag("setUpInterests") }
+  val setUpBio: KNode = onNode { hasTestTag("setUpBio") }
+  val bioInput: KNode = onNode { hasTestTag("bioInput") }
+  val addBasketball: KNode = onNode { hasTestTag("add BASKETBALL") }
+  val removeBasketball: KNode = onNode { hasTestTag("remove BASKETBALL") }
+  val setUpImage: KNode = onNode { hasTestTag("setUpImage") }
 }

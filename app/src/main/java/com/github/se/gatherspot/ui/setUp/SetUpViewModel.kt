@@ -9,7 +9,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class SetUpViewModel(val nav: NavigationActions) : ViewModel() {
-  var profile = ProfileFirebaseConnection().fetch(Firebase.auth.uid?:"TEST"){}
+  var profile = ProfileFirebaseConnection().fetch(Firebase.auth.uid ?: "TEST") {}
   var interests = MutableLiveData(Interests.new())
   var currentState = MutableLiveData(Phases.INTERESTS)
   var bio = MutableLiveData("")
@@ -21,7 +21,7 @@ class SetUpViewModel(val nav: NavigationActions) : ViewModel() {
     IMAGE,
     DONE
   }
-
+  // TODO : change this from the setter of the model after I refactor it :)
   fun flipInterests(interest: Interests) {
     interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
@@ -31,13 +31,15 @@ class SetUpViewModel(val nav: NavigationActions) : ViewModel() {
       Phases.INTERESTS -> currentState.value = Phases.BIO
       Phases.BIO -> currentState.value = Phases.IMAGE
       Phases.IMAGE -> currentState.value = Phases.DONE
-      Phases.DONE -> {} //these two should not happen anyway
-      null -> {}
+      else -> {}
     }
   }
-  // TODO : should function should come from the profile model ?
-  fun setBio(string: String) {bio.value = string}
-  fun done(){
+  // TODO : change this from the setter of the model after I refactor it :)
+  fun setBio(string: String) {
+    bio.value = string
+  }
+
+  fun done() {
     profile.interests = interests.value!!
     profile.bio = bio.value!!
     profile.image = image.value!!

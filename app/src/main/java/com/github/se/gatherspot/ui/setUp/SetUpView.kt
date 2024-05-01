@@ -29,10 +29,9 @@ fun NextButton(next: () -> Unit) {
       colors = ButtonDefaults.buttonColors(Color.Transparent),
       onClick = { next() },
       modifier =
-      Modifier
-        .testTag("nextButton")
-        .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
-        .wrapContentSize()) {
+          Modifier.testTag("nextButton")
+              .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
+              .wrapContentSize()) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -40,19 +39,15 @@ fun NextButton(next: () -> Unit) {
             }
       }
 }
+
 @Composable
 fun DoneButton(next: () -> Unit) {
-  Button(
-    onClick = { next() },
-    modifier =
-    Modifier
-      .testTag("doneButton")
-      .wrapContentSize()) {
+  Button(onClick = { next() }, modifier = Modifier.testTag("doneButton").wrapContentSize()) {
     Box(
-      modifier = Modifier.fillMaxWidth(),
-      contentAlignment = androidx.compose.ui.Alignment.Center) {
-      Text("Start using the app", fontSize = 22.sp)
-    }
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = androidx.compose.ui.Alignment.Center) {
+          Text("Start using the app", fontSize = 22.sp)
+        }
   }
 }
 
@@ -68,9 +63,7 @@ fun SetUpView(vm: SetUpViewModel) {
   if (currentState.value == SetUpViewModel.Phases.INTERESTS) {
     Column(
         modifier =
-        Modifier
-          .padding(horizontal = 20.dp, vertical = 30.dp)
-          .testTag("setUpInterests")) {
+            Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpInterests")) {
           // TODO : add scroll ???
           // TODO : add condition minimum 3 interests ?
           Text(text = "Choose your interests", fontSize = 30.sp)
@@ -80,9 +73,7 @@ fun SetUpView(vm: SetUpViewModel) {
         }
   }
   if (currentState.value == SetUpViewModel.Phases.BIO) {
-    Column(modifier = Modifier
-      .padding(horizontal = 20.dp, vertical = 30.dp)
-      .testTag("setUpBio")) {
+    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpBio")) {
       Text(text = "Tell us about yourself", fontSize = 30.sp)
       Spacer(modifier = Modifier.height(30.dp))
       ProfileView().BioField(bio = bio.value!!, updateBio = { setBio(it) }, edit = true)
@@ -91,9 +82,7 @@ fun SetUpView(vm: SetUpViewModel) {
   }
   if (currentState.value == SetUpViewModel.Phases.IMAGE) {
     Column(
-        modifier = Modifier
-          .padding(horizontal = 20.dp, vertical = 30.dp)
-          .testTag("setUpPicture")) {
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpImage")) {
           Text(text = "Choose a profile picture", fontSize = 30.sp)
           Spacer(modifier = Modifier.height(30.dp))
           // TODO : add image picker
@@ -102,9 +91,7 @@ fun SetUpView(vm: SetUpViewModel) {
         }
   }
   if (currentState.value == SetUpViewModel.Phases.DONE) {
-    Column(modifier = Modifier
-      .padding(horizontal = 20.dp, vertical = 30.dp)
-      .testTag("setUpDone")) {
+    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpDone")) {
       Text(text = "You're all set!", fontSize = 30.sp)
       Spacer(modifier = Modifier.height(30.dp))
       Text(text = "Welcome and have fun using GatherSpot !!!", fontSize = 20.sp)

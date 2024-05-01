@@ -122,10 +122,7 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
               }
 
-              composable("setup") {
-                SetUpProfile(
-                    NavigationActions(navController))
-              }
+              composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }
           }
         }

@@ -1,23 +1,22 @@
 package com.github.se.gatherspot.authentification
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,9 +25,14 @@ import org.junit.runner.RunWith
 class SetUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
 
+  @Before
+  fun before() {
+    ProfileFirebaseConnection().add(Profile("John Doe", "", "", "TEST", Interests.new()))
+  }
+
   @After
-  fun cleanUp() {
-    // For now nothing
+  fun after() {
+    ProfileFirebaseConnection().delete("TEST")
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -36,42 +40,51 @@ class SetUpTest : TestCase() {
   fun setUp() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      NavHost(navController = navController, startDestination = "auth") {
-        navigation(startDestination = "setup", route = "auth") {
-          composable("setup") { SetUpProfile(NavigationActions(navController)) }
+      NavHost(navController = navController, startDestination = "setUp") {
+        navigation(route = "setUp", startDestination = "setUpProfile") {
+          composable("setUpProfile") { SetUpProfile(NavigationActions(navController)) }
+          composable("home"){ com.github.se.gatherspot.ui.Profile(NavigationActions(navController))}
         }
       }
     }
 
-    composeTestRule.waitForIdle()
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
-      lazyColumn {
+      setUpInterests { assertExists() }
+      addBasketball {
         assertExists()
-        assertIsDisplayed()
-      }
-      composeTestRule.waitForIdle()
-      var c = 0
-      for (category in allCategories) {
-        category {
-          composeTestRule
-              .onNodeWithTag("lazyColumn")
-              .performScrollToNode(hasTestTag(enumValues<Interests>().toList()[c].toString()))
-          assertExists()
-          performClick() // Select the category
-          performClick() // Deselect the category
-          c++
-        }
-      }
-
-      save {
-        assertExists()
-        assertIsDisplayed()
         performClick()
       }
-
-      composeTestRule.waitUntilAtLeastOneExists(
-          hasText("Please verify your email before continuing"))
-      emailText.assertIsDisplayed()
+      next {
+        assertExists()
+        performClick()
+      }
+      setUpBio { assertExists() }
+      bioInput {
+        assertExists()
+        performTextInput("I love basketball")
+      }
+      next {
+        assertExists()
+        performClick()
+      }
+      setUpImage { assertExists() }
+      next {
+        assertExists()
+        performClick()
+      }
+      done {
+        assertExists()
+        performClick()
+      }
+      var lock = true
+      val profile = ProfileFirebaseConnection().fetch("TEST") { lock = false }
+      // wait for fetch and check if the profile has the good values
+      while (lock) {
+        {}
+      }
+      assert(profile.userName == "John Doe")
+      assert(profile.bio == "I love basketball")
+      assert(profile.interests.contains(Interests.BASKETBALL))
     }
   }
 }

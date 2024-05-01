@@ -57,9 +57,7 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") {
-            SetUpProfile(NavigationActions(navController))
-          }
+          composable("setup") { SetUpProfile(NavigationActions(navController)) }
         }
       }
     }
@@ -108,9 +106,7 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") {
-            SetUpProfile(NavigationActions(navController))
-          }
+          composable("setup") { SetUpProfile(NavigationActions(navController)) }
         }
       }
     }
@@ -151,9 +147,7 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") {
-            SetUpProfile(NavigationActions(navController))
-          }
+          composable("setup") { SetUpProfile(NavigationActions(navController)) }
         }
       }
     }
