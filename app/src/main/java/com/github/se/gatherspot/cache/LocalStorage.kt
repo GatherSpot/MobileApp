@@ -1,12 +1,16 @@
 package com.github.se.gatherspot.cache
 
 import android.content.Context
+import android.graphics.Bitmap
 import com.github.se.gatherspot.model.event.DraftEvent
-import com.google.gson.Gson
+import com.github.se.gatherspot.model.utils.ImageBitmapSerializer
+import com.google.gson.GsonBuilder
 import java.io.InputStreamReader
 
 class LocalStorage(private val context: Context) {
-  private val gson = Gson()
+  private val gson = GsonBuilder()
+    .registerTypeAdapter(Bitmap::class.java, ImageBitmapSerializer())
+    .create()
 
   fun loadDraftEvent(): DraftEvent? {
     return try {
