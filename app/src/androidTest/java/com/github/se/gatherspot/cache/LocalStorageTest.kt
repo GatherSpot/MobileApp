@@ -62,32 +62,31 @@ class LocalStorageTest {
     assert(loadedDraftEvent == null)
   }
 
-    @Test
-    fun deleteDraftEventThrowException() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val localStorage = LocalStorage(context)
-        val draftEvent =
-            DraftEvent(
-                "title",
-                "description",
-                null,
-                "eventStartDate",
-                "eventEndDate",
-                "timeBeginning",
-                "timeEnding",
-                "attendanceMaxCapacity",
-                "attendanceMinCapacity",
-                "inscriptionLimitDate",
-                "inscriptionLimitTime",
-                emptySet(),
-                null)
-        localStorage.storeDraftEvent(draftEvent)
-        localStorage.deleteDraftEvent()
-        try {
-            localStorage.deleteDraftEvent()
-        } catch (e: Exception) {
-            assert(true)
-        }
+  @Test
+  fun deleteDraftEventThrowException() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val localStorage = LocalStorage(context)
+    val draftEvent =
+        DraftEvent(
+            "title",
+            "description",
+            null,
+            "eventStartDate",
+            "eventEndDate",
+            "timeBeginning",
+            "timeEnding",
+            "attendanceMaxCapacity",
+            "attendanceMinCapacity",
+            "inscriptionLimitDate",
+            "inscriptionLimitTime",
+            emptySet(),
+            null)
+    localStorage.storeDraftEvent(draftEvent)
+    localStorage.deleteDraftEvent()
+    try {
+      localStorage.deleteDraftEvent()
+    } catch (e: Exception) {
+      assert(true)
     }
-
+  }
 }
