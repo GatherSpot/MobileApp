@@ -28,7 +28,7 @@ class ChatUITest {
   @Test
   fun testEverythingExists() {
     val eventId = UUID.randomUUID().toString()
-    val eventFirebaseConnection = com.github.se.gatherspot.EventFirebaseConnection()
+    val eventFirebaseConnection = com.github.se.gatherspot.firebase.EventFirebaseConnection()
     val chatViewModel = ChatViewModel(eventId)
     composeTestRule.setContent {
       val event =
