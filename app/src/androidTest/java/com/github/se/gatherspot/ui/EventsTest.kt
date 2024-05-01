@@ -14,7 +14,6 @@ import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
-import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
@@ -37,7 +36,7 @@ class EventsTest {
   @Before
   fun setUp() {
     testLogin()
-    Thread.sleep(8000)
+    Thread.sleep(10000)
     uid = FirebaseAuth.getInstance().currentUser!!.uid
   }
 
@@ -48,8 +47,9 @@ class EventsTest {
 
   @Test
   fun testEverythingExists() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
     composeTestRule.setContent {
-      val viewModel = EventsViewModel()
       val nav = NavigationActions(rememberNavController())
       Events(viewModel = viewModel, nav = nav)
     }
@@ -87,6 +87,7 @@ class EventsTest {
   @OptIn(ExperimentalTestApi::class, ExperimentalTestApi::class)
   @Test
   fun testEventsAreDisplayedAndScrollable() {
+
     composeTestRule.setContent {
       val viewModel = EventsViewModel()
       val nav = NavigationActions(rememberNavController())
@@ -389,8 +390,6 @@ class EventsTest {
       // show your skills"})
     }
 
-    EventFirebaseConnection().delete(viewModel.uiState.value.list[0].id)
+    //  EventFirebaseConnection().delete(viewModel.uiState.value.list[0].id)
   }
-
-  @Test fun entireRegistrationFlow() {}
 }

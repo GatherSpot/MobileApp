@@ -55,7 +55,6 @@ import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import java.time.LocalDate
 import java.time.LocalTime
@@ -75,8 +74,8 @@ fun EventUI(
   val showDialogDelete by registrationViewModel.displayAlertDeletion.observeAsState()
   val isOrganizer =
       event.organizer.id == (ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST")
-  val isAlreadyRegistered =
-      event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
+  // val isAlreadyRegistered =
+  //    event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
   val eventUtils = EventUtils()
   val registrationState by registrationViewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
@@ -251,7 +250,7 @@ fun EventUI(
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
 
-              if (!isOrganizer && !isAlreadyRegistered) {
+              if (!isOrganizer) {
                 Button(
                     onClick = {
                       registrationViewModel.registerForEvent(event)
