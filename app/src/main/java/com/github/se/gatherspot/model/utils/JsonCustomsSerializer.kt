@@ -65,51 +65,48 @@ class LocalDateTimeDeserializer : JsonDeserializer<LocalDateTime> {
   }
 }
 
-/**
- * Custom serializer for Bitmap images
- */
+/** Custom serializer for Bitmap images */
 class ImageBitmapSerializer : JsonSerializer<ImageBitmap>, JsonDeserializer<ImageBitmap> {
-    override fun serialize(
-        src: ImageBitmap?,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext?
-    ): JsonElement {
-        return if (src != null) {
-            JsonPrimitive(ImageBitmapConverter.fromImageBitmap(src))
-        } else {
-            JsonPrimitive("")
-        }
+  override fun serialize(
+      src: ImageBitmap?,
+      typeOfSrc: Type?,
+      context: JsonSerializationContext?
+  ): JsonElement {
+    return if (src != null) {
+      JsonPrimitive(ImageBitmapConverter.fromImageBitmap(src))
+    } else {
+      JsonPrimitive("")
     }
+  }
 
-    @Throws(JsonParseException::class)
-    override fun deserialize(
-        json: JsonElement?,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?
-    ): ImageBitmap? {
-        return if (json != null && json.asString.isNotEmpty()) {
-            ImageBitmapConverter.toImageBitmap(json.asString)
-        } else {
-            null
-        }
+  @Throws(JsonParseException::class)
+  override fun deserialize(
+      json: JsonElement?,
+      typeOfT: Type?,
+      context: JsonDeserializationContext?
+  ): ImageBitmap? {
+    return if (json != null && json.asString.isNotEmpty()) {
+      ImageBitmapConverter.toImageBitmap(json.asString)
+    } else {
+      null
     }
+  }
 }
 
 object ImageBitmapConverter {
-    // Converter for Bitmap to String
-    fun fromImageBitmap(imageBitmap: ImageBitmap): String {
-        // convert imageBitmap to Bitmap
-        val bitmap = imageBitmap.asAndroidBitmap()
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray())
-    }
+  // Converter for Bitmap to String
+  fun fromImageBitmap(imageBitmap: ImageBitmap): String {
+    // convert imageBitmap to Bitmap
+    val bitmap = imageBitmap.asAndroidBitmap()
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+    return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray())
+  }
 
-    // Converter for String to Bitmap
-    fun toImageBitmap(stringPicture: String): ImageBitmap {
-        val byteArray = Base64.getDecoder().decode(stringPicture)
-        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-        return bitmap.asImageBitmap()
-    }
-
+  // Converter for String to Bitmap
+  fun toImageBitmap(stringPicture: String): ImageBitmap {
+    val byteArray = Base64.getDecoder().decode(stringPicture)
+    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    return bitmap.asImageBitmap()
+  }
 }

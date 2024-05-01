@@ -364,7 +364,7 @@ class EventUtils {
       dateLimitInscription: String?,
       timeLimitInscription: String?,
       categories: Set<Interests>?,
-      image : ImageBitmap?,
+      image: ImageBitmap?,
       context: Context
   ) {
     val draftEvent =

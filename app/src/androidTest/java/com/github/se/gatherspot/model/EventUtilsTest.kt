@@ -508,8 +508,7 @@ class EventUtilsTest {
         "inscriptionLimitTime",
         setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
         null,
-        context
-    )
+        context)
     val draftEvent = eventUtils.retrieveFromDraft(context)
     Assert.assertEquals("title", draftEvent?.title)
     Assert.assertEquals("description", draftEvent?.description)
@@ -527,5 +526,32 @@ class EventUtilsTest {
     Assert.assertEquals(
         setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
         draftEvent?.categories)
+    Assert.assertNull(draftEvent?.image)
+    eventUtils.deleteDraft(context)
+  }
+
+  @Test
+  fun deleteDraftEventTest() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val eventUtils = EventUtils()
+    eventUtils.saveDraftEvent(
+        "title",
+        "description",
+        Location(0.0, 0.0, "Malibu"),
+        "eventStartDate",
+        "eventEndDate",
+        "timeBeginning",
+        "timeEnding",
+        "attendanceMaxCapacity",
+        "attendanceMinCapacity",
+        "inscriptionLimitDate",
+        "inscriptionLimitTime",
+        setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
+        null,
+        context)
+    eventUtils.retrieveFromDraft(context)!!
+    eventUtils.deleteDraft(context)
+    val draftEvent = eventUtils.retrieveFromDraft(context)
+    Assert.assertNull(draftEvent)
   }
 }

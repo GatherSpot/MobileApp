@@ -61,5 +61,4 @@ class LocalStorageTest {
     val loadedDraftEvent = localStorage.loadDraftEvent()
     assert(loadedDraftEvent == null)
   }
-
 }

@@ -8,9 +8,8 @@ import com.google.gson.GsonBuilder
 import java.io.InputStreamReader
 
 class LocalStorage(private val context: Context) {
-  private val gson = GsonBuilder()
-    .registerTypeAdapter(Bitmap::class.java, ImageBitmapSerializer())
-    .create()
+  private val gson =
+      GsonBuilder().registerTypeAdapter(Bitmap::class.java, ImageBitmapSerializer()).create()
 
   fun loadDraftEvent(): DraftEvent? {
     return try {

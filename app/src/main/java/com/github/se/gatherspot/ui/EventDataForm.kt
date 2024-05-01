@@ -44,7 +44,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
@@ -107,6 +109,8 @@ fun EventDataForm(
   val categories: MutableList<Interests> = remember { mutableStateListOf() }
   // Flow for query text input
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
+  // Context to use for draft saving
+  val context = LocalContext.current
 
   // Coroutine scope for launching coroutines
   val coroutineScope = rememberCoroutineScope()
@@ -128,7 +132,7 @@ fun EventDataForm(
     inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
   }
 
-  val draft = eventUtils.retrieveFromDraft(LocalContext.current)
+  val draft = eventUtils.retrieveFromDraft(context)
   if (eventAction == EventAction.CREATE && draft != null) {
     // Restore the draft
     title = TextFieldValue(draft.title ?: "")
@@ -155,12 +159,54 @@ fun EventDataForm(
                   modifier = Modifier.testTag("createEventTitle"))
             },
             navigationIcon = {
-              IconButton(onClick = { nav.goBack() }, modifier = Modifier.testTag("goBackButton")) {
-                Icon(
-                    modifier = Modifier.testTag("backIcon"),
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Go back to overview")
-              }
+              IconButton(
+                  onClick = {
+                    eventUtils.saveDraftEvent(
+                        title.text,
+                        description.text,
+                        location,
+                        eventStartDate.text,
+                        eventEndDate.text,
+                        eventTimeStart.text,
+                        eventTimeEnd.text,
+                        maxAttendees.text,
+                        minAttendees.text,
+                        inscriptionLimitDate.text,
+                        inscriptionLimitTime.text,
+                        categories.toSet(),
+                        image = null,
+                        context = context)
+                    nav.goBack()
+                  },
+                  modifier = Modifier.testTag("goBackButton")) {
+                    Icon(
+                        modifier = Modifier.testTag("backIcon"),
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Go back to overview")
+                  }
+            },
+            actions = {
+              // Add a button to erase all the fields
+              Button(
+                  onClick = {
+                    title = TextFieldValue("")
+                    description = TextFieldValue("")
+                    location = null
+                    eventStartDate = TextFieldValue("")
+                    eventEndDate = TextFieldValue("")
+                    eventTimeStart = TextFieldValue("")
+                    eventTimeEnd = TextFieldValue("")
+                    maxAttendees = TextFieldValue("")
+                    minAttendees = TextFieldValue("")
+                    inscriptionLimitDate = TextFieldValue("")
+                    inscriptionLimitTime = TextFieldValue("")
+                    categories.clear()
+                    eventUtils.deleteDraft(context)
+                  },
+                  modifier = Modifier.testTag("clearFieldsButton"),
+                  shape = RoundedCornerShape(size = 10.dp)) {
+                    Text(text = "Clear all fields")
+                  }
             })
       }) { innerPadding ->
         // Make the content scrollable
@@ -339,6 +385,9 @@ fun EventDataForm(
                     errorMessage = e.message.toString()
                     showErrorDialog = true
                   }
+                  // Delete the draft
+                  eventUtils.deleteDraft(context)
+
                   if (!showErrorDialog) {
                     if (eventAction == EventAction.CREATE) {
                       // Go back to the list of events
@@ -428,6 +477,12 @@ fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
         Button(onClick = onDismiss, modifier = Modifier.testTag("alertButton")) { Text("OK") }
       },
       dismissButton = {})
+}
+
+@Preview
+@Composable
+fun EventDataFormPreview() {
+  EventDataForm(EventUtils(), NavigationActions(rememberNavController()), EventAction.CREATE)
 }
 
 enum class EventAction {
