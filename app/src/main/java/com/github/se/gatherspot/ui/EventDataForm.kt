@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -206,6 +207,30 @@ fun EventDataForm(
                   modifier = Modifier.testTag("clearFieldsButton"),
                   shape = RoundedCornerShape(size = 10.dp)) {
                     Text(text = "Clear all fields")
+                  }
+              Spacer(modifier = Modifier.width(10.dp))
+              // Add a button to save the draft
+              Button(
+                  onClick = {
+                    eventUtils.saveDraftEvent(
+                        title.text,
+                        description.text,
+                        location,
+                        eventStartDate.text,
+                        eventEndDate.text,
+                        eventTimeStart.text,
+                        eventTimeEnd.text,
+                        maxAttendees.text,
+                        minAttendees.text,
+                        inscriptionLimitDate.text,
+                        inscriptionLimitTime.text,
+                        categories.toSet(),
+                        image = null,
+                        context = context)
+                  },
+                  modifier = Modifier.testTag("saveDraftButton"),
+                  shape = RoundedCornerShape(size = 10.dp)) {
+                    Text(text = "Save draft")
                   }
             })
       }) { innerPadding ->
