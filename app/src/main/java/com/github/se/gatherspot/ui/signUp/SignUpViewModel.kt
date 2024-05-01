@@ -8,6 +8,12 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class SignUpViewModel(val nav: NavigationActions) {
   var userName = MutableLiveData("")
@@ -19,14 +25,33 @@ class SignUpViewModel(val nav: NavigationActions) {
   var isPasswordValid = MutableLiveData<Boolean>()
   var isPassWordVisible = MutableLiveData(false)
   var isEverythingOk = MutableLiveData<Boolean>()
+  var waitingEmailConfirmation = MutableLiveData(false)
+
+  // FLOW FOR CONTEXT :
+  // let user fill fields with some basic check (including duplicate names)
+  // check if email is already in database when clicking sign in (can't do same as with username
+  // from what I can tell)
+  // tell confirmation email has been sent
+  // wait for email confirmation and then add user to database and move to signup
+  // TODO : check cases where it crashes, before moving to next screen (does profile exist, is it a
+  // problem ? are we still moved to setup ?), or cases where we stop at email confirmation and then
+  // sign in.
+  // TODO : add a reset email in case someone does DOS by registering random emails. (Allow
+  // resetting email)
   private fun updateEverythingOk() {
-    isEverythingOk.value = (doesUserNameExist.value == false && isEmailValid.value == true && isPasswordValid.value == true)
-    println("isEverythingOk: ${isEverythingOk.value} isPasswordValid: ${isPasswordValid.value} isEmailValid: ${isEmailValid.value} doesUsernameExist: ${doesUserNameExist.value}")
+    isEverythingOk.value =
+        (doesUserNameExist.value == false &&
+            isEmailValid.value == true &&
+            isPasswordValid.value == true)
+    println(
+        "isEverythingOk: ${isEverythingOk.value} isPasswordValid: ${isPasswordValid.value} isEmailValid: ${isEmailValid.value} doesUsernameExist: ${doesUserNameExist.value}")
     println("isEverythingOk: ${isEverythingOk.value}")
   }
+
   fun navBack() {
     nav.controller.navigate("auth")
   }
+
   fun updateUsername(string: String) {
     userName.value = string
     doesUserNameExist = ProfileFirebaseConnection().ifUsernameExists(string)
@@ -56,24 +81,56 @@ class SignUpViewModel(val nav: NavigationActions) {
     isPassWordVisible.value = !(isPassWordVisible.value!!)
   }
 
-  fun signUp() {
-    Firebase.auth.createUserWithEmailAndPassword(email.value!!, password.value!!)
-      .addOnSuccessListener(){
-        Profile.add(userName.value!!,Firebase.auth.uid!!)
-        Firebase.auth.currentUser!!.sendEmailVerification()
-        nav.controller.navigate("setup")
-      }
-      .addOnFailureListener(){
-        when (it) {
-          is FirebaseAuthUserCollisionException -> {
-            emailError.value = "Email already in use"
-            isEmailValid.value = false
-            updateEverythingOk()
-          }
-          else -> {
-           Log.e("SignUpViewModel", "Error: ${it.message}")
+  fun resendEmail() {
+    Firebase.auth.currentUser!!.sendEmailVerification()
+  }
+
+  private val scope = CoroutineScope(Dispatchers.Main)
+  private var job: Job? = null
+
+  // periodically check if email is verified, then run finished when it is
+  private fun checkEmailVerification() {
+    job =
+        scope.launch {
+          while (isActive) {
+            val user = Firebase.auth.currentUser
+            user?.reload()?.addOnCompleteListener {
+              if (user.isEmailVerified) {
+                // Email is verified, you can now proceed
+                finish()
+              }
+            }
+            delay(3000) // delay for 3 seconds before checking again
           }
         }
-      }
-    }
+  }
+
+  private fun finish() {
+    nav.controller.navigate("setup")
+  }
+
+  fun signUp() {
+    Firebase.auth
+        .createUserWithEmailAndPassword(email.value!!, password.value!!)
+        .addOnSuccessListener() {
+          println("authentified")
+          Firebase.auth.currentUser!!.sendEmailVerification()
+          isEverythingOk.value = false
+          waitingEmailConfirmation.value = true
+          Profile.add(userName.value!!, Firebase.auth.uid!!)
+          checkEmailVerification()
+        }
+        .addOnFailureListener() {
+          when (it) {
+            is FirebaseAuthUserCollisionException -> {
+              emailError.value = "Email already in use"
+              isEmailValid.value = false
+              updateEverythingOk()
+            }
+            else -> {
+              Log.e("SignUpViewModel", "Error: ${it.message}")
+            }
+          }
+        }
+  }
 }

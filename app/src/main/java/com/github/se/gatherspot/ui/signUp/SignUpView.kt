@@ -17,10 +17,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -36,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
 class SignUpView {
+  @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   fun SignUp(vm: SignUpViewModel) {
     val navBack = vm::navBack
@@ -56,11 +58,10 @@ class SignUpView {
     val updatePassword = vm::updatePassword
     val flipPassword = vm::flipPasswordVisibility
     val isEverythingOk = vm.isEverythingOk.observeAsState()
+    val waitingEmailConfirmation = vm.waitingEmailConfirmation.observeAsState()
     val signUp = vm::signUp
-    Box(modifier = Modifier
-      .fillMaxSize()
-      .background(Color.White)
-      .testTag("signUpScreen")) {
+    val resendEmail = vm::resendEmail
+    Box(modifier = Modifier.fillMaxSize().background(Color.White).testTag("signUpScreen")) {
       Column(
           modifier = Modifier.padding(vertical = 30.dp, horizontal = 20.dp),
           verticalArrangement = Arrangement.spacedBy(60.dp, Alignment.Top),
@@ -68,16 +69,11 @@ class SignUpView {
       ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 10.dp)) {
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
               Icon(
                   painter = painterResource(R.drawable.backarrow),
                   contentDescription = "",
-                  modifier = Modifier
-                    .clickable { navBack() }
-                    .width(30.dp)
-                    .height(30.dp))
+                  modifier = Modifier.clickable { navBack() }.width(30.dp).height(30.dp))
 
               Spacer(modifier = Modifier.width(90.dp))
 
@@ -176,24 +172,19 @@ class SignUpView {
                   enabled = isEverythingOk.value == true,
                   onClick = { signUp() },
                   colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                  modifier = Modifier
-                    .width(250.dp)
-                    .testTag("validate"),
+                  modifier = Modifier.width(250.dp).testTag("validate"),
                   content = { Text("Sign Up", color = Color.White) })
             }
       }
     }
 
-    if (verifEmailSent) {
+    if (waitingEmailConfirmation.value == true) {
       AlertDialog(
-        modifier =
-        Modifier.testTag("verification")
-        },
-        onDismissRequest = {
-        },
-        confirmButton = {},
-        title = { Text("Verification Email Sent") },
-        text = { Text("Please check your email to verify your account.") })
+          modifier = Modifier.testTag("verification"),
+          onDismissRequest = {},
+          confirmButton = { TextButton(onClick = { resendEmail() }) { Text("Resend Email") } },
+          title = { Text("Verification Email Sent") },
+          text = { Text("Please check your email to verify your account before continuing.") })
     }
   }
 
@@ -204,3 +195,4 @@ class SignUpView {
     SignUp(SignUpViewModel(NavigationActions(navController)))
   }
 }
+// convocation et ordre du jour + lien doc ordre du jour.

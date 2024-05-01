@@ -38,7 +38,7 @@ class SetUpTest : TestCase() {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
         navigation(startDestination = "setup", route = "auth") {
-          composable("setup") { SetUpProfile(NavigationActions(navController), "SetUpTest") }
+          composable("setup") { SetUpProfile(NavigationActions(navController)) }
         }
       }
     }

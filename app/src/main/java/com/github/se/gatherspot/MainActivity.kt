@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
 
               composable("setup") {
                 SetUpProfile(
-                    NavigationActions(navController), FirebaseAuth.getInstance().currentUser!!.uid)
+                    NavigationActions(navController))
               }
             }
           }

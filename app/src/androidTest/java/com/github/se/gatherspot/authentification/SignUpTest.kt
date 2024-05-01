@@ -17,9 +17,7 @@ import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After
@@ -60,7 +58,7 @@ class SignUpTest : TestCase() {
         }
         navigation(startDestination = "events", route = "home") {
           composable("setup") {
-            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
+            SetUpProfile(NavigationActions(navController))
           }
         }
       }
@@ -111,7 +109,7 @@ class SignUpTest : TestCase() {
         }
         navigation(startDestination = "events", route = "home") {
           composable("setup") {
-            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
+            SetUpProfile(NavigationActions(navController))
           }
         }
       }
@@ -154,7 +152,7 @@ class SignUpTest : TestCase() {
         }
         navigation(startDestination = "events", route = "home") {
           composable("setup") {
-            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
+            SetUpProfile(NavigationActions(navController))
           }
         }
       }
@@ -165,8 +163,7 @@ class SignUpTest : TestCase() {
       emailField { performTextInput("test@test.com") }
       passwordField { performTextInput("Test,2024;") }
       button { performClick() }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("signUpFailed"), 6000)
-      dialog { assertIsDisplayed() }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badEmail"), 6000)
     }
   }
 }
