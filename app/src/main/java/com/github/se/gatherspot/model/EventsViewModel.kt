@@ -40,24 +40,20 @@ class EventsViewModel : ViewModel() {
     _uiState.value = UIState(myEvents)
   }
 
-  fun displayMyNewEvent(event: Event) {
-    myEvents.add(0, event)
-    displayMyEvents()
-  }
-
   fun displayRegisteredTo() {
     _uiState.value = UIState(registeredTo)
   }
 
-  fun displayNewRegistered(event: Event) {
-    registeredTo.add(0, event)
-    displayRegisteredTo()
+  fun updateNewRegistered(event: Event) {
+    updateLoaded(event)
+    updateFiltered(event)
   }
 
   fun editMyEvent(event: Event) {
     for (i in 0 until myEvents.size) {
       if (myEvents[i].id == event.id) {
         myEvents[i] = event
+        displayMyEvents()
         return
       }
     }
@@ -100,6 +96,24 @@ class EventsViewModel : ViewModel() {
 
   fun getLoadedEvents(): MutableList<Event> {
     return loadedEvents
+  }
+
+  private fun updateLoaded(event: Event) {
+    for (i in 0 until loadedEvents.size) {
+      if (event.id == loadedEvents[i].id) {
+        loadedEvents[i] = event
+        break
+      }
+    }
+  }
+
+  private fun updateFiltered(event: Event) {
+    for (i in 0 until loadedFilteredEvents.size) {
+      if (event.id == loadedFilteredEvents[i].id) {
+        loadedFilteredEvents[i] = event
+        break
+      }
+    }
   }
 }
 

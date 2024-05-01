@@ -81,7 +81,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         }
     val categoriesList = d.get("categories") as List<String>
     val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
-    val registeredUsers = d.get("finalAttendee") as MutableList<String>
+    val registeredUsers = d.get("registeredUsers") as MutableList<String>
     val finalAttendee = d.get("finalAttendee") as List<String>
     val images = null // TODO: Retrieve images from database
     val globalRating =

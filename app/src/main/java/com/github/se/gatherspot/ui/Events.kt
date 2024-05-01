@@ -135,7 +135,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                               interestsSelected = mutableListOf()
                               showDropdownMenu = false
                             },
-                            leadingIcon = { Icon(Icons.Filled.Clear, "clear") })
+                            leadingIcon = { Icon(Icons.Filled.Clear, "clear") },
+                        )
 
                         DropdownMenuItem(
                             text = { Text("YOUR EVENTS") },
@@ -144,7 +145,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                               viewModel.displayMyEvents()
                               showDropdownMenu = false
                             },
-                            leadingIcon = { Icon(Icons.Filled.Info, "yourEvents") })
+                            leadingIcon = { Icon(Icons.Filled.Info, "yourEvents") },
+                            modifier = Modifier.testTag("myEvents"))
 
                         DropdownMenuItem(
                             text = { Text("REGISTERED TO") },
@@ -153,7 +155,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                               viewModel.displayRegisteredTo()
                               showDropdownMenu = false
                             },
-                            leadingIcon = { Icon(Icons.Filled.Info, "registeredTo") })
+                            leadingIcon = { Icon(Icons.Filled.Info, "registeredTo") },
+                            modifier = Modifier.testTag("registeredTo"))
 
                         filters.forEach { s -> StatefulDropdownItem(s, interestsSelected) }
                       }
@@ -247,6 +250,9 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                   color =
                       if (event.organizer.id == FirebaseAuth.getInstance().currentUser!!.uid) {
                         Color(80, 50, 200, 120)
+                      } else if (event.registeredUsers.contains(
+                          FirebaseAuth.getInstance().currentUser!!.uid)) {
+                        Color(46, 204, 113, 120)
                       } else {
                         Color.White
                       },

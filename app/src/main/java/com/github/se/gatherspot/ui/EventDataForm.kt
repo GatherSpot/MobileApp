@@ -322,7 +322,7 @@ fun EventDataForm(
                             event)
 
                     if (eventAction == EventAction.CREATE) {
-                      viewModel.displayMyNewEvent(newEvent)
+                      // viewModel.displayMyNewEvent(newEvent)
                     } else {
                       viewModel.editMyEvent(newEvent)
                     }

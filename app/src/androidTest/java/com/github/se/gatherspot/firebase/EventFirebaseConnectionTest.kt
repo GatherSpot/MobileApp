@@ -6,6 +6,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
+import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -180,6 +181,32 @@ class EventFirebaseConnectionTest {
         }
         testLoginCleanUp()
         EventFirebaseConnection.offset = null
+      }
+
+  @Test
+  fun fetchMyEventsWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        testLogin()
+        Thread.sleep(10000)
+        val events = EventFirebaseConnection.fetchMyEvents()
+        assert(
+            events.all { event ->
+              event.organizer.id == FirebaseAuth.getInstance().currentUser!!.uid
+            })
+        testLoginCleanUp()
+      }
+
+  @Test
+  fun fetchRegisteredToWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        testLogin()
+        Thread.sleep(10000)
+        val events = EventFirebaseConnection.fetchRegisteredTo()
+        assert(
+            events.all { event ->
+              event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
+            })
+        testLoginCleanUp()
       }
 
   @Test
