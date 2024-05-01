@@ -507,7 +507,9 @@ class EventUtilsTest {
         "inscriptionLimitDate",
         "inscriptionLimitTime",
         setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
-        context)
+        null,
+        context
+    )
     val draftEvent = eventUtils.retrieveFromDraft(context)
     Assert.assertEquals("title", draftEvent?.title)
     Assert.assertEquals("description", draftEvent?.description)

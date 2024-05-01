@@ -1,5 +1,8 @@
 package com.github.se.gatherspot.utils
 
+import android.util.Log
+import androidx.compose.ui.graphics.ImageBitmap
+import com.github.se.gatherspot.model.utils.ImageBitmapSerializer
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
@@ -42,5 +45,17 @@ class JsonCustomsSerializerTest {
         val deserializer = LocalDateTimeDeserializer()
         val localDateTime = deserializer.deserialize(jsonElement, LocalDateTime::class.java, null)
         assertEquals(LocalDateTime.of(2022, 12, 31, 23, 59), localDateTime)
+    }
+
+    @Test
+    fun testImageBitmapSerializer() {
+        val imageBitmap = ImageBitmap(30, 30)
+        val serializer = ImageBitmapSerializer()
+        val jsonElement = serializer.serialize(imageBitmap, ImageBitmap::class.java, null)
+        Log.d("ImageBitmapSerializer", jsonElement.toString())
+        val deserializer = ImageBitmapSerializer()
+        val deserializedImageBitmap = deserializer.deserialize(jsonElement, ImageBitmap::class.java, null)
+        assertEquals(imageBitmap.height, deserializedImageBitmap!!.height)
+        assertEquals(imageBitmap.width, deserializedImageBitmap.width)
     }
 }
