@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.ui.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
 class SignUpView {
@@ -180,6 +182,18 @@ class SignUpView {
                   content = { Text("Sign Up", color = Color.White) })
             }
       }
+    }
+
+    if (verifEmailSent) {
+      AlertDialog(
+        modifier =
+        Modifier.testTag("verification")
+        },
+        onDismissRequest = {
+        },
+        confirmButton = {},
+        title = { Text("Verification Email Sent") },
+        text = { Text("Please check your email to verify your account.") })
     }
   }
 

@@ -68,7 +68,7 @@ class Profile(
     fun testParticipant(): Profile {
       return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
     }
-    fun add(username: String,id: String) = ProfileFirebaseConnection().add(Profile(username, id ,"","", Interests.new()))
+    fun add(username: String,id: String) = ProfileFirebaseConnection().add(Profile(username, "" ,"",id, Interests.new()))
   }
 
   constructor(id: String) : this("", "", "", id, setOf())

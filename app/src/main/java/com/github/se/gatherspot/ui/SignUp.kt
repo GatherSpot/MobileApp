@@ -196,7 +196,7 @@ fun SignUp(nav: NavigationActions) {
 //    }
 //  }
 //}
-//
+
 //fun isEmailValid(email: String): Boolean {
 //  if (email.isEmpty()) return false
 //  val emailRegex = "^[A-Za-z](.*)(@)(.+)(\\.)(.+)"
