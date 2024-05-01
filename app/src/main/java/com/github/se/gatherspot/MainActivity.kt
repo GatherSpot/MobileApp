@@ -120,7 +120,7 @@ class MainActivity : ComponentActivity() {
                   ViewProfile(NavigationActions(navController), it)
                 }
               }
-                composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
+              composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
               composable("createEvent") {
                 CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
               }

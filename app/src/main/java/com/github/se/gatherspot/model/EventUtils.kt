@@ -91,16 +91,16 @@ class EventUtils {
   fun deleteEvent(event: Event) {
     // Remove the event from all the users who registered for it
     val idListFirebase = IdListFirebaseConnection()
-      runBlocking {
-          event.registeredUsers.forEach { userID ->
-              val registeredEvents = idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
-              registeredEvents?.remove(event.id)
-              if (registeredEvents != null) {
-                  idListFirebase.saveToFirebase(registeredEvents)
-              }
-          }
-
+    runBlocking {
+      event.registeredUsers.forEach { userID ->
+        val registeredEvents =
+            idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
+        registeredEvents?.remove(event.id)
+        if (registeredEvents != null) {
+          idListFirebase.saveToFirebase(registeredEvents)
+        }
       }
+    }
     EventFirebaseConnection.delete(event.id)
   }
 

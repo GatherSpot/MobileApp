@@ -2,8 +2,8 @@ package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.model.IdList
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Test
 
@@ -29,8 +29,7 @@ class IdListFirebaseConnectionTest {
     // wait as a precaution as we don't know how long it will take to save to firebase
     var block = true
     // fetch the data from firebase
-    val idList2 =
-    runBlocking {
+    val idList2 = runBlocking {
       IdListFirebaseConnection().fetchFromFirebase(id, tag) { block = false }
     }
     // busy wait until values are updated

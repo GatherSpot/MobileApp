@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model.event
 
-import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,14 +30,15 @@ class EventRegistrationViewModel : ViewModel() {
   val displayAlertDeletion: LiveData<Boolean> = _displayAlertDeletion
 
   // Profile of the user, is needed to add the event to the user's registered events
-  private var registeredEventsList : IdList
+  private var registeredEventsList: IdList
 
   init {
     runBlocking {
-      registeredEventsList = (IdListFirebaseConnection().fetchFromFirebase(userId, FirebaseCollection.REGISTERED_EVENTS) {}!!)
+      registeredEventsList =
+          (IdListFirebaseConnection().fetchFromFirebase(
+              userId, FirebaseCollection.REGISTERED_EVENTS) {}!!)
     }
   }
-
 
   /** Registers the user for the given event */
   fun registerForEvent(event: Event) {

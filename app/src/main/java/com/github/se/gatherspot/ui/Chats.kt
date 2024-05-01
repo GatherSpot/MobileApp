@@ -40,7 +40,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
@@ -50,7 +49,6 @@ import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 @Composable
 fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
@@ -65,7 +63,7 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
     if (fetch) {
       Log.d(ContentValues.TAG, "entered")
 
-        viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid)
+      viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid)
 
       fetch = false
     }
@@ -113,24 +111,21 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
               text = "Fetching chats...")
         }
 
-
         val chats = state.value.list.toList()
         val lazyState = rememberLazyListState()
         when {
-          chats.isEmpty() ->
-          {
-              Box(
-                  modifier = Modifier.fillMaxWidth().padding(paddingValues),
-                  contentAlignment = Alignment.TopStart) {
-                    Text(
-                        text = "Loading...",
-                        color = Color.Black,
-                        modifier = Modifier.testTag("emptyText"))
-                  }
-              fetch = true
+          chats.isEmpty() -> {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(paddingValues),
+                contentAlignment = Alignment.TopStart) {
+                  Text(
+                      text = "Loading...",
+                      color = Color.Black,
+                      modifier = Modifier.testTag("emptyText"))
+                }
+            fetch = true
           }
-
-            else -> {
+          else -> {
             LazyColumn(
                 state = lazyState,
                 modifier = Modifier.padding(paddingValues).testTag("chatsList")) {
@@ -174,7 +169,7 @@ fun ChatRow(event: Event, navigation: NavigationActions) {
             val gson = Gson()
             val chatJson = gson.toJson(event.id)
             navigation.controller.navigate("chat/$chatJson")
-              Log.e("Display", "eventJson = $chatJson")
+            Log.e("Display", "eventJson = $chatJson")
           },
       verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {

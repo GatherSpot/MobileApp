@@ -8,7 +8,6 @@ import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import okhttp3.internal.canParseAsIpAddress
 
 class ChatsListViewModel : ViewModel() {
 
@@ -19,25 +18,24 @@ class ChatsListViewModel : ViewModel() {
   private var eventsIDS = listOf<String>()
   val eventFirebaseConnection = EventFirebaseConnection()
 
-    //TEMPORARY
-    //val listEvents = listOf("-NwJSmLmQDUlF9booiq7")
-    //
+  // TEMPORARY
+  // val listEvents = listOf("-NwJSmLmQDUlF9booiq7")
+  //
   suspend fun fetchNext(uid: String?) {
 
-      if (uid == null) {
-          return
-      }
-      val idlist: IdList? =
-    IdListFirebaseConnection().fetchFromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS){}
+    if (uid == null) {
+      return
+    }
+    val idlist: IdList? =
+        IdListFirebaseConnection().fetchFromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS) {}
 
-     eventsIDS = idlist?.events?: listOf()
+    eventsIDS = idlist?.events ?: listOf()
 
-      _uiState.value = ChatUIState(loadedEvents)
+    _uiState.value = ChatUIState(loadedEvents)
 
-        val events = eventFirebaseConnection.fetchNextEvents(idlist, PAGE_SIZE)
-      loadedEvents.addAll(events)
-      _uiState.value = ChatUIState(loadedEvents)
-
+    val events = eventFirebaseConnection.fetchNextEvents(idlist, PAGE_SIZE)
+    loadedEvents.addAll(events)
+    _uiState.value = ChatUIState(loadedEvents)
   }
 }
 

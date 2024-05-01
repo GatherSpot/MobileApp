@@ -132,52 +132,55 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
    * @return list of events
    */
   suspend fun fetchNextEvents(number: Long): MutableList<Event> {
-      val querySnapshot: QuerySnapshot =
-          if (offset == null) {
-              Firebase.firestore.collection(EVENTS).orderBy("eventID").limit(number).get().await()
-          } else {
-              Firebase.firestore
-                  .collection(EVENTS)
-                  .orderBy("eventID")
-                  .startAfter(offset!!.get("eventID"))
-                  .limit(number)
-                  .get()
-                  .await()
-          }
+    val querySnapshot: QuerySnapshot =
+        if (offset == null) {
+          Firebase.firestore.collection(EVENTS).orderBy("eventID").limit(number).get().await()
+        } else {
+          Firebase.firestore
+              .collection(EVENTS)
+              .orderBy("eventID")
+              .startAfter(offset!!.get("eventID"))
+              .limit(number)
+              .get()
+              .await()
+        }
 
-      if (querySnapshot.documents.isNotEmpty()) {
-          offset = querySnapshot.documents.last()
-      }
+    if (querySnapshot.documents.isNotEmpty()) {
+      offset = querySnapshot.documents.last()
+    }
 
-      return eventsFromQuerySnaphot(querySnapshot)
+    return eventsFromQuerySnaphot(querySnapshot)
   }
 
+  suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
 
-    suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
-
-        if (idlist?.events == null || idlist.events.isEmpty()) {
-            return mutableListOf()
-        }
-        val querySnapshot: QuerySnapshot =
-            if (offset == null) {
-                Firebase.firestore.collection(EVENTS).orderBy("eventID").whereIn("eventID",
-                    idlist.events
-                ).limit(number).get().await()
-            } else {
-                Firebase.firestore
-                    .collection(EVENTS)
-                    .orderBy("eventID")
-                    .whereIn("eventID", idlist?.events?:listOf())
-                    .startAfter(offset!!.get("eventID"))
-                    .limit(number)
-                    .get()
-                    .await()
-            }
-        if (querySnapshot.documents.isNotEmpty()) {
-            offset = querySnapshot.documents.last()
-        }
-        return eventsFromQuerySnaphot(querySnapshot)
+    if (idlist?.events == null || idlist.events.isEmpty()) {
+      return mutableListOf()
     }
+    val querySnapshot: QuerySnapshot =
+        if (offset == null) {
+          Firebase.firestore
+              .collection(EVENTS)
+              .orderBy("eventID")
+              .whereIn("eventID", idlist.events)
+              .limit(number)
+              .get()
+              .await()
+        } else {
+          Firebase.firestore
+              .collection(EVENTS)
+              .orderBy("eventID")
+              .whereIn("eventID", idlist?.events ?: listOf())
+              .startAfter(offset!!.get("eventID"))
+              .limit(number)
+              .get()
+              .await()
+        }
+    if (querySnapshot.documents.isNotEmpty()) {
+      offset = querySnapshot.documents.last()
+    }
+    return eventsFromQuerySnaphot(querySnapshot)
+  }
 
   suspend fun fetchEventsBasedOnInterests(number: Long, l: List<Interests>): MutableList<Event> {
     val querySnapshot: QuerySnapshot =

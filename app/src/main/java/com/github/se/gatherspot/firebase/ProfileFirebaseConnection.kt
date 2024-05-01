@@ -79,11 +79,12 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   override fun add(element: Profile) {
 
-      val id = if (element.id == "") {
+    val id =
+        if (element.id == "") {
           FirebaseAuth.getInstance().currentUser?.uid ?: ""
-      } else {
+        } else {
           element.id
-      }
+        }
 
     val data =
         hashMapOf(
