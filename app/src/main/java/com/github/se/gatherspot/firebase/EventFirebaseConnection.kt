@@ -155,9 +155,14 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
     suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
 
+        if (idlist?.events == null || idlist.events.isEmpty()) {
+            return mutableListOf()
+        }
         val querySnapshot: QuerySnapshot =
             if (offset == null) {
-                Firebase.firestore.collection(EVENTS).orderBy("eventID").whereIn("eventID", idlist?.events?:listOf()).limit(number).get().await()
+                Firebase.firestore.collection(EVENTS).orderBy("eventID").whereIn("eventID",
+                    idlist.events
+                ).limit(number).get().await()
             } else {
                 Firebase.firestore
                     .collection(EVENTS)

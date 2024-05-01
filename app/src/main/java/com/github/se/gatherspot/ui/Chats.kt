@@ -65,7 +65,7 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
     if (fetch) {
       Log.d(ContentValues.TAG, "entered")
 
-        viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid ?: "")
+        viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid)
 
       fetch = false
     }

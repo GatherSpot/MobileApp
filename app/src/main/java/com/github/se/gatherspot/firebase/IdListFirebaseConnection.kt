@@ -33,8 +33,8 @@ class IdListFirebaseConnection {
                   if (data != null) {
                       val ids = data["ids"]
                       idSet.events = ids as List<String>
+                      Log.d(logTag, "DocumentSnapshot data: ${document.data}")
                   }
-                  Log.d(logTag, "DocumentSnapshot data: ${document.data}")
 
               } else {
                   Log.d(logTag, "No such document")

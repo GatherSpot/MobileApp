@@ -78,6 +78,13 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   override fun add(element: Profile) {
+
+      val id = if (element.id == "") {
+          FirebaseAuth.getInstance().currentUser?.uid ?: ""
+      } else {
+          element.id
+      }
+
     val data =
         hashMapOf(
             "userName" to element.userName,
@@ -86,7 +93,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
             "interests" to Interests.toCompressedString(element.interests))
     Firebase.firestore
         .collection(COLLECTION)
-        .document(element.id)
+        .document(id)
         .set(data)
         .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
         .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }

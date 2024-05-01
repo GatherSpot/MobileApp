@@ -22,8 +22,11 @@ class ChatsListViewModel : ViewModel() {
     //TEMPORARY
     //val listEvents = listOf("-NwJSmLmQDUlF9booiq7")
     //
-  suspend fun fetchNext(uid: String) {
+  suspend fun fetchNext(uid: String?) {
 
+      if (uid == null) {
+          return
+      }
       val idlist: IdList? =
     IdListFirebaseConnection().fetchFromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS){}
 
