@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.authentification
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -66,8 +67,7 @@ class SetUpTest : TestCase() {
         assertExists()
         performClick()
       }
-      composeTestRule.waitForIdle()
-      setUpBio { assertExists() }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpBio"), 3000)
       bioInput {
         assertExists()
         performTextInput("I love basketball")
@@ -76,12 +76,12 @@ class SetUpTest : TestCase() {
         assertExists()
         performClick()
       }
-      composeTestRule.waitForIdle()
-      setUpImage { assertExists() }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpImage"), 3000)
       next {
         assertExists()
         performClick()
       }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpDone"), 3000)
       done {
         assertExists()
         performClick()
