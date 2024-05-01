@@ -10,7 +10,6 @@ import com.github.se.gatherspot.model.location.Location
  * is saved as a string.
  */
 data class DraftEvent(
-    val organiserId: String,
     val title: String?,
     val description: String?,
     val location: Location?,

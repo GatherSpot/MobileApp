@@ -28,46 +28,39 @@ class LocalStorageTest {
             "attendanceMinCapacity",
             "inscriptionLimitDate",
             "inscriptionLimitTime",
-            setOf(
-                Interests.SPORT,
-                Interests.FOOTBALL,
-                Interests.BASKETBALL,
-                Interests.TENNIS),
+            setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
             null)
 
-      localStorage.storeDraftEvent(draftEvent)
-      val loadedDraftEvent = localStorage.loadDraftEvent()
-      assert(loadedDraftEvent == draftEvent)
-      localStorage.deleteDraftEvent()
+    localStorage.storeDraftEvent(draftEvent)
+    val loadedDraftEvent = localStorage.loadDraftEvent()
+    assert(loadedDraftEvent == draftEvent)
+    localStorage.deleteDraftEvent()
   }
 
-    @Test fun deleteDraftEventTest() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val localStorage = LocalStorage(context)
-        val draftEvent =
-            DraftEvent(
-                "organiserId",
-                "title",
-                "description",
-                null,
-                "eventStartDate",
-                "eventEndDate",
-                "timeBeginning",
-                "timeEnding",
-                "attendanceMaxCapacity",
-                "attendanceMinCapacity",
-                "inscriptionLimitDate",
-                "inscriptionLimitTime",
-                emptySet(),
-                null)
+  @Test
+  fun deleteDraftEventTest() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val localStorage = LocalStorage(context)
+    val draftEvent =
+        DraftEvent(
+            "organiserId",
+            "title",
+            "description",
+            null,
+            "eventStartDate",
+            "eventEndDate",
+            "timeBeginning",
+            "timeEnding",
+            "attendanceMaxCapacity",
+            "attendanceMinCapacity",
+            "inscriptionLimitDate",
+            "inscriptionLimitTime",
+            emptySet(),
+            null)
 
-        localStorage.storeDraftEvent(draftEvent)
-        localStorage.deleteDraftEvent()
-        val loadedDraftEvent = localStorage.loadDraftEvent()
-        assert(loadedDraftEvent == null)
-    }
-
-
-
-
+    localStorage.storeDraftEvent(draftEvent)
+    localStorage.deleteDraftEvent()
+    val loadedDraftEvent = localStorage.loadDraftEvent()
+    assert(loadedDraftEvent == null)
+  }
 }

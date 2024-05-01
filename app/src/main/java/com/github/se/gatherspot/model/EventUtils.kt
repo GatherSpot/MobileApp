@@ -1,8 +1,12 @@
 package com.github.se.gatherspot.model
 
+import android.content.Context
+import android.util.Log
+import com.github.se.gatherspot.cache.LocalStorage
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
+import com.github.se.gatherspot.model.event.DraftEvent
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -345,4 +349,52 @@ class EventUtils {
         }
         return@withContext suggestions
       }
+
+  fun saveDraftEvent(
+      title: String?,
+      description: String?,
+      location: Location?,
+      startDate: String?,
+      endDate: String?,
+      startTime: String?,
+      endTime: String?,
+      maxAttendees: String?,
+      minAttendees: String?,
+      dateLimitInscription: String?,
+      timeLimitInscription: String?,
+      categories: Set<Interests>?,
+      context: Context
+  ) {
+    val draftEvent =
+        DraftEvent(
+            title,
+            description,
+            location,
+            startDate,
+            endDate,
+            startTime,
+            endTime,
+            maxAttendees,
+            minAttendees,
+            dateLimitInscription,
+            timeLimitInscription,
+            categories = categories)
+
+    val localStorage = LocalStorage(context)
+    localStorage.storeDraftEvent(draftEvent)
+  }
+
+  fun retrieveFromDraft(context: Context): DraftEvent? {
+    val localStorage = LocalStorage(context)
+    return localStorage.loadDraftEvent()
+  }
+
+  fun deleteDraft(context: Context) {
+    val localStorage = LocalStorage(context)
+    try {
+      localStorage.deleteDraftEvent()
+    } catch (e: Exception) {
+      Log.e("EventUtils", "Error deleting draft event from local storage", e)
+    }
+  }
 }

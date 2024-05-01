@@ -41,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -125,6 +126,23 @@ fun EventDataForm(
     minAttendees = TextFieldValue(event.attendanceMinCapacity.toString())
     inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.format(dateFormatter) ?: "")
     inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
+  }
+
+  val draft = eventUtils.retrieveFromDraft(LocalContext.current)
+  if (eventAction == EventAction.CREATE && draft != null) {
+    // Restore the draft
+    title = TextFieldValue(draft.title ?: "")
+    description = TextFieldValue(draft.description ?: "")
+    location = draft.location
+    eventStartDate = TextFieldValue(draft.eventStartDate ?: "")
+    eventEndDate = TextFieldValue(draft.eventEndDate ?: "")
+    eventTimeStart = TextFieldValue(draft.timeBeginning ?: "")
+    eventTimeEnd = TextFieldValue(draft.timeEnding ?: "")
+    maxAttendees = TextFieldValue(draft.attendanceMaxCapacity ?: "")
+    minAttendees = TextFieldValue(draft.attendanceMinCapacity ?: "")
+    inscriptionLimitDate = TextFieldValue(draft.inscriptionLimitDate ?: "")
+    inscriptionLimitTime = TextFieldValue(draft.inscriptionLimitTime ?: "")
+    categories.addAll(draft.categories ?: emptySet())
   }
 
   Scaffold(
