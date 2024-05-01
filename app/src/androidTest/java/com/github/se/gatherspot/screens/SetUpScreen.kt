@@ -13,7 +13,7 @@ class SetUpScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val done: KNode = onNode { hasTestTag("doneButton") }
   val setUpInterests: KNode = onNode { hasTestTag("setUpInterests") }
   val setUpBio: KNode = onNode { hasTestTag("setUpBio") }
-  val bioInput: KNode = onNode { hasTestTag("bioInput") }
+  val bioInput: KNode = onNode { hasText("Bio") }
   val addBasketball: KNode = onNode { hasTestTag("add BASKETBALL") }
   val setUpImage: KNode = onNode { hasTestTag("setUpImage") }
 }
