@@ -52,10 +52,17 @@ import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
+import com.github.se.gatherspot.model.utils.LocalDateDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateSerializer
+import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -200,12 +207,21 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
-  val eventFirebaseConnection = com.github.se.gatherspot.EventFirebaseConnection()
+  val eventFirebaseConnection = com.github.se.gatherspot.firebase.EventFirebaseConnection()
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
-            val gson = Gson()
+            // Create a new Gson instance with the custom serializers and deserializers
+            val gson: Gson =
+                GsonBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+                    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+                    .create()
+
             val eventJson = gson.toJson(event)
+            Log.e("Display", "eventJson = $eventJson")
             navigation.controller.navigate("event/$eventJson")
           },
       verticalAlignment = Alignment.CenterVertically) {

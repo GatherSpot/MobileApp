@@ -44,7 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.github.se.gatherspot.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
@@ -53,7 +53,6 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 private val WIDTH = 300.dp
@@ -104,9 +103,8 @@ fun EventDataForm(
   var showErrorDialog by remember { mutableStateOf(false) }
   var errorMessage = ""
   var locationName by remember { mutableStateOf("") }
-  var categories: MutableList<Interests> = remember { mutableStateListOf() }
+  val categories: MutableList<Interests> = remember { mutableStateListOf() }
   // Flow for query text input
-  val queryText = MutableStateFlow("")
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
 
   // Coroutine scope for launching coroutines
@@ -187,10 +185,10 @@ fun EventDataForm(
                 label = { Text("End date of the event") },
                 placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
 
-            // Time Start
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
+                  // Time Start
                   OutlinedTextField(
                       modifier =
                           Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeStartEvent"),
@@ -233,9 +231,7 @@ fun EventDataForm(
                               // Debounce logic: wait for 300 milliseconds after the last text
                               // change
                               delay(300)
-                              Log.e("EventDataForm", "Querying for $newValue")
                               suggestions = eventUtils.fetchLocationSuggestions(newValue)
-                              Log.e("EventDataForm", "Suggestions: $suggestions")
                             }
                       },
                       label = { Text("Location") },
@@ -326,7 +322,13 @@ fun EventDataForm(
                     showErrorDialog = true
                   }
                   if (!showErrorDialog) {
-                    nav.controller.navigate("events")
+                    if (eventAction == EventAction.CREATE) {
+                      // Go back to the list of events
+                      nav.controller.navigate("events")
+                    } else {
+                      // Go back to the event details
+                      nav.goBack()
+                    }
                   }
                 },
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),

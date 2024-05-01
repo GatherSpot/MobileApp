@@ -1,4 +1,4 @@
-package com.github.se.gatherspot
+package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.model.IdList
 import junit.framework.TestCase.assertEquals

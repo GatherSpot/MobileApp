@@ -9,11 +9,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
-import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpSetUp
-import com.github.se.gatherspot.ProfileFirebaseConnection
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
@@ -43,7 +42,7 @@ class SignUpTest : TestCase() {
     val currentUser = FirebaseAuth.getInstance().currentUser
     if (currentUser != null) {
       ProfileFirebaseConnection().delete(currentUser.uid)
-      EnvironmentSetter.testLoginCleanUp()
+      testLoginCleanUp()
     }
   }
 
@@ -52,7 +51,7 @@ class SignUpTest : TestCase() {
   fun signUp() {
     val email = "gatherspot2024@gmail.com"
     val userName = "GatherSpot"
-    signUpSetUp(userName, email)
+    // signUpSetUp(userName, email)
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
