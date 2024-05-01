@@ -2,6 +2,7 @@ package com.github.se.gatherspot.model
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.ui.graphics.ImageBitmap
 import com.github.se.gatherspot.cache.LocalStorage
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
@@ -363,6 +364,7 @@ class EventUtils {
       dateLimitInscription: String?,
       timeLimitInscription: String?,
       categories: Set<Interests>?,
+      image : ImageBitmap?,
       context: Context
   ) {
     val draftEvent =
@@ -378,6 +380,7 @@ class EventUtils {
             minAttendees,
             dateLimitInscription,
             timeLimitInscription,
+            image = image,
             categories = categories)
 
     val localStorage = LocalStorage(context)

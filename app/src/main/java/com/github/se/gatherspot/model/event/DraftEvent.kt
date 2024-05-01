@@ -22,5 +22,5 @@ data class DraftEvent(
     val inscriptionLimitDate: String?,
     val inscriptionLimitTime: String?,
     val categories: Set<Interests>? = emptySet(),
-    val images: ImageBitmap? = ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565)
+    val image: ImageBitmap? = ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565)
 )
