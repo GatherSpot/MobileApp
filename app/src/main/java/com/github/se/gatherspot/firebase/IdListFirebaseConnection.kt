@@ -57,6 +57,23 @@ class IdListFirebaseConnection {
     }
 
     /**
+     * Saves the IdList to Firebase
+     *
+     * @param idSet The IdList to save.
+     */
+    fun saveToFirebase(idSet: IdList) {
+        val tag = idSet.collection.name
+        val id = idSet.id
+        // TODO : check if this good way to store data
+        val data = hashMapOf("ids" to idSet.events.toList())
+        firestore.collection(tag)
+            .document(id)
+            .set(data)
+            .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully written!") }
+            .addOnFailureListener { e -> Log.w(logTag, "Error writing document", e) }
+    }
+
+    /**
      * Creates a new list
      *
      * @param id The id of the owner of the list (can be owned by a user, event, etc..).
