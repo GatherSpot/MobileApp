@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.ui.setUp
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +31,7 @@ fun NextButton(nav: NavigationActions, dest: String) {
       colors = ButtonDefaults.buttonColors(Color.Transparent),
       onClick = { nav.controller.navigate(dest) },
       modifier =
-          Modifier.testTag("nextButton")
+          Modifier.testTag("nextButton").clickable { nav.controller.navigate(dest) }
               .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
               .wrapContentSize()) {
         Box(
@@ -43,7 +44,7 @@ fun NextButton(nav: NavigationActions, dest: String) {
 
 @Composable
 fun DoneButton(done: () -> Unit) {
-  Button(onClick = { done() }, modifier = Modifier.testTag("doneButton").wrapContentSize()) {
+  Button(onClick = { done() }, modifier = Modifier.testTag("doneButton").clickable {done()}.wrapContentSize()) {
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = androidx.compose.ui.Alignment.Center) {

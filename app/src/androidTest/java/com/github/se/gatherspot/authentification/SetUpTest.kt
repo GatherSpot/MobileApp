@@ -18,7 +18,6 @@ import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,11 +38,6 @@ class SetUpTest : TestCase() {
     }
   }
 
-  @After
-  fun after() {
-    // ProfileFirebaseConnection().delete("TEST")
-  }
-
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun setUp() {
@@ -59,33 +53,15 @@ class SetUpTest : TestCase() {
 
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       setUpInterests { assertExists() }
-      addBasketball {
-        assertExists()
-        performClick()
-      }
-      next {
-        assertExists()
-        performClick()
-      }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpBio"), 100000)
-      bioInput {
-        assertExists()
-        performTextInput("I love basketball")
-      }
-      next {
-        assertExists()
-        performClick()
-      }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpImage"), 10000)
-      next {
-        assertExists()
-        performClick()
-      }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("setUpDone"), 10000)
-      done {
-        assertExists()
-        performClick()
-      }
+      addBasketball { performClick() }
+      next { performClick() }
+      setUpBio { assertExists() }
+      bioInput { performTextInput("I love basketball") }
+      next { performClick() }
+      setUpImage { assertExists() }
+      next { performClick() }
+
+      done { performClick() }
       // wait until we get to next screen and fetch profile to see if it is right
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("EventsScreen"), 10000)
       var lock = true
