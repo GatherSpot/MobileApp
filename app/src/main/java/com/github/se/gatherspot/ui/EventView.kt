@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -57,8 +56,6 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.gson.Gson
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -150,11 +147,15 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
 
               // Event Host
            var profile = Profile.testParticipant()
+
+            /*
             runBlocking {
-                profile = async{ProfileFirebaseConnection().fetch(event.organizerID)}.await()
+            profile = async{ProfileFirebaseConnection().fetch(event.organizerID)}.await()
                     ?: Profile.testParticipant()
             }
-                ProfileIndicator(profile)
+
+             */
+            ProfileIndicator(profile)
 
               // Event Description
               event.description?.let { description ->
