@@ -29,9 +29,10 @@ import com.github.se.gatherspot.ui.profile.ProfileView
 fun NextButton(nav: NavigationActions, dest: String) {
   Button(
       colors = ButtonDefaults.buttonColors(Color.Transparent),
-      onClick = { nav.controller.navigate(dest) },
+      onClick = { nav.controller.navigate(dest)},
       modifier =
-          Modifier.testTag("nextButton").clickable { nav.controller.navigate(dest) }
+          Modifier.testTag("nextButton")
+              .clickable(onClick = { nav.controller.navigate(dest) })
               .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
               .wrapContentSize()) {
         Box(
@@ -44,13 +45,15 @@ fun NextButton(nav: NavigationActions, dest: String) {
 
 @Composable
 fun DoneButton(done: () -> Unit) {
-  Button(onClick = { done() }, modifier = Modifier.testTag("doneButton").clickable {done()}.wrapContentSize()) {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = androidx.compose.ui.Alignment.Center) {
-          Text("Start using the app", fontSize = 22.sp)
-        }
-  }
+  Button(
+      onClick = {done()},
+      modifier = Modifier.testTag("doneButton").clickable(onClick = {done()}).wrapContentSize()) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = androidx.compose.ui.Alignment.Center) {
+              Text("Start using the app", fontSize = 22.sp)
+            }
+      }
 }
 
 @Composable

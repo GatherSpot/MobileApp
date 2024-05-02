@@ -73,7 +73,7 @@ class ProfileView {
    * @param viewModel the view model that holds the profile data
    */
   @Composable
-  fun /**/EditOwnProfile(
+  fun EditOwnProfile(
       nav: NavigationActions,
       viewModel: OwnProfileViewModel,
       navController: NavController

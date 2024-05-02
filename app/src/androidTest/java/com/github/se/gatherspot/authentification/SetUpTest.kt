@@ -52,15 +52,21 @@ class SetUpTest : TestCase() {
     }
 
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
+      composeTestRule.waitForIdle()
       setUpInterests { assertExists() }
       addBasketball { performClick() }
-      next { performClick() }
+      next {
+        assertHasClickAction()
+        performClick()
+      }
+      composeTestRule.waitForIdle()
       setUpBio { assertExists() }
       bioInput { performTextInput("I love basketball") }
       next { performClick() }
+      composeTestRule.waitForIdle()
       setUpImage { assertExists() }
       next { performClick() }
-
+      composeTestRule.waitForIdle()
       done { performClick() }
       // wait until we get to next screen and fetch profile to see if it is right
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("EventsScreen"), 10000)
