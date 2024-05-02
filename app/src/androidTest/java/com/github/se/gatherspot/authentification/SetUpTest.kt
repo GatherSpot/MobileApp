@@ -71,7 +71,7 @@ class SetUpTest : TestCase() {
     }
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       setUpBio { assertExists() }
-      bioInput { assertExists() }
+      bioInput { performTextInput("I like haskell") }
       next { performClick() }
     }
   }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.InterestsView
-import com.github.se.gatherspot.ui.profile.ProfileView
 
 @Composable
 fun NextButton(nav: NavigationActions, dest: String) {
@@ -57,6 +57,15 @@ fun DoneButton(done: () -> Unit) {
 }
 
 @Composable
+fun BioField(bio: String, updateBio: (String) -> Unit) {
+  OutlinedTextField(
+      label = { Text("Bio") },
+      value = bio,
+      onValueChange = { updateBio(it) },
+      modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
+}
+
+@Composable
 fun SetUpInterests(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
   val interests = vm.interests.observeAsState()
   val flipInterests = vm::flipInterests
@@ -75,10 +84,10 @@ fun SetUpInterests(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
 fun SetUpBio(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
   val bio = vm.bio.observeAsState()
   val setBio = vm::setBio
-  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpBio")) {
-    Text(text = "Tell us about yourself", fontSize = 30.sp)
+  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpBioTag")) {
+    Text(text = "Tell us a bit about yourself", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
-    ProfileView().BioField(bio = bio.value!!, updateBio = { setBio(it) }, edit = true)
+    BioField(bio.value ?: "", setBio)
     NextButton(nav, dest)
   }
 }

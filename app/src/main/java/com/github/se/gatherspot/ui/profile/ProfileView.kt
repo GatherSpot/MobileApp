@@ -170,7 +170,7 @@ class ProfileView {
   }
 
   @Composable
-  fun BioField(bio: String, updateBio: (String) -> Unit, edit: Boolean) {
+  private fun BioField(bio: String, updateBio: (String) -> Unit, edit: Boolean) {
     OutlinedTextField(
         label = { Text("Bio") },
         value = bio,
