@@ -207,7 +207,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         Firebase.firestore
             .collection(EVENTS)
             .orderBy("eventID")
-            .whereArrayContains("registeredUsers", FirebaseAuth.getInstance().currentUser!!.uid)
+            .whereArrayContains("registeredUsers", FirebaseAuth.getInstance().currentUser?.uid?: "won'tWork")
             .get()
             .await()
 
