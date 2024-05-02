@@ -29,7 +29,7 @@ import com.github.se.gatherspot.ui.profile.ProfileView
 fun NextButton(nav: NavigationActions, dest: String) {
   Button(
       colors = ButtonDefaults.buttonColors(Color.Transparent),
-      onClick = { nav.controller.navigate(dest)},
+      onClick = { nav.controller.navigate(dest) },
       modifier =
           Modifier.testTag("nextButton")
               .clickable(onClick = { nav.controller.navigate(dest) })
@@ -46,8 +46,8 @@ fun NextButton(nav: NavigationActions, dest: String) {
 @Composable
 fun DoneButton(done: () -> Unit) {
   Button(
-      onClick = {done()},
-      modifier = Modifier.testTag("doneButton").clickable(onClick = {done()}).wrapContentSize()) {
+      onClick = { done() },
+      modifier = Modifier.testTag("doneButton").clickable(onClick = { done() }).wrapContentSize()) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = androidx.compose.ui.Alignment.Center) {

@@ -76,7 +76,7 @@ class SetUpTest : TestCase() {
       while (lock) {
         {}
       }
-      // assert(profile.bio == "I love basketball")
+      assert(profile.bio == "I love basketball")
       assert(profile.interests.contains(Interests.BASKETBALL))
     }
   }
