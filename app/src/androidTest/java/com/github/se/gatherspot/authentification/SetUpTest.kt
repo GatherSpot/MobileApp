@@ -41,7 +41,7 @@ class SetUpTest : TestCase() {
 
   @After
   fun after() {
-    //ProfileFirebaseConnection().delete("TEST")
+    // ProfileFirebaseConnection().delete("TEST")
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -94,7 +94,7 @@ class SetUpTest : TestCase() {
       while (lock) {
         {}
       }
-      //assert(profile.bio == "I love basketball")
+      // assert(profile.bio == "I love basketball")
       assert(profile.interests.contains(Interests.BASKETBALL))
     }
   }
