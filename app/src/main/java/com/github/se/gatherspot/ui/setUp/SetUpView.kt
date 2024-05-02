@@ -25,10 +25,10 @@ import com.github.se.gatherspot.ui.profile.InterestsView
 import com.github.se.gatherspot.ui.profile.ProfileView
 
 @Composable
-fun NextButton( nav: NavigationActions, dest : String) {
+fun NextButton(nav: NavigationActions, dest: String) {
   Button(
       colors = ButtonDefaults.buttonColors(Color.Transparent),
-      onClick = { nav.controller.navigate(dest)},
+      onClick = { nav.controller.navigate(dest) },
       modifier =
           Modifier.testTag("nextButton")
               .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
@@ -43,7 +43,7 @@ fun NextButton( nav: NavigationActions, dest : String) {
 
 @Composable
 fun DoneButton(done: () -> Unit) {
-  Button(onClick = { done()}, modifier = Modifier.testTag("doneButton").wrapContentSize()) {
+  Button(onClick = { done() }, modifier = Modifier.testTag("doneButton").wrapContentSize()) {
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -63,19 +63,19 @@ fun SetUpInterests(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
         Text(text = "Choose your interests", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
         InterestsView().EditInterests(Interests.toList(), interests, flipInterests)
-        NextButton(nav,dest)
+        NextButton(nav, dest)
       }
 }
 
 @Composable
-fun SetUpBio(vm : SetUpViewModel,nav: NavigationActions, dest: String) {
+fun SetUpBio(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
   val bio = vm.bio.observeAsState()
   val setBio = vm::setBio
   Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpBio")) {
     Text(text = "Tell us about yourself", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
     ProfileView().BioField(bio = bio.value!!, updateBio = { setBio(it) }, edit = true)
-    NextButton(nav,dest)
+    NextButton(nav, dest)
   }
 }
 
@@ -86,12 +86,12 @@ fun SetUpImage(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
     Spacer(modifier = Modifier.height(30.dp))
     // TODO : add image picker
     Text(text = "Not implemented yet, maybe in v3 :)")
-    NextButton(nav,dest)
+    NextButton(nav, dest)
   }
 }
 
 @Composable
-fun SetUpDone(vm: SetUpViewModel,nav: NavigationActions, dest: String) {
+fun SetUpDone(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
   val done = vm::done
   val isDone = vm.isDone.observeAsState()
   if (isDone.value == true) {

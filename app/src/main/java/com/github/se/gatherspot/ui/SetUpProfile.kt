@@ -14,7 +14,6 @@ import com.github.se.gatherspot.ui.setUp.SetUpImage
 import com.github.se.gatherspot.ui.setUp.SetUpInterests
 import com.github.se.gatherspot.ui.setUp.SetUpViewModel
 
-
 @Preview
 @Composable
 fun SetUpProfilePreview() {
@@ -29,10 +28,12 @@ fun SetUpProfile(nav: NavigationActions) {
   val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
   val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
   NavHost(navController, startDestination = "Interests") {
-    composable("Interests") { SetUpInterests(viewModel,nav2,"Bio") }
-    composable("Bio") { SetUpBio(viewModel,nav2,"Image") }
-    composable("Image") { SetUpImage(viewModel,nav2,"Done") }
-    composable("Done") { SetUpDone(viewModel,nav,"home") }//different nav has we go back to the home screen
+    composable("Interests") { SetUpInterests(viewModel, nav2, "Bio") }
+    composable("Bio") { SetUpBio(viewModel, nav2, "Image") }
+    composable("Image") { SetUpImage(viewModel, nav2, "Done") }
+    composable("Done") {
+      SetUpDone(viewModel, nav, "home")
+    } // different nav has we go back to the home screen
   }
 
   //  val vm = SetUpViewModel(nav)

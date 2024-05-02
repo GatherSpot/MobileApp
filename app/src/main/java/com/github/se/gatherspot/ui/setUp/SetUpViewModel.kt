@@ -27,7 +27,6 @@ class SetUpViewModel() : ViewModel() {
     profile.bio = bio.value!!
     profile.image = image.value!!
     profile.interests = interests.value!!
-    ProfileFirebaseConnection().add(profile){isDone.value = true}
-
+    ProfileFirebaseConnection().add(profile) { isDone.value = true }
   }
 }
