@@ -118,6 +118,14 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
 @Composable
 fun FilterChipCompose(interest: Interests, interests: MutableSet<Interests>, modifier: Modifier) {
   var selected by remember { mutableStateOf(false) }
+  var icon by remember {
+    mutableStateOf(
+        if (selected || interests.contains(interest)) {
+          Icons.Filled.Done
+        } else {
+          Icons.Filled.Add
+        })
+  }
 
   FilterChip(
       onClick = {
@@ -140,12 +148,13 @@ fun FilterChipCompose(interest: Interests, interests: MutableSet<Interests>, mod
           Icon(
               imageVector = Icons.Filled.Done,
               contentDescription = "Done icon",
-              modifier = Modifier.size(FilterChipDefaults.IconSize))
+              modifier = Modifier.size(FilterChipDefaults.IconSize).testTag("remove${interest}"))
         } else {
           Icon(
               imageVector = Icons.Filled.Add,
               contentDescription = "Add icon",
-              modifier = Modifier.size(FilterChipDefaults.IconSize + 2.dp))
+              modifier =
+                  Modifier.size(FilterChipDefaults.IconSize + 2.dp).testTag("add${interest}"))
         }
       },
       modifier = modifier)

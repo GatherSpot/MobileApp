@@ -75,6 +75,9 @@ class SetUpTest : TestCase() {
             .performScrollToNode(hasTestTag(enumValues<Interests>().toList()[0].toString()))
       }
 
+      firstAdd.assertDoesNotExist()
+      firstAdd.assertIsNotDisplayed()
+
       save {
         assertExists()
         assertIsDisplayed()
