@@ -39,7 +39,6 @@ class CreateEventTest {
   @Before
   fun setUp() {
     testLogin()
-    Thread.sleep(5000)
   }
 
   @After
@@ -488,7 +487,6 @@ class CreateEventTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testLocationQueryResult() {
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
@@ -507,7 +505,6 @@ class CreateEventTest {
         assertTextContains("École Polytechnique Fédérale de Lausanne", substring = true)
       }
     }
-    testLoginCleanUp()
   }
 
   @Test

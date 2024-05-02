@@ -31,7 +31,6 @@ class EventUITest {
   @Before
   fun setUp() {
     testLogin()
-    Thread.sleep(5000)
   }
 
   @After

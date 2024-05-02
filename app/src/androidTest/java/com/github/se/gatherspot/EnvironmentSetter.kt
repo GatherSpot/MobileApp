@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 
@@ -18,7 +19,11 @@ class EnvironmentSetter {
 
     /** This function logs in the user for testing purposes this user has his email verified */
     fun testLogin() {
-      Firebase.auth.signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;")
+      runBlocking {
+        Firebase.auth
+            .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;")
+            .await()
+      }
     }
 
     fun testLoginCleanUp() {
