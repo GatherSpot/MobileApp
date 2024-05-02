@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -106,6 +108,8 @@ fun EventDataForm(
   val categories: MutableList<Interests> = remember { mutableStateListOf() }
   // Flow for query text input
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
+  // Context to use for draft saving
+  val context = LocalContext.current
 
   // Coroutine scope for launching coroutines
   val coroutineScope = rememberCoroutineScope()
@@ -127,6 +131,23 @@ fun EventDataForm(
     inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
   }
 
+  val draft = eventUtils.retrieveFromDraft(context)
+  if (eventAction == EventAction.CREATE && draft != null) {
+    // Restore the draft
+    title = TextFieldValue(draft.title ?: "")
+    description = TextFieldValue(draft.description ?: "")
+    location = draft.location
+    eventStartDate = TextFieldValue(draft.eventStartDate ?: "")
+    eventEndDate = TextFieldValue(draft.eventEndDate ?: "")
+    eventTimeStart = TextFieldValue(draft.timeBeginning ?: "")
+    eventTimeEnd = TextFieldValue(draft.timeEnding ?: "")
+    maxAttendees = TextFieldValue(draft.attendanceMaxCapacity ?: "")
+    minAttendees = TextFieldValue(draft.attendanceMinCapacity ?: "")
+    inscriptionLimitDate = TextFieldValue(draft.inscriptionLimitDate ?: "")
+    inscriptionLimitTime = TextFieldValue(draft.inscriptionLimitTime ?: "")
+    categories.addAll(draft.categories ?: emptySet())
+  }
+
   Scaffold(
       modifier = Modifier.testTag("EventDataFormScreen"),
       topBar = {
@@ -137,12 +158,78 @@ fun EventDataForm(
                   modifier = Modifier.testTag("createEventTitle"))
             },
             navigationIcon = {
-              IconButton(onClick = { nav.goBack() }, modifier = Modifier.testTag("goBackButton")) {
-                Icon(
-                    modifier = Modifier.testTag("backIcon"),
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Go back to overview")
-              }
+              IconButton(
+                  onClick = {
+                    eventUtils.saveDraftEvent(
+                        title.text,
+                        description.text,
+                        location,
+                        eventStartDate.text,
+                        eventEndDate.text,
+                        eventTimeStart.text,
+                        eventTimeEnd.text,
+                        maxAttendees.text,
+                        minAttendees.text,
+                        inscriptionLimitDate.text,
+                        inscriptionLimitTime.text,
+                        categories.toSet(),
+                        image = null,
+                        context = context)
+                    nav.goBack()
+                  },
+                  modifier = Modifier.testTag("goBackButton")) {
+                    Icon(
+                        modifier = Modifier.testTag("backIcon"),
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Go back to overview")
+                  }
+            },
+            actions = {
+              // Add a button to erase all the fields
+              Button(
+                  onClick = {
+                    title = TextFieldValue("")
+                    description = TextFieldValue("")
+                    location = null
+                    eventStartDate = TextFieldValue("")
+                    eventEndDate = TextFieldValue("")
+                    eventTimeStart = TextFieldValue("")
+                    eventTimeEnd = TextFieldValue("")
+                    maxAttendees = TextFieldValue("")
+                    minAttendees = TextFieldValue("")
+                    inscriptionLimitDate = TextFieldValue("")
+                    inscriptionLimitTime = TextFieldValue("")
+                    categories.clear()
+                    eventUtils.deleteDraft(context)
+                  },
+                  modifier = Modifier.testTag("clearFieldsButton"),
+                  shape = RoundedCornerShape(size = 10.dp)) {
+                    Text(text = "Clear all fields")
+                  }
+              Spacer(modifier = Modifier.width(10.dp))
+              // Add a button to save the draft
+              Button(
+                  onClick = {
+                    eventUtils.saveDraftEvent(
+                        title.text,
+                        description.text,
+                        location,
+                        eventStartDate.text,
+                        eventEndDate.text,
+                        eventTimeStart.text,
+                        eventTimeEnd.text,
+                        maxAttendees.text,
+                        minAttendees.text,
+                        inscriptionLimitDate.text,
+                        inscriptionLimitTime.text,
+                        categories.toSet(),
+                        image = null,
+                        context = context)
+                  },
+                  modifier = Modifier.testTag("saveDraftButton"),
+                  shape = RoundedCornerShape(size = 10.dp)) {
+                    Text(text = "Save draft")
+                  }
             })
       }) { innerPadding ->
         // Make the content scrollable
@@ -321,6 +408,9 @@ fun EventDataForm(
                     errorMessage = e.message.toString()
                     showErrorDialog = true
                   }
+                  // Delete the draft
+                  eventUtils.deleteDraft(context)
+
                   if (!showErrorDialog) {
                     if (eventAction == EventAction.CREATE) {
                       // Go back to the list of events
