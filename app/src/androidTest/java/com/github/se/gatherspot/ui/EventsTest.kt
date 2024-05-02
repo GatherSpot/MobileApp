@@ -42,6 +42,7 @@ class EventsTest {
   @After
   fun cleanUp() {
     testLoginCleanUp()
+    Thread.sleep(1000)
   }
 
   @Test
@@ -194,6 +195,7 @@ class EventsTest {
       filterMenu { performClick() }
 
       composeTestRule.waitForIdle()
+      Thread.sleep(3000)
       assert(
           viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.SPORT) ?: true })
     }
@@ -375,8 +377,7 @@ class EventsTest {
       eventSaveButton.performClick()
     }
 
-    Thread.sleep(6000)
-
+    Thread.sleep(5000)
     // more asserts are needed but ok for now
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
       filterMenu { performClick() }
