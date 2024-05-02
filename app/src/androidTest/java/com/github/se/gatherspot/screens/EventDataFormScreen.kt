@@ -13,6 +13,8 @@ class EventDataFormScreen(semanticsProvider: SemanticsNodeInteractionsProvider) 
   val eventScaffold: KNode = onNode { hasTestTag("EventDataFormScreen") }
   val topBar: KNode = onNode { hasTestTag("createEventTitle") }
   val backButton: KNode = onNode { hasTestTag("goBackButton") }
+  val clearButton: KNode = onNode { hasTestTag("clearFieldsButton") }
+  val saveDraftButton: KNode = onNode { hasTestTag("saveDraftButton") }
   val formColumn: KNode = onNode { hasTestTag("formColumn") }
 
   val eventTitle: KNode = onNode { hasTestTag("inputTitle") }
