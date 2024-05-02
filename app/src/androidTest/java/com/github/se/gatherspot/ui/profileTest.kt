@@ -11,13 +11,13 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlin.coroutines.resume
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.coroutines.resume
 
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
@@ -27,7 +27,7 @@ class ProfileInstrumentedTest {
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @Before
   fun setUp() = runBlocking {
-    FollowList.unfollow("TEST","TEST2")
+    FollowList.unfollow("TEST", "TEST2")
     suspendCancellableCoroutine { continuation ->
       ProfileFirebaseConnection().add(Profile.testOrganizer()) { continuation.resume(Unit) }
     }
