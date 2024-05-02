@@ -22,6 +22,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 class SetUpTest : TestCase() {
@@ -52,21 +53,21 @@ class SetUpTest : TestCase() {
     }
 
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
-      composeTestRule.waitForIdle()
+      sleep(5000)
       setUpInterests { assertExists() }
       addBasketball { performClick() }
       next {
         assertHasClickAction()
         performClick()
       }
-      composeTestRule.waitForIdle()
+      sleep(5000)
       setUpBio { assertExists() }
       bioInput { performTextInput("I love basketball") }
       next { performClick() }
-      composeTestRule.waitForIdle()
+      sleep(5000)
       setUpImage { assertExists() }
       next { performClick() }
-      composeTestRule.waitForIdle()
+      sleep(5000)
       done { performClick() }
       // wait until we get to next screen and fetch profile to see if it is right
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("EventsScreen"), 10000)
