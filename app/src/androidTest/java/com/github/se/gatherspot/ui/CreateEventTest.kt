@@ -23,6 +23,8 @@ import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,6 +35,17 @@ class CreateEventTest {
   private val EventFirebaseConnection = EventFirebaseConnection()
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  @Before
+  fun setUp() {
+    testLogin()
+    Thread.sleep(5000)
+  }
+
+  @After
+  fun cleanUp() {
+    testLoginCleanUp()
+  }
 
   // Restructured to use EventDataFormScreen
   @Test
@@ -502,7 +515,7 @@ class CreateEventTest {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -557,7 +570,7 @@ class CreateEventTest {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -582,7 +595,7 @@ class CreateEventTest {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
-      CreateEvent(nav = NavigationActions(navController), eventUtils)
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventTitle.performTextInput("Test Event")
