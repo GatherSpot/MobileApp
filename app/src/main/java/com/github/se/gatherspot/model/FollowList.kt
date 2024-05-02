@@ -27,32 +27,32 @@ public class FollowList {
      * Check if user is following target
      *
      * @param uid The user that might follow
-     * @param target The user that might be followed
+     * @param targetUID The user that might be followed
      * @return Boolean uid follows target
      */
-    fun isFollowing(uid: String, target: String): MutableLiveData<Boolean> {
-      return IdListFirebaseConnection().exists(uid, FirebaseCollection.FOLLOWING, target) {}
+    fun isFollowing(uid: String, targetUID: String): MutableLiveData<Boolean> {
+      return IdListFirebaseConnection().exists(uid, FirebaseCollection.FOLLOWING, targetUID) {}
     }
     /**
      * Make user follow target
      *
      * @param uid The user that wants to follow
-     * @param target The user that is being followed uid follows target target is followed by uid
+     * @param targetUID The user that is being followed uid follows target target is followed by uid
      */
-    fun follow(uid: String, target: String) {
+    fun follow(uid: String, targetUID: String) {
       IdListFirebaseConnection().addTwoInSingleBatch(
-          uid, FirebaseCollection.FOLLOWING, target, target, FirebaseCollection.FOLLOWERS, uid) {}
+          uid, FirebaseCollection.FOLLOWING, targetUID, targetUID, FirebaseCollection.FOLLOWERS, uid) {}
     }
     /**
      * Make user unfollow target
      *
      * @param uid The user that wants to unfollow
-     * @param target The user that is being unfollowed uid unfollows target target is unfollowed by
+     * @param targetUID The user that is being unfollowed uid unfollows target target is unfollowed by
      *   uid
      */
-    fun unfollow(uid: String, target: String) {
+    fun unfollow(uid: String, targetUID: String) {
       IdListFirebaseConnection().removeTwoInSingleBatch(
-          uid, FirebaseCollection.FOLLOWING, target, target, FirebaseCollection.FOLLOWERS, uid) {}
+          uid, FirebaseCollection.FOLLOWING, targetUID, targetUID, FirebaseCollection.FOLLOWERS, uid) {}
     }
   }
 }
