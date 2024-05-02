@@ -210,62 +210,59 @@ fun EventDataForm(
               // Add a button to save the draft
               Button(
                   onClick = {
-                      try {
-                          eventUtils.validateAndCreateOrUpdateDraftEvent(
-                              title.text,
-                              description.text,
-                              location,
-                              eventStartDate.text,
-                              eventEndDate.text,
-                              eventTimeStart.text,
-                              eventTimeEnd.text,
-                              categories.toList(),
-                              maxAttendees.text,
-                              minAttendees.text,
-                              inscriptionLimitDate.text,
-                              inscriptionLimitTime.text,
-                              eventAction,
-                              event
-                          )
-                          eventUtils.saveDraftEvent(
-                              title.text,
-                              description.text,
-                              location,
-                              eventStartDate.text,
-                              eventEndDate.text,
-                              eventTimeStart.text,
-                              eventTimeEnd.text,
-                              maxAttendees.text,
-                              minAttendees.text,
-                              inscriptionLimitDate.text,
-                              inscriptionLimitTime.text,
-                              categories.toSet(),
-                              image = null,
-                              context = context
-                          )
-                      }catch (e : Exception){
-                          errorMessage = e.message.toString()
-                          showErrorDialog = true
+                    try {
+                      eventUtils.validateAndCreateOrUpdateDraftEvent(
+                          title.text,
+                          description.text,
+                          location,
+                          eventStartDate.text,
+                          eventEndDate.text,
+                          eventTimeStart.text,
+                          eventTimeEnd.text,
+                          categories.toList(),
+                          maxAttendees.text,
+                          minAttendees.text,
+                          inscriptionLimitDate.text,
+                          inscriptionLimitTime.text,
+                          eventAction,
+                          event)
+                      eventUtils.saveDraftEvent(
+                          title.text,
+                          description.text,
+                          location,
+                          eventStartDate.text,
+                          eventEndDate.text,
+                          eventTimeStart.text,
+                          eventTimeEnd.text,
+                          maxAttendees.text,
+                          minAttendees.text,
+                          inscriptionLimitDate.text,
+                          inscriptionLimitTime.text,
+                          categories.toSet(),
+                          image = null,
+                          context = context)
+                    } catch (e: Exception) {
+                      errorMessage = e.message.toString()
+                      showErrorDialog = true
+                    }
 
+                    if (showErrorDialog) {
+                      if (eventAction == EventAction.CREATE) {
+                        // Go back to the list of events
+                        nav.controller.navigate("events")
+                      } else {
+                        // Go back to the event details
+                        nav.goBack()
                       }
-
-                      if (showErrorDialog) {
-                          if (eventAction == EventAction.CREATE) {
-                              // Go back to the list of events
-                              nav.controller.navigate("events")
-                          } else {
-                              // Go back to the event details
-                              nav.goBack()
-                          }
-                      }
+                    }
                   },
                   modifier = Modifier.testTag("saveDraftButton"),
-                  enabled = (title.text != "") &&
+                  enabled =
+                      (title.text != "") &&
                           (description.text != "") &&
                           (eventStartDate.text != "") &&
                           (eventTimeStart.text != "") &&
-                          (eventTimeEnd.text != "")
-                  ,
+                          (eventTimeEnd.text != ""),
                   shape = RoundedCornerShape(size = 10.dp)) {
                     Text(text = "Publish draft")
                   }
