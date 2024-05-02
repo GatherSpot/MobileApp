@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -54,6 +53,8 @@ import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.gson.Gson
 import java.time.LocalDate
 import java.time.LocalTime
@@ -67,7 +68,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
   val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
   val isOrganizer =
-      event.organizer.id == (ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST")
+      event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
   val eventUtils = EventUtils()
   val registrationState by viewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
@@ -145,7 +146,16 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-              ProfileIndicator(profile = event.organizer)
+              var profile = Profile.testParticipant()
+
+              /*
+              runBlocking {
+              profile = async{ProfileFirebaseConnection().fetch(event.organizerID)}.await()
+                      ?: Profile.testParticipant()
+              }
+
+               */
+              ProfileIndicator(profile)
 
               // Event Description
               event.description?.let { description ->
@@ -375,7 +385,7 @@ fun EventUIPreview() {
           registeredUsers = mutableListOf(),
           timeBeginning = LocalTime.of(11, 0),
           timeEnding = LocalTime.of(13, 0),
-          organizer = Profile("test", "Test User", "", "testProfileId", setOf()))
+          organizerID = Profile.testOrganizer().id)
   val viewModel = EventRegistrationViewModel()
   EventUI(
       event = event, navActions = NavigationActions(rememberNavController()), viewModel = viewModel)

@@ -36,7 +36,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -84,7 +84,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -165,7 +165,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -231,7 +231,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -286,7 +286,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 2,
               attendanceMinCapacity = 1,
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -334,7 +334,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -382,7 +382,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizer = Profile.testOrganizer(),
+              organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -413,7 +413,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizer = Profile.testOrganizer(),
+              organizerID = Profile.testOrganizer().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -429,7 +429,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      editButton { assertIsDisplayed() }
+      editEventButton { assertIsDisplayed() }
       deleteButton {
         assertIsDisplayed()
         performClick()

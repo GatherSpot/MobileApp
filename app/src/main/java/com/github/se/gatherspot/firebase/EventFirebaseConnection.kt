@@ -74,10 +74,9 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val eventStatus: EventStatus =
         when (status) {
           "CREATED" -> EventStatus.CREATED
-          "DRAFT" -> EventStatus.DRAFT
           "ON_GOING" -> EventStatus.ON_GOING
           "COMPLETED" -> EventStatus.COMPLETED
-          else -> EventStatus.DRAFT
+          else -> EventStatus.CREATED
         }
     val categoriesList = d.get("categories") as List<String>
     val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
@@ -89,6 +88,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           "null" -> null
           else -> rating.toInt()
         }
+    val organizerID = d.getString("organizerID") ?: Profile.testOrganizer().id
     return Event(
         id = eventID,
         title = title,
@@ -109,7 +109,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         images = images,
         globalRating = globalRating,
         // TODO: Add organizer
-        organizer = Profile("TEST"))
+        organizerID = organizerID)
   }
 
   private suspend fun eventsFromQuerySnaphot(querySnapshot: QuerySnapshot): MutableList<Event> {
@@ -119,7 +119,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     listOfMaps.forEach { map ->
       val uid = map["eventID"] as String
       val event = super.fetch(uid)
-      event?.let { listOfEvents.add(it as Event) }
+      event?.let { listOfEvents.add(it) }
     }
 
     return listOfEvents
@@ -317,6 +317,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                   else -> element.globalRating.toString()
                 },
             "images" to null, // TODO: ADD IMAGES
+            "organizerID" to element.organizerID,
             "eventStatus" to element.eventStatus)
 
     Firebase.firestore
