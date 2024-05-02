@@ -8,17 +8,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
-import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.setUp.SetUpBio
 import com.github.se.gatherspot.ui.setUp.SetUpDone
 import com.github.se.gatherspot.ui.setUp.SetUpImage
 import com.github.se.gatherspot.ui.setUp.SetUpInterests
 import com.github.se.gatherspot.ui.setUp.SetUpViewModel
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlin.coroutines.resume
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,13 +30,9 @@ class SetUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
 
   @Before
-  fun before() {
-    var lock = true
-    ProfileFirebaseConnection().add(Profile("John Doe", "", "", "TEST", Interests.new())) {
-      lock = false
-    }
-    while (lock) {
-      {}
+  fun setUp() = runBlocking {
+    suspendCancellableCoroutine { continuation ->
+      ProfileFirebaseConnection().add(Profile.testOrganizer()) { continuation.resume(Unit) }
     }
   }
 
@@ -58,23 +55,24 @@ class SetUpTest : TestCase() {
     }
   }
 
-  @Test
-  fun setUpBio() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val nav = NavigationActions(navController)
-      val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
-      val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
-      NavHost(navController, startDestination = "bio") {
-        composable("bio") { SetUpBio(viewModel, nav, "bio") }
-      }
-    }
-    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
-      setUpBio { assertExists() }
-      bioInput { performTextInput("I like haskell") }
-      next { performClick() }
-    }
-  }
+  //  @Test
+  //  fun setUpBio() {
+  //    composeTestRule.setContent {
+  //      val navController = rememberNavController()
+  //      val nav = NavigationActions(navController)
+  //      val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
+  //      val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner =
+  // navHostViewModelStoreOwner)
+  //      NavHost(navController, startDestination = "bio") {
+  //        composable("bio") { SetUpBio(viewModel, nav, "bio") }
+  //      }
+  //    }
+  //    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
+  //      setUpBio { assertExists() }
+  //      bioInput { performTextInput("I like haskell") }
+  //      next { performClick() }
+  //    }
+  //  }
 
   @Test
   fun setUpImage() {

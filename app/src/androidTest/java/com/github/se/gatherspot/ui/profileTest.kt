@@ -10,6 +10,9 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlin.coroutines.resume
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -21,13 +24,10 @@ class ProfileInstrumentedTest {
   @get:Rule val composeTestRule = createComposeRule()
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
-  @OptIn(ExperimentalTestApi::class)
   @Before
-  fun setUp() {
-    var lock = true
-    ProfileFirebaseConnection().add(Profile.testOrganizer()) { lock = false }
-    while (lock) {
-      {}
+  fun setUp() = runBlocking {
+    suspendCancellableCoroutine { continuation ->
+      ProfileFirebaseConnection().add(Profile.testOrganizer()) { continuation.resume(Unit) }
     }
   }
 
