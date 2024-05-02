@@ -18,4 +18,5 @@ class SetUpScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
           .map { category -> onNode { hasTestTag(category.toString()) } }
           .toSet()
   val emailText: KNode = onNode { hasTestTag("emailText") }
+  val firstAdd: KNode = onNode { hasTestTag("add${enumValues<Interests>().toList()[0]}") }
 }
