@@ -39,7 +39,11 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
+    try {
+      ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
+    } catch (e: NullPointerException) {
+      e.printStackTrace()
+    }
     testLoginCleanUp()
   }
 
