@@ -39,8 +39,12 @@ class AllTest : TestCase() {
 
   @After
   fun cleanUp() {
-    ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
-    testDelete()
+    try {
+      ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
+      testDelete()
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
   }
 
   @OptIn(ExperimentalTestApi::class)
