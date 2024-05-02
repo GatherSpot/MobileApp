@@ -41,18 +41,28 @@ public class FollowList {
      */
     fun follow(uid: String, targetUID: String) {
       IdListFirebaseConnection().addTwoInSingleBatch(
-          uid, FirebaseCollection.FOLLOWING, targetUID, targetUID, FirebaseCollection.FOLLOWERS, uid) {}
+          uid,
+          FirebaseCollection.FOLLOWING,
+          targetUID,
+          targetUID,
+          FirebaseCollection.FOLLOWERS,
+          uid) {}
     }
     /**
      * Make user unfollow target
      *
      * @param uid The user that wants to unfollow
-     * @param targetUID The user that is being unfollowed uid unfollows target target is unfollowed by
-     *   uid
+     * @param targetUID The user that is being unfollowed uid unfollows target target is unfollowed
+     *   by uid
      */
     fun unfollow(uid: String, targetUID: String) {
       IdListFirebaseConnection().removeTwoInSingleBatch(
-          uid, FirebaseCollection.FOLLOWING, targetUID, targetUID, FirebaseCollection.FOLLOWERS, uid) {}
+          uid,
+          FirebaseCollection.FOLLOWING,
+          targetUID,
+          targetUID,
+          FirebaseCollection.FOLLOWERS,
+          uid) {}
     }
   }
 }
