@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.LoginScreen
@@ -14,9 +15,6 @@ import com.github.se.gatherspot.screens.SignUpScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlin.coroutines.resume
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -33,11 +31,12 @@ class AllTest : TestCase() {
   @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
 
   @After
-  fun cleanUp() = runBlocking {
-    suspendCancellableCoroutine { continuation ->
-      ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid) {
-        continuation.resume(Unit)
-      }
+  fun cleanUp() {
+    try {
+      ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
+      testLoginCleanUp()
+    } catch (e: Exception) {
+      e.printStackTrace()
     }
   }
 

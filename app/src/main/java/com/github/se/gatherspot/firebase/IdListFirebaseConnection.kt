@@ -5,13 +5,76 @@ import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.model.IdList
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class IdListFirebaseConnection {
+  private val firestore = Firebase.firestore
+  private val logTag = "IdListFirebaseConnection"
   private val COLLECTION = "ID_LIST"
   private val TAG = "IdListFirebaseConnection"
-  private val db = Firebase.firestore.collection(COLLECTION)
+  private val fcoll = Firebase.firestore.collection(COLLECTION)
   private val batchErrorMsg = "Error writing batch"
   private val getErrorMsg = "get failed with :"
+
+  /**
+   * Fetches the IdList from Firebase
+   *
+   * @param id The id of the owner of the list (can be owned by a user, event, etc..).
+   * @param category The category of the IdList.
+   * @param update lambda returned when fetched, useful to update the viewModel
+   * @return the IdList NOTE : The IdList will be initially empty, to use it in a view, you need to
+   *   update the view using with a lambda function that updates the view
+   */
+  suspend fun fetchFromFirebase(
+      id: String,
+      category: FirebaseCollection,
+      update: () -> Unit
+  ): IdList? = suspendCancellableCoroutine { continuation ->
+    val tag = category.name
+    val idSet = IdList.empty(id, category)
+    firestore
+        .collection(tag)
+        .document(id)
+        .get()
+        .addOnSuccessListener { document ->
+          if (document != null) {
+            val data = document.data
+            if (data != null) {
+              val ids = data["ids"]
+              idSet.events = ids as List<String>
+              Log.d(logTag, "DocumentSnapshot data: ${document.data}")
+            }
+          } else {
+            Log.d(logTag, "No such document")
+          }
+          update()
+          continuation.resume(idSet)
+        }
+        .addOnFailureListener { exception ->
+          Log.d(logTag, "get failed with ", exception)
+          continuation.resume(null)
+        }
+  }
+
+  /**
+   * Saves the IdList to Firebase
+   *
+   * @param idSet The IdList to save.
+   */
+  fun saveToFirebase(idSet: IdList) {
+    val tag = idSet.collection.name
+    val id = idSet.id
+    // TODO : check if this good way to store data
+    val data = hashMapOf("ids" to idSet.events.toList())
+    firestore
+        .collection(tag)
+        .document(id)
+        .set(data)
+        .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully written!") }
+        .addOnFailureListener { e -> Log.w(logTag, "Error writing document", e) }
+  }
+
   /**
    * Creates a new list
    *
@@ -29,7 +92,7 @@ class IdListFirebaseConnection {
     val batch = Firebase.firestore.batch()
     val data = MutableLiveData<IdList>()
     elements.forEach { event ->
-      val docRef = db.document(tag.name).collection(id).document(event)
+      val docRef = fcoll.document(tag.name).collection(id).document(event)
       batch.set(docRef, mapOf<String, Any>())
     }
     batch
@@ -40,25 +103,6 @@ class IdListFirebaseConnection {
           onSuccess()
         }
         .addOnFailureListener { e -> Log.w(TAG, batchErrorMsg, e) }
-    return data
-  }
-
-  fun fetch(
-      id: String,
-      category: FirebaseCollection,
-      onSuccess: () -> Unit
-  ): MutableLiveData<IdList> {
-    val tag = category.name
-    val data = MutableLiveData<IdList>()
-    db.document(tag)
-        .collection(id)
-        .get()
-        .addOnSuccessListener { result ->
-          data.value = IdList(id, result.documents.map { doc -> doc.id }, category)
-          onSuccess()
-          Log.d(TAG, "DocumentSnapshot data: ${result.documents}")
-        }
-        .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
     return data
   }
 
@@ -77,7 +121,8 @@ class IdListFirebaseConnection {
       onSuccess: () -> Unit
   ) {
     val tag = category.name
-    db.document(tag)
+    fcoll
+        .document(tag)
         .collection(id)
         .document(element)
         .delete()
@@ -86,6 +131,26 @@ class IdListFirebaseConnection {
           onSuccess()
         }
         .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
+  }
+
+  fun fetch(
+      id: String,
+      category: FirebaseCollection,
+      onSuccess: () -> Unit
+  ): MutableLiveData<IdList> {
+    val tag = category.name
+    val data = MutableLiveData<IdList>()
+    fcoll
+        .document(tag)
+        .collection(id)
+        .get()
+        .addOnSuccessListener { result ->
+          data.value = IdList(id, result.documents.map { doc -> doc.id }, category)
+          onSuccess()
+          Log.d(TAG, "DocumentSnapshot data: ${result.documents}")
+        }
+        .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
+    return data
   }
 
   /**
@@ -98,7 +163,8 @@ class IdListFirebaseConnection {
    */
   fun addElement(id: String, category: FirebaseCollection, element: String, onSuccess: () -> Unit) {
     val tag = category.name
-    db.document(tag)
+    fcoll
+        .document(tag)
         .collection(id)
         .document(element)
         .set(mapOf<String, Any>())
@@ -134,8 +200,8 @@ class IdListFirebaseConnection {
     val tag1 = category1.name
     val tag2 = category2.name
     val batch = Firebase.firestore.batch()
-    val docRef1 = db.document(tag1).collection(id1).document(element1)
-    val docRef2 = db.document(tag2).collection(id2).document(element2)
+    val docRef1 = fcoll.document(tag1).collection(id1).document(element1)
+    val docRef2 = fcoll.document(tag2).collection(id2).document(element2)
     batch.set(docRef1, mapOf<String, Any>())
     batch.set(docRef2, mapOf<String, Any>())
     batch
@@ -146,6 +212,7 @@ class IdListFirebaseConnection {
         }
         .addOnFailureListener { e -> Log.w(TAG, batchErrorMsg, e) }
   }
+
   /**
    * Removes two elements from two different lists in a single batch
    *
@@ -169,8 +236,8 @@ class IdListFirebaseConnection {
     val tag1 = category1.name
     val tag2 = category2.name
     val batch = Firebase.firestore.batch()
-    val docRef1 = db.document(tag1).collection(id1).document(element1)
-    val docRef2 = db.document(tag2).collection(id2).document(element2)
+    val docRef1 = fcoll.document(tag1).collection(id1).document(element1)
+    val docRef2 = fcoll.document(tag2).collection(id2).document(element2)
     batch.delete(docRef1)
     batch.delete(docRef2)
     batch
@@ -181,6 +248,7 @@ class IdListFirebaseConnection {
         }
         .addOnFailureListener { e -> Log.w(TAG, batchErrorMsg, e) }
   }
+
   /**
    * Checks if an element exists in the list
    *
@@ -198,7 +266,8 @@ class IdListFirebaseConnection {
   ): MutableLiveData<Boolean> {
     val tag = category.name
     val data = MutableLiveData<Boolean>()
-    db.document(tag)
+    fcoll
+        .document(tag)
         .collection(id)
         .document(element)
         .get()
@@ -219,7 +288,8 @@ class IdListFirebaseConnection {
    */
   fun delete(id: String, category: FirebaseCollection, onSuccess: () -> Unit) {
     val tag = category.name
-    db.document(tag)
+    fcoll
+        .document(tag)
         .collection(id)
         .get()
         .addOnSuccessListener { result ->
