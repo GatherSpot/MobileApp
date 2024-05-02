@@ -17,6 +17,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -94,10 +95,16 @@ class EventUtils {
    */
   fun deleteEvent(event: Event) {
     // Remove the event from all the users who registered for it
-    // TODO: do it in batch
-    event.registeredUsers.forEach { userID ->
-      IdListFirebaseConnection().deleteElement(
-          userID, FirebaseCollection.REGISTERED_EVENTS, event.id) {}
+    val idListFirebase = IdListFirebaseConnection()
+    runBlocking {
+      event.registeredUsers.forEach { userID ->
+        val registeredEvents =
+            idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
+        registeredEvents?.remove(event.id)
+        if (registeredEvents != null) {
+          idListFirebase.saveToFirebase(registeredEvents)
+        }
+      }
     }
     EventFirebaseConnection.delete(event.id)
   }
