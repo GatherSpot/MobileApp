@@ -242,6 +242,8 @@ class EventsTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 5000)
       composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 5000)
 
+      Thread.sleep(3000)
+
       assert(
           viewModel.uiState.value.list.all { e ->
             if (e.categories == null) {
@@ -275,6 +277,8 @@ class EventsTest {
         composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("myEvents"))
         performClick()
       }
+
+      Thread.sleep(3000)
       val listOfEvents = viewModel.uiState.value.list
       if (listOfEvents.isNotEmpty()) {
         assert(listOfEvents.all { event -> event.organizer.id == uid })
@@ -303,7 +307,7 @@ class EventsTest {
         composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("registeredTo"))
         performClick()
       }
-
+      Thread.sleep(3000)
       val listOfEvents = viewModel.uiState.value.list
       if (listOfEvents.isNotEmpty()) {
         assert(listOfEvents.all { event -> event.registeredUsers.contains(uid) })
