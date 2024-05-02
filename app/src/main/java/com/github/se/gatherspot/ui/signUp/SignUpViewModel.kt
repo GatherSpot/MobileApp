@@ -72,8 +72,8 @@ class SignUpViewModel(val nav: NavigationActions) {
 
   fun updatePassword(string: String) {
     password.value = string
-    val passwordRegex = """^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$"""
-    isPasswordValid.value = password.value!!.matches(passwordRegex.toRegex())
+    val passRegex = """^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$"""
+    isPasswordValid.value = password.value!!.matches(passRegex.toRegex())
     updateEverythingOk()
   }
 
