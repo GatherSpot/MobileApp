@@ -57,7 +57,6 @@ class Profile(
       _interests = value
     }
 
-
   companion object {
     fun testOrganizer(): Profile {
       return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))

@@ -4,13 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
-import com.github.se.gatherspot.model.IdList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 /** ViewModel class for handling event registration logic */
 class EventRegistrationViewModel : ViewModel() {

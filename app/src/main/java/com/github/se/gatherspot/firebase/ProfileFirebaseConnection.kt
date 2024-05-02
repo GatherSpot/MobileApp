@@ -161,11 +161,6 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     val bio = d.getString("bio")
     val image = d.getString("image")
     val interests = Interests.fromCompressedString(d.getString("interests") ?: "")
-    return Profile(
-        userName,
-        bio ?: "",
-        image ?: "",
-        d.id,
-        interests)
+    return Profile(userName, bio ?: "", image ?: "", d.id, interests)
   }
 }
