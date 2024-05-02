@@ -65,7 +65,7 @@ class EventFirebaseConnectionTest {
             inscriptionLimitTime =
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-            eventStatus = EventStatus.DRAFT,
+            eventStatus = EventStatus.CREATED,
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
@@ -106,7 +106,7 @@ class EventFirebaseConnectionTest {
     assertEquals(
         resultEvent!!.inscriptionLimitTime,
         LocalTime.parse("09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)))
-    assertEquals(resultEvent!!.eventStatus, EventStatus.DRAFT)
+    assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
     assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
@@ -207,7 +207,7 @@ class EventFirebaseConnectionTest {
             inscriptionLimitTime =
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-            eventStatus = EventStatus.DRAFT,
+            eventStatus = EventStatus.CREATED,
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),

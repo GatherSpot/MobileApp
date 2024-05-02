@@ -252,7 +252,6 @@ fun EventRow(event: Event, navigation: NavigationActions) {
             when (event.eventStatus) {
               EventStatus.CREATED -> Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
               EventStatus.ON_GOING -> Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
-              EventStatus.DRAFT -> Text("Draft", color = Color(0xFF1FC959), fontSize = 14.sp)
               EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
             }
             Icon(

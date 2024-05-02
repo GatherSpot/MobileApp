@@ -146,16 +146,16 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-           var profile = Profile.testParticipant()
+              var profile = Profile.testParticipant()
 
-            /*
-            runBlocking {
-            profile = async{ProfileFirebaseConnection().fetch(event.organizerID)}.await()
-                    ?: Profile.testParticipant()
-            }
+              /*
+              runBlocking {
+              profile = async{ProfileFirebaseConnection().fetch(event.organizerID)}.await()
+                      ?: Profile.testParticipant()
+              }
 
-             */
-            ProfileIndicator(profile)
+               */
+              ProfileIndicator(profile)
 
               // Event Description
               event.description?.let { description ->

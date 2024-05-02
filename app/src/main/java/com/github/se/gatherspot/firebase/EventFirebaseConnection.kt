@@ -73,10 +73,9 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val eventStatus: EventStatus =
         when (status) {
           "CREATED" -> EventStatus.CREATED
-          "DRAFT" -> EventStatus.DRAFT
           "ON_GOING" -> EventStatus.ON_GOING
           "COMPLETED" -> EventStatus.COMPLETED
-          else -> EventStatus.DRAFT
+          else -> EventStatus.CREATED
         }
     val categoriesList = d.get("categories") as List<String>
     val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
@@ -88,7 +87,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           "null" -> null
           else -> rating.toInt()
         }
-    val organizerID = d.getString("organizerID")?: Profile.testOrganizer().id
+    val organizerID = d.getString("organizerID") ?: Profile.testOrganizer().id
     return Event(
         id = eventID,
         title = title,

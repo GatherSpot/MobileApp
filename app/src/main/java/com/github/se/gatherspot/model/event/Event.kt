@@ -45,7 +45,7 @@ data class Event(
     val attendanceMinCapacity: Int = 0,
     val inscriptionLimitDate: LocalDate?,
     val inscriptionLimitTime: LocalTime?,
-    val eventStatus: EventStatus = EventStatus.DRAFT,
+    val eventStatus: EventStatus = EventStatus.CREATED,
     val categories: Set<Interests>? = emptySet(),
     val organizerID: String = Profile.testOrganizer().id,
     // List of the IDs of the users who registered for the event
