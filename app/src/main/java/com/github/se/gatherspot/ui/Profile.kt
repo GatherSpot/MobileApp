@@ -38,9 +38,7 @@ fun Profile(nav: NavigationActions) {
  */
 @Composable
 fun ViewProfile(nav: NavigationActions, uid: String) {
-  // TODO : when actually implementing this, we will need to think how to go back to the previous
-  // screen
-  ProfileView().ProfileScreen(ProfileViewModel(uid))
+  ProfileView().ProfileScreen(ProfileViewModel(uid, nav))
 }
 
 // Those preview should show you all the functions you can call when it comes to profiles

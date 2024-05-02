@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - messages-chatting-screen
+      - 73-list-of-event-chat-ui
 
   pull_request:
     types:
