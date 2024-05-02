@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -125,6 +126,38 @@ class ProfileView {
                       .testTag("save"))
         }
   }
+  // TODO: add state for the buttons for better ui when we have time, I want to catch up to
+  // propagate functionalities first
+  @Composable
+  private fun FollowButtons(
+      back: () -> Unit,
+      follow: () -> Unit,
+      following: Boolean,
+      addFriend: () -> Unit
+  ) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+          Icon(
+              painter = painterResource(R.drawable.backarrow),
+              contentDescription = "back",
+              modifier = Modifier.clickable { back() }.testTag("back").size(24.dp))
+          Row(modifier = Modifier.clickable { addFriend() }.testTag("addFriend")) {
+            Icon(
+                painter = painterResource(R.drawable.add_friend),
+                contentDescription = "add friend",
+                modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(text = "Add Friend")
+          }
+          // TODO : make if so it does not move add friend around (make if either a chip or put it
+          // in a fixed size box)
+          Text(
+              text = if (following) "Unfollow" else "  Follow",
+              modifier = Modifier.clickable { follow() }.testTag("follow"))
+        }
+  }
 
   @Composable
   private fun UsernameField(username: String, updateUsername: (String) -> Unit, edit: Boolean) {
@@ -173,6 +206,7 @@ class ProfileView {
     val interests = viewModel.interests.value ?: mutableSetOf()
     Column {
       EditButton(navController)
+
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUri, {}, false)
         UsernameField(username, {}, false)
@@ -220,13 +254,19 @@ class ProfileView {
     val bio = viewModel.bio.observeAsState("").value
     val imageUri = viewModel.image.observeAsState("").value
     val interests = viewModel.interests.observeAsState(setOf()).value
-
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-      ProfileImage(imageUri, {}, false)
-      UsernameField(username, {}, false)
-      BioField(bio, {}, false)
-      InterestsView().ShowInterests(interests)
-      Spacer(modifier = Modifier.height(56.dp))
+    val following = viewModel.isFollowing.observeAsState(false).value
+    val back = { viewModel.back() }
+    val follow = { viewModel.follow() }
+    val addFriend = { viewModel.requestFriend() }
+    Column() {
+      FollowButtons(back, follow, following, addFriend)
+      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+        ProfileImage(imageUri, {}, false)
+        UsernameField(username, {}, false)
+        BioField(bio, {}, false)
+        InterestsView().ShowInterests(interests)
+        Spacer(modifier = Modifier.height(56.dp))
+      }
     }
   }
 }
