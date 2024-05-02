@@ -413,7 +413,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = Profile.testParticipant().id,
+              organizerID = Profile.testOrganizer().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -429,7 +429,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      editButton { assertIsDisplayed() }
+      editEventButton { assertIsDisplayed() }
       deleteButton {
         assertIsDisplayed()
         performClick()
