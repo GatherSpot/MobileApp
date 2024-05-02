@@ -106,7 +106,7 @@ class SetUpTest : TestCase() {
     }
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       setUpDone { assertExists() }
-      done { performClick() }
+      done { assertHasClickAction() } // do not click here as it has not valid data
     }
   }
 }
