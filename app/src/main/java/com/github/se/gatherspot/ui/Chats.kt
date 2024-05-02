@@ -62,7 +62,7 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
   LaunchedEffect(fetch) {
     if (fetch) {
       Log.d(ContentValues.TAG, "entered")
-
+      delay(1000)
       viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid)
 
       fetch = false
@@ -142,7 +142,6 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
               previousScrollPosition = currentScrollPosition
               if (lazyState.isScrollInProgress && isAtBottom && downwards) {
                 loading = true
-                delay(1000)
                 viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid ?: "")
                 fetched = true
               }

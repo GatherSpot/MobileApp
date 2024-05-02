@@ -6,16 +6,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
-import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.screens.ChatsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -28,13 +24,13 @@ class ChatsTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @Before
-  fun setUp() {
-    FirebaseAuth.getInstance().signOut()
+  fun testLogin() {
+    Firebase.auth.signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;")
   }
 
   @After
-  fun tearDown() {
-    FirebaseAuth.getInstance().signOut()
+  fun testLoginCleanUp() {
+    Firebase.auth.signOut()
   }
 
   @Test
@@ -67,25 +63,6 @@ class ChatsTest {
   @OptIn(ExperimentalTestApi::class, ExperimentalTestApi::class)
   @Test
   fun chatsAreDisplayedAndScrollable() {
-    val firebase = FirebaseAuth.getInstance()
-
-    firebase.signOut()
-    firebase.createUserWithEmailAndPassword("GatherSpotTest", "azerty123A")
-    firebase.signInWithEmailAndPassword("GatherSpotTest", "azerty123A")
-    var uid = firebase.currentUser?.uid ?: ""
-    runBlocking {
-      async { firebase.signInWithEmailAndPassword("mathurinsky@gmail.com", "azerty123A") }.await()
-      firebase.updateCurrentUser(firebase.currentUser!!)
-
-      uid = firebase.currentUser?.uid!!
-
-      ProfileFirebaseConnection()
-          .add(
-              com.github.se.gatherspot.model.Profile(
-                  "GatherSpotTest", "", "", uid, setOf(Interests.ART)))
-
-      ProfileFirebaseConnection().update(uid, "registeredEvents", setOf("-NwJSmLmQDUlF9booiq7"))
-    }
 
     val viewModel = ChatsListViewModel()
     composeTestRule.setContent {
@@ -93,7 +70,6 @@ class ChatsTest {
       Chats(viewModel = viewModel, nav = nav)
     }
 
-    runTest { viewModel.fetchNext(uid) }
     ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 20000)
       eventsList {
@@ -102,6 +78,5 @@ class ChatsTest {
         performGesture { swipeUp(400F, 0F, 1000) }
       }
     }
-    FirebaseAuth.getInstance().signOut()
   }
 }
