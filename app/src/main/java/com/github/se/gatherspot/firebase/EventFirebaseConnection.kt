@@ -189,6 +189,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
   // needs change cause events are not yet created with appropriate profile
+  // eventID-> organizerID
   suspend fun fetchMyEvents(): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
         Firebase.firestore

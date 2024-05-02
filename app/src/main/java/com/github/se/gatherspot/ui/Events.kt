@@ -248,10 +248,11 @@ fun EventRow(event: Event, navigation: NavigationActions) {
       modifier =
           Modifier.background(
                   color =
-                      if (event.organizer.id == FirebaseAuth.getInstance().currentUser!!.uid) {
+                      if (event.organizer.id ==
+                          (FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")) {
                         Color(80, 50, 200, 120)
                       } else if (event.registeredUsers.contains(
-                          FirebaseAuth.getInstance().currentUser!!.uid)) {
+                          FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")) {
                         Color(46, 204, 113, 120)
                       } else {
                         Color.White
