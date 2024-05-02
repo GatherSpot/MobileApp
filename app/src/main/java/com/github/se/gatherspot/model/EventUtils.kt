@@ -1,8 +1,13 @@
 package com.github.se.gatherspot.model
 
-import com.github.se.gatherspot.EventFirebaseConnection
-import com.github.se.gatherspot.FirebaseCollection
-import com.github.se.gatherspot.IdListFirebaseConnection
+import android.content.Context
+import android.util.Log
+import androidx.compose.ui.graphics.ImageBitmap
+import com.github.se.gatherspot.cache.LocalStorage
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.FirebaseCollection
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
+import com.github.se.gatherspot.model.event.DraftEvent
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -89,12 +94,10 @@ class EventUtils {
    */
   fun deleteEvent(event: Event) {
     // Remove the event from all the users who registered for it
-    val idListFirebase = IdListFirebaseConnection()
+    // TODO: do it in batch
     event.registeredUsers.forEach { userID ->
-      val registeredEvents =
-          idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
-      registeredEvents.remove(event.id)
-      idListFirebase.saveToFirebase(registeredEvents)
+      IdListFirebaseConnection().deleteElement(
+          userID, FirebaseCollection.REGISTERED_EVENTS, event.id) {}
     }
     EventFirebaseConnection.delete(event.id)
   }
@@ -345,4 +348,54 @@ class EventUtils {
         }
         return@withContext suggestions
       }
+
+  fun saveDraftEvent(
+      title: String?,
+      description: String?,
+      location: Location?,
+      startDate: String?,
+      endDate: String?,
+      startTime: String?,
+      endTime: String?,
+      maxAttendees: String?,
+      minAttendees: String?,
+      dateLimitInscription: String?,
+      timeLimitInscription: String?,
+      categories: Set<Interests>?,
+      image: ImageBitmap?,
+      context: Context
+  ) {
+    val draftEvent =
+        DraftEvent(
+            title,
+            description,
+            location,
+            startDate,
+            endDate,
+            startTime,
+            endTime,
+            maxAttendees,
+            minAttendees,
+            dateLimitInscription,
+            timeLimitInscription,
+            image = image,
+            categories = categories)
+
+    val localStorage = LocalStorage(context)
+    localStorage.storeDraftEvent(draftEvent)
+  }
+
+  fun retrieveFromDraft(context: Context): DraftEvent? {
+    val localStorage = LocalStorage(context)
+    return localStorage.loadDraftEvent()
+  }
+
+  fun deleteDraft(context: Context) {
+    val localStorage = LocalStorage(context)
+    try {
+      localStorage.deleteDraftEvent()
+    } catch (e: Exception) {
+      Log.e("EventUtils", "Error deleting draft event from local storage", e)
+    }
+  }
 }

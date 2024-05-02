@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - 75-interface-for-all-firebaseconnection-classes
+      - messages-chatting-screen
 
   pull_request:
     types:

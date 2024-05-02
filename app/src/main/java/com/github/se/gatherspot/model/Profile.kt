@@ -1,6 +1,6 @@
 package com.github.se.gatherspot.model
 
-import com.github.se.gatherspot.CollectionClass
+import com.github.se.gatherspot.firebase.CollectionClass
 
 // NOTE : I will add interests once theses are pushed
 /**
@@ -56,6 +56,8 @@ class Profile(
     set(value) {
       _interests = value
     }
+
+  val registeredEvents = mutableListOf<String>() // list of event ids
 
   companion object {
     fun testOrganizer(): Profile {

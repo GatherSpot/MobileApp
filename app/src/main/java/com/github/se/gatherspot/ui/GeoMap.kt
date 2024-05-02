@@ -15,6 +15,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 private const val ZOOM_DEFAULT = 15f
+private val DEFAULT_POSITION = LatLng(46.518567549767575, 6.568562923656716)
 
 @Composable
 fun GeoMap(
@@ -23,7 +24,7 @@ fun GeoMap(
     mapViewModifier: Modifier = Modifier
 ) {
   // find the camera initial position (default is Rolex Learning Center at EPFL)
-  var cameraCenter = LatLng(46.518567549767575, 6.568562923656716)
+  var cameraCenter = DEFAULT_POSITION
 
   if (userCoordinates != null) {
     cameraCenter = LatLng(userCoordinates.latitude, userCoordinates.longitude)

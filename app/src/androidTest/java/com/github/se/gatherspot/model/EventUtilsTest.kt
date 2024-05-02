@@ -1,4 +1,6 @@
-import com.github.se.gatherspot.EventFirebaseConnection
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -78,6 +80,9 @@ class EventUtilsTest {
     Assert.assertEquals(10, event.attendanceMinCapacity)
     Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
+
+    // Keep a clean database: suppress immediately the event
+    EventFirebaseConnection.delete(event.id)
   }
 
   @Test
@@ -113,6 +118,9 @@ class EventUtilsTest {
     Assert.assertEquals(10, event.attendanceMinCapacity)
     Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
+
+    // Keep a clean database: suppress immediately the event
+    EventFirebaseConnection.delete(event.id)
   }
 
   @Test
@@ -188,7 +196,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_OnlyMandatoryFields_returnsTrue() {
+  fun validateEventData_withInvalidEndTime_returnsFalse() {
     // validate data parse strings
     try {
       val result =
@@ -480,5 +488,70 @@ class EventUtilsTest {
     eventUtils.deleteEvent(event)
     val eventFromDBAfterDelete = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertNull(eventFromDBAfterDelete)
+  }
+
+  @Test
+  fun testSaveDraftEvent() {
+    val eventUtils = EventUtils()
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    eventUtils.saveDraftEvent(
+        "title",
+        "description",
+        Location(0.0, 0.0, "Malibu"),
+        "eventStartDate",
+        "eventEndDate",
+        "timeBeginning",
+        "timeEnding",
+        "attendanceMaxCapacity",
+        "attendanceMinCapacity",
+        "inscriptionLimitDate",
+        "inscriptionLimitTime",
+        setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
+        null,
+        context)
+    val draftEvent = eventUtils.retrieveFromDraft(context)
+    Assert.assertEquals("title", draftEvent?.title)
+    Assert.assertEquals("description", draftEvent?.description)
+    Assert.assertEquals(0.0, draftEvent?.location?.latitude)
+    Assert.assertEquals(0.0, draftEvent?.location?.longitude)
+    Assert.assertEquals("Malibu", draftEvent?.location?.name)
+    Assert.assertEquals("eventStartDate", draftEvent?.eventStartDate)
+    Assert.assertEquals("eventEndDate", draftEvent?.eventEndDate)
+    Assert.assertEquals("timeBeginning", draftEvent?.timeBeginning)
+    Assert.assertEquals("timeEnding", draftEvent?.timeEnding)
+    Assert.assertEquals("attendanceMaxCapacity", draftEvent?.attendanceMaxCapacity)
+    Assert.assertEquals("attendanceMinCapacity", draftEvent?.attendanceMinCapacity)
+    Assert.assertEquals("inscriptionLimitDate", draftEvent?.inscriptionLimitDate)
+    Assert.assertEquals("inscriptionLimitTime", draftEvent?.inscriptionLimitTime)
+    Assert.assertEquals(
+        setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
+        draftEvent?.categories)
+    Assert.assertNull(draftEvent?.image)
+    eventUtils.deleteDraft(context)
+  }
+
+  @Test
+  fun deleteDraftEventTest() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val eventUtils = EventUtils()
+    eventUtils.saveDraftEvent(
+        "title",
+        "description",
+        Location(0.0, 0.0, "Malibu"),
+        "eventStartDate",
+        "eventEndDate",
+        "timeBeginning",
+        "timeEnding",
+        "attendanceMaxCapacity",
+        "attendanceMinCapacity",
+        "inscriptionLimitDate",
+        "inscriptionLimitTime",
+        setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
+        null,
+        context)
+    eventUtils.retrieveFromDraft(context)!!
+    eventUtils.deleteDraft(context)
+    val draftEvent = eventUtils.retrieveFromDraft(context)
+    Assert.assertNull(draftEvent)
   }
 }

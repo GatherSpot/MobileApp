@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.UserFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
@@ -62,14 +62,16 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
   val interests by remember { mutableStateOf(mutableSetOf<Interests>()) }
 
   LaunchedEffect(isClicked) {
-    withContext(Dispatchers.Main) {
-      auth.currentUser?.reload()?.await()
-      isEmailVerified = auth.currentUser?.isEmailVerified ?: false
-      if (isEmailVerified) {
-        UserFirebaseConnection().updateUserInterests(uid, interests.toList())
-        nav.controller.navigate("events")
-      } else {
-        emailText = "Please verify your email before continuing"
+    if (isClicked) {
+      withContext(Dispatchers.Main) {
+        auth.currentUser?.reload()?.await()
+        isEmailVerified = auth.currentUser?.isEmailVerified ?: false
+        if (isEmailVerified) {
+          ProfileFirebaseConnection().updateInterests(uid, interests)
+          nav.controller.navigate("profile")
+        } else {
+          emailText = "Please verify your email before continuing"
+        }
       }
     }
   }

@@ -52,10 +52,17 @@ import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
+import com.github.se.gatherspot.model.utils.LocalDateDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateSerializer
+import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -94,6 +101,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                                 showDropdownMenu = !showDropdownMenu
                                 if (!showDropdownMenu) {
                                   viewModel.filter(interestsSelected)
+                                } else {
                                   interestsSelected = mutableListOf()
                                 }
                               }
@@ -104,12 +112,12 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                       onDismissRequest = {
                         showDropdownMenu = false
                         viewModel.filter(interestsSelected)
-                        interestsSelected = mutableListOf()
                       }) {
                         DropdownMenuItem(
                             text = { Text("REMOVE FILTER") },
                             onClick = {
                               viewModel.removeFilter()
+                              interestsSelected = mutableListOf()
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.Clear, "clear") })
@@ -124,8 +132,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                     modifier = Modifier.clickable { fetch = true }.testTag("refresh"))
                 LaunchedEffect(fetch) {
                   if (fetch) {
-                    Log.d(TAG, "entered")
-                    viewModel.fetchNext()
+                    Log.d(TAG, "entered with $interestsSelected")
+                    viewModel.fetchNext(interestsSelected)
                     fetch = false
                   }
                 }
@@ -160,14 +168,16 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
       }) { paddingValues ->
         if (fetch) {
           Text(
-              modifier = Modifier.testTag("fetch").padding(vertical = 30.dp),
-              text = "Fetching new events...")
+              modifier = Modifier.testTag("fetch").padding(vertical = 40.dp),
+              text = "Fetching new events matching: ${interestsSelected.joinToString(", ")}",
+              fontSize = 12.sp)
         }
+        Spacer(modifier = Modifier.height(10.dp))
         val events = state.value.list
         val lazyState = rememberLazyListState()
         Log.d(TAG, "size = " + events.size.toString())
         when {
-          events.isEmpty() -> Empty(viewModel)
+          events.isEmpty() -> Empty(viewModel, interestsSelected) { fetch = true }
           else -> {
             LazyColumn(
                 state = lazyState,
@@ -186,7 +196,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
               if (lazyState.isScrollInProgress && isAtBottom && downwards) {
                 loading = true
                 delay(1000)
-                viewModel.fetchNext()
+                viewModel.fetchNext(interestsSelected)
                 fetched = true
               }
             }
@@ -197,12 +207,21 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
-  val EventFirebaseConnection = com.github.se.gatherspot.EventFirebaseConnection()
+  val eventFirebaseConnection = com.github.se.gatherspot.firebase.EventFirebaseConnection()
   Row(
       modifier =
           Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
-            val gson = Gson()
+            // Create a new Gson instance with the custom serializers and deserializers
+            val gson: Gson =
+                GsonBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+                    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+                    .create()
+
             val eventJson = gson.toJson(event)
+            Log.e("Display", "eventJson = $eventJson")
             navigation.controller.navigate("event/$eventJson")
           },
       verticalAlignment = Alignment.CenterVertically) {
@@ -216,13 +235,13 @@ fun EventRow(event: Event, navigation: NavigationActions) {
           Text(
               text =
                   "Start date: ${event.eventStartDate?.
-                format(DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))}",
+                format(DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT))}",
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
           Text(
               text =
                   "End date: ${event.eventEndDate?.
-                format(DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))}",
+                format(DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT))}",
               fontWeight = FontWeight.Bold,
               fontSize = 10.sp)
           Text(text = event.title, fontSize = 14.sp)
@@ -247,14 +266,22 @@ fun EventRow(event: Event, navigation: NavigationActions) {
 }
 
 @Composable
-fun Empty(viewModel: EventsViewModel) {
+fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: () -> Unit) {
   Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-      Text("No events matched your query")
-      Text(
-          "Remove filter",
-          color = Color.Blue,
-          modifier = Modifier.clickable { viewModel.removeFilter() })
+      Text("No loaded events matched your query")
+      Row {
+        Text(
+            "Remove filter ",
+            color = Color.Blue,
+            modifier =
+                Modifier.clickable {
+                  viewModel.removeFilter()
+                  interests.removeAll { true }
+                })
+        Text("or ")
+        Text("try loading new ones", color = Color.Blue, modifier = Modifier.clickable { fetch() })
+      }
     }
   }
 }
@@ -269,8 +296,10 @@ fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Int
       onClick = {
         selected = !selected
         if (selected) {
+          Log.d(TAG, "added ${interest.name}")
           interestsSelected.add(interest)
         } else {
+          Log.d(TAG, "removed ${interest.name}")
           interestsSelected.remove(interest)
         }
       },

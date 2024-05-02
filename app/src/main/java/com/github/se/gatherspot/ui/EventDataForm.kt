@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,10 +42,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.github.se.gatherspot.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
@@ -53,7 +55,6 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 private val WIDTH = 300.dp
@@ -104,10 +105,11 @@ fun EventDataForm(
   var showErrorDialog by remember { mutableStateOf(false) }
   var errorMessage = ""
   var locationName by remember { mutableStateOf("") }
-  var categories: MutableList<Interests> = remember { mutableStateListOf() }
+  val categories: MutableList<Interests> = remember { mutableStateListOf() }
   // Flow for query text input
-  val queryText = MutableStateFlow("")
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
+  // Context to use for draft saving
+  val context = LocalContext.current
 
   // Coroutine scope for launching coroutines
   val coroutineScope = rememberCoroutineScope()
@@ -129,6 +131,23 @@ fun EventDataForm(
     inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
   }
 
+  val draft = eventUtils.retrieveFromDraft(context)
+  if (eventAction == EventAction.CREATE && draft != null) {
+    // Restore the draft
+    title = TextFieldValue(draft.title ?: "")
+    description = TextFieldValue(draft.description ?: "")
+    location = draft.location
+    eventStartDate = TextFieldValue(draft.eventStartDate ?: "")
+    eventEndDate = TextFieldValue(draft.eventEndDate ?: "")
+    eventTimeStart = TextFieldValue(draft.timeBeginning ?: "")
+    eventTimeEnd = TextFieldValue(draft.timeEnding ?: "")
+    maxAttendees = TextFieldValue(draft.attendanceMaxCapacity ?: "")
+    minAttendees = TextFieldValue(draft.attendanceMinCapacity ?: "")
+    inscriptionLimitDate = TextFieldValue(draft.inscriptionLimitDate ?: "")
+    inscriptionLimitTime = TextFieldValue(draft.inscriptionLimitTime ?: "")
+    categories.addAll(draft.categories ?: emptySet())
+  }
+
   Scaffold(
       modifier = Modifier.testTag("EventDataFormScreen"),
       topBar = {
@@ -139,12 +158,78 @@ fun EventDataForm(
                   modifier = Modifier.testTag("createEventTitle"))
             },
             navigationIcon = {
-              IconButton(onClick = { nav.goBack() }, modifier = Modifier.testTag("goBackButton")) {
-                Icon(
-                    modifier = Modifier.testTag("backIcon"),
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Go back to overview")
-              }
+              IconButton(
+                  onClick = {
+                    eventUtils.saveDraftEvent(
+                        title.text,
+                        description.text,
+                        location,
+                        eventStartDate.text,
+                        eventEndDate.text,
+                        eventTimeStart.text,
+                        eventTimeEnd.text,
+                        maxAttendees.text,
+                        minAttendees.text,
+                        inscriptionLimitDate.text,
+                        inscriptionLimitTime.text,
+                        categories.toSet(),
+                        image = null,
+                        context = context)
+                    nav.goBack()
+                  },
+                  modifier = Modifier.testTag("goBackButton")) {
+                    Icon(
+                        modifier = Modifier.testTag("backIcon"),
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Go back to overview")
+                  }
+            },
+            actions = {
+              // Add a button to erase all the fields
+              Button(
+                  onClick = {
+                    title = TextFieldValue("")
+                    description = TextFieldValue("")
+                    location = null
+                    eventStartDate = TextFieldValue("")
+                    eventEndDate = TextFieldValue("")
+                    eventTimeStart = TextFieldValue("")
+                    eventTimeEnd = TextFieldValue("")
+                    maxAttendees = TextFieldValue("")
+                    minAttendees = TextFieldValue("")
+                    inscriptionLimitDate = TextFieldValue("")
+                    inscriptionLimitTime = TextFieldValue("")
+                    categories.clear()
+                    eventUtils.deleteDraft(context)
+                  },
+                  modifier = Modifier.testTag("clearFieldsButton"),
+                  shape = RoundedCornerShape(size = 10.dp)) {
+                    Text(text = "Clear all fields")
+                  }
+              Spacer(modifier = Modifier.width(10.dp))
+              // Add a button to save the draft
+              Button(
+                  onClick = {
+                    eventUtils.saveDraftEvent(
+                        title.text,
+                        description.text,
+                        location,
+                        eventStartDate.text,
+                        eventEndDate.text,
+                        eventTimeStart.text,
+                        eventTimeEnd.text,
+                        maxAttendees.text,
+                        minAttendees.text,
+                        inscriptionLimitDate.text,
+                        inscriptionLimitTime.text,
+                        categories.toSet(),
+                        image = null,
+                        context = context)
+                  },
+                  modifier = Modifier.testTag("saveDraftButton"),
+                  shape = RoundedCornerShape(size = 10.dp)) {
+                    Text(text = "Save draft")
+                  }
             })
       }) { innerPadding ->
         // Make the content scrollable
@@ -187,10 +272,10 @@ fun EventDataForm(
                 label = { Text("End date of the event") },
                 placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
 
-            // Time Start
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
+                  // Time Start
                   OutlinedTextField(
                       modifier =
                           Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeStartEvent"),
@@ -233,9 +318,7 @@ fun EventDataForm(
                               // Debounce logic: wait for 300 milliseconds after the last text
                               // change
                               delay(300)
-                              Log.e("EventDataForm", "Querying for $newValue")
                               suggestions = eventUtils.fetchLocationSuggestions(newValue)
-                              Log.e("EventDataForm", "Suggestions: $suggestions")
                             }
                       },
                       label = { Text("Location") },
@@ -325,8 +408,17 @@ fun EventDataForm(
                     errorMessage = e.message.toString()
                     showErrorDialog = true
                   }
+                  // Delete the draft
+                  eventUtils.deleteDraft(context)
+
                   if (!showErrorDialog) {
-                    nav.controller.navigate("events")
+                    if (eventAction == EventAction.CREATE) {
+                      // Go back to the list of events
+                      nav.controller.navigate("events")
+                    } else {
+                      // Go back to the event details
+                      nav.goBack()
+                    }
                   }
                 },
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),

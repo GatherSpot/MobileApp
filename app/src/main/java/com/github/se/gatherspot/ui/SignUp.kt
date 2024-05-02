@@ -40,14 +40,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.UserFirebaseConnection
-import com.github.se.gatherspot.model.User
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -61,11 +62,11 @@ fun SignUp(nav: NavigationActions) {
   var password by remember { mutableStateOf("") }
   var isPasswordDisplayed by remember { mutableStateOf(false) }
   var isPasswordValid by remember { mutableStateOf(false) }
-  var showDialog by remember { mutableStateOf(false) }
+  var signUpFailed by remember { mutableStateOf(false) }
   var isClicked by remember { mutableStateOf(false) }
-  var showDialogVerif by remember { mutableStateOf(false) }
+  var verifEmailSent by remember { mutableStateOf(false) }
   val t = remember { mutableStateOf("") }
-  val UserFirebaseConnection = UserFirebaseConnection()
+  val ProfileFirebaseConnection = ProfileFirebaseConnection()
 
   LaunchedEffect(isClicked) {
     if (isClicked) {
@@ -73,13 +74,10 @@ fun SignUp(nav: NavigationActions) {
         withContext(Dispatchers.IO) {
           val success = checkCredentials(email, password, t)
           if (success) {
-            MainActivity.uid = UserFirebaseConnection.getNewID()
-            val newUser = User(MainActivity.uid, username, email, password)
-            UserFirebaseConnection.add(newUser)
             FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().await()
-            showDialogVerif = true
+            verifEmailSent = true
           } else {
-            showDialog = true
+            signUpFailed = true
             isClicked = false
           }
         }
@@ -90,12 +88,12 @@ fun SignUp(nav: NavigationActions) {
   }
 
   LaunchedEffect(key1 = username) {
-    UserFirebaseConnection.usernameExists(username) { result -> isUsernameValid = !result }
+    ProfileFirebaseConnection.ifUsernameExists(username) { result -> isUsernameValid = !result }
   }
 
   Box(modifier = Modifier.fillMaxSize().background(Color.White).testTag("signUpScreen")) {
     Column(
-        modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp),
+        modifier = Modifier.padding(vertical = 30.dp, horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(60.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -118,7 +116,7 @@ fun SignUp(nav: NavigationActions) {
       Column(
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.spacedBy(10.dp)) {
+          verticalArrangement = Arrangement.spacedBy(5.dp)) {
             OutlinedTextField(
                 value = username,
                 onValueChange = { s -> username = s },
@@ -140,7 +138,7 @@ fun SignUp(nav: NavigationActions) {
       Column(
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.spacedBy(10.dp)) {
+          verticalArrangement = Arrangement.spacedBy(5.dp)) {
             OutlinedTextField(
                 value = email,
                 onValueChange = { s -> email = s },
@@ -163,7 +161,7 @@ fun SignUp(nav: NavigationActions) {
       Column(
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.spacedBy(10.dp)) {
+          verticalArrangement = Arrangement.spacedBy(5.dp)) {
             OutlinedTextField(
                 value = password,
                 onValueChange = {
@@ -215,25 +213,28 @@ fun SignUp(nav: NavigationActions) {
             Text("Sign Up", color = Color.White)
           }
 
-      if (showDialog) {
+      if (signUpFailed) {
         AlertDialog(
-            modifier = Modifier.testTag("signUpFailed").clickable { showDialog = false },
-            onDismissRequest = { showDialog = false },
+            modifier = Modifier.testTag("signUpFailed").clickable { signUpFailed = false },
+            onDismissRequest = { signUpFailed = false },
             confirmButton = {},
             title = { Text("Signup Failed") },
             text = { Text(t.value) },
         )
       }
 
-      if (showDialogVerif) {
+      if (verifEmailSent) {
         AlertDialog(
             modifier =
                 Modifier.testTag("verification").clickable {
-                  showDialogVerif = false
+                  verifEmailSent = false
+                  ProfileFirebaseConnection.add(
+                      Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
                   nav.controller.navigate("setup")
                 },
             onDismissRequest = {
-              showDialogVerif = false
+              verifEmailSent = false
+              ProfileFirebaseConnection.add(Profile(username, "", "", "", setOf()))
               nav.controller.navigate("setup")
             },
             confirmButton = {},
