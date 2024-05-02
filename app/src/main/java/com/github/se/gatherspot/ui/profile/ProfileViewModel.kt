@@ -14,7 +14,6 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class OwnProfileViewModel : ViewModel() {
@@ -70,9 +69,9 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun uploadProfileImage(newImageUri: Uri) {
-    viewModelScope.launch{
+    viewModelScope.launch {
       Log.d("New image uri : ", newImageUri.toString())
-      if(newImageUri != Uri.EMPTY) {
+      if (newImageUri != Uri.EMPTY) {
         val newUrl = FirebaseImages().pushProfilePicture(newImageUri, _profile.id)
         if (newUrl.isNotEmpty()) {
           Log.d("Successfully uploaded: ", newUrl)
@@ -80,6 +79,14 @@ class OwnProfileViewModel : ViewModel() {
           ProfileFirebaseConnection().update(_profile.id, "image", newUrl)
         }
       }
+    }
+  }
+
+  fun removeProfilePicture() {
+    viewModelScope.launch {
+      FirebaseImages().removeProfilePicture(_profile.id)
+      ProfileFirebaseConnection().update(_profile.id, "image", "")
+      updateProfileImage("")
     }
   }
 

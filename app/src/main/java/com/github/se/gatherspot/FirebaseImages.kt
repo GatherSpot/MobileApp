@@ -10,8 +10,8 @@ class FirebaseImages {
   private val PROFILE_PICTURE_STORAGE = "profile_images"
 
   /**
-   * A function that pushes the profile picture to the profile image cloud storage on
-   * success returns the image url, elses empty
+   * A function that pushes the profile picture to the profile image cloud storage on success
+   * returns the image url, elses empty
    */
   suspend fun pushProfilePicture(imageUri: Uri, userId: String): String {
     if (imageUri != Uri.EMPTY && userId.isNotEmpty()) {
@@ -22,8 +22,8 @@ class FirebaseImages {
   }
 
   /**
-   * A function that pushes the profile picture to the profile image cloud storage on
-   * success returns the image url, elses empty
+   * A function that pushes the profile picture to the profile image cloud storage on success
+   * returns the image url, elses empty
    */
   suspend fun pushPicture(imageUri: Uri, subFolder: String, saveAs: String): String {
     if (imageUri != Uri.EMPTY && subFolder.isNotEmpty() && saveAs.isNotEmpty()) {
@@ -36,6 +36,29 @@ class FirebaseImages {
       }
     } else {
       return ""
+    }
+  }
+
+  /** A function that removes the picture from the cloud storage */
+  suspend fun removePicture(subFolder: String, saveAs: String): Boolean {
+    if (subFolder.isNotEmpty() && saveAs.isNotEmpty()) {
+      try {
+        PICTURE_BASE_STORAGE.child("${subFolder}/${saveAs}").delete().await()
+        return true
+      } catch (e: Exception) {
+        return false
+      }
+    } else {
+      return false
+    }
+  }
+
+  /** A function that removes the user profile picture from the cloud storage */
+  suspend fun removeProfilePicture(userId: String): Boolean {
+    if (userId.isNotEmpty()) {
+      return removePicture(PROFILE_PICTURE_STORAGE, userId)
+    } else {
+      return false
     }
   }
 }

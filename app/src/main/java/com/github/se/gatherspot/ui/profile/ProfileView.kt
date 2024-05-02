@@ -1,15 +1,11 @@
 package com.github.se.gatherspot.ui.profile
 
-import android.app.VoiceInteractor.PickOptionRequest
 import android.content.ContentValues
 import android.net.Uri
-import android.provider.Settings.Global
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -32,6 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -40,19 +40,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
-import com.github.se.gatherspot.FirebaseImages
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class ProfileView {
   /**
@@ -109,45 +101,36 @@ class ProfileView {
 
   @Composable
   fun EditButton(nav: NavController) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp), horizontalArrangement = Arrangement.End) {
+    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
       // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
       Icon(
           painter = painterResource(R.drawable.edit),
           contentDescription = "edit",
-          modifier = Modifier
-              .clickable { nav.navigate("edit") }
-              .size(24.dp)
-              .testTag("edit"))
+          modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
     }
   }
 
   @Composable
   fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, nav: NavController) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Text(
               text = "Cancel",
               modifier =
-              Modifier
-                  .clickable {
-                      cancel()
-                      nav.navigate("view")
-                  }
-                  .testTag("cancel"))
+                  Modifier.clickable {
+                        cancel()
+                        nav.navigate("view")
+                      }
+                      .testTag("cancel"))
           Text(
               text = "Save",
               modifier =
-              Modifier
-                  .clickable {
-                      save()
-                      nav.navigate("view")
-                  }
-                  .testTag("save"))
+                  Modifier.clickable {
+                        save()
+                        nav.navigate("view")
+                      }
+                      .testTag("save"))
         }
   }
   // TODO: add state for the buttons for better ui when we have time, I want to catch up to
@@ -160,20 +143,13 @@ class ProfileView {
       addFriend: () -> Unit
   ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Icon(
               painter = painterResource(R.drawable.backarrow),
               contentDescription = "back",
-              modifier = Modifier
-                  .clickable { back() }
-                  .testTag("back")
-                  .size(24.dp))
-          Row(modifier = Modifier
-              .clickable { addFriend() }
-              .testTag("addFriend")) {
+              modifier = Modifier.clickable { back() }.testTag("back").size(24.dp))
+          Row(modifier = Modifier.clickable { addFriend() }.testTag("addFriend")) {
             Icon(
                 painter = painterResource(R.drawable.add_friend),
                 contentDescription = "add friend",
@@ -186,19 +162,14 @@ class ProfileView {
           // in a fixed size box)
           Text(
               text = if (following) "Unfollow" else "  Follow",
-              modifier = Modifier
-                  .clickable { follow() }
-                  .testTag("follow"))
+              modifier = Modifier.clickable { follow() }.testTag("follow"))
         }
   }
 
   @Composable
   private fun UsernameField(username: String, updateUsername: (String) -> Unit, edit: Boolean) {
     OutlinedTextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .testTag("usernameInput"),
+        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
         label = { Text("username") },
         value = username,
         readOnly = !edit,
@@ -212,53 +183,59 @@ class ProfileView {
         value = bio,
         onValueChange = { updateBio(it) },
         readOnly = !edit,
-        modifier = Modifier
-            .height(150.dp)
-            .fillMaxWidth()
-            .padding(8.dp)
-            .testTag("bioInput"))
+        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
   }
 
   @Composable
-  private fun ProfileImage(imageUrl: String, updateImage: (Uri) -> Unit, edit: Boolean) {
-      val photoPickerLauncher = rememberLauncherForActivityResult(
-          contract = ActivityResultContracts.PickVisualMedia(),
-          onResult = {
-              if (it != null){
-                  Log.d("SELECT IMAGE : ", it.toString())
-                  updateImage(it)
+  private fun ProfileImage(
+      imageUrl: String,
+      edit: Boolean,
+      setImageEditAction: (ImageEditAction) -> Unit = {},
+      editAction: ImageEditAction = ImageEditAction.NO_ACTION,
+      localImageUri: Uri = Uri.EMPTY,
+      updateLocalImageUri: (Uri) -> Unit = {}
+  ) {
+    val photoPickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+            onResult = {
+              if (it != null) {
+                Log.d("SELECT IMAGE : ", it.toString())
+                setImageEditAction(ImageEditAction.UPLOAD)
+                updateLocalImageUri(it)
               }
-          }
-      )
+            })
 
-      Column(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
+    Column(
+        modifier = Modifier.padding(8.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally) {
-          Card(shape = CircleShape, modifier = Modifier
-              .padding(8.dp)
-              .size(180.dp)) {
-
-              AsyncImage(
-                  model = imageUrl,
-                  placeholder = painterResource(R.drawable.user),
-                  contentDescription = "profile image",
-                  modifier = Modifier
-                      .clickable {
-                          if(edit) {
-                              photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+          Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
+            AsyncImage(
+                model = if (editAction == ImageEditAction.NO_ACTION) imageUrl else localImageUri,
+                placeholder = painterResource(R.drawable.user),
+                contentDescription = "profile image",
+                modifier =
+                    Modifier.clickable {
+                          if (edit) {
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly))
                           }
-                      }
-                      .testTag("profileImage"),
-                  contentScale = ContentScale.Crop
-              )
+                        }
+                        .testTag("profileImage"),
+                contentScale = ContentScale.Crop)
           }
-
           if (edit) Text(text = "Change profile picture")
+
+          if (edit &&
+              ((imageUrl.isNotEmpty() && editAction == ImageEditAction.NO_ACTION) ||
+                  localImageUri != Uri.EMPTY)) {
+            Button(onClick = { setImageEditAction(ImageEditAction.REMOVE) }) {
+              Text(text = "Remove profile picture")
+            }
+          }
         }
   }
-
 
   @Composable
   private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
@@ -271,10 +248,8 @@ class ProfileView {
     Column {
       EditButton(navController)
 
-      Column(modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .padding(8.dp)) {
-        ProfileImage(imageUrl, {}, false)
+      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+        ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
         InterestsView().ShowInterests(interests)
@@ -293,18 +268,37 @@ class ProfileView {
     val updateUsername = { s: String -> viewModel.updateUsername(s) }
     val updateBio = { s: String -> viewModel.updateBio(s) }
 
-      val uploadProfileImage: (Uri) -> Unit = {
-          it -> viewModel.uploadProfileImage(it)
+    var localImageUriToUpload by remember { mutableStateOf(Uri.EMPTY) }
+    val setLocalImageUriToUpload: (Uri) -> Unit = { localImageUriToUpload = it }
+    var imageEditAction by remember { mutableStateOf(ImageEditAction.NO_ACTION) }
+    val setImageEditAction: (ImageEditAction) -> Unit = {
+      if (it == ImageEditAction.REMOVE) {
+        localImageUriToUpload = Uri.EMPTY
       }
+      imageEditAction = it
+      Log.d("Image Edit Action", it.toString())
+    }
+    Log.d("Image Edit Action : ", imageEditAction.toString())
 
-    val save = { viewModel.save() }
+    val save = {
+      when (imageEditAction) {
+        ImageEditAction.UPLOAD -> viewModel.uploadProfileImage(localImageUriToUpload)
+        ImageEditAction.REMOVE -> viewModel.removeProfilePicture()
+        else -> {}
+      }
+      viewModel.save()
+    }
     val cancel = { viewModel.update() }
     Column() {
       SaveCancelButtons(save, cancel, navController)
-      Column(modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .padding(56.dp)) {
-        ProfileImage(imageUrl, uploadProfileImage, true)
+      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
+        ProfileImage(
+            imageUrl = imageUrl,
+            edit = true,
+            setImageEditAction = setImageEditAction,
+            editAction = imageEditAction,
+            localImageUri = localImageUriToUpload,
+            updateLocalImageUri = setLocalImageUriToUpload)
         UsernameField(username, updateUsername, true)
         BioField(bio, updateBio, true)
         InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
@@ -324,7 +318,7 @@ class ProfileView {
   fun ProfileScreen(viewModel: ProfileViewModel) {
     val username = viewModel.username.observeAsState("").value
     val bio = viewModel.bio.observeAsState("").value
-    val imageUri = viewModel.image.observeAsState("").value
+    val imageUrl = viewModel.image.observeAsState("").value
     val interests = viewModel.interests.observeAsState(setOf()).value
     val following = viewModel.isFollowing.observeAsState(false).value
     val back = { viewModel.back() }
@@ -332,15 +326,19 @@ class ProfileView {
     val addFriend = { viewModel.requestFriend() }
     Column() {
       FollowButtons(back, follow, following, addFriend)
-      Column(modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .padding(8.dp)) {
-        ProfileImage(imageUri, {}, false)
+      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+        ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
         InterestsView().ShowInterests(interests)
         Spacer(modifier = Modifier.height(56.dp))
       }
     }
+  }
+
+  enum class ImageEditAction {
+    NO_ACTION,
+    UPLOAD,
+    REMOVE
   }
 }
