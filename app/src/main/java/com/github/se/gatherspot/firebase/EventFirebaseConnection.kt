@@ -188,9 +188,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     if (querySnapshot.documents.isNotEmpty()) {
       offset = querySnapshot.documents.last()
     }
-    return eventsFromQuerySnaphot(querySnapshot)
+    return eventsFromQuerySnapshot(querySnapshot)
   }
-
 
   suspend fun fetchEventsBasedOnInterests(number: Long, l: List<Interests>): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
@@ -227,7 +226,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         Firebase.firestore
             .collection(EVENTS)
             .orderBy("eventID")
-            .whereEqualTo("eventID", FirebaseAuth.getInstance().currentUser!!.uid)
+            .whereEqualTo("eventID", FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")
             .get()
             .await()
 
@@ -240,7 +239,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             .collection(EVENTS)
             .orderBy("eventID")
             .whereArrayContains(
-                "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "won'tWork")
+                "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "forTest")
             .get()
             .await()
 

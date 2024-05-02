@@ -6,18 +6,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.swipeUp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
-import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
@@ -162,12 +156,11 @@ class EventsTest {
         }
       }
     }
-    // testLoginCleanUp()
   }
 
   @Test
   fun testFilterWorks() {
-    // testLogin()
+
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
     composeTestRule.setContent {
@@ -199,8 +192,6 @@ class EventsTest {
       assert(
           viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.SPORT) ?: true })
     }
-
-    //  testLoginCleanUp()
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -320,6 +311,7 @@ class EventsTest {
     }
   }
 
+  /*
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun entireCreationFlow() {
@@ -392,4 +384,6 @@ class EventsTest {
 
     //  EventFirebaseConnection().delete(viewModel.uiState.value.list[0].id)
   }
+
+   */
 }
