@@ -5,4 +5,9 @@ enum class FirebaseCollection {
   EVENTS,
   CHATS,
   REGISTERED_EVENTS,
+  FRIENDS,
+  FOLLOWING,
+  FOLLOWERS,
+  REQUESTED_FRIENDS,
+  PENDING_FRIENDS,
 }
