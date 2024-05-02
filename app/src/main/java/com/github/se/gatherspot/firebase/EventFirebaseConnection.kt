@@ -88,6 +88,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           "null" -> null
           else -> rating.toInt()
         }
+    val organizerID = d.getString("organizerID")?: Profile.testOrganizer().id
     return Event(
         id = eventID,
         title = title,
@@ -108,7 +109,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         images = images,
         globalRating = globalRating,
         // TODO: Add organizer
-        organizer = Profile("TEST"))
+        organizerID = organizerID)
   }
 
   private suspend fun eventsFromQuerySnaphot(querySnapshot: QuerySnapshot): MutableList<Event> {
@@ -286,6 +287,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                   else -> element.globalRating.toString()
                 },
             "images" to null, // TODO: ADD IMAGES
+            "organizerID" to element.organizerID,
             "eventStatus" to element.eventStatus)
 
     Firebase.firestore
