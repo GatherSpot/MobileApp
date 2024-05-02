@@ -25,7 +25,7 @@ import java.time.LocalTime
  * @param inscriptionLimitDate: The last date to register for the event (optional)
  * @param eventStatus: The status of the event (draft, created, ongoing, completed)
  * @param categories: List of category labels of the event
- * @param organizer: Profile of the organizer
+ * @param organizerID: Id of the Profile of the organizer
  * @param registeredUsers: The list of users who registered for the event
  * @param finalAttendees: The list of users who attended the event
  * @param images: The images uploaded for the event

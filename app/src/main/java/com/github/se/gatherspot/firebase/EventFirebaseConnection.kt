@@ -119,7 +119,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     listOfMaps.forEach { map ->
       val uid = map["eventID"] as String
       val event = super.fetch(uid)
-      event?.let { listOfEvents.add(it as Event) }
+      event?.let { listOfEvents.add(it) }
     }
 
     return listOfEvents
