@@ -7,33 +7,22 @@ import kotlinx.coroutines.tasks.await
 class FirebaseImages {
   private val firebaseStorage = FirebaseStorage.getInstance()
   private val PICTURE_BASE_STORAGE = firebaseStorage.getReference("images")
-  private val PROFILE_PICTURE_STORAGE = firebaseStorage.getReference("images/profile_images")
+  private val PROFILE_PICTURE_STORAGE = "profile_images"
 
   /**
-   * To fetch an image from the cloud storage, you can use the following composable : AsyncImage(
-   * model = "https://example.com/image.jpg", contentDescription = "image description" )
-   */
-
-  /**
-   * An asynchronous function that pushes the profile picture to the profile image cloud storage on
+   * A function that pushes the profile picture to the profile image cloud storage on
    * success returns the image url, elses empty
    */
   suspend fun pushProfilePicture(imageUri: Uri, userId: String): String {
-    if (imageUri != Uri.EMPTY) {
-      try {
-        val task = PROFILE_PICTURE_STORAGE.child(userId).putFile(imageUri).await()
-        val url = task.metadata!!.reference!!.downloadUrl.await()
-        return url.toString()
-      } catch (e: Exception) {
-        return ""
-      }
+    if (imageUri != Uri.EMPTY && userId.isNotEmpty()) {
+      return pushPicture(imageUri, PROFILE_PICTURE_STORAGE, userId)
     } else {
       return ""
     }
   }
 
   /**
-   * An asynchronous function that pushes the profile picture to the profile image cloud storage on
+   * A function that pushes the profile picture to the profile image cloud storage on
    * success returns the image url, elses empty
    */
   suspend fun pushPicture(imageUri: Uri, subFolder: String, saveAs: String): String {

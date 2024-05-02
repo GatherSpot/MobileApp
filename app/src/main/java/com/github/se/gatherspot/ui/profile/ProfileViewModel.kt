@@ -1,8 +1,12 @@
 package com.github.se.gatherspot.ui.profile
 
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.FirebaseImages
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
@@ -10,6 +14,8 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class OwnProfileViewModel : ViewModel() {
   private lateinit var _profile: Profile
@@ -59,8 +65,22 @@ class OwnProfileViewModel : ViewModel() {
     _bio.value = bio
   }
 
-  fun updateProfileImage(image: String) {
-    _image.value = image
+  fun updateProfileImage(newImageUrl: String) {
+    _image.value = newImageUrl
+  }
+
+  fun uploadProfileImage(newImageUri: Uri) {
+    viewModelScope.launch{
+      Log.d("New image uri : ", newImageUri.toString())
+      if(newImageUri != Uri.EMPTY) {
+        val newUrl = FirebaseImages().pushProfilePicture(newImageUri, _profile.id)
+        if (newUrl.isNotEmpty()) {
+          Log.d("Successfully uploaded: ", newUrl)
+          updateProfileImage(newUrl)
+          ProfileFirebaseConnection().update(_profile.id, "image", newUrl)
+        }
+      }
+    }
   }
 
   fun flipInterests(interest: Interests) {
