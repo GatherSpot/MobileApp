@@ -70,10 +70,6 @@ class ProfileInstrumentedTest {
       bioInput { performTextReplacement("I am a bot") }
       save { performClick() }
       bioInput { assert(hasText("I am a bot")) }
-      // restore for next time
-      edit { performClick() }
-      bioInput { performTextReplacement("I am not a bot") }
-      save { performClick() }
     }
   }
 
@@ -82,17 +78,21 @@ class ProfileInstrumentedTest {
   fun viewProfileTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      ViewProfile(NavigationActions(navController), "TEST")
+      ViewProfile(NavigationActions(navController), "TEST2")
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update :
-      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasText("Steeve"), 6000)
       usernameInput { assertExists() }
       bioInput { assertExists() }
       profileImage { assertExists() }
       edit { assertDoesNotExist() }
       save { assertDoesNotExist() }
       cancel { assertDoesNotExist() }
+      follow { hasText("Follow") }
+      addFriend { assertExists() }
+      follow { performClick() }
+      composeTestRule.waitUntilAtLeastOneExists(hasText("Unfollow"), 6000)
     }
   }
 }

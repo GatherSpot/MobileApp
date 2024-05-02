@@ -28,8 +28,6 @@ import org.junit.runner.RunWith
 class SetUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
 
-
-
   @Before
   fun before() {
     var lock = true
@@ -42,7 +40,7 @@ class SetUpTest : TestCase() {
   }
 
   @Test
-  fun testScreens(){
+  fun testScreens() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val nav = NavigationActions(navController)
@@ -53,19 +51,19 @@ class SetUpTest : TestCase() {
         composable("Bio") { SetUpBio(viewModel, nav, "Image") }
         composable("Image") { SetUpImage(viewModel, nav, "Done") }
         composable("Done") { SetUpDone(viewModel, nav, "Interests") }
-      }}
-    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule){
+      }
+    }
+    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       setUpInterests { assertExists() }
       addBasketball { performClick() }
       removeBasketball { assertExists() }
       next { performClick() }
       setUpBio { assertExists() }
-      bioInput { performTextInput("I like haskell")}
+      bioInput { performTextInput("I like haskell") }
       next { performClick() }
       setUpImage { assertExists() }
       next { performClick() }
       done { performClick() }
-
     }
     var lock = true
     val profile = ProfileFirebaseConnection().fetch("TEST") { lock = false }
@@ -75,5 +73,4 @@ class SetUpTest : TestCase() {
     assert(profile.bio == "I like haskell")
     assert(profile.interests.contains(Interests.BASKETBALL))
   }
-
 }

@@ -15,8 +15,6 @@ class ProfileScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val usernameInput: KNode = onNode { hasTestTag("usernameInput") }
   val bioInput: KNode = onNode { hasTestTag("bioInput") }
   val profileImage: KNode = onNode { hasTestTag("profileImage") }
-  val addBasketball: KNode = onNode { hasTestTag("add BASKETBALL") }
-  val removeBasketball: KNode = onNode { hasTestTag("remove BASKETBALL") }
-  val basketball: KNode = onNode { hasTestTag("BASKETBALL") }
-  val football: KNode = onNode { hasTestTag("FOOTBALL") }
+  val addFriend: KNode = onNode { hasTestTag("addFriend") }
+  val follow: KNode = onNode { hasTestTag("follow") }
 }
