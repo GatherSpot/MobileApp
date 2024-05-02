@@ -2,6 +2,8 @@ package com.github.se.gatherspot.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,6 +13,7 @@ import com.github.se.gatherspot.ui.setUp.SetUpDone
 import com.github.se.gatherspot.ui.setUp.SetUpImage
 import com.github.se.gatherspot.ui.setUp.SetUpInterests
 import com.github.se.gatherspot.ui.setUp.SetUpViewModel
+
 
 @Preview
 @Composable
@@ -22,12 +25,14 @@ fun SetUpProfilePreview() {
 @Composable
 fun SetUpProfile(nav: NavigationActions) {
   val navController = rememberNavController()
-  val viewModel = SetUpViewModel(NavigationActions(navController))
+  val nav2 = NavigationActions(navController)
+  val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
+  val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
   NavHost(navController, startDestination = "Interests") {
-    composable("Interests") { SetUpInterests(viewModel) }
-    composable("Bio") { SetUpBio(viewModel) }
-    composable("Image") { SetUpImage(viewModel) }
-    composable("Done") { SetUpDone(viewModel) }
+    composable("Interests") { SetUpInterests(viewModel,nav2,"Bio") }
+    composable("Bio") { SetUpBio(viewModel,nav2,"Image") }
+    composable("Image") { SetUpImage(viewModel,nav2,"Done") }
+    composable("Done") { SetUpDone(viewModel,nav,"home") }//different nav has we go back to the home screen
   }
 
   //  val vm = SetUpViewModel(nav)
