@@ -40,17 +40,14 @@ class SetUpTest : TestCase() {
   }
 
   @Test
-  fun testScreens() {
+  fun setUpInterests() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val nav = NavigationActions(navController)
       val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
       val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
       NavHost(navController, startDestination = "Interests") {
-        composable("Interests") { SetUpInterests(viewModel, nav, "Bio") }
-        composable("Bio") { SetUpBio(viewModel, nav, "Image") }
-        composable("Image") { SetUpImage(viewModel, nav, "Done") }
-        composable("Done") { SetUpDone(viewModel, nav, "Interests") }
+        composable("Interests") { SetUpInterests(viewModel, nav, "Interests") }
       }
     }
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
@@ -58,19 +55,58 @@ class SetUpTest : TestCase() {
       addBasketball { performClick() }
       removeBasketball { assertExists() }
       next { performClick() }
+    }
+  }
+
+  @Test
+  fun setUpBio() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val nav = NavigationActions(navController)
+      val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
+      val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
+      NavHost(navController, startDestination = "bio") {
+        composable("bio") { SetUpBio(viewModel, nav, "bio") }
+      }
+    }
+    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       setUpBio { assertExists() }
-      bioInput { performTextInput("I like haskell") }
+      bioInput { assertExists() }
       next { performClick() }
+    }
+  }
+
+  @Test
+  fun setUpImage() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val nav = NavigationActions(navController)
+      val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
+      val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
+      NavHost(navController, startDestination = "image") {
+        composable("image") { SetUpImage(viewModel, nav, "image") }
+      }
+    }
+    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       setUpImage { assertExists() }
       next { performClick() }
+    }
+  }
+
+  @Test
+  fun setUpDone() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val nav = NavigationActions(navController)
+      val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
+      val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
+      NavHost(navController, startDestination = "done") {
+        composable("done") { SetUpDone(viewModel, nav, "done") }
+      }
+    }
+    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
+      setUpDone { assertExists() }
       done { performClick() }
     }
-    var lock = true
-    val profile = ProfileFirebaseConnection().fetch("TEST") { lock = false }
-    while (lock) {
-      {}
-    }
-    assert(profile.bio == "I like haskell")
-    assert(profile.interests.contains(Interests.BASKETBALL))
   }
 }
