@@ -36,7 +36,7 @@ class EventsTest {
   @Before
   fun setUp() {
     testLogin()
-    Thread.sleep(10000)
+    Thread.sleep(5000)
     uid = FirebaseAuth.getInstance().currentUser!!.uid
   }
 
