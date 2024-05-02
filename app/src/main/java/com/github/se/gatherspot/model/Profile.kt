@@ -23,13 +23,13 @@ class Profile(
   var userName: String
     get() = _userName
     set(value) {
-      val regex = Regex("^[a-zA-Z_\\-\\s]*$")
+      val regex = Regex("^[a-zA-Z_0-9\\-\\s]*$")
       if (value.isEmpty()) {
         throw IllegalArgumentException("Username cannot be empty")
       }
       if (!regex.matches(value)) {
         throw IllegalArgumentException(
-            "Username can only contain letters, spaces, hyphens, and underscores")
+            "Username can only contain letters, numbers, spaces, hyphens, and underscores")
       }
       if (value.length > 20) {
         throw IllegalArgumentException("Username cannot be longer than 20 characters")

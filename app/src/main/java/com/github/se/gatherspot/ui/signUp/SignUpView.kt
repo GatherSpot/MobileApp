@@ -43,7 +43,7 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 class SignUpView {
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
-  fun SignUp(vm: SignUpViewModel) {
+  fun SignUp(vm: SignUpViewModel, nav: NavigationActions) {
     val navBack = vm::navBack
     val userName = vm.userName.observeAsState()
     val email = vm.email.observeAsState()
@@ -61,6 +61,10 @@ class SignUpView {
     val waitingEmailConfirmation = vm.waitingEmailConfirmation.observeAsState()
     val signUp = vm::signUp
     val resendEmail = vm::resendEmail
+    val isFinished = vm.isFinished.observeAsState()
+    if (isFinished.value == true) {
+      nav.controller.navigate("setUp")
+    }
     Box(modifier = Modifier.fillMaxSize().background(Color.White).testTag("signUpScreen")) {
       Column(
           modifier = Modifier.padding(vertical = 30.dp, horizontal = 20.dp),
@@ -192,7 +196,7 @@ class SignUpView {
   @Composable
   fun SignUpPreview() {
     val navController = rememberNavController()
-    SignUp(SignUpViewModel(NavigationActions(navController)))
+    SignUp(SignUpViewModel(), NavigationActions(navController))
   }
 }
 // convocation et ordre du jour + lien doc ordre du jour.

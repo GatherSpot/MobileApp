@@ -25,8 +25,8 @@ fun SetUpProfilePreview() {
 fun SetUpProfile(nav: NavigationActions) {
   val navController = rememberNavController()
   val nav2 = NavigationActions(navController)
-  val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
-  val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
+  val storeOwner = LocalViewModelStoreOwner.current!!
+  val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = storeOwner)
   NavHost(navController, startDestination = "Interests") {
     composable("interests") { SetUpInterests(viewModel, nav2, "bio") }
     composable("bio") { SetUpBio(viewModel, nav2, "image") }

@@ -2,9 +2,9 @@ package com.github.se.gatherspot.ui.signUp
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
-import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
@@ -15,7 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class SignUpViewModel(val nav: NavigationActions) {
+class SignUpViewModel() : ViewModel() {
   var userName = MutableLiveData("")
   var email = MutableLiveData("")
   var password = MutableLiveData("")
@@ -26,7 +26,7 @@ class SignUpViewModel(val nav: NavigationActions) {
   var isPassWordVisible = MutableLiveData(false)
   var isEverythingOk = MutableLiveData<Boolean>()
   var waitingEmailConfirmation = MutableLiveData(false)
-
+  var isFinished = MutableLiveData(false)
   // FLOW FOR CONTEXT :
   // let user fill fields with some basic check (including duplicate names)
   // check if email is already in database when clicking sign in (can't do same as with username
@@ -49,7 +49,7 @@ class SignUpViewModel(val nav: NavigationActions) {
   }
 
   fun navBack() {
-    nav.controller.navigate("auth")
+    isFinished.value = true
   }
 
   fun updateUsername(string: String) {
@@ -106,7 +106,8 @@ class SignUpViewModel(val nav: NavigationActions) {
   }
 
   private fun finish() {
-    nav.controller.navigate("setup")
+    isFinished.value = true
+    job?.cancel()
   }
 
   fun signUp() {
