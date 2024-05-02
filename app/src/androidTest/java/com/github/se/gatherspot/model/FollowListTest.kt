@@ -2,19 +2,18 @@ package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import kotlin.coroutines.resume
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.junit.Before
 import org.junit.Test
-import kotlin.coroutines.resume
 
 class FollowListTest {
   @Before
-  fun setUp() = runBlocking{
-    suspendCancellableCoroutine {c ->
+  fun setUp() = runBlocking {
+    suspendCancellableCoroutine { c ->
       IdListFirebaseConnection().delete("TEST2", FirebaseCollection.FOLLOWERS) {}
-      IdListFirebaseConnection().delete("TEST", FirebaseCollection.FOLLOWING) {c.resume(Unit)}
+      IdListFirebaseConnection().delete("TEST", FirebaseCollection.FOLLOWING) { c.resume(Unit) }
     }
   }
 
