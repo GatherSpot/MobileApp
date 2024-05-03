@@ -5,7 +5,6 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -25,9 +24,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -353,7 +350,7 @@ class EventUITest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testAlreadyRegistered() = runBlocking {
+  fun testAlreadyRegistered(): Unit = runBlocking {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =

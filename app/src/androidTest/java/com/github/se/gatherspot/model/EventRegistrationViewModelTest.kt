@@ -65,7 +65,7 @@ class EventRegistrationViewModelTest {
   }
 
   @Test
-  fun testAlreadyRegistered() = runBlocking {
+  fun testAlreadyRegistered(): Unit = runBlocking {
     if (Firebase.auth.currentUser == null) Log.d("testAlreadyRegistered", "User is null")
     val viewModel = EventRegistrationViewModel(listOf())
     val event =

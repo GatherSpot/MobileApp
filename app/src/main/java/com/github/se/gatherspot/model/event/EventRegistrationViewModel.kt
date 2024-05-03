@@ -11,6 +11,7 @@ import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.IdList
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
@@ -43,6 +44,7 @@ class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
     viewModelScope.launch {
       registeredEventsList =
           IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS) {}
+      delay(2000)
     }
   }
 
@@ -61,6 +63,7 @@ class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
       }
       // Check if the user is already registered for the event
       if (event.registeredUsers.contains(userId)) {
+        _registrationState.value = RegistrationState.Error("Already registered for this event")
         Log.e("EventRegistrationViewModel", "${registrationState.value}")
       }
       if (!(event.registeredUsers.contains(userId))) {
