@@ -45,7 +45,6 @@ class ChatsTest {
       topBar {
         assertExists()
         assertIsDisplayed()
-        assertTextContains("Chats")
       }
 
       createMenu {

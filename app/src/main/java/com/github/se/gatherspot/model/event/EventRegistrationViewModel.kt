@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.model.event
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,14 +19,11 @@ class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
   private val userId = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
 
   // LiveData for holding registration state
-  private val _registrationState =
-      MutableLiveData<RegistrationState>().apply {
-        value =
-            if (registered.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
-              RegistrationState.Success
-            } else {
-              RegistrationState.NoError
-            }
+  private val _registrationState: MutableLiveData<RegistrationState> =
+      if (registered.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
+        MutableLiveData(RegistrationState.Success)
+      } else {
+        MutableLiveData(RegistrationState.NoError)
       }
 
   val registrationState: LiveData<RegistrationState> = _registrationState
@@ -62,17 +60,15 @@ class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
         }
       }
       // Check if the user is already registered for the event
-
       if (event.registeredUsers.contains(userId)) {
-        _registrationState.value = RegistrationState.Error("Already registered for this event")
-        return@launch
+        Log.e("EventRegistrationViewModel", "${registrationState.value}")
       }
-      event.registeredUsers.add(userId)
-      eventFirebaseConnection.addRegisteredUser(
-          event.id, FirebaseAuth.getInstance().currentUser!!.uid)
-      registeredEventsList!!.add(event.id)
-      // Notify the UI that registration was successful
-      _registrationState.value = RegistrationState.Success
+      if (!(event.registeredUsers.contains(userId))) {
+        event.registeredUsers.add(userId)
+        eventFirebaseConnection.addRegisteredUser(event.id, userId)
+        registeredEventsList!!.add(event.id)
+        _registrationState.value = RegistrationState.Success
+      }
     }
   }
 
