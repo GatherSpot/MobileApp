@@ -32,5 +32,10 @@ jobs:
         run: |
           # To run the CI with debug information, add --info
           ./gradlew assemble lint --parallel --build-cache
-
-    
+      
+      - name : PublishArtefact
+        run : sangatdesai/release-apk@m2
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          APP_FOLDER: app
+          RELEASE_TITLE: New Build
