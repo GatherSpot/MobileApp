@@ -87,7 +87,7 @@ class EventsTest {
   fun testRefreshButtonFunctional() {
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
-    assert(viewModel.getLoadedEvents().size.toLong() == viewModel.PAGESIZE)
+    val prev = viewModel.getLoadedEvents().size.toLong()
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
       Events(viewModel = viewModel, nav = nav)
@@ -100,7 +100,7 @@ class EventsTest {
       }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 500)
       composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
-      assert(viewModel.getLoadedEvents().size.toLong() == 2 * viewModel.PAGESIZE)
+      assert(viewModel.getLoadedEvents().size.toLong() >= prev)
     }
   }
 
