@@ -1,7 +1,10 @@
 package com.github.se.gatherspot.ui.profile
 
 import android.net.Uri
+import android.net.Uri.*
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,7 +43,7 @@ class OwnProfileViewModel : ViewModel() {
   val interests: LiveData<Set<Interests>>
     get() = _interests
 
-  fun save() {
+  fun saveText() {
     _profile.userName = _username.value!!
     _profile.bio = _bio.value!!
     _profile.interests = _interests.value!!
@@ -69,7 +72,7 @@ class OwnProfileViewModel : ViewModel() {
   fun uploadProfileImage(newImageUri: Uri) {
     viewModelScope.launch {
       Log.d("New image uri : ", newImageUri.toString())
-      if (newImageUri != Uri.EMPTY) {
+      if (newImageUri != EMPTY) {
         val newUrl = FirebaseImages().pushProfilePicture(newImageUri, _profile.id)
         if (newUrl.isNotEmpty()) {
           Log.d("Successfully uploaded: ", newUrl)
@@ -94,6 +97,45 @@ class OwnProfileViewModel : ViewModel() {
 
   fun isInterestsSelected(interest: Interests): Boolean {
     return interest in _interests.value!!
+  }
+
+  enum class ImageEditAction {
+    NO_ACTION,
+    UPLOAD,
+    REMOVE
+  }
+
+  var localImageUriToUpload = MutableLiveData(Uri.EMPTY)
+
+  fun setLocalImageUriToUpload(uri: Uri) {
+    localImageUriToUpload.value = uri
+  }
+
+  var imageEditAction = MutableLiveData(ImageEditAction.NO_ACTION)
+
+  fun setImageEditAction(newImageEditAction: ImageEditAction) {
+    if (newImageEditAction == ImageEditAction.REMOVE) {
+      localImageUriToUpload.value = Uri.EMPTY
+    }
+    imageEditAction.value = newImageEditAction
+  }
+
+  fun saveImage() {
+    when (imageEditAction.value) {
+      ImageEditAction.UPLOAD -> uploadProfileImage(localImageUriToUpload.value!!)
+      ImageEditAction.REMOVE -> removeProfilePicture()
+      else -> {}
+    }
+  }
+
+  fun cancelImage() {
+    imageEditAction.value = ImageEditAction.NO_ACTION
+    localImageUriToUpload.value = Uri.EMPTY
+  }
+
+  fun save() {
+    saveText()
+    saveImage()
   }
 }
 
