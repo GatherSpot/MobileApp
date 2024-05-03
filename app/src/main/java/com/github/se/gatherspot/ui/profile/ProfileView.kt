@@ -273,10 +273,8 @@ class ProfileView {
     val imageUrl by viewModel.image.observeAsState("")
     val updateUsername = viewModel::updateUsername
     val updateBio = viewModel::updateBio
-    val saveImage = viewModel::saveImage
-    val saveText = viewModel::saveText
-    val cancelImage = viewModel::cancelImage
-    val cancelText = viewModel::cancelText
+    val save = viewModel::save
+    val cancel = viewModel::cancel
     val setImageEditAction = { action: OwnProfileViewModel.ImageEditAction ->
       viewModel.setImageEditAction(action)
     }
@@ -286,7 +284,7 @@ class ProfileView {
     val setLocalImageUriToUpload = { uri: Uri -> viewModel.setLocalImageUriToUpload(uri) }
 
     Column() {
-      SaveCancelButtons(saveText, cancelText, navController)
+      SaveCancelButtons(save, cancel, navController)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
         ProfileImage(
             imageUrl = imageUrl,

@@ -48,12 +48,6 @@ class OwnProfileViewModel : ViewModel() {
     ProfileFirebaseConnection().add(_profile)
   }
 
-  fun cancelText() {
-    _username.value = _profile.userName
-    _bio.value = _profile.bio
-    _interests.value = _profile.interests
-  }
-
   fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
@@ -139,6 +133,15 @@ class OwnProfileViewModel : ViewModel() {
     imageEditAction.value = ImageEditAction.NO_ACTION
     localImageUriToUpload.value = Uri.EMPTY
   }
+
+  fun save() {
+    saveText()
+    saveImage()
+  }
+  fun cancel(){
+    update()
+    cancelImage()
+  }
 }
 
 class ProfileViewModel(private val _target: String, private val nav: NavigationActions) {
@@ -173,9 +176,6 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
     _bio.value = _profile.bio
     _image.value = _profile.image
     _interests.value = _profile.interests.toMutableSet()
-    _username.value = _profile.userName
-    _bio.value = _profile.bio
-    _interests.value = _profile.interests
   }
 
   // TODO : replace ?: with hilt injection
