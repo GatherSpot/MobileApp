@@ -14,16 +14,27 @@ import java.time.LocalTime
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 class EventRegistrationViewModelTest {
 
+  @Before
+  fun setUp() {
+    testLogin()
+  }
+
+  @After
+  fun cleanUp() {
+    testLoginCleanUp()
+  }
+
   @Test
   fun testRegisterForEventChangeEventListRegistered() {
     // Set global uid
-    testLogin()
 
-    val viewModel = EventRegistrationViewModel()
+    val viewModel = EventRegistrationViewModel(listOf())
 
     val event =
         Event(
@@ -55,9 +66,8 @@ class EventRegistrationViewModelTest {
 
   @Test
   fun testAlreadyRegistered() {
-    testLogin()
     if (Firebase.auth.currentUser == null) Log.d("testAlreadyRegistered", "User is null")
-    val viewModel = EventRegistrationViewModel()
+    val viewModel = EventRegistrationViewModel(listOf())
     val event =
         Event(
             id = "idTestEvent",

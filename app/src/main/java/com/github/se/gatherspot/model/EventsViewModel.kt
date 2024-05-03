@@ -1,7 +1,5 @@
 package com.github.se.gatherspot.model
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -16,6 +14,8 @@ class EventsViewModel : ViewModel() {
   private var _uiState = MutableStateFlow(UIState())
   val uiState: StateFlow<UIState> = _uiState
   private var loadedEvents: MutableList<Event> = mutableListOf()
+  private var myEvents: MutableList<Event> = mutableListOf()
+  private var registeredTo: MutableList<Event> = mutableListOf()
   private var loadedFilteredEvents: MutableList<Event> = mutableListOf()
   val eventFirebaseConnection = EventFirebaseConnection()
   var previousInterests = mutableListOf<Interests>()
@@ -23,19 +23,47 @@ class EventsViewModel : ViewModel() {
   init {
     viewModelScope.launch {
       val events = eventFirebaseConnection.fetchNextEvents(PAGESIZE)
-      _uiState.value = UIState(events)
       loadedEvents = events.toMutableList()
+      _uiState.value = UIState(loadedEvents)
+    }
+  }
+
+  suspend fun fetchMyEvents() {
+    myEvents = eventFirebaseConnection.fetchMyEvents()
+  }
+
+  suspend fun fetchRegisteredTo() {
+    registeredTo = eventFirebaseConnection.fetchRegisteredTo()
+  }
+
+  fun displayMyEvents() {
+    _uiState.value = UIState(myEvents)
+  }
+
+  fun displayRegisteredTo() {
+    _uiState.value = UIState(registeredTo)
+  }
+
+  fun updateNewRegistered(event: Event) {
+    updateLoaded(event)
+    updateFiltered(event)
+  }
+
+  fun editMyEvent(event: Event) {
+    for (i in 0 until myEvents.size) {
+      if (myEvents[i].id == event.id) {
+        myEvents[i] = event
+        displayMyEvents()
+        return
+      }
     }
   }
 
   suspend fun fetchNext(l: MutableList<Interests>) {
-    // removeFilter()
-    Log.d(TAG, "previous$previousInterests")
-    Log.d(TAG, "current$l")
+
     val newRequest = l != previousInterests
-    Log.d(TAG, newRequest.toString())
+
     if (newRequest) {
-      Log.d(TAG, "new request")
       eventFirebaseConnection.offset = null
       loadedFilteredEvents = mutableListOf()
     }
@@ -68,6 +96,24 @@ class EventsViewModel : ViewModel() {
 
   fun getLoadedEvents(): MutableList<Event> {
     return loadedEvents
+  }
+
+  private fun updateLoaded(event: Event) {
+    for (i in 0 until loadedEvents.size) {
+      if (event.id == loadedEvents[i].id) {
+        loadedEvents[i] = event
+        break
+      }
+    }
+  }
+
+  private fun updateFiltered(event: Event) {
+    for (i in 0 until loadedFilteredEvents.size) {
+      if (event.id == loadedFilteredEvents[i].id) {
+        loadedFilteredEvents[i] = event
+        break
+      }
+    }
   }
 }
 

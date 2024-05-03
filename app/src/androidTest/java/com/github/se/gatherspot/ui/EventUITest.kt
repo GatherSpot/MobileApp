@@ -7,6 +7,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
@@ -16,6 +18,8 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,10 +28,18 @@ import org.junit.runner.RunWith
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
 
+  @Before
+  fun setUp() {
+    testLogin()
+  }
+
+  @After
+  fun cleanUp() {
+    testLoginCleanUp()
+  }
+
   @Test
   fun testEverythingExists() {
-    testLogin()
-
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -49,7 +61,11 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
@@ -74,8 +90,6 @@ class EventUITest {
   @Test
   fun testEverythingIsDisplayed() {
 
-    testLogin()
-
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -97,7 +111,11 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertIsDisplayed()
@@ -156,7 +174,6 @@ class EventUITest {
   @Test
   fun textsDisplayedAreCorrect() {
 
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -179,7 +196,11 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description {
@@ -222,7 +243,6 @@ class EventUITest {
   @Test
   fun registerToAnEventWorks() {
 
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -245,7 +265,11 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -276,7 +300,6 @@ class EventUITest {
   @Test
   fun testUnableToRegisterToAFullEvent() {
 
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -299,7 +322,11 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -324,7 +351,7 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testAlreadyRegistered() {
-    testLogin()
+
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -347,7 +374,11 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -372,7 +403,6 @@ class EventUITest {
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
     // To make it works, need to define a global MainActivity.uid
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -395,7 +425,11 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {}
   }
@@ -426,7 +460,11 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }
