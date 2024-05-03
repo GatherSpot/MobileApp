@@ -35,12 +35,8 @@ jobs:
       - name: Build app 
         run: ./gradlew assemble lint --parallel --build-cache
 
-      - name: Publish the artefact to release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with: 
-          tag_name: v2.0.0          # Specify the tag name for the release
-          release_name: Milestone2  # Specify the release name
-          files: |
-            app/build/outputs/apk/release/app-release-unsigned.apk
+      - name: Upload APK to Github Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: app
+          path: app/build/outputs/apk/debug/app-debug.apk
