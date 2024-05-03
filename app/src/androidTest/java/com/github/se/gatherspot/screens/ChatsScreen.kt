@@ -8,7 +8,6 @@ class ChatsScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
     ComposeScreen<ChatsScreen>(
         semanticsProvider = semanticsProvider, viewBuilderAction = { hasTestTag("ChatsScreen") }) {
   val topBar: KNode = onNode { hasTestTag("chatsTopBar") }
-  val createMenu: KNode = onNode { hasTestTag("createChatMenu") }
   val eventsList: KNode = onNode { hasTestTag("chatsList") }
   val empty: KNode = onNode { hasTestTag("emptyText") }
 }

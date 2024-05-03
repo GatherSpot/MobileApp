@@ -18,9 +18,9 @@ import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -353,8 +353,7 @@ class EventUITest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testAlreadyRegistered() = runBlocking{
-
+  fun testAlreadyRegistered() = runBlocking {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -376,8 +375,8 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-        val eventfirebase = EventFirebaseConnection()
-        eventfirebase.add(event)
+      val eventfirebase = EventFirebaseConnection()
+      eventfirebase.add(event)
 
       EventUI(
           event,
