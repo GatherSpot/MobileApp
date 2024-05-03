@@ -416,52 +416,6 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testClickOnDeleteButton() {
-<<<<<<< HEAD
-    /*
-      composeTestRule.setContent {
-        val navController = rememberNavController()
-        val event =
-            Event(
-                id = "1",
-                title = "Event Title",
-                description = "Hello: I am a description",
-                attendanceMaxCapacity = 10,
-                attendanceMinCapacity = 1,
-                organizer = Profile.testOrganizer(),
-                categories = setOf(Interests.BASKETBALL),
-                eventEndDate = LocalDate.of(2024, 4, 15),
-                eventStartDate = LocalDate.of(2024, 4, 14),
-                inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-                inscriptionLimitTime = LocalTime.of(23, 59),
-                location = null,
-                registeredUsers = mutableListOf("TEST"),
-                timeBeginning = LocalTime.of(13, 0),
-                globalRating = 4,
-                timeEnding = LocalTime.of(16, 0),
-            )
-
-        EventUI(
-            event, NavigationActions(navController), EventRegistrationViewModel(), EventsViewModel())
-      }
-      ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-        editButton { assertIsDisplayed() }
-        deleteButton {
-          assertIsDisplayed()
-          performClick()
-        }
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
-        alertBox {
-          assertIsDisplayed()
-          hasText("Are you sure you want to delete this event? This action cannot be undone.")
-        }
-        okButton {
-          assertIsDisplayed()
-          hasText("Delete")
-        }
-        cancelButton.performClick()
-        alertBox { assertIsNotDisplayed() }
-      }
-=======
     testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -485,7 +439,8 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event, NavigationActions(navController), EventRegistrationViewModel(), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }
@@ -504,9 +459,6 @@ class EventUITest {
       }
       cancelButton.performClick()
       alertBox { assertIsNotDisplayed() }
->>>>>>> c64b44a544d1cc71b1b2c18208a63a769c3dd84a
     }
-
-       */
   }
 }

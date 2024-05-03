@@ -191,7 +191,7 @@ class EventFirebaseConnectionTest {
         val events = EventFirebaseConnection.fetchMyEvents()
         assert(
             events.all { event ->
-              event.organizer.id == FirebaseAuth.getInstance().currentUser!!.uid
+              event.organizerID == FirebaseAuth.getInstance().currentUser!!.uid
             })
         testLoginCleanUp()
       }

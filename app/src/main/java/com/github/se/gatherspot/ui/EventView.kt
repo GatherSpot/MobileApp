@@ -74,13 +74,7 @@ fun EventUI(
   val showDialogRegistration by registrationViewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by registrationViewModel.displayAlertDeletion.observeAsState()
   val isOrganizer =
-<<<<<<< HEAD:app/src/main/java/com/github/se/gatherspot/ui/EventUI.kt
-      event.organizer.id == (ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST")
-  // val isAlreadyRegistered =
-  //    event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
-=======
       event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
->>>>>>> c64b44a544d1cc71b1b2c18208a63a769c3dd84a:app/src/main/java/com/github/se/gatherspot/ui/EventView.kt
   val eventUtils = EventUtils()
   val registrationState by registrationViewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null

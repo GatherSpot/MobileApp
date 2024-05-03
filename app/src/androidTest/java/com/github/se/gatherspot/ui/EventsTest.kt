@@ -281,7 +281,7 @@ class EventsTest {
       Thread.sleep(3000)
       val listOfEvents = viewModel.uiState.value.list
       if (listOfEvents.isNotEmpty()) {
-        assert(listOfEvents.all { event -> event.organizer.id == uid })
+        assert(listOfEvents.all { event -> event.organizerID == uid })
       }
     }
   }

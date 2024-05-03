@@ -121,6 +121,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                                 }
                               }
                               .testTag("filterMenu"))
+
                   DropdownMenu(
                       modifier = Modifier.height(300.dp).testTag("dropdown"),
                       expanded = showDropdownMenu,
@@ -161,11 +162,13 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                         filters.forEach { s -> StatefulDropdownItem(s, interestsSelected) }
                       }
                 }
+
                 Spacer(modifier = Modifier.width(30.dp))
                 Icon(
                     Icons.Filled.Refresh,
                     "fetch",
                     modifier = Modifier.clickable { fetch = true }.testTag("refresh"))
+
                 LaunchedEffect(fetch) {
                   if (fetch) {
                     Log.d(TAG, "entered with $interestsSelected")
@@ -248,7 +251,7 @@ fun EventRow(event: Event, navigation: NavigationActions) {
       modifier =
           Modifier.background(
                   color =
-                      if (event.organizer.id ==
+                      if (event.organizerID ==
                           (FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")) {
                         Color(80, 50, 200, 120)
                       } else if (event.registeredUsers.contains(
@@ -290,25 +293,28 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                 Text(
                     text =
                         "Start date: ${
-                      event.eventStartDate?.format(
-                          DateTimeFormatter.ofPattern(
-                              eventFirebaseConnection.DATE_FORMAT
-                          )
-                      )
-                  }",
+                            event.eventStartDate?.format(
+                                DateTimeFormatter.ofPattern(
+                                    eventFirebaseConnection.DATE_FORMAT
+                                )
+                            )
+                        }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
                 Text(
                     text =
                         "End date: ${
-                      event.eventEndDate?.format(DateTimeFormatter.ofPattern(eventFirebaseConnection.DATE_FORMAT))
-                  }",
+                            event.eventEndDate?.format(
+                                DateTimeFormatter.ofPattern(
+                                    eventFirebaseConnection.DATE_FORMAT
+                                )
+                            )
+                        }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
                 Text(text = event.title, fontSize = 14.sp)
               }
 
-<<<<<<< HEAD
               Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                   when (event.eventStatus) {
@@ -316,30 +322,23 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                         Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
                     EventStatus.ON_GOING ->
                         Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
-                    EventStatus.DRAFT -> Text("Draft", color = Color(0xFF1FC959), fontSize = 14.sp)
                     EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
                   }
+
                   Icon(
                       painter = painterResource(R.drawable.arrow_right),
                       contentDescription = null,
                       modifier = Modifier.width(24.dp).height(24.dp).clickable {})
                 }
               }
-=======
-        Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            when (event.eventStatus) {
-              EventStatus.CREATED -> Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
-              EventStatus.ON_GOING -> Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
-              EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
->>>>>>> c64b44a544d1cc71b1b2c18208a63a769c3dd84a
             }
+        Divider(color = Color.Black, thickness = 1.dp)
       }
-  Divider(color = Color.Black, thickness = 1.dp)
 }
 
 @Composable
 fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: () -> Unit) {
+
   Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
       Text("No loaded events matched your query")
@@ -361,6 +360,7 @@ fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: 
 
 @Composable
 fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Interests>) {
+
   var selected by remember { mutableStateOf(false) }
 
   DropdownMenuItem(
