@@ -11,7 +11,7 @@ public class FollowList {
      *
      * @param uid The user id
      */
-    fun followers(uid: String): MutableLiveData<IdList> {
+    suspend fun followers(uid: String): IdList {
       return IdListFirebaseConnection().fetch(uid, FirebaseCollection.FOLLOWERS) {}
     }
     /**
@@ -19,7 +19,7 @@ public class FollowList {
      *
      * @param uid The user id
      */
-    fun following(uid: String): MutableLiveData<IdList> {
+    suspend fun following(uid: String): IdList {
       return IdListFirebaseConnection().fetch(uid, FirebaseCollection.FOLLOWING) {}
     }
 

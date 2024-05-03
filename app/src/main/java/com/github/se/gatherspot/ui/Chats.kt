@@ -3,11 +3,9 @@ package com.github.se.gatherspot.ui
 import android.content.ContentValues
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,8 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.IconButton
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -70,35 +70,7 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
   }
 
   Scaffold(
-      topBar = {
-        Column {
-          Row(
-              modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-              horizontalArrangement = Arrangement.Center,
-              verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "Add chat", fontSize = 18.sp, modifier = Modifier.testTag("AddChatText"))
-                Spacer(modifier = Modifier.width(10.dp))
-                Box {
-                  Icon(
-                      imageVector = Icons.Default.Add,
-                      contentDescription = null,
-                      modifier =
-                          Modifier.clickable { nav.controller.navigate("createChat") }
-                              .testTag("createChatMenu"))
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-
-                if (loading) {
-                  Text("Loading next chats ... Keep scrolling")
-                }
-                if (fetched) {
-                  Text("Fetched next chats")
-                }
-              }
-        }
-      },
+      topBar = { ChatsTopAppBar(nav, "Chats") },
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { tld -> nav.navigateTo(tld) },
@@ -217,6 +189,24 @@ fun ChatRow(event: Event, navigation: NavigationActions) {
         }
       }
   Divider(color = Color.Black, thickness = 1.dp)
+}
+
+@Composable
+fun ChatsTopAppBar(navActions: NavigationActions, title: String) {
+  TopAppBar(
+      modifier = Modifier.testTag("chatsTopBar"),
+      title = { androidx.compose.material.Text(text = title, color = Color.Black) },
+      navigationIcon = {
+        IconButton(onClick = { navActions.controller.popBackStack() }) {
+          androidx.compose.material.Icon(
+              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              contentDescription = "Go Back",
+              tint = Color.Black)
+        }
+      },
+      backgroundColor = Color.White,
+      contentColor = Color.Black,
+      elevation = 4.dp)
 }
 
 @Preview
