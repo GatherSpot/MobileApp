@@ -60,7 +60,7 @@ class ChatUITest {
               inscriptionLimitTime =
                   LocalTime.parse(
                       "09:00", DateTimeFormatter.ofPattern(eventFirebaseConnection.TIME_FORMAT)),
-              eventStatus = EventStatus.DRAFT,
+              eventStatus = EventStatus.CREATED,
               categories = setOf(Interests.CHESS),
               registeredUsers = mutableListOf("my_id"),
               finalAttendees = emptyList(),
