@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,7 +36,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.github.se.gatherspot.R
@@ -287,11 +285,12 @@ class ProfileView {
     val bio = viewModel.bio.observeAsState("")
     val bioValid = viewModel.bioValid.observeAsState()
     val imageUrl = viewModel.image.observeAsState("")
-    val updateUsername = { s: String -> viewModel.updateUsername(s) }
-    val updateBio = { s: String -> viewModel.updateBio(s) }
-
-    val save = { viewModel.save() }
-    val cancel = { viewModel.cancelImage() }
+    val updateUsername = viewModel::updateUsername
+    val updateBio = viewModel::updateBio
+    val saveText = viewModel::saveText
+    val cancelText = viewModel::cancelText
+    val saveImage = viewModel::saveImage
+    val cancelImage = viewModel::cancelImage
     val setImageEditAction = { action: OwnProfileViewModel.ImageEditAction ->
       viewModel.setImageEditAction(action)
     }
@@ -301,7 +300,7 @@ class ProfileView {
     val setLocalImageUriToUpload = { uri: Uri -> viewModel.setLocalImageUriToUpload(uri) }
 
     Column() {
-      SaveCancelButtons(save, cancel, navController)
+      SaveCancelButtons(saveText, cancelText, navController)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
         ProfileImage(
             imageUrl = imageUrl.value,

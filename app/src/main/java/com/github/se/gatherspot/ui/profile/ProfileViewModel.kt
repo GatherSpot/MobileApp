@@ -1,10 +1,8 @@
 package com.github.se.gatherspot.ui.profile
 
 import android.net.Uri
-import android.net.Uri.*
+import android.net.Uri.EMPTY
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -50,15 +48,18 @@ class OwnProfileViewModel : ViewModel() {
 
   val interests: LiveData<Set<Interests>>
     get() = _interests
-
   fun saveText() {
     _profile.userName = _username.value!!
     _profile.bio = _bio.value!!
     _profile.interests = _interests.value!!
     ProfileFirebaseConnection().add(_profile)
   }
-
-  fun update() {
+  fun cancelText(){
+    _username.value = _profile.userName
+    _bio.value = _profile.bio
+    _interests.value = _profile.interests
+  }
+  private fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _interests.value = _profile.interests
@@ -146,10 +147,6 @@ class OwnProfileViewModel : ViewModel() {
     localImageUriToUpload.value = Uri.EMPTY
   }
 
-  fun save() {
-    saveText()
-    saveImage()
-  }
 }
 
 class ProfileViewModel(private val _target: String, private val nav: NavigationActions) {
