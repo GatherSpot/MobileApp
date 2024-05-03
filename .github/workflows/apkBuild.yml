@@ -32,12 +32,15 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Build app 
+        run: ./gradlew assemble lint --parallel --build-cache
 
-      # This step runs gradle commands to build the application
-      - name: Assemble
-        run: |
-          # To run the CI with debug information, add --info
-          ./gradlew assemble lint --parallel --build-cache
-      
-      - name: Publish the artefact 
-        run: echo "save the artefactin the branch"
+      - name: Publish the artefact to release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          tag_name: v2.0.0          # Specify the tag name for the release
+          release_name: Milestone2  # Specify the release name
+          files: |
+            app/build/outputs/apk/release/app-release-unsigned.apk
