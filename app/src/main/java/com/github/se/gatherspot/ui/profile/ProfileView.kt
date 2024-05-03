@@ -121,14 +121,7 @@ class ProfileView {
                         nav.navigate("view")
                       }
                       .testTag("cancel"))
-          Text(
-              text = "Save",
-              modifier =
-                  Modifier.clickable {
-                        save()
-                        nav.navigate("view")
-                      }
-                      .testTag("save"))
+          Text(text = "Save", modifier = Modifier.clickable { save() }.testTag("save"))
         }
   }
   // TODO: add state for the buttons for better ui when we have time, I want to catch up to
@@ -289,6 +282,8 @@ class ProfileView {
     val updateBio = viewModel::updateBio
     val save = viewModel::save
     val cancel = viewModel::cancel
+    val saved = viewModel.saved.observeAsState()
+    val resetSaved = viewModel::resetSaved
     val setImageEditAction = { action: OwnProfileViewModel.ImageEditAction ->
       viewModel.setImageEditAction(action)
     }
@@ -296,9 +291,12 @@ class ProfileView {
         viewModel.imageEditAction.observeAsState(OwnProfileViewModel.ImageEditAction.NO_ACTION)
     val localImageUriToUpload by viewModel.localImageUriToUpload.observeAsState(Uri.EMPTY)
     val setLocalImageUriToUpload = { uri: Uri -> viewModel.setLocalImageUriToUpload(uri) }
-
+    if (saved.value == true) {
+      resetSaved()
+      navController.navigate("view")
+    }
     Column() {
-      SaveCancelButtons(saveText, cancelText, navController)
+      SaveCancelButtons(save, cancel, navController)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
         ProfileImage(
             imageUrl = imageUrl.value,

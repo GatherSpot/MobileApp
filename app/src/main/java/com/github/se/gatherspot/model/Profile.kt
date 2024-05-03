@@ -15,49 +15,12 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
  * @param id the id of the user
  */
 class Profile(
-    private var _userName: String,
-    private var _bio: String,
-    private var _image: String,
+    var userName: String,
+    var bio: String,
+    var image: String,
     override val id: String,
-    private var _interests: Set<Interests>,
+    var interests: Set<Interests>,
 ) : CollectionClass() {
-  var userName: String
-    get() = _userName
-    set(value) {
-      val regex = Regex("^[a-zA-Z_\\-\\s]*$")
-      if (value.isEmpty()) {
-        throw IllegalArgumentException("Username cannot be empty")
-      }
-      if (!regex.matches(value)) {
-        throw IllegalArgumentException(
-            "Username can only contain letters, spaces, hyphens, and underscores")
-      }
-      if (value.length > 20) {
-        throw IllegalArgumentException("Username cannot be longer than 20 characters")
-      }
-      _userName = value
-    }
-
-  var bio: String
-    get() = _bio
-    set(value) {
-      if (value.length > 100) {
-        throw IllegalArgumentException("Bio cannot be longer than 100 characters")
-      }
-      _bio = value
-    }
-
-  var image: String
-    get() = _image
-    set(value) {
-      _image = value
-    }
-
-  var interests: Set<Interests>
-    get() = _interests
-    set(value) {
-      _interests = value
-    }
 
   companion object {
     fun testOrganizer(): Profile {
@@ -82,21 +45,25 @@ class Profile(
      * @param oldName the old username
      * @return a string with the error message if there is one
      */
-    fun checkUsername(newName: String, oldName: String?): MutableLiveData<String> {
-      val res = MutableLiveData("")
-      val regex = Regex("^[a-zA-Z0-9_\\-\\s]*$")
-      if (newName.isEmpty()) {
+    fun checkUsername(
+        newName: String,
+        oldName: String?,
+        onSuccess: () -> Unit
+    ): MutableLiveData<String> {
+      val res = MutableLiveData<String>()
+      val regex = ProfileRegex
+      if (newName == oldName) {
+        res.value = ""
+      } else if (newName.isEmpty()) {
         res.value = "Username cannot be empty"
-      }
-      if (!regex.matches(newName)) {
+      } else if (!regex.matches(newName)) {
         res.value = "Username can only contain letters, numbers, spaces, hyphens, and underscores"
-      }
-      if (newName.length > 20) {
+      } else if (newName.length > 20) {
         res.value = "Username cannot be longer than 20 characters"
-      }
-      if (newName != oldName) {
+      } else {
         ProfileFirebaseConnection().ifUsernameExists(newName) {
-          if (it) res.value = "Username already taken"
+          res.value = if (it) "Username already taken" else ""
+          onSuccess()
         }
       }
       return res
@@ -109,5 +76,7 @@ class Profile(
       }
       return res
     }
+
+    val ProfileRegex = Regex("^[a-zA-Z_0-9\\-\\s]*$")
   }
 }
