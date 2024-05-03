@@ -56,17 +56,17 @@ class OwnProfileViewModel : ViewModel() {
     ProfileFirebaseConnection().add(_profile)
   }
 
-  fun cancelText() {
-    _username.value = _profile.userName
-    _bio.value = _profile.bio
-    _interests.value = _profile.interests
-  }
-
-  private fun update() {
+  fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _interests.value = _profile.interests
     _image.value = _profile.image
+  }
+
+  fun cancelText() {
+    _username.value = _profile.userName
+    _bio.value = _profile.bio
+    _interests.value = _profile.interests
   }
 
   // TODO : add sanitization to these function !!!
@@ -112,10 +112,6 @@ class OwnProfileViewModel : ViewModel() {
     _interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
 
-  fun isInterestsSelected(interest: Interests): Boolean {
-    return interest in _interests.value!!
-  }
-
   enum class ImageEditAction {
     NO_ACTION,
     UPLOAD,
@@ -148,6 +144,16 @@ class OwnProfileViewModel : ViewModel() {
   fun cancelImage() {
     imageEditAction.value = ImageEditAction.NO_ACTION
     localImageUriToUpload.value = Uri.EMPTY
+  }
+
+  fun save() {
+    saveText()
+    saveImage()
+  }
+
+  fun cancel() {
+    cancelText()
+    cancelImage()
   }
 }
 
@@ -187,11 +193,7 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
 
   // TODO : replace ?: with hilt injection
   fun follow() {
-    println("follow clicked")
-    // unsure we disable functionality if we didn't fetch data yet, makes null asserted safe as a
-    // bonus
     if (_isFollowing.isInitialized) {
-      println("follow clicked 2")
       if (_isFollowing.value!!) FollowList.unfollow(_id, _target)
       else FollowList.follow(_id, _target)
       _isFollowing.value = !(_isFollowing.value!!)

@@ -287,10 +287,8 @@ class ProfileView {
     val imageUrl = viewModel.image.observeAsState("")
     val updateUsername = viewModel::updateUsername
     val updateBio = viewModel::updateBio
-    val saveText = viewModel::saveText
-    val cancelText = viewModel::cancelText
-    val saveImage = viewModel::saveImage
-    val cancelImage = viewModel::cancelImage
+    val save = viewModel::save
+    val cancel = viewModel::cancel
     val setImageEditAction = { action: OwnProfileViewModel.ImageEditAction ->
       viewModel.setImageEditAction(action)
     }
@@ -331,9 +329,9 @@ class ProfileView {
     val imageUrl = viewModel.image.observeAsState("").value
     val interests = viewModel.interests.observeAsState(setOf()).value
     val following = viewModel.isFollowing.observeAsState(false).value
-    val back = { viewModel.back() }
-    val follow = { viewModel.follow() }
-    val addFriend = { viewModel.requestFriend() }
+    val back = viewModel::back
+    val follow = viewModel::follow
+    val addFriend = viewModel::requestFriend
     Column() {
       FollowButtons(back, follow, following, addFriend)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
