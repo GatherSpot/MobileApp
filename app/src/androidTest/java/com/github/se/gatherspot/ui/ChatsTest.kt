@@ -63,8 +63,6 @@ class ChatsTest {
   @After
   fun testLoginCleanUp() {
     Firebase.auth.signOut()
-
-    EventFirebaseConnection().delete("idTestEvent")
   }
 
   @Test
