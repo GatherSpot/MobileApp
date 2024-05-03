@@ -43,7 +43,6 @@ class OwnProfileViewModel : ViewModel() {
   fun save() {
     _profile.userName = _username.value!!
     _profile.bio = _bio.value!!
-    _profile.image = _image.value ?: ""
     _profile.interests = _interests.value!!
     ProfileFirebaseConnection().add(_profile)
   }
@@ -51,7 +50,6 @@ class OwnProfileViewModel : ViewModel() {
   fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
-    _image.value = _profile.image
     _interests.value = _profile.interests
   }
 

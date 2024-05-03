@@ -286,7 +286,6 @@ class ProfileView {
         ImageEditAction.REMOVE -> viewModel.removeProfilePicture()
         else -> {}
       }
-      viewModel.save()
     }
     val cancel = { viewModel.update() }
     Column() {
