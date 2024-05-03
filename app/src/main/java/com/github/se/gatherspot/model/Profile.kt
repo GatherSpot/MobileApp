@@ -1,6 +1,8 @@
 package com.github.se.gatherspot.model
 
+import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.firebase.CollectionClass
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 
 // NOTE : I will add interests once theses are pushed
 /**
@@ -65,7 +67,44 @@ class Profile(
     fun testParticipant(): Profile {
       return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
     }
-  }
 
-  constructor(id: String) : this("", "", "", id, setOf())
+    fun fromFirebase(id: String, onSuccess: () -> Unit) {
+      ProfileFirebaseConnection().fetch(id) { onSuccess() }
+    }
+
+    fun empty(id: String) = Profile("", "", "", id, setOf())
+
+    /**
+     * Check if a username is valid
+     * an old username can be optionally given to avoid telling we can't use our own username
+     * @param newName the new username
+     * @param oldName the old username
+     * @return a string with the error message if there is one
+     */
+    fun checkUsername(newName: String, oldName: String?): MutableLiveData<String> {
+      val res = MutableLiveData("")
+      val regex = Regex("^[a-zA-Z0-9_\\-\\s]*$")
+      if (newName.isEmpty()) {
+        res.value = "Username cannot be empty"
+      }
+      if (!regex.matches(newName)) {
+        res.value = "Username can only contain letters, numbers, spaces, hyphens, and underscores"
+      }
+      if (newName.length > 20) {
+        res.value = "Username cannot be longer than 20 characters"
+      }
+      if (newName != oldName) {
+        ProfileFirebaseConnection().ifUsernameExists(newName) {
+          if (it) res.value = "Username already taken"
+          }
+        }
+        return res
+    }
+      fun checkBio(bio: String): MutableLiveData<String> {
+        val res = MutableLiveData<String>()
+        if (bio.length > 100) {
+          res.value = "Bio cannot be longer than 100 characters"
+        }
+        return res
+      }
 }

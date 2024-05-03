@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -160,23 +161,34 @@ class ProfileView {
   }
 
   @Composable
-  private fun UsernameField(username: String, updateUsername: (String) -> Unit, edit: Boolean) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
-        label = { Text("username") },
-        value = username,
-        readOnly = !edit,
-        onValueChange = { updateUsername(it) })
+  private fun UsernameField(
+      username: String,
+      usernameValid: String?,
+      updateUsername: (String) -> Unit,
+      edit: Boolean
+  ) {
+    Column {
+      OutlinedTextField(
+          modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
+          label = { Text("username") },
+          value = username,
+          readOnly = !edit,
+          onValueChange = { updateUsername(it) })
+      Text(usernameValid ?: "", color = Color.Red)
+    }
   }
 
   @Composable
-  private fun BioField(bio: String, updateBio: (String) -> Unit, edit: Boolean) {
-    OutlinedTextField(
-        label = { Text("Bio") },
-        value = bio,
-        onValueChange = { updateBio(it) },
-        readOnly = !edit,
-        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
+  private fun BioField(bio: String, bioValid: String?, updateBio: (String) -> Unit, edit: Boolean) {
+    Column() {
+      OutlinedTextField(
+          label = { Text("Bio") },
+          value = bio,
+          onValueChange = { updateBio(it) },
+          readOnly = !edit,
+          modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
+      Text(text = bioValid ?: "", color = Color.Red)
+    }
   }
 
   @Composable
@@ -209,8 +221,8 @@ class ProfileView {
 
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUri, {}, false)
-        UsernameField(username, {}, false)
-        BioField(bio, {}, false)
+        UsernameField(username, null, {}, false)
+        BioField(bio, null, {}, false)
         InterestsView().ShowInterests(interests)
         Spacer(modifier = Modifier.height(56.dp))
       }
@@ -221,9 +233,11 @@ class ProfileView {
   private fun EditOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
-    val username by viewModel.username.observeAsState("")
-    val bio by viewModel.bio.observeAsState("")
-    val imageUri by viewModel.image.observeAsState("")
+    val username = viewModel.username.observeAsState("")
+    val usernameValid = viewModel.userNameValid.observeAsState()
+    val bio = viewModel.bio.observeAsState("")
+    val bioValid = viewModel.bioValid.observeAsState()
+    val imageUri = viewModel.image.observeAsState("")
     val updateUsername = { s: String -> viewModel.updateUsername(s) }
     val updateBio = { s: String -> viewModel.updateBio(s) }
     val updateImageUri = { s: String -> viewModel.updateProfileImage(s) }
@@ -232,9 +246,9 @@ class ProfileView {
     Column() {
       SaveCancelButtons(save, cancel, navController)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
-        ProfileImage(imageUri, updateImageUri, true)
-        UsernameField(username, updateUsername, true)
-        BioField(bio, updateBio, true)
+        ProfileImage(imageUri.value, updateImageUri, true)
+        UsernameField(username.value, usernameValid.value, updateUsername, true)
+        BioField(bio.value, bioValid.value, updateBio, true)
         InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
           viewModel.flipInterests(it)
         }
@@ -262,8 +276,8 @@ class ProfileView {
       FollowButtons(back, follow, following, addFriend)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUri, {}, false)
-        UsernameField(username, {}, false)
-        BioField(bio, {}, false)
+        UsernameField(username, null, {}, false)
+        BioField(bio, null, {}, false)
         InterestsView().ShowInterests(interests)
         Spacer(modifier = Modifier.height(56.dp))
       }

@@ -17,6 +17,8 @@ class OwnProfileViewModel : ViewModel() {
   private var _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
   private val _interests = MutableLiveData<Set<Interests>>()
+  private var _usernameValid = MutableLiveData<String>()
+  private var _bioValid = MutableLiveData<String>()
 
   init {
     // TODO: replace this with hilt injection
@@ -26,8 +28,14 @@ class OwnProfileViewModel : ViewModel() {
   val username: LiveData<String>
     get() = _username
 
+  val userNameValid: LiveData<String>
+    get() = _usernameValid
+
   val bio: LiveData<String>
     get() = _bio
+
+  val bioValid: LiveData<String>
+    get() = _bioValid
 
   val image: LiveData<String>
     get() = _image
@@ -53,9 +61,11 @@ class OwnProfileViewModel : ViewModel() {
   // TODO : add sanitization to these function !!!
   fun updateUsername(userName: String) {
     _username.value = userName
+    _usernameValid = Profile.checkUsername(userName, _profile.userName)
   }
 
   fun updateBio(bio: String) {
+    _bioValid = Profile.checkBio(bio)
     _bio.value = bio
   }
 
