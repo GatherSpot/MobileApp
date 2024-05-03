@@ -54,11 +54,11 @@ class OwnProfileViewModel : ViewModel() {
     _interests.value = _profile.interests
     _image.value = _profile.image
   }
-  fun cancelText(){
+
+  fun cancelText() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _interests.value = _profile.interests
-
   }
 
   // TODO : add sanitization to these function !!!
@@ -140,7 +140,8 @@ class OwnProfileViewModel : ViewModel() {
     saveText()
     saveImage()
   }
-  fun cancel(){
+
+  fun cancel() {
     cancelText()
     cancelImage()
   }
