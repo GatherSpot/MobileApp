@@ -42,9 +42,10 @@ class ChatsTest {
     }
 
     ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
-      createText {
+      topBar {
         assertExists()
         assertIsDisplayed()
+        assertTextContains("Chats")
       }
 
       createMenu {

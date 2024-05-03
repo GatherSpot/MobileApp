@@ -39,9 +39,13 @@ class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
   val displayAlertDeletion: LiveData<Boolean> = _displayAlertDeletion
 
   // Profile of the user, is needed to add the event to the user's registered events
-  private var registeredEventsList : IdList? = null
-  init{
-    viewModelScope.launch { registeredEventsList = IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS) { }}
+  private var registeredEventsList: IdList? = null
+
+  init {
+    viewModelScope.launch {
+      registeredEventsList =
+          IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS) {}
+    }
   }
 
   private val eventFirebaseConnection = EventFirebaseConnection()

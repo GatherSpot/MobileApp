@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
-import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +26,7 @@ class ChatsListViewModel : ViewModel() {
     if (uid == null) {
       return
     }
-    val idlist = IdList.fromFirebase(uid,FirebaseCollection.REGISTERED_EVENTS){}
+    val idlist = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS) {}
 
     eventsIDS = idlist.events
     Log.e("IDS", eventsIDS.toString())
@@ -41,5 +40,3 @@ class ChatsListViewModel : ViewModel() {
 }
 
 data class ChatUIState(val list: MutableList<Event> = mutableListOf())
-
-
