@@ -1,8 +1,11 @@
 package com.github.se.gatherspot.ui.profile
 
 import android.content.ContentValues
+import android.net.Uri
 import android.util.Log
-import androidx.compose.foundation.Image
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -25,14 +29,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
@@ -180,19 +186,62 @@ class ProfileView {
   }
 
   @Composable
-  private fun ProfileImage(imageUri: String, updateImageUri: (String) -> Unit, edit: Boolean) {
-    val painter = rememberAsyncImagePainter(imageUri.ifEmpty { R.drawable.user })
+  private fun ProfileImage(
+      imageUrl: String,
+      edit: Boolean,
+      setImageEditAction: (OwnProfileViewModel.ImageEditAction) -> Unit = {},
+      editAction: OwnProfileViewModel.ImageEditAction =
+          OwnProfileViewModel.ImageEditAction.NO_ACTION,
+      localImageUri: Uri = Uri.EMPTY,
+      updateLocalImageUri: (Uri) -> Unit = {}
+  ) {
+
+    val photoPickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+            onResult = {
+              if (it != null) {
+                Log.d("SELECT IMAGE : ", it.toString())
+                setImageEditAction(OwnProfileViewModel.ImageEditAction.UPLOAD)
+                updateLocalImageUri(it)
+              }
+            })
+
     Column(
         modifier = Modifier.padding(8.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally) {
           Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
-            Image(
-                painter = painter,
+            AsyncImage(
+                model =
+                    if (editAction == OwnProfileViewModel.ImageEditAction.NO_ACTION) {
+                      imageUrl
+                    } else {
+                      localImageUri
+                    },
+                placeholder = painterResource(R.drawable.user),
                 contentDescription = "profile image",
-                modifier = Modifier.clickable { /*select image*/}.testTag("profileImage"),
+                modifier =
+                    Modifier.clickable {
+                          if (edit) {
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly))
+                          }
+                        }
+                        .testTag("profileImage"),
                 contentScale = ContentScale.Crop)
           }
+
           if (edit) Text(text = "Change profile picture")
+
+          if (edit &&
+              ((imageUrl.isNotEmpty() &&
+                  editAction == OwnProfileViewModel.ImageEditAction.NO_ACTION) ||
+                  (localImageUri != Uri.EMPTY))) {
+            Button(onClick = { setImageEditAction(OwnProfileViewModel.ImageEditAction.REMOVE) }) {
+              Text(text = "Remove profile picture")
+            }
+          }
         }
   }
 
@@ -202,13 +251,13 @@ class ProfileView {
     // nice
     val username by viewModel.username.observeAsState("")
     val bio by viewModel.bio.observeAsState("")
-    val imageUri by viewModel.image.observeAsState("")
+    val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
     Column {
       EditButton(navController)
 
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-        ProfileImage(imageUri, {}, false)
+        ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
         InterestsView().ShowInterests(interests)
@@ -223,16 +272,30 @@ class ProfileView {
     // nice
     val username by viewModel.username.observeAsState("")
     val bio by viewModel.bio.observeAsState("")
-    val imageUri by viewModel.image.observeAsState("")
+    val imageUrl by viewModel.image.observeAsState("")
     val updateUsername = { s: String -> viewModel.updateUsername(s) }
     val updateBio = { s: String -> viewModel.updateBio(s) }
-    val updateImageUri = { s: String -> viewModel.updateProfileImage(s) }
+
     val save = { viewModel.save() }
-    val cancel = { viewModel.update() }
+    val cancel = { viewModel.cancelImage() }
+    val setImageEditAction = { action: OwnProfileViewModel.ImageEditAction ->
+      viewModel.setImageEditAction(action)
+    }
+    val imageEditAction =
+        viewModel.imageEditAction.observeAsState(OwnProfileViewModel.ImageEditAction.NO_ACTION)
+    val localImageUriToUpload by viewModel.localImageUriToUpload.observeAsState(Uri.EMPTY)
+    val setLocalImageUriToUpload = { uri: Uri -> viewModel.setLocalImageUriToUpload(uri) }
+
     Column() {
       SaveCancelButtons(save, cancel, navController)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
-        ProfileImage(imageUri, updateImageUri, true)
+        ProfileImage(
+            imageUrl = imageUrl,
+            edit = true,
+            setImageEditAction = setImageEditAction,
+            editAction = imageEditAction.value,
+            localImageUri = localImageUriToUpload,
+            updateLocalImageUri = setLocalImageUriToUpload)
         UsernameField(username, updateUsername, true)
         BioField(bio, updateBio, true)
         InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
@@ -252,7 +315,7 @@ class ProfileView {
   fun ProfileScreen(viewModel: ProfileViewModel) {
     val username = viewModel.username.observeAsState("").value
     val bio = viewModel.bio.observeAsState("").value
-    val imageUri = viewModel.image.observeAsState("").value
+    val imageUrl = viewModel.image.observeAsState("").value
     val interests = viewModel.interests.observeAsState(setOf()).value
     val following = viewModel.isFollowing.observeAsState(false).value
     val back = { viewModel.back() }
@@ -261,7 +324,7 @@ class ProfileView {
     Column() {
       FollowButtons(back, follow, following, addFriend)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-        ProfileImage(imageUri, {}, false)
+        ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
         InterestsView().ShowInterests(interests)
