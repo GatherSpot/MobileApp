@@ -92,7 +92,7 @@ class EventRegistrationViewModelTest {
     val eventFirebaseConnection = EventFirebaseConnection()
     eventFirebaseConnection.add(event)
     viewModel.registerForEvent(event)
-    delay(2000)
+    delay(5000)
     viewModel.registerForEvent(event)
     runBlocking {
       delay(1000)
