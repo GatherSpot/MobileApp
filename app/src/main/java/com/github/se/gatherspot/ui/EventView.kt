@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
@@ -55,6 +54,8 @@ import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.gson.Gson
 import java.time.LocalDate
 import java.time.LocalTime
@@ -73,9 +74,13 @@ fun EventUI(
   val showDialogRegistration by registrationViewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by registrationViewModel.displayAlertDeletion.observeAsState()
   val isOrganizer =
+<<<<<<< HEAD:app/src/main/java/com/github/se/gatherspot/ui/EventUI.kt
       event.organizer.id == (ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST")
   // val isAlreadyRegistered =
   //    event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
+=======
+      event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
+>>>>>>> c64b44a544d1cc71b1b2c18208a63a769c3dd84a:app/src/main/java/com/github/se/gatherspot/ui/EventView.kt
   val eventUtils = EventUtils()
   val registrationState by registrationViewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == null
@@ -153,7 +158,16 @@ fun EventUI(
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-              ProfileIndicator(profile = event.organizer)
+              var profile = Profile.testParticipant()
+
+              /*
+              runBlocking {
+              profile = async{ProfileFirebaseConnection().fetch(event.organizerID)}.await()
+                      ?: Profile.testParticipant()
+              }
+
+               */
+              ProfileIndicator(profile)
 
               // Event Description
               event.description?.let { description ->
@@ -384,7 +398,7 @@ fun EventUIPreview() {
           registeredUsers = mutableListOf(),
           timeBeginning = LocalTime.of(11, 0),
           timeEnding = LocalTime.of(13, 0),
-          organizer = Profile("test", "Test User", "", "testProfileId", setOf()))
+          organizerID = Profile.testOrganizer().id)
   val viewModel = EventRegistrationViewModel()
   EventUI(
       event = event,

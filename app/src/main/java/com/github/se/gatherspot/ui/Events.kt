@@ -308,6 +308,7 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                 Text(text = event.title, fontSize = 14.sp)
               }
 
+<<<<<<< HEAD
               Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                   when (event.eventStatus) {
@@ -324,6 +325,14 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                       modifier = Modifier.width(24.dp).height(24.dp).clickable {})
                 }
               }
+=======
+        Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            when (event.eventStatus) {
+              EventStatus.CREATED -> Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
+              EventStatus.ON_GOING -> Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
+              EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
+>>>>>>> c64b44a544d1cc71b1b2c18208a63a769c3dd84a
             }
       }
   Divider(color = Color.Black, thickness = 1.dp)

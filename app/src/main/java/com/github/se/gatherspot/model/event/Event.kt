@@ -25,7 +25,7 @@ import java.time.LocalTime
  * @param inscriptionLimitDate: The last date to register for the event (optional)
  * @param eventStatus: The status of the event (draft, created, ongoing, completed)
  * @param categories: List of category labels of the event
- * @param organizer: Profile of the organizer
+ * @param organizerID: Id of the Profile of the organizer
  * @param registeredUsers: The list of users who registered for the event
  * @param finalAttendees: The list of users who attended the event
  * @param images: The images uploaded for the event
@@ -45,9 +45,9 @@ data class Event(
     val attendanceMinCapacity: Int = 0,
     val inscriptionLimitDate: LocalDate?,
     val inscriptionLimitTime: LocalTime?,
-    val eventStatus: EventStatus = EventStatus.DRAFT,
+    val eventStatus: EventStatus = EventStatus.CREATED,
     val categories: Set<Interests>? = emptySet(),
-    val organizer: Profile = Profile.testOrganizer(),
+    val organizerID: String = Profile.testOrganizer().id,
     // List of the IDs of the users who registered for the event
     val registeredUsers: MutableList<String> = mutableListOf(),
     val finalAttendees: List<String>? = emptyList(),
