@@ -17,6 +17,7 @@ import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.runBlocking
@@ -287,7 +288,7 @@ class EventUITest {
         assertExists()
         performClick()
       }
-
+        Thread.sleep(2000)
       registerButton {
         performScrollTo()
         assertIsNotEnabled()
@@ -393,6 +394,7 @@ class EventUITest {
       }
 
       okButton.performClick()
+        Thread.sleep(2000)
       registerButton {
         performScrollTo()
         assertIsNotEnabled()
