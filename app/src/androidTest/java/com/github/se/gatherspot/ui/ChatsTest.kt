@@ -32,7 +32,7 @@ class ChatsTest {
   lateinit var id: String
 
   @Before
-  fun testLogin() {
+  fun testLogin() = runBlocking {
     Firebase.auth
         .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;")
         .addOnSuccessListener { id = Firebase.auth.currentUser?.uid ?: "" }
