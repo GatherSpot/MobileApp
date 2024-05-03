@@ -213,10 +213,10 @@ class ProfileView {
           Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
             AsyncImage(
                 model =
-                    if (editAction == OwnProfileViewModel.ImageEditAction.UPLOAD) {
-                      localImageUri
-                    } else {
+                    if (editAction == OwnProfileViewModel.ImageEditAction.NO_ACTION) {
                       imageUrl
+                    } else {
+                      localImageUri
                     },
                 placeholder = painterResource(R.drawable.user),
                 contentDescription = "profile image",
@@ -230,15 +230,16 @@ class ProfileView {
                         }
                         .testTag("profileImage"),
                 contentScale = ContentScale.Crop)
-            if (edit) Text(text = "Change profile picture")
+          }
 
-            if (edit &&
-                ((imageUrl.isNotEmpty() &&
-                    editAction == OwnProfileViewModel.ImageEditAction.NO_ACTION) ||
-                    localImageUri != Uri.EMPTY)) {
-              Button(onClick = { setImageEditAction(OwnProfileViewModel.ImageEditAction.REMOVE) }) {
-                Text(text = "Remove profile picture")
-              }
+          if (edit) Text(text = "Change profile picture")
+
+          if (edit &&
+              ((imageUrl.isNotEmpty() &&
+                  editAction == OwnProfileViewModel.ImageEditAction.NO_ACTION) ||
+                  (localImageUri != Uri.EMPTY))) {
+            Button(onClick = { setImageEditAction(OwnProfileViewModel.ImageEditAction.REMOVE) }) {
+              Text(text = "Remove profile picture")
             }
           }
         }
@@ -276,11 +277,11 @@ class ProfileView {
     val updateBio = { s: String -> viewModel.updateBio(s) }
 
     val save = { viewModel.save() }
-    val cancel = { viewModel.update() }
+    val cancel = { viewModel.cancelImage() }
     val setImageEditAction = { action: OwnProfileViewModel.ImageEditAction ->
       viewModel.setImageEditAction(action)
     }
-    val imageEditAction by
+    val imageEditAction =
         viewModel.imageEditAction.observeAsState(OwnProfileViewModel.ImageEditAction.NO_ACTION)
     val localImageUriToUpload by viewModel.localImageUriToUpload.observeAsState(Uri.EMPTY)
     val setLocalImageUriToUpload = { uri: Uri -> viewModel.setLocalImageUriToUpload(uri) }
@@ -292,7 +293,7 @@ class ProfileView {
             imageUrl = imageUrl,
             edit = true,
             setImageEditAction = setImageEditAction,
-            editAction = imageEditAction,
+            editAction = imageEditAction.value,
             localImageUri = localImageUriToUpload,
             updateLocalImageUri = setLocalImageUriToUpload)
         UsernameField(username, updateUsername, true)

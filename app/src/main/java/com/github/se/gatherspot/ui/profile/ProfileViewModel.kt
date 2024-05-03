@@ -54,6 +54,7 @@ class OwnProfileViewModel : ViewModel() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _interests.value = _profile.interests
+    _image.value = _profile.image
   }
 
   // TODO : add sanitization to these function !!!
@@ -69,17 +70,18 @@ class OwnProfileViewModel : ViewModel() {
     _image.value = newImageUrl
   }
 
-  fun uploadProfileImage(newImageUri: Uri) {
+  fun uploadProfileImage(newImageUri: Uri?) {
     viewModelScope.launch {
-      Log.d("New image uri : ", newImageUri.toString())
-      if (newImageUri != EMPTY) {
-        val newUrl = FirebaseImages().pushProfilePicture(newImageUri, _profile.id)
+      if (newImageUri != null || newImageUri != EMPTY) {
+        Log.d("New image uri : ", newImageUri.toString())
+        val newUrl = FirebaseImages().pushProfilePicture(newImageUri!!, _profile.id)
         if (newUrl.isNotEmpty()) {
           Log.d("Successfully uploaded: ", newUrl)
           updateProfileImage(newUrl)
           ProfileFirebaseConnection().update(_profile.id, "image", newUrl)
         }
       }
+      imageEditAction.value = ImageEditAction.NO_ACTION
     }
   }
 
@@ -88,6 +90,7 @@ class OwnProfileViewModel : ViewModel() {
       FirebaseImages().removeProfilePicture(_profile.id)
       ProfileFirebaseConnection().update(_profile.id, "image", "")
       updateProfileImage("")
+      imageEditAction.value = ImageEditAction.NO_ACTION
     }
   }
 
@@ -122,7 +125,7 @@ class OwnProfileViewModel : ViewModel() {
 
   fun saveImage() {
     when (imageEditAction.value) {
-      ImageEditAction.UPLOAD -> uploadProfileImage(localImageUriToUpload.value!!)
+      ImageEditAction.UPLOAD -> uploadProfileImage(localImageUriToUpload.value)
       ImageEditAction.REMOVE -> removeProfilePicture()
       else -> {}
     }
