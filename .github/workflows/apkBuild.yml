@@ -1,6 +1,12 @@
 name: Build the apk after button press
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      my-custom-name:
+        description: 'Build APK'
+        required: false
+        default: 'Run My Workflow'
+        
 jobs:
   build:
     # The type of runner that the job will run on
@@ -33,9 +39,5 @@ jobs:
           # To run the CI with debug information, add --info
           ./gradlew assemble lint --parallel --build-cache
       
-      - name : PublishArtefact
-        run : sangatdesai/release-apk@m2
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          APP_FOLDER: app
-          RELEASE_TITLE: New Build
+      - name: Publish the artefact 
+        run: echo "save the artefactin the branch"
