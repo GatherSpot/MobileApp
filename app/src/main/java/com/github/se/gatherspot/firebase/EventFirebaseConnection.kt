@@ -10,6 +10,7 @@ import com.github.se.gatherspot.model.location.Location
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import java.time.LocalDate
@@ -244,6 +245,14 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             .await()
 
     return eventsFromQuerySnapshot(querySnapshot)
+  }
+
+  suspend fun addRegisteredUser(eventID: String, uid: String) {
+    Firebase.firestore
+        .collection(EVENTS)
+        .document(eventID)
+        .update("registeredUsers", FieldValue.arrayUnion(uid))
+        .await()
   }
 
   /**

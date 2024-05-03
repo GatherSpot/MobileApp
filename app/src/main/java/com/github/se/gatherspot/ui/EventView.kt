@@ -77,7 +77,7 @@ fun EventUI(
       event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
   val eventUtils = EventUtils()
   val registrationState by registrationViewModel.registrationState.observeAsState()
-  val isButtonEnabled = registrationState == null
+  val isButtonEnabled = registrationState == RegistrationState.NoError
   val buttonText =
       when (registrationState) {
         is RegistrationState.Success -> "Registered"
@@ -393,7 +393,7 @@ fun EventUIPreview() {
           timeBeginning = LocalTime.of(11, 0),
           timeEnding = LocalTime.of(13, 0),
           organizerID = Profile.testOrganizer().id)
-  val viewModel = EventRegistrationViewModel()
+  val viewModel = EventRegistrationViewModel(listOf(""))
   EventUI(
       event = event,
       navActions = NavigationActions(rememberNavController()),

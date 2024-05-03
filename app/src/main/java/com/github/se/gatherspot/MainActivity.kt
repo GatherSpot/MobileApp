@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
                 EventUI(
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
-                    registrationViewModel = EventRegistrationViewModel(),
+                    registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
                     eventsViewModel = eventsViewModel)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->

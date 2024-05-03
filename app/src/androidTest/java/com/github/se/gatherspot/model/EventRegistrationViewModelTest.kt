@@ -34,7 +34,7 @@ class EventRegistrationViewModelTest {
   fun testRegisterForEventChangeEventListRegistered() {
     // Set global uid
 
-    val viewModel = EventRegistrationViewModel()
+    val viewModel = EventRegistrationViewModel(listOf())
 
     val event =
         Event(
@@ -67,7 +67,7 @@ class EventRegistrationViewModelTest {
   @Test
   fun testAlreadyRegistered() {
     if (Firebase.auth.currentUser == null) Log.d("testAlreadyRegistered", "User is null")
-    val viewModel = EventRegistrationViewModel()
+    val viewModel = EventRegistrationViewModel(listOf())
     val event =
         Event(
             id = "idTestEvent",
