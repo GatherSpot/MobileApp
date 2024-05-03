@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 
@@ -18,24 +19,20 @@ class EnvironmentSetter {
 
     /** This function logs in the user for testing purposes this user has his email verified */
     fun testLogin() {
-
-      runTest {
-        val TAG = "testLogin"
-        // Hard coded this is the one account easily logged in for all tests unless specified
-        // otherwise
-        async {
-              Firebase.auth.createUserWithEmailAndPassword(
-                  "neverdeleted@mail.com", "GatherSpot,2024;")
-            }
+      runBlocking {
+        Firebase.auth
+            .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;")
             .await()
-        Log.d(TAG, "Logged in")
       }
     }
 
     fun testLoginCleanUp() {
-      runTest {
-        if (Firebase.auth.currentUser != null)
-            async { Firebase.auth.currentUser!!.delete() }.await()
+      Firebase.auth.signOut()
+    }
+
+    fun testDelete() {
+      if (Firebase.auth.currentUser != null) {
+        Firebase.auth.currentUser!!.delete()
       }
     }
 

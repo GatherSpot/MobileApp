@@ -97,7 +97,8 @@ class MainActivity : ComponentActivity() {
                 EventUI(
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
-                    viewModel = EventRegistrationViewModel())
+                    registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
+                    eventsViewModel = eventsViewModel)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val gson = Gson()
@@ -107,7 +108,8 @@ class MainActivity : ComponentActivity() {
                 EditEvent(
                     event = eventObject!!,
                     eventUtils = EventUtils(),
-                    nav = NavigationActions(navController))
+                    nav = NavigationActions(navController),
+                    viewModel = eventsViewModel)
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -132,7 +134,10 @@ class MainActivity : ComponentActivity() {
                 }
               }
               composable("createEvent") {
-                CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
+                CreateEvent(
+                    nav = NavigationActions(navController),
+                    eventUtils = EventUtils(),
+                    eventsViewModel)
               }
 
               composable("setup") {

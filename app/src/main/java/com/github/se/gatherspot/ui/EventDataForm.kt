@@ -48,6 +48,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
+import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
@@ -85,6 +86,7 @@ fun ScrollableContent(content: @Composable () -> Unit) {
 @Composable
 fun EventDataForm(
     eventUtils: EventUtils,
+    viewModel: EventsViewModel,
     nav: NavigationActions,
     eventAction: EventAction,
     event: Event? = null
@@ -389,21 +391,28 @@ fun EventDataForm(
                 onClick = {
                   try {
                     // give the event if update
-                    eventUtils.validateAndCreateOrUpdateEvent(
-                        title.text,
-                        description.text,
-                        location,
-                        eventStartDate.text,
-                        eventEndDate.text,
-                        eventTimeStart.text,
-                        eventTimeEnd.text,
-                        categories.toList(),
-                        maxAttendees.text,
-                        minAttendees.text,
-                        inscriptionLimitDate.text,
-                        inscriptionLimitTime.text,
-                        eventAction,
-                        event)
+                    val newEvent =
+                        eventUtils.validateAndCreateOrUpdateEvent(
+                            title.text,
+                            description.text,
+                            location,
+                            eventStartDate.text,
+                            eventEndDate.text,
+                            eventTimeStart.text,
+                            eventTimeEnd.text,
+                            categories.toList(),
+                            maxAttendees.text,
+                            minAttendees.text,
+                            inscriptionLimitDate.text,
+                            inscriptionLimitTime.text,
+                            eventAction,
+                            event)
+
+                    if (eventAction == EventAction.CREATE) {
+                      // viewModel.displayMyNewEvent(newEvent)
+                    } else {
+                      viewModel.editMyEvent(newEvent)
+                    }
                   } catch (e: Exception) {
                     errorMessage = e.message.toString()
                     showErrorDialog = true

@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventUtils
+import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
@@ -63,15 +64,20 @@ import java.time.format.FormatStyle
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistrationViewModel) {
+fun EventUI(
+    event: Event,
+    navActions: NavigationActions,
+    registrationViewModel: EventRegistrationViewModel,
+    eventsViewModel: EventsViewModel
+) {
 
-  val showDialogRegistration by viewModel.displayAlertRegistration.observeAsState()
-  val showDialogDelete by viewModel.displayAlertDeletion.observeAsState()
+  val showDialogRegistration by registrationViewModel.displayAlertRegistration.observeAsState()
+  val showDialogDelete by registrationViewModel.displayAlertDeletion.observeAsState()
   val isOrganizer =
       event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
   val eventUtils = EventUtils()
-  val registrationState by viewModel.registrationState.observeAsState()
-  val isButtonEnabled = registrationState == null
+  val registrationState by registrationViewModel.registrationState.observeAsState()
+  val isButtonEnabled = registrationState == RegistrationState.NoError
   val buttonText =
       when (registrationState) {
         is RegistrationState.Success -> "Registered"
@@ -113,7 +119,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                     }
                 // Delete button
                 IconButton(
-                    onClick = { viewModel.clickDeleteButton() },
+                    onClick = { registrationViewModel.clickDeleteButton() },
                     modifier = Modifier.testTag("deleteEventButton")) {
                       Icon(
                           modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
@@ -255,8 +261,9 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               if (!isOrganizer) {
                 Button(
                     onClick = {
-                      viewModel.registerForEvent(event)
-                      viewModel.clickRegisterButton()
+                      registrationViewModel.registerForEvent(event)
+                      eventsViewModel.updateNewRegistered(event)
+                      registrationViewModel.clickRegisterButton()
                     },
                     enabled = isButtonEnabled,
                     modifier = Modifier.fillMaxWidth().testTag("registerButton"),
@@ -269,7 +276,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
         if (showDialogRegistration!!) {
           AlertDialog(
               modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { viewModel.dismissAlert() },
+              onDismissRequest = { registrationViewModel.dismissAlert() },
               title = { Text("Registration Result") },
               text = {
                 when (val state = registrationState) {
@@ -281,7 +288,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               confirmButton = {
                 Button(
                     modifier = Modifier.testTag("okButton"),
-                    onClick = { viewModel.dismissAlert() }) {
+                    onClick = { registrationViewModel.dismissAlert() }) {
                       Text("OK")
                     }
               })
@@ -290,7 +297,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
         if (showDialogDelete!!) {
           AlertDialog(
               modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { viewModel.dismissAlert() },
+              onDismissRequest = { registrationViewModel.dismissAlert() },
               title = { Text("Delete Event") },
               text = {
                 Text("Are you sure you want to delete this event? This action cannot be undone.")
@@ -302,7 +309,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
                       // Delete the event
                       eventUtils.deleteEvent(event)
                       navActions.goBack()
-                      viewModel.dismissAlert()
+                      registrationViewModel.dismissAlert()
                     }) {
                       Text("Delete")
                     }
@@ -310,7 +317,7 @@ fun EventUI(event: Event, navActions: NavigationActions, viewModel: EventRegistr
               dismissButton = {
                 Button(
                     modifier = Modifier.testTag("cancelButton"),
-                    onClick = { viewModel.dismissAlert() }) {
+                    onClick = { registrationViewModel.dismissAlert() }) {
                       Text("Cancel")
                     }
               })
@@ -386,7 +393,10 @@ fun EventUIPreview() {
           timeBeginning = LocalTime.of(11, 0),
           timeEnding = LocalTime.of(13, 0),
           organizerID = Profile.testOrganizer().id)
-  val viewModel = EventRegistrationViewModel()
+  val viewModel = EventRegistrationViewModel(listOf(""))
   EventUI(
-      event = event, navActions = NavigationActions(rememberNavController()), viewModel = viewModel)
+      event = event,
+      navActions = NavigationActions(rememberNavController()),
+      registrationViewModel = viewModel,
+      eventsViewModel = EventsViewModel())
 }

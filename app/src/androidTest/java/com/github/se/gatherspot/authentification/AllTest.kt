@@ -8,7 +8,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testDelete
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
@@ -41,7 +41,7 @@ class AllTest : TestCase() {
   fun cleanUp() {
     try {
       ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
-      testLoginCleanUp()
+      testDelete()
     } catch (e: Exception) {
       e.printStackTrace()
     }

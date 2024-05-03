@@ -4,18 +4,29 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
-class EventRegistrationViewModel : ViewModel() {
+class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
   // TODO : use hilt injection instead of hardcoded userId to remove this test handle in production
   private val userId = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
 
   // LiveData for holding registration state
-  private val _registrationState = MutableLiveData<RegistrationState>()
+  private val _registrationState =
+      MutableLiveData<RegistrationState>().apply {
+        value =
+            if (registered.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
+              RegistrationState.Success
+            } else {
+              RegistrationState.NoError
+            }
+      }
+
   val registrationState: LiveData<RegistrationState> = _registrationState
 
   // LiveData for displaying the alert dialog for the registration
@@ -29,6 +40,8 @@ class EventRegistrationViewModel : ViewModel() {
   // Profile of the user, is needed to add the event to the user's registered events
   private val registeredEventsList =
       IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS) {}
+
+  private val eventFirebaseConnection = EventFirebaseConnection()
 
   /** Registers the user for the given event */
   fun registerForEvent(event: Event) {
@@ -48,7 +61,8 @@ class EventRegistrationViewModel : ViewModel() {
         return@launch
       }
       event.registeredUsers.add(userId)
-
+      eventFirebaseConnection.addRegisteredUser(
+          event.id, FirebaseAuth.getInstance().currentUser!!.uid)
       registeredEventsList.value?.add(event.id)
       // Notify the UI that registration was successful
       _registrationState.value = RegistrationState.Success
@@ -73,4 +87,6 @@ sealed class RegistrationState {
   data object Success : RegistrationState()
 
   data class Error(val message: String) : RegistrationState()
+
+  data object NoError : RegistrationState()
 }
