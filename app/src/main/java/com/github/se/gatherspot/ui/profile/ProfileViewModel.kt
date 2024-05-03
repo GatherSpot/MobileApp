@@ -48,17 +48,20 @@ class OwnProfileViewModel : ViewModel() {
 
   val interests: LiveData<Set<Interests>>
     get() = _interests
+
   fun saveText() {
     _profile.userName = _username.value!!
     _profile.bio = _bio.value!!
     _profile.interests = _interests.value!!
     ProfileFirebaseConnection().add(_profile)
   }
-  fun cancelText(){
+
+  fun cancelText() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _interests.value = _profile.interests
   }
+
   private fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
@@ -146,7 +149,6 @@ class OwnProfileViewModel : ViewModel() {
     imageEditAction.value = ImageEditAction.NO_ACTION
     localImageUriToUpload.value = Uri.EMPTY
   }
-
 }
 
 class ProfileViewModel(private val _target: String, private val nav: NavigationActions) {

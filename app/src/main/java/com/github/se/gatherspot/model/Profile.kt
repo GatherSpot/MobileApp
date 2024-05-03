@@ -75,8 +75,9 @@ class Profile(
     fun empty(id: String) = Profile("", "", "", id, setOf())
 
     /**
-     * Check if a username is valid
-     * an old username can be optionally given to avoid telling we can't use our own username
+     * Check if a username is valid an old username can be optionally given to avoid telling we
+     * can't use our own username
+     *
      * @param newName the new username
      * @param oldName the old username
      * @return a string with the error message if there is one
@@ -96,16 +97,17 @@ class Profile(
       if (newName != oldName) {
         ProfileFirebaseConnection().ifUsernameExists(newName) {
           if (it) res.value = "Username already taken"
-          }
         }
-        return res
-    }
-      fun checkBio(bio: String): MutableLiveData<String> {
-        val res = MutableLiveData<String>()
-        if (bio.length > 100) {
-          res.value = "Bio cannot be longer than 100 characters"
-        }
-        return res
       }
+      return res
+    }
+
+    fun checkBio(bio: String): MutableLiveData<String> {
+      val res = MutableLiveData<String>()
+      if (bio.length > 100) {
+        res.value = "Bio cannot be longer than 100 characters"
+      }
+      return res
+    }
   }
 }
