@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.model.chat
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
@@ -26,10 +27,10 @@ class ChatsListViewModel : ViewModel() {
     if (uid == null) {
       return
     }
-    val idlist: IdList? =
-        IdListFirebaseConnection().fetchFromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS) {}
+    val idlist = IdList.fromFirebase(uid,FirebaseCollection.REGISTERED_EVENTS){}
 
-    eventsIDS = idlist?.events ?: listOf()
+    eventsIDS = idlist.events
+    Log.e("IDS", eventsIDS.toString())
 
     _uiState.value = ChatUIState(loadedEvents)
 
@@ -40,3 +41,5 @@ class ChatsListViewModel : ViewModel() {
 }
 
 data class ChatUIState(val list: MutableList<Event> = mutableListOf())
+
+

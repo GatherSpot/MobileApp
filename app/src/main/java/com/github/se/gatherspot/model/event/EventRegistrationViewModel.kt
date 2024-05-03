@@ -8,6 +8,7 @@ import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.IdList
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -38,8 +39,10 @@ class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
   val displayAlertDeletion: LiveData<Boolean> = _displayAlertDeletion
 
   // Profile of the user, is needed to add the event to the user's registered events
-  private val registeredEventsList =
-      IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS) {}
+  private var registeredEventsList : IdList? = null
+  init{
+    viewModelScope.launch { registeredEventsList = IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS) { }}
+  }
 
   private val eventFirebaseConnection = EventFirebaseConnection()
 
@@ -63,7 +66,7 @@ class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
       event.registeredUsers.add(userId)
       eventFirebaseConnection.addRegisteredUser(
           event.id, FirebaseAuth.getInstance().currentUser!!.uid)
-      registeredEventsList.value?.add(event.id)
+      registeredEventsList!!.add(event.id)
       // Notify the UI that registration was successful
       _registrationState.value = RegistrationState.Success
     }

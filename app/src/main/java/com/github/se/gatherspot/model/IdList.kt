@@ -1,3 +1,4 @@
+
 package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.firebase.CollectionClass
@@ -17,31 +18,31 @@ class IdList(
     var events: List<String>,
     val collection: FirebaseCollection
 ) : CollectionClass() {
-  fun add(eventId: String) {
-    IdListFirebaseConnection().addElement(id, collection, eventId) { events = events.plus(eventId) }
-  }
-
-  fun remove(eventId: String) {
-    IdListFirebaseConnection().deleteElement(id, collection, eventId) {
-      events = events.minus(eventId)
+    fun add(eventId: String) {
+        IdListFirebaseConnection().addElement(id, collection, eventId) { events = events.plus(eventId) }
     }
-  }
 
-  companion object {
-    /**
-     * Create an empty IdList
-     *
-     * @param id the id of the user
-     * @param collection the collection where it will be stored
-     * @return an empty IdList useful for tests, the creation of a new list, and enabling non
-     *   blocking access to the list
-     */
-    fun new(id: String, collection: FirebaseCollection, elements: List<String>) =
-        IdListFirebaseConnection().add(id, collection, elements) {}
+    fun remove(eventId: String) {
+        IdListFirebaseConnection().deleteElement(id, collection, eventId) {
+            events = events.minus(eventId)
+        }
+    }
 
-    fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) =
-        IdListFirebaseConnection().fetch(id, collection) { onSuccess() }
+    companion object {
+        /**
+         * Create an empty IdList
+         *
+         * @param id the id of the user
+         * @param collection the collection where it will be stored
+         * @return an empty IdList useful for tests, the creation of a new list, and enabling non
+         *   blocking access to the list
+         */
+        fun new(id: String, collection: FirebaseCollection, elements: List<String>) =
+            IdListFirebaseConnection().add(id, collection, elements) {}
 
-    fun empty(id: String, collection: FirebaseCollection) = IdList(id, listOf(), collection)
-  }
+        suspend fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) =
+            IdListFirebaseConnection().fetch(id, collection) { onSuccess() }
+
+        fun empty(id: String, collection: FirebaseCollection) = IdList(id, listOf(), collection)
+    }
 }
