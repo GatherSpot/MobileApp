@@ -1,0 +1,92 @@
+Title	URL	Assignees	Status	Priority	Estimate	Size	Iteration
+Learn CI/CD and push inital code	https://github.com/GatherSpot/MobileApp/issues/1	Eliasgoat	Done Sprint 1				
+Profile creation after signup (UI + Firebase)	https://github.com/GatherSpot/MobileApp/issues/19	WesLeeO	Done Sprint 2	P1	4		
+My profile window	https://github.com/GatherSpot/MobileApp/issues/17	Stuce-bot	Done Sprint 3		8		
+Fetch and Store Event	https://github.com/GatherSpot/MobileApp/issues/15	Eliasgoat	Done Sprint 2		5		
+As a user, I want to be able to create a profile, so that people can see who I am.	https://github.com/GatherSpot/MobileApp/issues/55	Stuce-bot	Done Sprint 2		8		
+Event creation UI	https://github.com/GatherSpot/MobileApp/issues/16	SamBachmann	Done Sprint 2	P1	8		
+Login Google (Mathurin's Task)	https://github.com/GatherSpot/MobileApp/issues/34	Mathurinnn	Done Sprint 2	P0	2		
+Login Google (Wesley's Task)	https://github.com/GatherSpot/MobileApp/issues/21	WesLeeO	Done Sprint 2	P0	2		
+As a user, I want to authenticate myself so that I can access personalized content	https://github.com/GatherSpot/MobileApp/issues/136		Done Sprint 2				
+Create the navigation tree	https://github.com/GatherSpot/MobileApp/issues/5	WesLeeO	Done Sprint 1				
+Brainstorm the app and user backlogs	https://github.com/GatherSpot/MobileApp/issues/20	mmalonga	Done Sprint 1		6		
+As an organiser I want to delete my event so that participants are no longer registered to an event that will not take place			Sprint 4 backlog				
+As a user I want to set a personnalized profile picture			Sprint 5 backlog				
+As a user, I want to upload a picture of me so that people recognize me			Sprint 5 backlog				
+As a participant, I want to register to the event so that I may be included by the event organizer	https://github.com/GatherSpot/MobileApp/issues/147		Done Sprint 5				
+Implement notifications for Chat			Product Backlog				
+As a participant, I want to be able to export saved events to my calendar so that I can plan them			Product Backlog				
+As a participant, I want to be reminded of my event registration a few hours before the event takes place so that I don't forget			Product Backlog				
+As a participant, I want to be provided GPS navigation to the event			Product Backlog				
+As a participant I want to check in with NFC for a secure and efficient experience			Product Backlog				
+As a participant I want to grade events so that my feedback may have an impact			Product Backlog				
+As a participant, I want to attend events with reputable people so that I have a better time (grading system)			Product Backlog				
+As an organizer I want to recieve feedback from participant so that I can improve my future events			Product Backlog				
+As a user, I want to get a notification when I receive a message			Product Backlog				
+--------------------------- NOT IN USER FLOW 2  -----------------			Product Backlog				
+As a participant I want to be able to share pictures of the event with other participants and the organizers			Product Backlog				
+As a participant taking part to a casual event I want to be mapped to other participant in order to get to know new people			Product Backlog				
+As a participant, I want to be able to chat with users so that we can synchronize for a coming event	https://github.com/GatherSpot/MobileApp/issues/145		In Progress Sprint 6				
+As an organizer, I want to have feedback about the impacted audience so that I can evaluate the success rate of my announcement			Product Backlog				
+As a user, I want to manage my confidentiality settings so that I can control visibility			Product Backlog				
+As a user, I want to have a list of friends, so that I can share my activities with them.			Sprint 4 backlog				
+As a user I want to be able to prove my belonging to a given university			Product Backlog				
+As an organizer, I want to create interactive event so that my attendees can bond			Product Backlog				
+As a user I need to know what and how data is handled to comply with the law (nLPD) so that I may safely share information			Product Backlog				
+As a user I want to be able to browse an interactive map to see events around me			Sprint 7 backlog				
+As a user I want to store event details locally so I can access them offline			Sprint 7 backlog				
+As a user I want to be able to use QR codes to exchange information in a convenient manner			Sprint 7 backlog				
+QR Code generator for encoding profiles and events	https://github.com/GatherSpot/MobileApp/issues/159	Eliasgoat	In Progress Sprint 7		8		
+Community tab -> Map tab (display registered events location)	https://github.com/GatherSpot/MobileApp/issues/162	Mathurinnn	In Progress Sprint 7				
+Save event details offline	https://github.com/GatherSpot/MobileApp/issues/164	Stuce-bot	In Progress Sprint 7				
+Rating activity in view of attended event	https://github.com/GatherSpot/MobileApp/issues/163	mmalonga	In Progress Sprint 7				
+UI for "Checking attendance" activity of an event as an organizer	https://github.com/GatherSpot/MobileApp/issues/161	mmalonga	In Progress Sprint 7				
+NFC encoding generator for profiles	https://github.com/GatherSpot/MobileApp/issues/165	markh0rr	In Progress Sprint 7				
+Implement chronological logic in Events	https://github.com/GatherSpot/MobileApp/issues/160	WesLeeO	In Progress Sprint 7		8		
+Learn how to store images in the cloud	https://github.com/GatherSpot/MobileApp/issues/57	markh0rr	Done Sprint 4		5		
+Filter events using user interests	https://github.com/GatherSpot/MobileApp/issues/68	WesLeeO	Done Sprint 4		6		
+As a participant, I want to be able to filter out events that are of no interest to me so that I can save time	https://github.com/GatherSpot/MobileApp/issues/143		Done Sprint 4				
+As a participant, I want to have brief overview of all events I can participate in because it is time-efficient.	https://github.com/GatherSpot/MobileApp/issues/142		Done Sprint 4				
+Update Profile GUI	https://github.com/GatherSpot/MobileApp/issues/71	Stuce-bot	Done Sprint 4		2		
+Implement the starting block (model, firebase + ui) for the chatting feature	https://github.com/GatherSpot/MobileApp/issues/80	Eliasgoat, Mathurinnn	Done Sprint 4		15		
+interface for all firebaseConnection classes	https://github.com/GatherSpot/MobileApp/issues/75	Mathurinnn	Done Sprint 4		2		
+Delete an event implementation	https://github.com/GatherSpot/MobileApp/issues/70	SamBachmann	Done Sprint 4		7		
+Event UI organizer	https://github.com/GatherSpot/MobileApp/issues/69	SamBachmann	Done Sprint 4		2		
+Register to an event	https://github.com/GatherSpot/MobileApp/issues/67	SamBachmann	Done Sprint 4		3		
+Event UI (from the point of view of general user)	https://github.com/GatherSpot/MobileApp/issues/29	Eliasgoat	Done Sprint 3		8		
+Map implementation and testing	https://github.com/GatherSpot/MobileApp/issues/27	markh0rr	Done Sprint 3		6		
+As a user, I want to be able to see all the details for a specific event	https://github.com/GatherSpot/MobileApp/issues/140		Done Sprint 3				
+As a participant, I want to be able to see the location of an event on a map	https://github.com/GatherSpot/MobileApp/issues/139		Done Sprint 3				
+Firebase (fetch "all events" for now) + Main Menu UI + Testing	https://github.com/GatherSpot/MobileApp/issues/26	WesLeeO	Done Sprint 3		6		
+Profile UI from the point of view of random user(no edit permission)	https://github.com/GatherSpot/MobileApp/issues/35	Stuce-bot	Done Sprint 3				
+Choose and add a Location to an event + Edit Event	https://github.com/GatherSpot/MobileApp/issues/36	SamBachmann	Done Sprint 3		10		
+Add tests for Login/Sign up classes	https://github.com/GatherSpot/MobileApp/issues/38	Mathurinnn	Done Sprint 3		6		
+As a user, I want to be able to check other user's profile	https://github.com/GatherSpot/MobileApp/issues/56	Stuce-bot	Done Sprint 3		1		
+Interests	https://github.com/GatherSpot/MobileApp/issues/135	mmalonga	Done Sprint 3		5		
+As an organizer, I want to be able to create events, so that I can spend good time with friends.	https://github.com/GatherSpot/MobileApp/issues/137		Done Sprint 3				
+Learn how to link profile to images	https://github.com/GatherSpot/MobileApp/issues/60	markh0rr	Done Sprint 5		5		
+Select an Image when creating an Event	https://github.com/GatherSpot/MobileApp/issues/108	markh0rr	In Progress Sprint 7		3		
+adapt profile image to display a placeholder	https://github.com/GatherSpot/MobileApp/issues/134	markh0rr	In Progress Sprint 7		0.5		
+View Host profile when seeing Event UI	https://github.com/GatherSpot/MobileApp/issues/157	SamBachmann	In Progress Sprint 7				
+Fix bug with scrolling categories in SignUp flow	https://github.com/GatherSpot/MobileApp/issues/107	Mathurinnn	Done Sprint 6		2		
+Implement the chat UI	https://github.com/GatherSpot/MobileApp/issues/109	Eliasgoat	Done Sprint 6		5		
+Github one click to build the APK	https://github.com/GatherSpot/MobileApp/issues/110	markh0rr	Done Sprint 6		1		
+Profile picture	https://github.com/GatherSpot/MobileApp/issues/86	markh0rr	Done Sprint 6		6		
+Save draft event	https://github.com/GatherSpot/MobileApp/issues/111	SamBachmann	Done Sprint 6		7		
+Fix Event so that it stores ID of the organizer	https://github.com/GatherSpot/MobileApp/issues/138	mmalonga	Done Sprint 6				
+Reference Profile id rather than Profile	https://github.com/GatherSpot/MobileApp/issues/90	Stuce-bot	Done Sprint 6				
+Synchronize application with Firebase (modification of an event should be reflected)	https://github.com/GatherSpot/MobileApp/issues/112	WesLeeO	Done Sprint 1		8		
+Fix Event creation to save the organiser of the event	https://github.com/GatherSpot/MobileApp/issues/126	SamBachmann	In Progress Sprint 6		4		
+Default filter (by user interests)	https://github.com/GatherSpot/MobileApp/issues/113	WesLeeO	In Progress Sprint 6		3		
+Improve filtering : loading events based on selected filters.	https://github.com/GatherSpot/MobileApp/issues/88	WesLeeO	Done Sprint 5				
+Improve the UI for the chat list	https://github.com/GatherSpot/MobileApp/issues/89	Mathurinnn	Done Sprint 5		7		
+Delete User	https://github.com/GatherSpot/MobileApp/issues/91	mmalonga	Done Sprint 5		2		
+Complete sign up flow	https://github.com/GatherSpot/MobileApp/issues/94	mmalonga	Done Sprint 5		3		
+Improve event UI in main flow	https://github.com/GatherSpot/MobileApp/issues/92	SamBachmann	Done Sprint 5		7		
+Implement the model for a chat conversation	https://github.com/GatherSpot/MobileApp/issues/93	Eliasgoat	Done Sprint 5				
+Button to follow profiles	https://github.com/GatherSpot/MobileApp/issues/131	Stuce-bot	Done Sprint 5				
+Map the image API adaptor to firebase API calls	https://github.com/GatherSpot/MobileApp/issues/59	markh0rr	Done Sprint 5		5		
+ProfileFirebaseConnection	https://github.com/GatherSpot/MobileApp/issues/102	mmalonga	Done Sprint 5		2		
+As a user, I want to be able to create draft events so that I can use the application in offline mode	https://github.com/GatherSpot/MobileApp/issues/144		Done Sprint 6				
+As a participant I want to chat with the people from the event so that I can clarify any questions			Sprint 6 Backlog				
+As a user, I want my preferences to be understood and acknowledged so that my experience is more relevant	https://github.com/GatherSpot/MobileApp/issues/148		In Progress Sprint 6				
