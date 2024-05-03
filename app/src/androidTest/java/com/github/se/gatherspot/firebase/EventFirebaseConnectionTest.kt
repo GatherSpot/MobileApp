@@ -132,8 +132,8 @@ class EventFirebaseConnectionTest {
         assert(round >= listOfEvents1.size)
         val listOfEvents2 = EventFirebaseConnection.fetchNextEvents(round.toLong())
         assert(round >= listOfEvents2.size)
-        for (i in 0 until round) {
-          for (j in 0 until round) {
+        for (i in 0 until listOfEvents1.size) {
+          for (j in 0 until listOfEvents2.size) {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
@@ -150,16 +150,19 @@ class EventFirebaseConnectionTest {
             EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
         val listOfEvents2 =
             EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
-        for (i in 0 until round) {
+        for (i in 0 until listOfEvents1.size) {
           assertNotNull(listOfEvents1[i].categories)
           assertTrue(
               listOfEvents1[i].categories!!.contains(interests[0]) ||
                   listOfEvents1[i].categories!!.contains(interests[1]))
-          assertNotNull(listOfEvents2[i].categories)
-          assertTrue(
-              listOfEvents2[i].categories!!.contains(interests[0]) ||
-                  listOfEvents2[i].categories!!.contains(interests[1]))
         }
+        for (j in 0 until listOfEvents2.size) {
+          assertNotNull(listOfEvents2[j].categories)
+          assertTrue(
+              listOfEvents2[j].categories!!.contains(interests[0]) ||
+                  listOfEvents2[j].categories!!.contains(interests[1]))
+        }
+
         testLoginCleanUp()
         EventFirebaseConnection.offset = null
       }
@@ -174,8 +177,8 @@ class EventFirebaseConnectionTest {
             EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
         val listOfEvents2 =
             EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
-        for (i in 0 until round) {
-          for (j in 0 until round) {
+        for (i in 0 until listOfEvents1.size) {
+          for (j in 0 until listOfEvents2.size) {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
