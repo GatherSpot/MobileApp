@@ -1,6 +1,12 @@
 name: Build the apk after button press
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      my-custom-name:
+        description: 'Build APK'
+        required: false
+        default: 'Run My Workflow'
+        
 jobs:
   build:
     # The type of runner that the job will run on
@@ -26,11 +32,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Build app 
+        run: ./gradlew assemble lint --parallel --build-cache
 
-      # This step runs gradle commands to build the application
-      - name: Assemble
-        run: |
-          # To run the CI with debug information, add --info
-          ./gradlew assemble lint --parallel --build-cache
-
-    
+      - name: Upload APK to Github Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: app
+          path: app/build/outputs/apk/debug/app-debug.apk

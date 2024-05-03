@@ -29,14 +29,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.github.se.gatherspot.R
@@ -273,11 +271,10 @@ class ProfileView {
     val username by viewModel.username.observeAsState("")
     val bio by viewModel.bio.observeAsState("")
     val imageUrl by viewModel.image.observeAsState("")
-    val updateUsername = { s: String -> viewModel.updateUsername(s) }
-    val updateBio = { s: String -> viewModel.updateBio(s) }
-
-    val save = { viewModel.save() }
-    val cancel = { viewModel.cancelImage() }
+    val updateUsername = viewModel::updateUsername
+    val updateBio = viewModel::updateBio
+    val save = viewModel::save
+    val cancel = viewModel::cancel
     val setImageEditAction = { action: OwnProfileViewModel.ImageEditAction ->
       viewModel.setImageEditAction(action)
     }
@@ -318,9 +315,9 @@ class ProfileView {
     val imageUrl = viewModel.image.observeAsState("").value
     val interests = viewModel.interests.observeAsState(setOf()).value
     val following = viewModel.isFollowing.observeAsState(false).value
-    val back = { viewModel.back() }
-    val follow = { viewModel.follow() }
-    val addFriend = { viewModel.requestFriend() }
+    val back = viewModel::back
+    val follow = viewModel::follow
+    val addFriend = viewModel::requestFriend
     Column() {
       FollowButtons(back, follow, following, addFriend)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
