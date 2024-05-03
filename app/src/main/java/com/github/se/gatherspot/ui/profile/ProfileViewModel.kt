@@ -1,10 +1,8 @@
 package com.github.se.gatherspot.ui.profile
 
 import android.net.Uri
-import android.net.Uri.*
+import android.net.Uri.EMPTY
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -57,6 +55,12 @@ class OwnProfileViewModel : ViewModel() {
     _image.value = _profile.image
   }
 
+  fun cancelText() {
+    _username.value = _profile.userName
+    _bio.value = _profile.bio
+    _interests.value = _profile.interests
+  }
+
   // TODO : add sanitization to these function !!!
   fun updateUsername(userName: String) {
     _username.value = userName
@@ -98,10 +102,6 @@ class OwnProfileViewModel : ViewModel() {
     _interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
 
-  fun isInterestsSelected(interest: Interests): Boolean {
-    return interest in _interests.value!!
-  }
-
   enum class ImageEditAction {
     NO_ACTION,
     UPLOAD,
@@ -139,6 +139,11 @@ class OwnProfileViewModel : ViewModel() {
   fun save() {
     saveText()
     saveImage()
+  }
+
+  fun cancel() {
+    cancelText()
+    cancelImage()
   }
 }
 
@@ -178,11 +183,7 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
 
   // TODO : replace ?: with hilt injection
   fun follow() {
-    println("follow clicked")
-    // unsure we disable functionality if we didn't fetch data yet, makes null asserted safe as a
-    // bonus
     if (_isFollowing.isInitialized) {
-      println("follow clicked 2")
       if (_isFollowing.value!!) FollowList.unfollow(_id, _target)
       else FollowList.follow(_id, _target)
       _isFollowing.value = !(_isFollowing.value!!)
