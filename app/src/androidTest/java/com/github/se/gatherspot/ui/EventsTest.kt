@@ -36,7 +36,7 @@ class EventsTest {
   @After
   fun cleanUp() {
     testLoginCleanUp()
-    Thread.sleep(1000)
+    Thread.sleep(2000)
   }
 
   @Test
