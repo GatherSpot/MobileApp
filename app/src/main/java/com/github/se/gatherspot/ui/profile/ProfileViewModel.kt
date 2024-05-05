@@ -59,7 +59,6 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun saveText() {
-    println("usernameisuniquecheck: ${userNameIsUniqueCheck.value}")
     if (_usernameValid.value == "" &&
         _bioValid.value == "" &&
         userNameIsUniqueCheck.value == true) {
@@ -68,7 +67,6 @@ class OwnProfileViewModel : ViewModel() {
       _profile.interests = _interests.value!!
       ProfileFirebaseConnection().add(_profile)
       _saved.value = true
-      println("saved")
     }
   }
 
@@ -165,8 +163,8 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun save() {
-    saveText()
     saveImage()
+    saveText()
   }
 
   fun cancel() {
