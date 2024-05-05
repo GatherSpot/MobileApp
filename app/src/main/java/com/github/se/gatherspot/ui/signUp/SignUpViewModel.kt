@@ -36,8 +36,6 @@ class SignUpViewModel() : ViewModel() {
   // TODO : check cases where it crashes, before moving to next screen (does profile exist, is it a
   // problem ? are we still moved to setup ?), or cases where we stop at email confirmation and then
   // sign in.
-  // TODO : add a reset email in case someone does DOS by registering random emails. (Allow
-  // resetting email)
   private fun updateEverythingOk() {
     isEverythingOk.value =
         (doesUserNameExist.value == false &&
@@ -53,6 +51,7 @@ class SignUpViewModel() : ViewModel() {
   }
 
   fun updateUsername(string: String) {
+    //TODO update this
     userName.value = string
     doesUserNameExist = ProfileFirebaseConnection().ifUsernameExists(string)
   }
@@ -124,7 +123,7 @@ class SignUpViewModel() : ViewModel() {
         .addOnFailureListener() {
           when (it) {
             is FirebaseAuthUserCollisionException -> {
-              emailError.value = "Email already in use"
+              emailError.value = "Email already in use, try signing in!"
               isEmailValid.value = false
               updateEverythingOk()
             }
