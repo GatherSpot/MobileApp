@@ -1,4 +1,4 @@
-package com.github.se.gatherspot
+package com.github.se.gatherspot.firebase
 
 import android.util.Log
 import com.github.se.gatherspot.model.chat.ChatMessage
@@ -11,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 class ChatMessagesFirebaseConnection {
 
   private val TAG = "ChatMessagesFirebase"
-  val CHATS = "chats"
+  val CHATS = "chatMessages"
   val MESSAGES = "messages"
   private val DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
@@ -59,7 +59,7 @@ class ChatMessagesFirebaseConnection {
   }
 
   /** Maps a Firestore document to a ChatMessage object. */
-  private fun getFromDocument(d: DocumentSnapshot): ChatMessage? {
+  fun getFromDocument(d: DocumentSnapshot): ChatMessage? {
     val messageId = d.id
     val senderId = d.getString("senderId") ?: return null
     val messageText = d.getString("message") ?: return null

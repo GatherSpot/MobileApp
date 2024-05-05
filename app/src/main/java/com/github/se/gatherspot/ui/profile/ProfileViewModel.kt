@@ -1,8 +1,13 @@
 package com.github.se.gatherspot.ui.profile
 
+import android.net.Uri
+import android.net.Uri.EMPTY
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.FirebaseImages
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
@@ -10,6 +15,7 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.launch
 
 class OwnProfileViewModel : ViewModel() {
   private lateinit var _profile: Profile
@@ -35,10 +41,9 @@ class OwnProfileViewModel : ViewModel() {
   val interests: LiveData<Set<Interests>>
     get() = _interests
 
-  fun save() {
+  fun saveText() {
     _profile.userName = _username.value!!
     _profile.bio = _bio.value!!
-    _profile.image = _image.value ?: ""
     _profile.interests = _interests.value!!
     ProfileFirebaseConnection().add(_profile)
   }
@@ -46,7 +51,13 @@ class OwnProfileViewModel : ViewModel() {
   fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
+    _interests.value = _profile.interests
     _image.value = _profile.image
+  }
+
+  fun cancelText() {
+    _username.value = _profile.userName
+    _bio.value = _profile.bio
     _interests.value = _profile.interests
   }
 
@@ -59,16 +70,80 @@ class OwnProfileViewModel : ViewModel() {
     _bio.value = bio
   }
 
-  fun updateProfileImage(image: String) {
-    _image.value = image
+  fun updateProfileImage(newImageUrl: String) {
+    _image.value = newImageUrl
+  }
+
+  fun uploadProfileImage(newImageUri: Uri?) {
+    viewModelScope.launch {
+      if (newImageUri != null || newImageUri != EMPTY) {
+        Log.d("New image uri : ", newImageUri.toString())
+        val newUrl = FirebaseImages().pushProfilePicture(newImageUri!!, _profile.id)
+        if (newUrl.isNotEmpty()) {
+          Log.d("Successfully uploaded: ", newUrl)
+          updateProfileImage(newUrl)
+          ProfileFirebaseConnection().update(_profile.id, "image", newUrl)
+        }
+      }
+      imageEditAction.value = ImageEditAction.NO_ACTION
+    }
+  }
+
+  fun removeProfilePicture() {
+    viewModelScope.launch {
+      FirebaseImages().removeProfilePicture(_profile.id)
+      ProfileFirebaseConnection().update(_profile.id, "image", "")
+      updateProfileImage("")
+      imageEditAction.value = ImageEditAction.NO_ACTION
+    }
   }
 
   fun flipInterests(interest: Interests) {
     _interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
 
-  fun isInterestsSelected(interest: Interests): Boolean {
-    return interest in _interests.value!!
+  enum class ImageEditAction {
+    NO_ACTION,
+    UPLOAD,
+    REMOVE
+  }
+
+  var localImageUriToUpload = MutableLiveData(Uri.EMPTY)
+
+  fun setLocalImageUriToUpload(uri: Uri) {
+    localImageUriToUpload.value = uri
+  }
+
+  var imageEditAction = MutableLiveData(ImageEditAction.NO_ACTION)
+
+  fun setImageEditAction(newImageEditAction: ImageEditAction) {
+    if (newImageEditAction == ImageEditAction.REMOVE) {
+      localImageUriToUpload.value = Uri.EMPTY
+    }
+    imageEditAction.value = newImageEditAction
+  }
+
+  fun saveImage() {
+    when (imageEditAction.value) {
+      ImageEditAction.UPLOAD -> uploadProfileImage(localImageUriToUpload.value)
+      ImageEditAction.REMOVE -> removeProfilePicture()
+      else -> {}
+    }
+  }
+
+  fun cancelImage() {
+    imageEditAction.value = ImageEditAction.NO_ACTION
+    localImageUriToUpload.value = Uri.EMPTY
+  }
+
+  fun save() {
+    saveText()
+    saveImage()
+  }
+
+  fun cancel() {
+    cancelText()
+    cancelImage()
   }
 }
 
@@ -108,11 +183,7 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
 
   // TODO : replace ?: with hilt injection
   fun follow() {
-    println("follow clicked")
-    // unsure we disable functionality if we didn't fetch data yet, makes null asserted safe as a
-    // bonus
     if (_isFollowing.isInitialized) {
-      println("follow clicked 2")
       if (_isFollowing.value!!) FollowList.unfollow(_id, _target)
       else FollowList.follow(_id, _target)
       _isFollowing.value = !(_isFollowing.value!!)

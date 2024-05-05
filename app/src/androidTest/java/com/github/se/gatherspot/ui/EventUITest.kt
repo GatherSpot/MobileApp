@@ -5,29 +5,41 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
 
+  @Before
+  fun setUp() {
+    testLogin()
+  }
+
+  @After
+  fun cleanUp() {
+    testLoginCleanUp()
+  }
+
   @Test
   fun testEverythingExists() {
-    testLogin()
-
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -36,7 +48,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -49,7 +61,11 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
@@ -74,8 +90,6 @@ class EventUITest {
   @Test
   fun testEverythingIsDisplayed() {
 
-    testLogin()
-
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -84,7 +98,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -97,7 +111,11 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertIsDisplayed()
@@ -156,7 +174,6 @@ class EventUITest {
   @Test
   fun textsDisplayedAreCorrect() {
 
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -165,7 +182,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -179,7 +196,11 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description {
@@ -222,7 +243,6 @@ class EventUITest {
   @Test
   fun registerToAnEventWorks() {
 
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -231,7 +251,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -245,7 +265,11 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -263,7 +287,7 @@ class EventUITest {
         assertExists()
         performClick()
       }
-
+      Thread.sleep(2000)
       registerButton {
         performScrollTo()
         assertIsNotEnabled()
@@ -276,7 +300,6 @@ class EventUITest {
   @Test
   fun testUnableToRegisterToAFullEvent() {
 
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -286,7 +309,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 2,
               attendanceMinCapacity = 1,
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -299,7 +322,11 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -323,8 +350,7 @@ class EventUITest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testAlreadyRegistered() {
-    testLogin()
+  fun testAlreadyRegistered(): Unit = runBlocking {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -334,7 +360,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizer = Profile.testParticipant(),
+              organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -346,8 +372,14 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
+      val eventfirebase = EventFirebaseConnection()
+      eventfirebase.add(event)
 
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -361,6 +393,7 @@ class EventUITest {
       }
 
       okButton.performClick()
+      Thread.sleep(2000)
       registerButton {
         performScrollTo()
         assertIsNotEnabled()
@@ -372,7 +405,6 @@ class EventUITest {
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
     // To make it works, need to define a global MainActivity.uid
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -382,7 +414,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizer = Profile.testOrganizer(),
+              organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -395,7 +427,11 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {}
   }
@@ -413,7 +449,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizer = Profile.testOrganizer(),
+              organizerID = FirebaseAuth.getInstance().currentUser!!.uid,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -426,10 +462,14 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(event, NavigationActions(navController), EventRegistrationViewModel())
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      editButton { assertIsDisplayed() }
+      editEventButton { assertIsDisplayed() }
       deleteButton {
         assertIsDisplayed()
         performClick()

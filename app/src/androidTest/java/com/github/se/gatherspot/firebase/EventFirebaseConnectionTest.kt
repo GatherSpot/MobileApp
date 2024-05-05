@@ -1,9 +1,12 @@
 package com.github.se.gatherspot.firebase
 
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
+import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -65,7 +68,7 @@ class EventFirebaseConnectionTest {
             inscriptionLimitTime =
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-            eventStatus = EventStatus.DRAFT,
+            eventStatus = EventStatus.CREATED,
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
@@ -106,7 +109,7 @@ class EventFirebaseConnectionTest {
     assertEquals(
         resultEvent!!.inscriptionLimitTime,
         LocalTime.parse("09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)))
-    assertEquals(resultEvent!!.eventStatus, EventStatus.DRAFT)
+    assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
     assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
@@ -129,8 +132,8 @@ class EventFirebaseConnectionTest {
         assert(round >= listOfEvents1.size)
         val listOfEvents2 = EventFirebaseConnection.fetchNextEvents(round.toLong())
         assert(round >= listOfEvents2.size)
-        for (i in 0 until round) {
-          for (j in 0 until round) {
+        for (i in 0 until listOfEvents1.size) {
+          for (j in 0 until listOfEvents2.size) {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
@@ -140,42 +143,73 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchNextBasedOnInterestReturnsCorrectEvents() =
       runTest(timeout = Duration.parse("20s")) {
+        testLogin()
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
             EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
         val listOfEvents2 =
             EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
-        for (i in 0 until round) {
+        for (i in 0 until listOfEvents1.size) {
           assertNotNull(listOfEvents1[i].categories)
           assertTrue(
               listOfEvents1[i].categories!!.contains(interests[0]) ||
                   listOfEvents1[i].categories!!.contains(interests[1]))
-          assertNotNull(listOfEvents2[i].categories)
+        }
+        for (j in 0 until listOfEvents2.size) {
+          assertNotNull(listOfEvents2[j].categories)
           assertTrue(
-              listOfEvents2[i].categories!!.contains(interests[0]) ||
-                  listOfEvents2[i].categories!!.contains(interests[1]))
+              listOfEvents2[j].categories!!.contains(interests[0]) ||
+                  listOfEvents2[j].categories!!.contains(interests[1]))
         }
 
+        testLoginCleanUp()
         EventFirebaseConnection.offset = null
       }
 
   @Test
   fun fetchNextBasedOnInterestReturnsDistinctEvents() =
       runTest(timeout = Duration.parse("20s")) {
+        testLogin()
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
             EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
         val listOfEvents2 =
             EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
-        for (i in 0 until round) {
-          for (j in 0 until round) {
+        for (i in 0 until listOfEvents1.size) {
+          for (j in 0 until listOfEvents2.size) {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
-
+        testLoginCleanUp()
         EventFirebaseConnection.offset = null
+      }
+
+  @Test
+  fun fetchMyEventsWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        testLogin()
+        Thread.sleep(10000)
+        val events = EventFirebaseConnection.fetchMyEvents()
+        assert(
+            events.all { event ->
+              event.organizerID == FirebaseAuth.getInstance().currentUser!!.uid
+            })
+        testLoginCleanUp()
+      }
+
+  @Test
+  fun fetchRegisteredToWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        testLogin()
+        Thread.sleep(10000)
+        val events = EventFirebaseConnection.fetchRegisteredTo()
+        assert(
+            events.all { event ->
+              event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
+            })
+        testLoginCleanUp()
       }
 
   @Test
@@ -207,7 +241,7 @@ class EventFirebaseConnectionTest {
             inscriptionLimitTime =
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-            eventStatus = EventStatus.DRAFT,
+            eventStatus = EventStatus.CREATED,
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),

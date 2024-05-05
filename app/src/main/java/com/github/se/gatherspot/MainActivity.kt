@@ -19,6 +19,7 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
@@ -26,6 +27,7 @@ import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
+import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.Chats
 import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
@@ -95,7 +97,8 @@ class MainActivity : ComponentActivity() {
                 EventUI(
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
-                    viewModel = EventRegistrationViewModel())
+                    registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
+                    eventsViewModel = eventsViewModel)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val gson = Gson()
@@ -105,7 +108,8 @@ class MainActivity : ComponentActivity() {
                 EditEvent(
                     event = eventObject!!,
                     eventUtils = EventUtils(),
-                    nav = NavigationActions(navController))
+                    nav = NavigationActions(navController),
+                    viewModel = eventsViewModel)
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -121,8 +125,19 @@ class MainActivity : ComponentActivity() {
                 }
               }
               composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
+              composable("chat/{chatJson}") { backStackEntry ->
+                backStackEntry.arguments?.getString("chatJson")?.let {
+                  ChatUI(
+                      viewModel = ChatViewModel(it),
+                      currentUserId = FirebaseAuth.getInstance().currentUser!!.uid,
+                      navActions = NavigationActions(navController))
+                }
+              }
               composable("createEvent") {
-                CreateEvent(nav = NavigationActions(navController), eventUtils = EventUtils())
+                CreateEvent(
+                    nav = NavigationActions(navController),
+                    eventUtils = EventUtils(),
+                    eventsViewModel)
               }
 
               composable("setup") { SetUpProfile(NavigationActions(navController)) }

@@ -1,0 +1,42 @@
+name: Build the apk after button press
+on:
+  workflow_dispatch:
+    inputs:
+      my-custom-name:
+        description: 'Build APK'
+        required: false
+        default: 'Run My Workflow'
+        
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis (if we use Sonar Later)
+
+      - name: Run the gradlew to build
+        run: echo Hello, world!
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build app 
+        run: ./gradlew assemble lint --parallel --build-cache
+
+      - name: Upload APK to Github Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: app
+          path: app/build/outputs/apk/debug/app-debug.apk

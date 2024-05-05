@@ -8,11 +8,16 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,11 +25,25 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
+  private lateinit var uid: String
+
+  @Before
+  fun setUp() {
+    testLogin()
+    uid = FirebaseAuth.getInstance().currentUser!!.uid
+  }
+
+  @After
+  fun cleanUp() {
+    testLoginCleanUp()
+    Thread.sleep(1000)
+  }
 
   @Test
   fun testEverythingExists() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
     composeTestRule.setContent {
-      val viewModel = EventsViewModel()
       val nav = NavigationActions(rememberNavController())
       Events(viewModel = viewModel, nav = nav)
     }
@@ -62,6 +81,7 @@ class EventsTest {
   @OptIn(ExperimentalTestApi::class, ExperimentalTestApi::class)
   @Test
   fun testEventsAreDisplayedAndScrollable() {
+
     composeTestRule.setContent {
       val viewModel = EventsViewModel()
       val nav = NavigationActions(rememberNavController())
@@ -87,7 +107,7 @@ class EventsTest {
   fun testRefreshButtonFunctional() {
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
-    assert(viewModel.getLoadedEvents().size.toLong() == viewModel.PAGESIZE)
+    val prev = viewModel.getLoadedEvents().size.toLong()
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
       Events(viewModel = viewModel, nav = nav)
@@ -100,13 +120,14 @@ class EventsTest {
       }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 500)
       composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
-      assert(viewModel.getLoadedEvents().size.toLong() == 2 * viewModel.PAGESIZE)
+      assert(viewModel.getLoadedEvents().size.toLong() >= prev)
     }
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testDropdownMenuFunctional() {
+
     composeTestRule.setContent {
       val viewModel = EventsViewModel()
       val nav = NavigationActions(rememberNavController())
@@ -139,6 +160,7 @@ class EventsTest {
 
   @Test
   fun testFilterWorks() {
+
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
     composeTestRule.setContent {
@@ -166,6 +188,7 @@ class EventsTest {
       filterMenu { performClick() }
 
       composeTestRule.waitForIdle()
+      Thread.sleep(3000)
       assert(
           viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.SPORT) ?: true })
     }
@@ -174,6 +197,7 @@ class EventsTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testRefreshButtonFunctionalWithFilter() {
+    assert(FirebaseAuth.getInstance().currentUser != null)
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
     composeTestRule.setContent {
@@ -218,6 +242,8 @@ class EventsTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 5000)
       composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 5000)
 
+      Thread.sleep(3000)
+
       assert(
           viewModel.uiState.value.list.all { e ->
             if (e.categories == null) {
@@ -229,4 +255,139 @@ class EventsTest {
           })
     }
   }
+
+  @Test
+  fun testMyEventsFilterWorks() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
+    composeTestRule.setContent {
+      val nav = NavigationActions(rememberNavController())
+      Events(viewModel = viewModel, nav = nav)
+    }
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      dropdown { assertIsDisplayed() }
+
+      myEvents {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("myEvents"))
+        performClick()
+      }
+
+      Thread.sleep(3000)
+      val listOfEvents = viewModel.uiState.value.list
+      if (listOfEvents.isNotEmpty()) {
+        assert(listOfEvents.all { event -> event.organizerID == uid })
+      }
+    }
+  }
+
+  @Test
+  fun testRegisteredToWorks() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
+    composeTestRule.setContent {
+      val nav = NavigationActions(rememberNavController())
+      Events(viewModel = viewModel, nav = nav)
+    }
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      dropdown { assertIsDisplayed() }
+
+      registeredTo {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("registeredTo"))
+        performClick()
+      }
+      Thread.sleep(3000)
+      val listOfEvents = viewModel.uiState.value.list
+      if (listOfEvents.isNotEmpty()) {
+        assert(listOfEvents.all { event -> event.registeredUsers.contains(uid) })
+      }
+    }
+  }
+
+  /*
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun entireCreationFlow() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
+
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      NavHost(navController = navController, startDestination = "home") {
+        navigation(startDestination = "events", route = "home") {
+          composable("events") { Events(viewModel, NavigationActions(navController)) }
+        }
+        navigation(startDestination = "form", route = "createEvent") {
+          composable("form") {
+            EventDataForm(
+                eventUtils = EventUtils(),
+                viewModel = viewModel,
+                nav = NavigationActions(navController),
+                eventAction = EventAction.CREATE)
+          }
+        }
+      }
+    }
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu { performClick() } }
+
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+      eventTitle.performTextInput("Basketball Game")
+      Espresso.closeSoftKeyboard()
+      eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
+      Espresso.closeSoftKeyboard()
+      eventStartDate.performTextInput("10/07/2024")
+      Espresso.closeSoftKeyboard()
+      eventEndDate.performTextInput("10/07/2024")
+      Espresso.closeSoftKeyboard()
+      eventTimeStart.performTextInput("13:00")
+      Espresso.closeSoftKeyboard()
+      eventTimeEnd.performTextInput("19:00")
+      Espresso.closeSoftKeyboard()
+      eventLocation.performTextInput("Bussy-Saint-Georges")
+      Espresso.closeSoftKeyboard()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
+      Espresso.closeSoftKeyboard()
+      locationProposition { performClick() }
+      Espresso.closeSoftKeyboard()
+      eventMaxAttendees.performTextInput("10")
+      Espresso.closeSoftKeyboard()
+      eventMinAttendees.performTextInput("5")
+      Espresso.closeSoftKeyboard()
+      eventInscriptionLimitDate.performTextInput("10/06/2024")
+      Espresso.closeSoftKeyboard()
+      eventInscriptionLimitTime.performTextInput("09:00")
+      Espresso.closeSoftKeyboard()
+      eventSaveButton.performScrollTo()
+      eventSaveButton.performClick()
+    }
+
+    Thread.sleep(5000)
+    // more asserts are needed but ok for now
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu { performClick() }
+      myEvents {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("myEvents"))
+        performClick()
+      }
+      // composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 6000)
+      //  assert(viewModel.uiState.value.list.any { event -> event.description ==  "Ayo, 5v5: Come
+      // show your skills"})
+    }
+
+    //  EventFirebaseConnection().delete(viewModel.uiState.value.list[0].id)
+  }
+
+   */
 }

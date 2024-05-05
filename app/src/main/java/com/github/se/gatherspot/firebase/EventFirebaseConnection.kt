@@ -8,7 +8,9 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import java.time.LocalDate
@@ -19,7 +21,7 @@ import kotlinx.coroutines.tasks.await
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
-  override val COLLECTION = FirebaseCollection.EVENTS.toString()
+  override val COLLECTION = FirebaseCollection.EVENTS.toString().lowercase()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
   val EVENTS = "events" // Collection name for events
   val DATE_FORMAT = "dd/MM/yyyy"
@@ -74,14 +76,13 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val eventStatus: EventStatus =
         when (status) {
           "CREATED" -> EventStatus.CREATED
-          "DRAFT" -> EventStatus.DRAFT
           "ON_GOING" -> EventStatus.ON_GOING
           "COMPLETED" -> EventStatus.COMPLETED
-          else -> EventStatus.DRAFT
+          else -> EventStatus.CREATED
         }
     val categoriesList = d.get("categories") as List<String>
     val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
-    val registeredUsers = d.get("finalAttendee") as MutableList<String>
+    val registeredUsers = d.get("registeredUsers") as MutableList<String>
     val finalAttendee = d.get("finalAttendee") as List<String>
     val images = null // TODO: Retrieve images from database
     val globalRating =
@@ -89,6 +90,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           "null" -> null
           else -> rating.toInt()
         }
+    val organizerID = d.getString("organizerID") ?: Profile.testOrganizer().id
     return Event(
         id = eventID,
         title = title,
@@ -109,17 +111,17 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         images = images,
         globalRating = globalRating,
         // TODO: Add organizer
-        organizer = Profile("TEST"))
+        organizerID = organizerID)
   }
 
-  private suspend fun eventsFromQuerySnaphot(querySnapshot: QuerySnapshot): MutableList<Event> {
+  private suspend fun eventsFromQuerySnapshot(querySnapshot: QuerySnapshot): MutableList<Event> {
     val listOfMaps = querySnapshot.documents.map { it.data!! }
     val listOfEvents = mutableListOf<Event>()
 
     listOfMaps.forEach { map ->
       val uid = map["eventID"] as String
       val event = super.fetch(uid)
-      event?.let { listOfEvents.add(it as Event) }
+      event?.let { listOfEvents.add(it) }
     }
 
     return listOfEvents
@@ -131,14 +133,22 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
    * @param number: the number of events to fetch
    * @return list of events
    */
+  // to be changed, Firebase not clear, I want to filter out events created by current user
   suspend fun fetchNextEvents(number: Long): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
         if (offset == null) {
-          Firebase.firestore.collection(EVENTS).orderBy("eventID").limit(number).get().await()
+          Firebase.firestore
+              .collection(EVENTS)
+              .orderBy("eventID")
+              // .whereNotEqualTo("eventID",FirebaseAuth.getInstance().currentUser!!.uid)
+              .limit(number)
+              .get()
+              .await()
         } else {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
+              //  .whereNotEqualTo("eventID", FirebaseAuth.getInstance().currentUser!!.uid)
               .startAfter(offset!!.get("eventID"))
               .limit(number)
               .get()
@@ -149,7 +159,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
       offset = querySnapshot.documents.last()
     }
 
-    return eventsFromQuerySnaphot(querySnapshot)
+    return eventsFromQuerySnapshot(querySnapshot)
   }
 
   suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
@@ -179,7 +189,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     if (querySnapshot.documents.isNotEmpty()) {
       offset = querySnapshot.documents.last()
     }
-    return eventsFromQuerySnaphot(querySnapshot)
+    return eventsFromQuerySnapshot(querySnapshot)
   }
 
   suspend fun fetchEventsBasedOnInterests(number: Long, l: List<Interests>): MutableList<Event> {
@@ -188,6 +198,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
+              .whereNotEqualTo("organizerID", FirebaseAuth.getInstance().currentUser!!.uid)
               .whereArrayContainsAny("categories", l.map { it.name })
               .limit(number)
               .get()
@@ -196,6 +207,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
+              .whereNotEqualTo("organizerID", FirebaseAuth.getInstance().currentUser!!.uid)
               .whereArrayContainsAny("categories", l.map { it.name })
               .startAfter(offset!!.get("eventID"))
               .limit(number)
@@ -205,7 +217,42 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     if (querySnapshot.documents.isNotEmpty()) {
       offset = querySnapshot.documents.last()
     }
-    return eventsFromQuerySnaphot(querySnapshot)
+    return eventsFromQuerySnapshot(querySnapshot)
+  }
+
+  // needs change cause events are not yet created with appropriate profile
+  // eventID-> organizerID
+  suspend fun fetchMyEvents(): MutableList<Event> {
+    val querySnapshot: QuerySnapshot =
+        Firebase.firestore
+            .collection(EVENTS)
+            .orderBy("eventID")
+            .whereEqualTo("organizerID", FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")
+            .get()
+            .await()
+
+    return eventsFromQuerySnapshot(querySnapshot)
+  }
+
+  suspend fun fetchRegisteredTo(): MutableList<Event> {
+    val querySnapshot: QuerySnapshot =
+        Firebase.firestore
+            .collection(EVENTS)
+            .orderBy("eventID")
+            .whereArrayContains(
+                "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "forTest")
+            .get()
+            .await()
+
+    return eventsFromQuerySnapshot(querySnapshot)
+  }
+
+  suspend fun addRegisteredUser(eventID: String, uid: String) {
+    Firebase.firestore
+        .collection(EVENTS)
+        .document(eventID)
+        .update("registeredUsers", FieldValue.arrayUnion(uid))
+        .await()
   }
 
   /**
@@ -317,6 +364,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                   else -> element.globalRating.toString()
                 },
             "images" to null, // TODO: ADD IMAGES
+            "organizerID" to element.organizerID,
             "eventStatus" to element.eventStatus)
 
     Firebase.firestore
