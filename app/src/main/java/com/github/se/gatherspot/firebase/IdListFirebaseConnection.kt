@@ -3,10 +3,12 @@ package com.github.se.gatherspot.firebase
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.model.IdList
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 
 class IdListFirebaseConnection {
   private val firestore = Firebase.firestore
@@ -133,23 +135,11 @@ class IdListFirebaseConnection {
         .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
   }
 
-  fun fetch(
-      id: String,
-      category: FirebaseCollection,
-      onSuccess: () -> Unit
-  ): MutableLiveData<IdList> {
+  suspend fun fetch(id: String, category: FirebaseCollection, onSuccess: () -> Unit): IdList {
     val tag = category.name
-    val data = MutableLiveData<IdList>()
-    fcoll
-        .document(tag)
-        .collection(id)
-        .get()
-        .addOnSuccessListener { result ->
-          data.value = IdList(id, result.documents.map { doc -> doc.id }, category)
-          onSuccess()
-          Log.d(TAG, "DocumentSnapshot data: ${result.documents}")
-        }
-        .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
+    val data: IdList
+    val querySnapshot: QuerySnapshot = fcoll.document(tag).collection(id).get().await()
+    data = IdList(id, querySnapshot.documents.map { it.id }, category)
     return data
   }
 

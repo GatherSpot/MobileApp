@@ -4,8 +4,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.location.Location
+import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -47,7 +47,7 @@ data class Event(
     val inscriptionLimitTime: LocalTime?,
     val eventStatus: EventStatus = EventStatus.CREATED,
     val categories: Set<Interests>? = emptySet(),
-    val organizerID: String = Profile.testOrganizer().id,
+    val organizerID: String = FirebaseAuth.getInstance().currentUser?.uid ?: "",
     // List of the IDs of the users who registered for the event
     val registeredUsers: MutableList<String> = mutableListOf(),
     val finalAttendees: List<String>? = emptyList(),

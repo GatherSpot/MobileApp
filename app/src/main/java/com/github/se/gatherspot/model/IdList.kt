@@ -39,7 +39,7 @@ class IdList(
     fun new(id: String, collection: FirebaseCollection, elements: List<String>) =
         IdListFirebaseConnection().add(id, collection, elements) {}
 
-    fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) =
+    suspend fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) =
         IdListFirebaseConnection().fetch(id, collection) { onSuccess() }
 
     fun empty(id: String, collection: FirebaseCollection) = IdList(id, listOf(), collection)

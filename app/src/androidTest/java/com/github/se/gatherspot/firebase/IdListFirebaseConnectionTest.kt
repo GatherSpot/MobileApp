@@ -3,6 +3,7 @@ package com.github.se.gatherspot.firebase
 import com.github.se.gatherspot.model.IdList
 import junit.framework.Assert.assertEquals
 import kotlin.random.Random
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -29,7 +30,7 @@ class IdListFirebaseConnectionTest {
   }
 
   @Test
-  fun addElementTest() {
+  fun addElementTest() = runBlocking {
     // create a new list
     val idList1 = IdList.new(id, tag, listOf(randString1, randString2))
     while (!idList1.isInitialized) {
@@ -40,23 +41,24 @@ class IdListFirebaseConnectionTest {
     idList1.value!!.add(randString2)
     // save to firebase
     // fetch the data from firebase
-    val idList2 = IdListFirebaseConnection().fetch(id, tag) {}
+    var idList2: IdList?
+    idList2 = IdListFirebaseConnection().fetch(id, tag) {}
     // busy wait until values are updated
-    while (!idList1.isInitialized || !idList2.isInitialized) {
+    while (!idList1.isInitialized) {
       {}
     }
-    assertEquals(idList1.value!!.events.toSet(), idList2.value!!.events.toSet())
+    assertEquals(idList1.value!!.events.toSet(), idList2.events.toSet())
   }
 
   @Test
-  fun addTest() {
+  fun addTest() = runBlocking {
     val idList1 = IdList.new(id, tag, listOf(randString1, randString2))
     val idList2 = IdList.fromFirebase(id, tag) {}
-    while (!idList1.isInitialized || !idList2.isInitialized) {
+    while (!idList1.isInitialized) {
       {}
     }
     assert(
-        idList1.value!!.events.toSet().intersect(idList2.value!!.events.toSet()) ==
+        idList1.value!!.events.toSet().intersect(idList2.events.toSet()) ==
             idList1.value!!.events.toSet())
   }
 }
