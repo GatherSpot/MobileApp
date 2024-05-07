@@ -46,13 +46,12 @@ class SignUpView {
   fun SignUp(vm: SignUpViewModel, nav: NavigationActions) {
     val navBack = vm::navBack
     val userName = vm.userName.observeAsState()
+    val userNameError = vm.userNameError.observeAsState()
     val email = vm.email.observeAsState()
-    val isEmailValid = vm.isEmailValid.observeAsState()
     val emailError = vm.emailError.observeAsState()
     val password = vm.password.observeAsState()
-    val isPasswordValid = vm.isPasswordValid.observeAsState()
+    val passwordError = vm.passwordError.observeAsState()
     val isPasswordVisible = vm.isPassWordVisible.observeAsState()
-    val doesUsernameExist = vm.doesUserNameExist.observeAsState()
     val updateUsername = vm::updateUsername
     val updateEmail = vm::updateEmail
     val updatePassword = vm::updatePassword
@@ -93,20 +92,9 @@ class SignUpView {
                   onValueChange = { updateUsername(it) },
                   label = { Text(text = "Username") },
                   modifier = Modifier.testTag("user"),
-                  keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text))
-              if (userName.value!!.isEmpty()) {
-                Text(text = "", color = Color.Red)
-              } else {
-                if (doesUsernameExist.value == false) {
-                  Text(text = "Username is valid", color = Color.Blue)
-                }
-                if (doesUsernameExist.value == true) {
-                  Text(
-                      text = "Username is already in use",
-                      color = Color.Red,
-                      modifier = Modifier.testTag("badUsername"))
-                }
-              }
+                  keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                  supportingText = { Text(userNameError.value!!, color = Color.Red) }
+              )
               Column(
                   modifier = Modifier.fillMaxWidth(),
                   horizontalAlignment = Alignment.CenterHorizontally,
@@ -116,17 +104,9 @@ class SignUpView {
                         onValueChange = { updateEmail(it) },
                         label = { Text(text = "Email") },
                         modifier = Modifier.testTag("email"),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
-
-                    if (isEmailValid.value == true) {
-                      Text(text = "Email is valid", color = Color.Blue)
-                    }
-                    if (isEmailValid.value == false) {
-                      Text(
-                          text = emailError.value!!,
-                          color = Color.Red,
-                          modifier = Modifier.testTag("badEmail"))
-                    }
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        supportingText = {Text(emailError.value!!, color = Color.Red)}
+                    )
                   }
 
               Column(
@@ -142,7 +122,8 @@ class SignUpView {
                             else PasswordVisualTransformation(),
                         modifier = Modifier.testTag("password"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        trailingIcon = {
+                        supportingText = { Text(passwordError.value!!, color = Color.Red)},
+                      trailingIcon = {
                           IconButton(
                               onClick = { flipPassword() },
                               content = {
@@ -160,16 +141,6 @@ class SignUpView {
                               })
                         },
                     )
-
-                    if (isPasswordValid.value == true) {
-                      Text(text = "Password is valid", color = Color.Blue)
-                    }
-                    if (isPasswordValid.value == false) {
-                      Text(
-                          text = "Password is not valid",
-                          color = Color.Red,
-                          modifier = Modifier.testTag("badPassword"))
-                    }
                   }
 
               Button(
@@ -199,4 +170,3 @@ class SignUpView {
     SignUp(SignUpViewModel(), NavigationActions(navController))
   }
 }
-// convocation et ordre du jour + lien doc ordre du jour.

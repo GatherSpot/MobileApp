@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.firebase
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
@@ -56,18 +55,14 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     return FirebaseAuth.getInstance().currentUser?.uid
   }
 
-  fun ifUsernameExists(userName: String): MutableLiveData<Boolean> {
-    val res = MutableLiveData<Boolean>()
+  fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
+
     Firebase.firestore
-        .collection(COLLECTION)
-        .whereEqualTo("userName", userName)
-        .get()
-        .addOnSuccessListener { result ->
-          res.value = !result.isEmpty
-          Log.d(TAG, "found doc : ${result.documents}, empty : ${result.isEmpty}")
-        }
-        .addOnFailureListener { e -> Log.e(TAG, "error while searching username :", e) }
-    return res
+      .collection(COLLECTION)
+      .whereEqualTo("userName", userName)
+      .get()
+      .addOnSuccessListener { result -> onComplete(result.documents.isNotEmpty()) }
+      .addOnFailureListener { onComplete(true) }
   }
 
   fun fetchFromUserName(userName: String): Profile? {
@@ -118,40 +113,37 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         }
         .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
   }
-  // Note: I don't wanna bother to verify but pretty sure I cant write on my own profile if I dont
-  // change username using this
-  //  override fun update(id: String, field: String, value: Any) {
-  //    when (field) {
-  //      "interests" -> {
-  //        when (value) {
-  //          is Set<*> -> {
-  //            updateInterests(id, value as Set<Interests>)
-  //            return
-  //          }
-  //          is List<*> -> { // This is already a misuse case please don't land here
-  //            Log.d(TAG, "Please use a Set instead of a List when updating interests of a
-  // profile")
-  //            updateInterests(id, value.toSet() as Set<Interests>)
-  //            return
-  //          }
-  //          is String -> {
-  //            super.update(id, field, value)
-  //            return
-  //          }
-  //        }
-  //      }
-  //      "userName" -> {
-  //        ifUsernameExists(value as String) { exists ->
-  //          if (exists) {
-  //            Log.d(TAG, "Username already exists")
-  //            return@ifUsernameExists
-  //          }
-  //        }
-  //      }
-  //    }
-  //
-  //    super.update(id, field, value)
-  //  }
+    override fun update(id: String, field: String, value: Any) {
+      when (field) {
+        "interests" -> {
+          when (value) {
+            is Set<*> -> {
+              updateInterests(id, value as Set<Interests>)
+              return
+            }
+            is List<*> -> { // This is already a misuse case please don't land here
+              Log.d(TAG, "Please use a Set instead of a List when updating interests of a profile")
+              updateInterests(id, value.toSet() as Set<Interests>)
+              return
+            }
+            is String -> {
+              super.update(id, field, value)
+              return
+            }
+          }
+        }
+        "userName" -> {
+          ifUsernameExists(value as String) { exists ->
+            if (exists) {
+              Log.d(TAG, "Username already exists")
+              return@ifUsernameExists
+            }
+          }
+        }
+      }
+
+      super.update(id, field, value)
+    }
 
   fun update(profile: Profile) {
     this.add(profile)

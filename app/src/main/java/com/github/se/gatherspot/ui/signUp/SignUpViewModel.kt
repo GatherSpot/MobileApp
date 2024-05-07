@@ -3,7 +3,6 @@ package com.github.se.gatherspot.ui.signUp
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -17,16 +16,16 @@ import kotlinx.coroutines.launch
 
 class SignUpViewModel() : ViewModel() {
   var userName = MutableLiveData("")
+  var userNameError = MutableLiveData("")
   var email = MutableLiveData("")
   var password = MutableLiveData("")
-  var doesUserNameExist = MutableLiveData<Boolean>()
-  var isEmailValid = MutableLiveData<Boolean>()
   var emailError = MutableLiveData("")
-  var isPasswordValid = MutableLiveData<Boolean>()
+  var passwordError = MutableLiveData("")
   var isPassWordVisible = MutableLiveData(false)
   var isEverythingOk = MutableLiveData<Boolean>()
   var waitingEmailConfirmation = MutableLiveData(false)
   var isFinished = MutableLiveData(false)
+  private var isUsernameUnique = false
   // FLOW FOR CONTEXT :
   // let user fill fields with some basic check (including duplicate names)
   // check if email is already in database when clicking sign in (can't do same as with username
@@ -38,12 +37,10 @@ class SignUpViewModel() : ViewModel() {
   // sign in.
   private fun updateEverythingOk() {
     isEverythingOk.value =
-        (doesUserNameExist.value == false &&
-            isEmailValid.value == true &&
-            isPasswordValid.value == true)
-    println(
-        "isEverythingOk: ${isEverythingOk.value} isPasswordValid: ${isPasswordValid.value} isEmailValid: ${isEmailValid.value} doesUsernameExist: ${doesUserNameExist.value}")
-    println("isEverythingOk: ${isEverythingOk.value}")
+        (userNameError.value == "" &&
+            emailError.value == "" &&
+            passwordError.value == "" &&
+                isUsernameUnique)
   }
 
   fun navBack() {
@@ -51,28 +48,22 @@ class SignUpViewModel() : ViewModel() {
   }
 
   fun updateUsername(string: String) {
-    //TODO update this
     userName.value = string
-    doesUserNameExist = ProfileFirebaseConnection().ifUsernameExists(string)
+    isUsernameUnique = false
+    userNameError = Profile.checkUsername(string,null){isUsernameUnique = true}
   }
 
   fun updateEmail(string: String) {
     email.value = string
     val emailRegex = Regex("^[A-Za-z](.*)(@)(.+)(\\.)(.+)")
-    if (email.value!!.matches(emailRegex)) {
-      isEmailValid.value = true
-      emailError.value = ""
-    } else {
-      isEmailValid.value = false
-      emailError.value = "Invalid Email"
-    }
+    emailError.value = if (email.value!!.matches(emailRegex)) "" else "Invalid Email"
     updateEverythingOk()
   }
 
   fun updatePassword(string: String) {
     password.value = string
     val passRegex = """^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$"""
-    isPasswordValid.value = password.value!!.matches(passRegex.toRegex())
+    passwordError.value = if (password.value!!.matches(passRegex.toRegex()))  "" else "Invalid Password"
     updateEverythingOk()
   }
 
@@ -113,7 +104,6 @@ class SignUpViewModel() : ViewModel() {
     Firebase.auth
         .createUserWithEmailAndPassword(email.value!!, password.value!!)
         .addOnSuccessListener() {
-          println("authentified")
           Firebase.auth.currentUser!!.sendEmailVerification()
           isEverythingOk.value = false
           waitingEmailConfirmation.value = true
@@ -124,7 +114,6 @@ class SignUpViewModel() : ViewModel() {
           when (it) {
             is FirebaseAuthUserCollisionException -> {
               emailError.value = "Email already in use, try signing in!"
-              isEmailValid.value = false
               updateEverythingOk()
             }
             else -> {
