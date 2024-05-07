@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class CreateEventTest {
 
-  private val EventFirebaseConnection = EventFirebaseConnection()
+  private val eventFirebaseConnection = EventFirebaseConnection()
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -81,13 +81,13 @@ class CreateEventTest {
         assertExists()
         assert(hasText("Start Date of the event*"))
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventEndDate {
         assertExists()
         assert(hasText("End date of the event"))
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventTimeStart {
         assertExists()
@@ -126,7 +126,7 @@ class CreateEventTest {
         performScrollTo()
         assert(hasText("Inscription Limit Date"))
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       Espresso.closeSoftKeyboard()
       eventInscriptionLimitTime {
@@ -429,12 +429,12 @@ class CreateEventTest {
       eventStartDate {
         composeTestRule.onNodeWithText("Start Date of the event*").assertIsDisplayed()
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventEndDate {
         composeTestRule.onNodeWithText("End date of the event").assertIsDisplayed()
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventTimeStart {
         composeTestRule.onNodeWithText("Start time*").assertIsDisplayed()
@@ -465,7 +465,7 @@ class CreateEventTest {
         performScrollTo()
         composeTestRule.onNodeWithText("Inscription Limit Date").assertIsDisplayed()
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventInscriptionLimitTime {
         performScrollTo()

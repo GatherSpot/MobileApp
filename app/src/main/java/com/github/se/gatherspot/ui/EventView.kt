@@ -53,10 +53,17 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.model.utils.LocalDateDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -107,9 +114,18 @@ fun EventUI(
                 // Edit button
                 IconButton(
                     onClick = {
-                      val gson = Gson()
+                      val gson: Gson =
+                          GsonBuilder()
+                              .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                              .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                              .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                              .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                              .create()
                       val eventJson = gson.toJson(event)
-                      navActions.controller.navigate("event/$eventJson")
+                      val eventJsonWellFormed =
+                          URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString())
+                              .replace("+", "%20")
+                      navActions.controller.navigate("editEvent/$eventJsonWellFormed")
                     },
                     modifier = Modifier.testTag("editEventButton")) {
                       Icon(
