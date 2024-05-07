@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -29,7 +30,6 @@ import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.Chats
-import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
 import com.github.se.gatherspot.ui.EditEvent
 import com.github.se.gatherspot.ui.EventUI
@@ -51,6 +51,8 @@ import java.time.LocalDateTime
 class MainActivity : ComponentActivity() {
   companion object {
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
+    lateinit var mapLauncher: ActivityResultLauncher<String>
+    var mapAccess = false
   }
 
   private lateinit var navController: NavHostController
@@ -66,6 +68,11 @@ class MainActivity : ComponentActivity() {
             FirebaseAuthUIActivityResultContract(),
         ) { res ->
           this.onSignInResult(res, navController)
+        }
+    mapLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean
+          ->
+          mapAccess = isGranted
         }
 
     setContent {
@@ -113,10 +120,6 @@ class MainActivity : ComponentActivity() {
               }
 
               composable("map") { Map(NavigationActions(navController)) }
-
-              composable("community") { Community(NavigationActions(navController)) }
-
-              // composable("chats") { Chats(chatViewModel, NavigationActions(navController)) }
 
               composable("profile") { Profile(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
