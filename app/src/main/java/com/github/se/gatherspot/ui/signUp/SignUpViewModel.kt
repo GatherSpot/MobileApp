@@ -99,7 +99,6 @@ class SignUpViewModel() : ViewModel() {
     isFinished.value = true
     job?.cancel()
   }
-
   fun signUp() {
     Firebase.auth
         .createUserWithEmailAndPassword(email.value!!, password.value!!)
