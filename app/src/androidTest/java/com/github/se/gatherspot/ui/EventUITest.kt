@@ -126,6 +126,7 @@ class EventUITest {
       image {
         performScrollTo()
         assertIsDisplayed()
+        assertContentDescriptionEquals("Default Event Image")
       }
       profileIndicator {
         performScrollTo()
@@ -526,4 +527,6 @@ class EventUITest {
       // profileIndicator.performClick()
     }
   }
+  // write an integration test that tests the following:
+  // Start from Events screen
 }

@@ -74,9 +74,9 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
-import java.time.LocalTime
 
 /** Composable that displays events * */
 
@@ -270,23 +270,27 @@ fun EventRow(event: Event, navigation: NavigationActions) {
               .fillMaxSize()) {
         Row(
             modifier =
-                Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
-                  // Create a new Gson instance with the custom serializers and deserializers
-                  val gson: Gson =
-                      GsonBuilder()
-                          .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                          .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                          .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-                          .registerTypeAdapter(
-                              LocalDateTime::class.java, LocalDateTimeDeserializer())
-                          .create()
+                Modifier.fillMaxWidth()
+                    .padding(vertical = 16.dp, horizontal = 10.dp)
+                    .testTag("eventRow")
+                    .clickable {
+                      // Create a new Gson instance with the custom serializers and deserializers
+                      val gson: Gson =
+                          GsonBuilder()
+                              .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                              .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                              .registerTypeAdapter(
+                                  LocalDateTime::class.java, LocalDateTimeSerializer())
+                              .registerTypeAdapter(
+                                  LocalDateTime::class.java, LocalDateTimeDeserializer())
+                              .create()
 
-                  val eventJson = gson.toJson(event)
-                  val eventJsonWellFormed =
-                      URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString())
-                          .replace("+", "%20")
-                  navigation.controller.navigate("event/$eventJsonWellFormed")
-                },
+                      val eventJson = gson.toJson(event)
+                      val eventJsonWellFormed =
+                          URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString())
+                              .replace("+", "%20")
+                      navigation.controller.navigate("event/$eventJsonWellFormed")
+                    },
             verticalAlignment = Alignment.CenterVertically) {
               Column(modifier = Modifier.weight(1f)) {
                 Image(
@@ -393,32 +397,31 @@ fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Int
 @Preview
 @Composable
 fun EventUIPreview() {
-    // Set global uid for testing
-    val event =
-        Event(
-            id = "idTestEvent",
-            title = "Event Title",
-            description =
-            "Hello: I am a description of the event just saying that I would love to say" +
-                    "that Messi is not the best player in the world, but I can't. I am sorry.",
-            attendanceMaxCapacity = 5,
-            attendanceMinCapacity = 1,
-            categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2025, 4, 15),
-            eventStartDate = LocalDate.of(2025, 4, 10),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2025, 4, 1),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
-            registeredUsers = mutableListOf(),
-            timeBeginning = LocalTime.of(11, 0),
-            timeEnding = LocalTime.of(13, 0),
-            organizerID = Profile.testOrganizer().id)
-    val viewModel = EventRegistrationViewModel(listOf(""))
-    EventUI(
-        event = event,
-        navActions = NavigationActions(rememberNavController()),
-        registrationViewModel = viewModel,
-        eventsViewModel = EventsViewModel())
+  // Set global uid for testing
+  val event =
+      Event(
+          id = "idTestEvent",
+          title = "Event Title",
+          description =
+              "Hello: I am a description of the event just saying that I would love to say" +
+                  "that Messi is not the best player in the world, but I can't. I am sorry.",
+          attendanceMaxCapacity = 5,
+          attendanceMinCapacity = 1,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2025, 4, 15),
+          eventStartDate = LocalDate.of(2025, 4, 10),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2025, 4, 1),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(11, 0),
+          timeEnding = LocalTime.of(13, 0),
+          organizerID = Profile.testOrganizer().id)
+  val viewModel = EventRegistrationViewModel(listOf(""))
+  EventUI(
+      event = event,
+      navActions = NavigationActions(rememberNavController()),
+      registrationViewModel = viewModel,
+      eventsViewModel = EventsViewModel())
 }
-
