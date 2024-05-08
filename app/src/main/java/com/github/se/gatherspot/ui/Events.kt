@@ -48,13 +48,18 @@ import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp as dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.EventStatus
+import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
@@ -71,6 +76,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
+import java.time.LocalTime
 
 /** Composable that displays events * */
 
@@ -383,3 +389,36 @@ fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Int
       },
   )
 }
+// Preview for the Event UI, for testing purposes
+@Preview
+@Composable
+fun EventUIPreview() {
+    // Set global uid for testing
+    val event =
+        Event(
+            id = "idTestEvent",
+            title = "Event Title",
+            description =
+            "Hello: I am a description of the event just saying that I would love to say" +
+                    "that Messi is not the best player in the world, but I can't. I am sorry.",
+            attendanceMaxCapacity = 5,
+            attendanceMinCapacity = 1,
+            categories = setOf(Interests.BASKETBALL),
+            eventEndDate = LocalDate.of(2025, 4, 15),
+            eventStartDate = LocalDate.of(2025, 4, 10),
+            globalRating = 4,
+            inscriptionLimitDate = LocalDate.of(2025, 4, 1),
+            inscriptionLimitTime = LocalTime.of(23, 59),
+            location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
+            registeredUsers = mutableListOf(),
+            timeBeginning = LocalTime.of(11, 0),
+            timeEnding = LocalTime.of(13, 0),
+            organizerID = Profile.testOrganizer().id)
+    val viewModel = EventRegistrationViewModel(listOf(""))
+    EventUI(
+        event = event,
+        navActions = NavigationActions(rememberNavController()),
+        registrationViewModel = viewModel,
+        eventsViewModel = EventsViewModel())
+}
+
