@@ -2,11 +2,13 @@ package com.github.se.gatherspot
 
 // import com.github.se.gatherspot.ui.Chats
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,6 +22,7 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
@@ -57,11 +60,12 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var navController: NavHostController
 
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
     val eventsViewModel = EventsViewModel()
-    // val chatViewModel = ChatViewModel()
+    val mapViewModel = MapViewModel(application)
 
     signInLauncher =
         registerForActivityResult(
@@ -119,7 +123,7 @@ class MainActivity : ComponentActivity() {
                     viewModel = eventsViewModel)
               }
 
-              composable("map") { Map(NavigationActions(navController)) }
+              composable("map") { Map(mapViewModel, NavigationActions(navController)) }
 
               composable("profile") { Profile(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
