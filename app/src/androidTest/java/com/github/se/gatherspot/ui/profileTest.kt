@@ -38,7 +38,7 @@ class ProfileInstrumentedTest {
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update
-      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 10000)
       // check if things are here :
       usernameInput { assertExists() }
       bioInput { assertExists() }

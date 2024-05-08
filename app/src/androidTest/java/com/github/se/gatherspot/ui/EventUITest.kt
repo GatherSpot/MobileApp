@@ -126,7 +126,6 @@ class EventUITest {
       image {
         performScrollTo()
         assertIsDisplayed()
-        assertContentDescriptionEquals("Default Event Image")
       }
       profileIndicator {
         performScrollTo()

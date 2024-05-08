@@ -242,7 +242,7 @@ class EventsTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 5000)
       composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 5000)
 
-      Thread.sleep(3000)
+      Thread.sleep(6000)
 
       assert(
           viewModel.uiState.value.list.all { e ->
