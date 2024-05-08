@@ -350,7 +350,11 @@ fun ProfileIndicator(profile: Profile, navActions: NavigationActions) {
               .testTag("profileIndicator")
               .clickable {
                 // Navigate to the profile of the organizer
-                navActions.controller.navigate("viewProfile/${profile.id}")
+                if (profile.id != Firebase.auth.currentUser?.uid){
+                    navActions.controller.navigate("viewProfile/${profile.id}")
+                }else{
+                    navActions.controller.navigate("profile")
+                }
               }) {
         // TODO implement image here: do it later
         Box(
