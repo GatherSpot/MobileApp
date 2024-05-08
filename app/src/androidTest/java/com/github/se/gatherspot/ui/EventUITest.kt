@@ -519,13 +519,10 @@ class EventUITest {
           EventRegistrationViewModel(listOf()),
           EventsViewModel())
     }
-      ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-          profileIndicator.assertIsDisplayed()
-          userName{ hasText("John Doe")}
-          profileIndicator.performClick()
-
-      }
-
-
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      profileIndicator.assertIsDisplayed()
+      userName { hasText("John Doe") }
+      profileIndicator.performClick()
+    }
   }
 }

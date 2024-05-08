@@ -83,7 +83,7 @@ fun EventUI(
 
   val organizerProfile = remember { mutableStateOf<Profile?>(null) }
   LaunchedEffect(Unit) {
-    organizerProfile.value = ProfileFirebaseConnection().fetch(event.organizerID)
+    organizerProfile.value = ProfileFirebaseConnection().fetch(event.organizerID) {}
   }
 
   val eventUtils = EventUtils()
