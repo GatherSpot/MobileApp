@@ -394,9 +394,9 @@ class EventsTest {
         }
       }
     }
-
+    Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu { performClick() } }
-
+    Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventTitle.performTextInput("Basketball Game")
       Espresso.closeSoftKeyboard()
@@ -444,10 +444,12 @@ class EventsTest {
       eventCreated { performClick() }
     }
 
+    Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { performClick() }
     }
 
+    Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventDescription { assertTextContains("Ayo, 5v5: Come show your skills") }
     }
