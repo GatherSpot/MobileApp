@@ -16,6 +16,7 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val formColumn: KNode = onNode { hasTestTag("eventColumn") }
   val image: KNode = onNode { hasTestTag("eventImage") }
   val profileIndicator: KNode = onNode { hasTestTag("profileIndicator") }
+  val userName : KNode = onNode { hasTestTag("userName") }
   val description: KNode = onNode { hasTestTag("eventDescription") }
   val attendeesInfoTitle = onNode { hasTestTag("attendeesInfoTitle") }
   val attendeesInfo = onNode { hasTestTag("attendeesInfo") }
