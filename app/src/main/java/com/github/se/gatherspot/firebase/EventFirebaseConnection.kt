@@ -243,7 +243,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         Firebase.firestore
             .collection(EVENTS)
             .orderBy("eventID")
-            .whereEqualTo("organizerID", FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")
+            .whereEqualTo(
+                "organizerID", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
             .get()
             .await()
 
@@ -256,7 +257,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             .collection(EVENTS)
             .orderBy("eventID")
             .whereArrayContains(
-                "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")
+                "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
             .get()
             .await()
 

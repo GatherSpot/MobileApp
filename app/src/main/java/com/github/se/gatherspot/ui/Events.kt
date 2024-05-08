@@ -237,7 +237,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
-  val uid = FirebaseAuth.getInstance().currentUser!!.uid
+  val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests"
   val isPastEvent = event.eventStartDate!!.isBefore(LocalDate.now())
   val isToday = event.eventStartDate.isEqual(LocalDate.now())
   val isOrganizer = event.organizerID == uid
