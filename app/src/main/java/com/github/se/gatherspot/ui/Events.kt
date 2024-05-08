@@ -267,25 +267,13 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                         Color.White
                       },
                   shape = RoundedCornerShape(5.dp))
+              .clickable {
+                  val eventJsonWellFormed = event.toJson()
+                  navigation.controller.navigate("event/$eventJsonWellFormed") }
+              .testTag(event.title)
               .fillMaxSize()) {
         Row(
-            modifier =
-                Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
-                  // Create a new Gson instance with the custom serializers and deserializers
-                  val gson: Gson =
-                      GsonBuilder()
-                          .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                          .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                          .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                          .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                          .create()
-
-                  val eventJson = gson.toJson(event)
-                  val eventJsonWellFormed =
-                      URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString())
-                          .replace("+", "%20")
-                  navigation.controller.navigate("event/$eventJsonWellFormed")
-                },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically) {
               Column(modifier = Modifier.weight(1f)) {
                 Image(

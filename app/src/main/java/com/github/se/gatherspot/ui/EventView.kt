@@ -114,17 +114,7 @@ fun EventUI(
                 // Edit button
                 IconButton(
                     onClick = {
-                      val gson: Gson =
-                          GsonBuilder()
-                              .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                              .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                              .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                              .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                              .create()
-                      val eventJson = gson.toJson(event)
-                      val eventJsonWellFormed =
-                          URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString())
-                              .replace("+", "%20")
+                      val eventJsonWellFormed = event.toJson()
                       navActions.controller.navigate("editEvent/$eventJsonWellFormed")
                     },
                     modifier = Modifier.testTag("editEventButton")) {
