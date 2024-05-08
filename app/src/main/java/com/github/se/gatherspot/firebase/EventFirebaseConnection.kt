@@ -32,6 +32,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
   var offset: DocumentSnapshot? = null
+
   // val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern())
 
   /**

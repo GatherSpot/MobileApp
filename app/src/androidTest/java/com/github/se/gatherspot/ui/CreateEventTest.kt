@@ -197,6 +197,7 @@ class CreateEventTest {
       alertBox { assertDoesNotExist() }
     }
   }
+
   // Restructured to use EventDataFormScreen
   @Test
   fun testMinimalData() {
@@ -335,6 +336,7 @@ class CreateEventTest {
       alertBox.assertDoesNotExist()
     }
   }
+
   // Does not work
 
   @OptIn(ExperimentalTestApi::class)

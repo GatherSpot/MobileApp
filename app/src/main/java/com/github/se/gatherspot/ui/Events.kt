@@ -55,20 +55,11 @@ import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.utils.LocalDateDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -268,8 +259,9 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                       },
                   shape = RoundedCornerShape(5.dp))
               .clickable {
-                  val eventJsonWellFormed = event.toJson()
-                  navigation.controller.navigate("event/$eventJsonWellFormed") }
+                val eventJsonWellFormed = event.toJson()
+                navigation.controller.navigate("event/$eventJsonWellFormed")
+              }
               .testTag(event.title)
               .fillMaxSize()) {
         Row(

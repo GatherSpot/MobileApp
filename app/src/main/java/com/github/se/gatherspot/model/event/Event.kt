@@ -65,16 +65,15 @@ data class Event(
     val globalRating: Int?,
 ) : CollectionClass() {
 
-    fun toJson(): String {
-        val gson: Gson =
-            GsonBuilder()
-                .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                .create()
-        val eventJson = gson.toJson(this)
-        return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString())
-            .replace("+", "%20")
-    }
+  fun toJson(): String {
+    val gson: Gson =
+        GsonBuilder()
+            .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+            .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+            .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+            .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+            .create()
+    val eventJson = gson.toJson(this)
+    return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
+  }
 }
