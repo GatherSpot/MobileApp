@@ -7,8 +7,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
@@ -62,20 +62,21 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnFailureListener { onComplete(true) }
   }
 
-  suspend fun fetchFromUserName(userName: String): Profile? = suspendCancellableCoroutine { continuation ->
-      Firebase.firestore
-          .collection(COLLECTION)
-          .whereEqualTo("userName", userName)
-          .get()
-          .addOnSuccessListener { querysnps ->
+  suspend fun fetchFromUserName(userName: String): Profile? =
+      suspendCancellableCoroutine { continuation ->
+        Firebase.firestore
+            .collection(COLLECTION)
+            .whereEqualTo("userName", userName)
+            .get()
+            .addOnSuccessListener { querysnps ->
               val res = getFromDocument(querysnps.documents[0])
               continuation.resume(res)
-          }
-          .addOnFailureListener { exception ->
+            }
+            .addOnFailureListener { exception ->
               Log.d(TAG, exception.toString())
               continuation.resume(null)
-          }
-  }
+            }
+      }
 
   override fun add(element: Profile) {
     val data =
@@ -119,11 +120,11 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
           }
         }
       }
-        /*
-      "registeredEvents" -> {
-        updateRegisteredEvents(id, value as Set<String>)
-        return
-      }*/
+    /*
+    "registeredEvents" -> {
+      updateRegisteredEvents(id, value as Set<String>)
+      return
+    }*/
     }
 
     super.update(id, field, value)
@@ -142,7 +143,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
   }
 
- /* fun updateRegisteredEvents(id: String, eventIDs: Set<String>) {
+  /* fun updateRegisteredEvents(id: String, eventIDs: Set<String>) {
 
     Firebase.firestore
         .collection(COLLECTION)
