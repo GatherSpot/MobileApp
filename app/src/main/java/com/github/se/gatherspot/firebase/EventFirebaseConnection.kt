@@ -116,7 +116,6 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         finalAttendees = finalAttendee,
         images = images,
         globalRating = globalRating,
-        // TODO: Add organizer
         organizerID = organizerID)
   }
 
@@ -147,7 +146,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
               .collection(EVENTS)
               .orderBy("eventStartDate")
               .orderBy("eventID")
-              .whereGreaterThan(
+              .whereGreaterThanOrEqualTo(
                   "eventStartDate",
                   LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
               .limit(number)
@@ -158,7 +157,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
               .collection(EVENTS)
               .orderBy("eventStartDate")
               .orderBy("eventID")
-              .whereGreaterThan(
+              .whereGreaterThanOrEqualTo(
                   "eventStartDate",
                   LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
               .startAfter(offset!!.get("eventStartDate"), offset!!.get("eventID"))
@@ -211,7 +210,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
               .collection(EVENTS)
               .orderBy("eventStartDate")
               .orderBy("eventID")
-              .whereGreaterThan(
+              .whereGreaterThanOrEqualTo(
                   "eventStartDate",
                   LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
               .whereArrayContainsAny("categories", l.map { it.name })
@@ -224,7 +223,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
               .orderBy("eventStartDate")
               .orderBy("eventID")
               .whereArrayContainsAny("categories", l.map { it.name })
-              .whereGreaterThan(
+              .whereGreaterThanOrEqualTo(
                   "eventStartDate",
                   LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
               .startAfter(offset!!.get("eventStartDate"), offset!!.get("eventID"))
