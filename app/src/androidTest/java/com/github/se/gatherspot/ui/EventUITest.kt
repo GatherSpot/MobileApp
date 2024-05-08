@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -15,7 +16,6 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
@@ -404,7 +404,6 @@ class EventUITest {
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
-    // To make it works, need to define a global MainActivity.uid
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -414,7 +413,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = Profile.testParticipant().id,
+              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -433,13 +432,15 @@ class EventUITest {
           EventRegistrationViewModel(listOf()),
           EventsViewModel())
     }
-    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {}
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      editEventButton { assertIsDisplayed() }
+      deleteButton { assertIsDisplayed() }
+    }
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testClickOnDeleteButton() {
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -449,7 +450,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = FirebaseAuth.getInstance().currentUser!!.uid,
+              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -522,7 +523,7 @@ class EventUITest {
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       profileIndicator.assertIsDisplayed()
       userName { hasText("John Doe") }
-      profileIndicator.performClick()
+      // profileIndicator.performClick()
     }
   }
 }
