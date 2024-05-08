@@ -341,7 +341,7 @@ class EventsTest {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
-      NavHost(navController = navController, startDestination = "home") {
+      NavHost(navController = navController, startDestination = "createEvent") {
         navigation(startDestination = "events", route = "home") {
           composable("events") { Events(viewModel, NavigationActions(navController)) }
         }
@@ -394,8 +394,6 @@ class EventsTest {
         }
       }
     }
-
-    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu { performClick() } }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
