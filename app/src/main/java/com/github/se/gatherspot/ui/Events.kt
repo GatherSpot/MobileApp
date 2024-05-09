@@ -1,7 +1,9 @@
 package com.github.se.gatherspot.ui
 
 import android.content.ContentValues.TAG
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -50,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
@@ -75,6 +78,7 @@ import kotlinx.coroutines.delay
 /** Composable that displays events * */
 
 // listOf("Your interests", "None")
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
@@ -90,6 +94,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
   LaunchedEffect(init) {
     if (!init) {
+      MainActivity.mapViewModel!!.fetchEvents()
       viewModel.fetchMyEvents()
       viewModel.fetchRegisteredTo()
       init = true

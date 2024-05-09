@@ -34,6 +34,6 @@ object Route {
 val TOP_LEVEL_DESTINATIONS =
     listOf(
         TopLevelDestination(Route.EVENTS, R.drawable.event, R.string.events),
-        TopLevelDestination(Route.MAP, R.drawable.glob, R.string.map),
+        TopLevelDestination(Route.MAP, R.drawable.map_black, R.string.map),
         TopLevelDestination(Route.CHATS, R.drawable.chat, R.string.chats),
         TopLevelDestination(Route.PROFILE, R.drawable.profile, R.string.profile))

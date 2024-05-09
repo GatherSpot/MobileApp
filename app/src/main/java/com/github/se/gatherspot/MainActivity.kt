@@ -1,6 +1,7 @@
 package com.github.se.gatherspot
 
 // import com.github.se.gatherspot.ui.Chats
+import android.app.Application
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -56,6 +57,8 @@ class MainActivity : ComponentActivity() {
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
     lateinit var mapLauncher: ActivityResultLauncher<String>
     var mapAccess = false
+    var mapViewModel: MapViewModel? = null
+    lateinit var app: Application
   }
 
   private lateinit var navController: NavHostController
@@ -65,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
     super.onCreate(savedInstanceState)
     val eventsViewModel = EventsViewModel()
-    val mapViewModel = MapViewModel(application)
+    app = application
 
     signInLauncher =
         registerForActivityResult(
@@ -82,8 +85,10 @@ class MainActivity : ComponentActivity() {
     setContent {
       GatherSpotTheme {
         // A surface container using the 'background' color from the theme
+
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           navController = rememberNavController()
+
           NavHost(navController = navController, startDestination = "auth") {
             navigation(startDestination = "login", route = "auth") {
               composable("login") { LogIn(NavigationActions(navController), signInLauncher) }
@@ -123,7 +128,7 @@ class MainActivity : ComponentActivity() {
                     viewModel = eventsViewModel)
               }
 
-              composable("map") { Map(mapViewModel, NavigationActions(navController)) }
+              composable("map") { Map(NavigationActions(navController)) }
 
               composable("profile") { Profile(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
@@ -158,6 +163,7 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+  @RequiresApi(Build.VERSION_CODES.S)
   private fun onSignInResult(
       result: FirebaseAuthUIAuthenticationResult,
       navController: NavHostController
@@ -168,6 +174,9 @@ class MainActivity : ComponentActivity() {
         navController.navigate("auth")
         return RESULT_CANCELED
       } else {
+        if (mapViewModel == null) {
+          mapViewModel = MapViewModel(app)
+        }
         navController.navigate("home")
       }
     }

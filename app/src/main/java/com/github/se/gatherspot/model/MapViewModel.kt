@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationRequest
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
@@ -43,8 +42,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
   }
 
   @RequiresApi(Build.VERSION_CODES.S)
-  private fun fetchLocation() {
-    Log.d("MapViewModel", "fetchLocation")
+  fun fetchLocation() {
     if (ActivityCompat.checkSelfPermission(
         getApplication(), Manifest.permission.ACCESS_FINE_LOCATION) ==
         PackageManager.PERMISSION_GRANTED ||
@@ -59,7 +57,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
   }
 
-  suspend fun fetchEvents(): MutableList<Event?> {
+  suspend fun fetchEvents() {
     val list =
         IdListFirebaseConnection()
             .fetchFromFirebase(
@@ -67,6 +65,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 FirebaseCollection.REGISTERED_EVENTS) {}!!
             .events
             .toMutableList()
-    return list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
+    events = list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
+    return
   }
 }
