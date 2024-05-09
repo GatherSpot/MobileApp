@@ -29,7 +29,7 @@ private const val DEFAULT_ZOOM_LEVEL = 15f
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun Map(viewModel: MapViewModel, nav: NavigationActions) {
+fun Map(viewModel: MapViewModel, nav: NavigationActions, testPosition: LatLng? = null) {
 
   var init = true
 
@@ -68,7 +68,8 @@ fun Map(viewModel: MapViewModel, nav: NavigationActions) {
                     MarkerState(
                         LatLng(
                             event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
-                title = event?.title ?: "Event")
+                title = event?.title ?: "Event",
+            )
           }
         }
       }
