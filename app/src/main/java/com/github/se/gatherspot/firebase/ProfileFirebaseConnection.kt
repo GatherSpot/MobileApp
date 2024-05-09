@@ -47,11 +47,20 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     return profile
   }
 
-  /** Returns the current user's UID, or null if the user is not logged in. */
+  /**
+   * @return the UID of the user logged in the current instance, or null if the user is not logged
+   *   in.
+   */
   fun getCurrentUserUid(): String? {
     return FirebaseAuth.getInstance().currentUser?.uid
   }
 
+  /**
+   * Checks if the username exists in the database Once the check is done, the onComplete lambda is
+   * called with the result of the check : true if the username exists, false otherwise
+   *
+   * @param userName the username to check
+   */
   fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
 
     Firebase.firestore
@@ -62,6 +71,12 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnFailureListener { onComplete(true) }
   }
 
+  /**
+   * Fetches the profile from the database with given username if the username does not exist, the
+   * function returns null if two profiles have the same username, one is returned
+   *
+   * @param userName the username of the user
+   */
   suspend fun fetchFromUserName(userName: String): Profile? =
       suspendCancellableCoroutine { continuation ->
         Firebase.firestore
@@ -78,6 +93,11 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
             }
       }
 
+  /**
+   * Adds or overrides a profile to the database
+   *
+   * @param element the profile to add
+   */
   override fun add(element: Profile) {
     val data =
         hashMapOf(
@@ -93,6 +113,13 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
   }
 
+  /**
+   * Updates a field of a profile in the database
+   *
+   * @param id the id of the profile
+   * @param field the field to update : {userName, bio, image, interests}
+   * @param value the new value of the field
+   */
   override fun update(id: String, field: String, value: Any) {
     when (field) {
       "interests" -> {
@@ -130,10 +157,17 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     super.update(id, field, value)
   }
 
+  /** Calls the add function to update the profile in the database */
   fun update(profile: Profile) {
     this.add(profile)
   }
 
+  /**
+   * Updates the interests of a profile in the database
+   *
+   * @param id the id of the profile
+   * @param interests the new interests of the profile
+   */
   fun updateInterests(id: String, interests: Set<Interests>) {
     Firebase.firestore
         .collection(COLLECTION)
@@ -155,11 +189,21 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   */
 
+  /** Deletes a profile from the database */
   override fun delete(id: String) {
     // delete associated data from other collection TODO
+    // delete ratings using registrations to find such events
+    // delete registrations
+    // (delete User ? No)
     super.delete(id)
   }
 
+  /**
+   * Converts a document to a profile
+   *
+   * @param d the document to convert
+   * @return the profile
+   */
   override fun getFromDocument(d: DocumentSnapshot): Profile? {
     val userName = d.getString("userName") ?: return null
     val bio = d.getString("bio")

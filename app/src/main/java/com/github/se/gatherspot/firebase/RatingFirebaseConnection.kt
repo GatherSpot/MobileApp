@@ -13,15 +13,15 @@ class RatingFirebaseConnection {
   val COLLECTION = FirebaseCollection.RATINGS.toString().lowercase()
   val TAG = "RatingFirebaseConnection"
 
-    /**
-     * Fetches the rating of the user for the event
-     * @param eventId the id of the event
-     * @param uid the id of the user
-     * @return the rating of the user for the event
-     * if the user has not rated the event, returns UNRATED
-     * if the event doesn't have any ratings, or that get results in failure, returns null
-     */
-    suspend fun fetchRating(eventId: String, uid: String): Rating? =
+  /**
+   * Fetches the rating of the user for the event
+   *
+   * @param eventId the id of the event
+   * @param uid the id of the user
+   * @return the rating of the user for the event if the user has not rated the event, returns
+   *   UNRATED if the event doesn't have any ratings, or that get results in failure, returns null
+   */
+  suspend fun fetchRating(eventId: String, uid: String): Rating? =
       suspendCancellableCoroutine { continuation ->
         var rating: Rating? = Rating.UNRATED
 
@@ -37,7 +37,7 @@ class RatingFirebaseConnection {
                 }
               } else {
                 Log.d(TAG, "No such rating")
-                  continuation.resume(null)
+                continuation.resume(null)
               }
               continuation.resume(rating)
             }
@@ -47,12 +47,13 @@ class RatingFirebaseConnection {
             }
       }
 
-    /**
-     * Fetches all the ratings given to the event
-     * @param eventID the id of the event
-     * @return a map of user id to rating
-     */
-    suspend fun fetchRatings(eventID: String): Map<String, Rating>? =
+  /**
+   * Fetches all the ratings given to the event
+   *
+   * @param eventID the id of the event
+   * @return a map of user id to rating
+   */
+  suspend fun fetchRatings(eventID: String): Map<String, Rating>? =
       suspendCancellableCoroutine { continuation ->
         Firebase.firestore
             .collection(COLLECTION)
@@ -70,15 +71,15 @@ class RatingFirebaseConnection {
             }
       }
 
-    /**
-     * Updates the rating given by the user for the event
-     * @param eventID the id of the event
-     * @param userID the id of the user
-     * @param rating the new value for the rating of the event by the user
-     * if the rating is UNRATED, the rating is deleted
-     *
-     */
-    fun update(eventID: String, userID: String, rating: Rating) {
+  /**
+   * Updates the rating given by the user for the event
+   *
+   * @param eventID the id of the event
+   * @param userID the id of the user
+   * @param rating the new value for the rating of the event by the user if the rating is UNRATED,
+   *   the rating is deleted
+   */
+  fun update(eventID: String, userID: String, rating: Rating) {
 
     var data: Map<String, Any> = mapOf(userID to FieldValue.delete())
     if (rating != Rating.UNRATED) {
@@ -95,15 +96,16 @@ class RatingFirebaseConnection {
         .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
   }
 
-    /**
-     * Deletes all the ratings of the event
-     * @param eventID the id of the event
-     *
-     * Meant to be ran :
-     * - in test functions for convenience
-     * - typically after a passed event is deleted even though atm we don't do that
-     */
-    fun deleteRatings(eventID: String) {
+  /**
+   * Deletes all the ratings of the event
+   *
+   * @param eventID the id of the event
+   *
+   * Meant to be ran :
+   * - in test functions for convenience
+   * - typically after a passed event is deleted even though atm we don't do that
+   */
+  fun deleteRatings(eventID: String) {
     Firebase.firestore
         .collection(COLLECTION)
         .document(eventID)
