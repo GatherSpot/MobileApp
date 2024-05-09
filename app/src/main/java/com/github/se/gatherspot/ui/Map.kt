@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
@@ -32,10 +33,9 @@ private const val DEFAULT_ZOOM_LEVEL = 15f
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun Map(nav: NavigationActions) {
+fun Map(nav: NavigationActions, viewModel: MapViewModel? = MainActivity.mapViewModel) {
 
-  val viewModel = MainActivity.mapViewModel!!
-
+  val viewModel = viewModel!!
   val currentLocation by viewModel.currentLocation.observeAsState(LatLng(0.0, 0.0))
 
   val cameraPositionState = rememberCameraPositionState {

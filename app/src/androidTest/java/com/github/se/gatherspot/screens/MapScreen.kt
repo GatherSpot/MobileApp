@@ -9,5 +9,4 @@ class MapScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         viewBuilderAction = { hasTestTag("EditOwnProfileScreen") }) {
 
   val googleMap = onNode { hasTestTag("GoogleMap") }
-  val marker = onNode { hasTestTag("EventMarker") }
 }
