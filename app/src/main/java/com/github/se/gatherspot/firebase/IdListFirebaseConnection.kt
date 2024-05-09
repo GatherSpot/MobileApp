@@ -11,17 +11,12 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 
 class IdListFirebaseConnection {
-  private val firestore = Firebase.firestore
   private val logTag = "IdListFirebaseConnection"
   private val COLLECTION = "ID_LIST"
   private val TAG = "IdListFirebaseConnection"
   private val fcoll = Firebase.firestore.collection(COLLECTION)
   private val batchErrorMsg = "Error writing batch"
   private val getErrorMsg = "get failed with :"
-
-
-
-
 
   /**
    * Fetches the IdList from Firebase
@@ -46,9 +41,9 @@ class IdListFirebaseConnection {
         .addOnSuccessListener { documents ->
           if (documents != null) {
             val data = documents.documents
-              val ids = data.map { it.id }
-              idSet.events = ids as List<String>
-              Log.d(logTag, "DocumentSnapshot data: ${data}")
+            val ids = data.map { it.id }
+            idSet.events = ids
+            Log.d(logTag, "DocumentSnapshot data: ${data}")
           } else {
             Log.d(logTag, "No such document")
           }
@@ -71,8 +66,9 @@ class IdListFirebaseConnection {
     val id = idSet.id
     // TODO : check if this good way to store data
     val data = hashMapOf("ids" to idSet.events.toList())
-    firestore
-        .collection(tag)
+    fcoll
+        .document(tag)
+        .collection(idSet.collection.toString())
         .document(id)
         .set(data)
         .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully written!") }

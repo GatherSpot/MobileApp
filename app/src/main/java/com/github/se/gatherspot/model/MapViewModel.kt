@@ -16,60 +16,57 @@ import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
-import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import kotlinx.coroutines.runBlocking
 
 @RequiresApi(Build.VERSION_CODES.S)
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(application.applicationContext)
-    private val _currentLocation = MutableLiveData<LatLng>()
+  private val fusedLocationClient =
+      LocationServices.getFusedLocationProviderClient(application.applicationContext)
+  private val _currentLocation = MutableLiveData<LatLng>()
 
-    private var _events = mutableListOf<Event?>()
+  private var _events = mutableListOf<Event?>()
 
-    val currentLocation: LiveData<LatLng>
-        get() = _currentLocation
-    var events: MutableList<Event?>
-        get() = _events
-        set(value) {
-            _events = value
-        }
+  val currentLocation: LiveData<LatLng>
+    get() = _currentLocation
 
-
-    init {
-        fetchLocation()
+  var events: MutableList<Event?>
+    get() = _events
+    set(value) {
+      _events = value
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
-    private fun fetchLocation() {
-        Log.d("MapViewModel", "fetchLocation")
-        if (ActivityCompat.checkSelfPermission(
-                getApplication(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(
-                getApplication(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationClient.getCurrentLocation(LocationRequest.QUALITY_HIGH_ACCURACY, null) .addOnSuccessListener { location: Location? ->
-                location?.let {
-                    _currentLocation.value = LatLng(it.latitude, it.longitude)
-                }
-            }
-        }
-    }
+  init {
+    fetchLocation()
+  }
 
-    suspend fun fetchEvents(): MutableList<Event?> {
-        val list = IdListFirebaseConnection().fetchFromFirebase(FirebaseAuth.getInstance().currentUser?.uid?:"0", FirebaseCollection.REGISTERED_EVENTS){}!!.events.toMutableList()
-        return list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
+  @RequiresApi(Build.VERSION_CODES.S)
+  private fun fetchLocation() {
+    Log.d("MapViewModel", "fetchLocation")
+    if (ActivityCompat.checkSelfPermission(
+        getApplication(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+        PackageManager.PERMISSION_GRANTED ||
+        ActivityCompat.checkSelfPermission(
+            getApplication(), Manifest.permission.ACCESS_COARSE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED) {
+      fusedLocationClient
+          .getCurrentLocation(LocationRequest.QUALITY_HIGH_ACCURACY, null)
+          .addOnSuccessListener { location: Location? ->
+            location?.let { _currentLocation.value = LatLng(it.latitude, it.longitude) }
+          }
     }
+  }
 
+  suspend fun fetchEvents(): MutableList<Event?> {
+    val list =
+        IdListFirebaseConnection()
+            .fetchFromFirebase(
+                FirebaseAuth.getInstance().currentUser?.uid ?: "0",
+                FirebaseCollection.REGISTERED_EVENTS) {}!!
+            .events
+            .toMutableList()
+    return list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
+  }
 }
-
-
-
