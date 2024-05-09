@@ -458,6 +458,7 @@ class EventsTest {
      */
 
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 6000)
       filterMenu { performClick() }
       myEvents {
         composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("myEvents"))
