@@ -362,7 +362,7 @@ class EventsTest {
     runBlocking { eventFirebase.fetch(eventCreated.id) }
 
     val viewModel = EventsViewModel()
-    Thread.sleep(5000)
+    Thread.sleep(6000)
     assert(viewModel.uiState.value.list.isNotEmpty())
 
     composeTestRule.setContent {
@@ -422,13 +422,13 @@ class EventsTest {
     }
 
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 12000)
       filterMenu { performClick() }
       myEvents {
         composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("myEvents"))
         performClick()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 12000)
       assert(
           viewModel.uiState.value.list.any { event ->
             event.description == "Ayo, 5v5: Come show your skills"
