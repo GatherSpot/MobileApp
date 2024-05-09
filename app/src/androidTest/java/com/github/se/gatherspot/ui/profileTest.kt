@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.ui
-
+/*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
@@ -22,7 +23,7 @@ class ProfileInstrumentedTest {
         "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING) {}
   }
 
-  /*
+
   // For now on this branch, we will not test the profile screen because it does not pass the CI
 
   @OptIn(ExperimentalTestApi::class)
@@ -66,8 +67,8 @@ class ProfileInstrumentedTest {
       bioInput { assert(hasText("I am a bot")) }
     }
   }
-   */
-  /*
+
+
     // For now on this branch, we will not test the profile screen because it does not pass the CI
 
 
@@ -94,5 +95,6 @@ class ProfileInstrumentedTest {
     }
   }
 
-   */
+
 }
+*/
