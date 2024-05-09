@@ -52,6 +52,13 @@ fun Map(nav: NavigationActions) {
       delay(1000)
     }
   }
+  LaunchedEffect(key1 = Unit) {
+    while (currentLocation == LatLng(0.0, 0.0)) {
+      delay(500)
+    }
+    cameraPositionState.position =
+        CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
+  }
 
   Scaffold(
       bottomBar = {
@@ -63,8 +70,8 @@ fun Map(nav: NavigationActions) {
         LaunchedEffect(MainActivity.mapAccess) {
           Log.d("MapAccess", MainActivity.mapAccess.toString())
           MainActivity.mapLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+          viewModel.fetchLocation()
         }
-
         GoogleMap(
             properties = MapProperties(mapType = MapType.HYBRID),
             modifier = Modifier.testTag("GoogleMap"),
