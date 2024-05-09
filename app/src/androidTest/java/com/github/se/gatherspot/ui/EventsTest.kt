@@ -345,10 +345,10 @@ class EventsTest {
             attendanceMinCapacity = 5,
             organizerID = uid,
             categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2024, 5, 15),
-            eventStartDate = LocalDate.of(2024, 5, 15),
+            eventEndDate = LocalDate.of(2024, 6, 15),
+            eventStartDate = LocalDate.of(2024, 6, 15),
             globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+            inscriptionLimitDate = LocalDate.of(2024, 6, 11),
             inscriptionLimitTime = LocalTime.of(23, 59),
             location = null,
             registeredUsers = mutableListOf(),
@@ -363,6 +363,7 @@ class EventsTest {
 
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
+    assert(viewModel.uiState.value.list.isNotEmpty())
 
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -420,43 +421,6 @@ class EventsTest {
       }
     }
 
-    /*
-    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
-
-    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
-      eventTitle.performTextInput("Basketball Game")
-      Espresso.closeSoftKeyboard()
-      eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
-      Espresso.closeSoftKeyboard()
-      eventStartDate.performTextInput("10/07/2024")
-      Espresso.closeSoftKeyboard()
-      eventEndDate.performTextInput("10/07/2024")
-      Espresso.closeSoftKeyboard()
-      eventTimeStart.performTextInput("13:00")
-      Espresso.closeSoftKeyboard()
-      eventTimeEnd.performTextInput("19:00")
-      Espresso.closeSoftKeyboard()
-      eventLocation.performTextInput("Bussy-Saint-Georges")
-      Espresso.closeSoftKeyboard()
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
-      Espresso.closeSoftKeyboard()
-      locationProposition { performClick() }
-      Espresso.closeSoftKeyboard()
-      eventMaxAttendees.performTextInput("10")
-      Espresso.closeSoftKeyboard()
-      eventMinAttendees.performTextInput("5")
-      Espresso.closeSoftKeyboard()
-      eventInscriptionLimitDate.performTextInput("10/06/2024")
-      Espresso.closeSoftKeyboard()
-      eventInscriptionLimitTime.performTextInput("09:00")
-      Espresso.closeSoftKeyboard()
-      eventSaveButton.performScrollTo()
-      eventSaveButton.performClick()
-    }
-
-     */
-
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 6000)
       filterMenu { performClick() }
@@ -484,3 +448,40 @@ class EventsTest {
     EventFirebaseConnection().delete(event.id)
   }
 }
+
+/*
+ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
+
+ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+  composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
+  eventTitle.performTextInput("Basketball Game")
+  Espresso.closeSoftKeyboard()
+  eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
+  Espresso.closeSoftKeyboard()
+  eventStartDate.performTextInput("10/07/2024")
+  Espresso.closeSoftKeyboard()
+  eventEndDate.performTextInput("10/07/2024")
+  Espresso.closeSoftKeyboard()
+  eventTimeStart.performTextInput("13:00")
+  Espresso.closeSoftKeyboard()
+  eventTimeEnd.performTextInput("19:00")
+  Espresso.closeSoftKeyboard()
+  eventLocation.performTextInput("Bussy-Saint-Georges")
+  Espresso.closeSoftKeyboard()
+  composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
+  Espresso.closeSoftKeyboard()
+  locationProposition { performClick() }
+  Espresso.closeSoftKeyboard()
+  eventMaxAttendees.performTextInput("10")
+  Espresso.closeSoftKeyboard()
+  eventMinAttendees.performTextInput("5")
+  Espresso.closeSoftKeyboard()
+  eventInscriptionLimitDate.performTextInput("10/06/2024")
+  Espresso.closeSoftKeyboard()
+  eventInscriptionLimitTime.performTextInput("09:00")
+  Espresso.closeSoftKeyboard()
+  eventSaveButton.performScrollTo()
+  eventSaveButton.performClick()
+}
+
+ */
