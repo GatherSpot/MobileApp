@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.content.ContentValues
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,10 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -61,16 +57,14 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
 
   LaunchedEffect(fetch) {
     if (fetch) {
-      Log.d(ContentValues.TAG, "entered")
-      delay(1000)
+      delay(300)
       viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid)
-
       fetch = false
     }
   }
 
   Scaffold(
-      topBar = { ChatsTopAppBar(nav, "Chats") },
+      topBar = { ChatsTopAppBar("Chats") },
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { tld -> nav.navigateTo(tld) },
@@ -192,18 +186,10 @@ fun ChatRow(event: Event, navigation: NavigationActions) {
 }
 
 @Composable
-fun ChatsTopAppBar(navActions: NavigationActions, title: String) {
+fun ChatsTopAppBar(title: String) {
   TopAppBar(
       modifier = Modifier.testTag("chatsTopBar"),
       title = { androidx.compose.material.Text(text = title, color = Color.Black) },
-      navigationIcon = {
-        IconButton(onClick = { navActions.controller.popBackStack() }) {
-          androidx.compose.material.Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = "Go Back",
-              tint = Color.Black)
-        }
-      },
       backgroundColor = Color.White,
       contentColor = Color.Black,
       elevation = 4.dp)
