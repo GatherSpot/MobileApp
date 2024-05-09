@@ -19,6 +19,10 @@ class IdListFirebaseConnection {
   private val batchErrorMsg = "Error writing batch"
   private val getErrorMsg = "get failed with :"
 
+
+
+
+
   /**
    * Fetches the IdList from Firebase
    *
@@ -35,18 +39,16 @@ class IdListFirebaseConnection {
   ): IdList? = suspendCancellableCoroutine { continuation ->
     val tag = category.name
     val idSet = IdList.empty(id, category)
-    firestore
-        .collection(tag)
-        .document(id)
+    fcoll
+        .document(tag)
+        .collection(id)
         .get()
-        .addOnSuccessListener { document ->
-          if (document != null) {
-            val data = document.data
-            if (data != null) {
-              val ids = data["ids"]
+        .addOnSuccessListener { documents ->
+          if (documents != null) {
+            val data = documents.documents
+              val ids = data.map { it.id }
               idSet.events = ids as List<String>
-              Log.d(logTag, "DocumentSnapshot data: ${document.data}")
-            }
+              Log.d(logTag, "DocumentSnapshot data: ${data}")
           } else {
             Log.d(logTag, "No such document")
           }

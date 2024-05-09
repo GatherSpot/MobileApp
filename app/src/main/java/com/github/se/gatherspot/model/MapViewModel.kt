@@ -13,10 +13,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.FirebaseCollection
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import kotlinx.coroutines.runBlocking
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -25,12 +29,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(application.applicationContext)
     private val _currentLocation = MutableLiveData<LatLng>()
 
-    private val _events = MutableLiveData<MutableList<Event>>()
+    private var _events = mutableListOf<Event?>()
 
     val currentLocation: LiveData<LatLng>
         get() = _currentLocation
-    val events: LiveData<MutableList<Event>>
+    var events: MutableList<Event?>
         get() = _events
+        set(value) {
+            _events = value
+        }
 
 
     init {
@@ -57,8 +64,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    suspend fun fetchEvents(): MutableList<Event> {
-        return EventFirebaseConnection().fetchRegisteredTo()
+    suspend fun fetchEvents(): MutableList<Event?> {
+        val list = IdListFirebaseConnection().fetchFromFirebase(FirebaseAuth.getInstance().currentUser?.uid?:"0", FirebaseCollection.REGISTERED_EVENTS){}!!.events.toMutableList()
+        return list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
     }
 
 }

@@ -23,6 +23,8 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.ktx.auth
@@ -44,13 +46,10 @@ private const val DEFAULT_ZOOM_LEVEL = 15f
 @Composable
 fun Map(viewModel: MapViewModel, nav: NavigationActions) {
 
-
-    var events: MutableList<Event> = mutableListOf()
     var init = true
 
-
     LaunchedEffect(init) {
-        events = viewModel.fetchEvents()
+        viewModel.events = viewModel.fetchEvents()
         init = false
     }
 
@@ -87,10 +86,10 @@ fun Map(viewModel: MapViewModel, nav: NavigationActions) {
               state = MarkerState(currentLocation),
               title = "Your current position"
           )
-          for (event in events) {
+          for (event in viewModel.events) {
               Marker(
-                  state = MarkerState(LatLng(event.location?.latitude?:0.0, event.location?.longitude?:0.0)),
-                  title = event.title
+                  state = MarkerState(LatLng(event?.location?.latitude?:0.0, event?.location?.longitude?:0.0)),
+                  title = event?.title?: "Event"
               )
           }
       }
