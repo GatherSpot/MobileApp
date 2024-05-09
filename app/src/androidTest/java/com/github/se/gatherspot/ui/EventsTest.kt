@@ -33,6 +33,7 @@ import com.google.gson.GsonBuilder
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -357,6 +358,8 @@ class EventsTest {
 
     val eventFirebase = EventFirebaseConnection()
     eventFirebase.add(eventCreated)
+
+    runBlocking { eventFirebase.fetch(eventCreated.id) }
 
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
