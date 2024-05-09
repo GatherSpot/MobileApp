@@ -194,9 +194,6 @@ class EventsTest {
     }
   }
 
-  /*
-  // For now, comment out the entire test because it is not working on the CI
-
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testRefreshButtonFunctionalWithFilter() {
@@ -258,8 +255,6 @@ class EventsTest {
           })
     }
   }
-
-   */
 
   @Test
   fun testMyEventsFilterWorks() {
