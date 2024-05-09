@@ -341,7 +341,7 @@ class EventsTest {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
-      NavHost(navController = navController, startDestination = "createEvent") {
+      NavHost(navController = navController, startDestination = "home") {
         navigation(startDestination = "events", route = "home") {
           composable("events") { Events(viewModel, NavigationActions(navController)) }
         }
@@ -395,6 +395,8 @@ class EventsTest {
       }
     }
 
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
+
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
       eventTitle.performTextInput("Basketball Game")
@@ -427,8 +429,6 @@ class EventsTest {
       eventSaveButton.performClick()
     }
 
-    Thread.sleep(5000)
-    // more asserts are needed but ok for now
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
       filterMenu { performClick() }
       myEvents {
@@ -443,12 +443,10 @@ class EventsTest {
       eventCreated { performClick() }
     }
 
-    Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { performClick() }
     }
 
-    Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventDescription { assertTextContains("Ayo, 5v5: Come show your skills") }
     }
