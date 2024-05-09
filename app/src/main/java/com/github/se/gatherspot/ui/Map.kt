@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,6 +19,7 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -57,20 +59,25 @@ fun Map(viewModel: MapViewModel, nav: NavigationActions, testPosition: LatLng? =
         }
         GoogleMap(
             properties = MapProperties(mapType = MapType.HYBRID),
-            modifier = Modifier.testTag("Google Map"),
+            modifier = Modifier.testTag("GoogleMap"),
             contentPadding = paddingValues,
             cameraPositionState = cameraPositionState,
         ) {
           Marker(state = MarkerState(currentLocation), title = "Your current position")
           for (event in viewModel.events) {
-            Marker(
+            MarkerWithTestTag(
                 state =
                     MarkerState(
                         LatLng(
                             event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
                 title = event?.title ?: "Event",
-            )
+                testTag = "EventMarker")
           }
         }
       }
+}
+
+@Composable
+fun MarkerWithTestTag(state: MarkerState, title: String, testTag: String) {
+  Box(modifier = Modifier.testTag(testTag)) { Marker(state = state, title = title) }
 }
