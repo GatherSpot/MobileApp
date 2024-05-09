@@ -40,7 +40,7 @@ class SignUpViewModel() : ViewModel() {
         (userNameError.value == "" &&
             emailError.value == "" &&
             passwordError.value == "" &&
-                isUsernameUnique)
+            isUsernameUnique)
   }
 
   fun navBack() {
@@ -50,7 +50,7 @@ class SignUpViewModel() : ViewModel() {
   fun updateUsername(string: String) {
     userName.value = string
     isUsernameUnique = false
-    userNameError = Profile.checkUsername(string,null){isUsernameUnique = true}
+    userNameError = Profile.checkUsername(string, null) { isUsernameUnique = true }
   }
 
   fun updateEmail(string: String) {
@@ -63,7 +63,8 @@ class SignUpViewModel() : ViewModel() {
   fun updatePassword(string: String) {
     password.value = string
     val passRegex = """^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$"""
-    passwordError.value = if (password.value!!.matches(passRegex.toRegex()))  "" else "Invalid Password"
+    passwordError.value =
+        if (password.value!!.matches(passRegex.toRegex())) "" else "Invalid Password"
     updateEverythingOk()
   }
 
@@ -99,6 +100,7 @@ class SignUpViewModel() : ViewModel() {
     isFinished.value = true
     job?.cancel()
   }
+
   fun signUp() {
     Firebase.auth
         .createUserWithEmailAndPassword(email.value!!, password.value!!)

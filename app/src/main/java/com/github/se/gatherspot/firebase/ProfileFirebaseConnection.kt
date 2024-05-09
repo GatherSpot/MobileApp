@@ -58,11 +58,11 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
 
     Firebase.firestore
-      .collection(COLLECTION)
-      .whereEqualTo("userName", userName)
-      .get()
-      .addOnSuccessListener { result -> onComplete(result.documents.isNotEmpty()) }
-      .addOnFailureListener { onComplete(true) }
+        .collection(COLLECTION)
+        .whereEqualTo("userName", userName)
+        .get()
+        .addOnSuccessListener { result -> onComplete(result.documents.isNotEmpty()) }
+        .addOnFailureListener { onComplete(true) }
   }
 
   fun fetchFromUserName(userName: String): Profile? {
@@ -113,37 +113,38 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         }
         .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
   }
-    override fun update(id: String, field: String, value: Any) {
-      when (field) {
-        "interests" -> {
-          when (value) {
-            is Set<*> -> {
-              updateInterests(id, value as Set<Interests>)
-              return
-            }
-            is List<*> -> { // This is already a misuse case please don't land here
-              Log.d(TAG, "Please use a Set instead of a List when updating interests of a profile")
-              updateInterests(id, value.toSet() as Set<Interests>)
-              return
-            }
-            is String -> {
-              super.update(id, field, value)
-              return
-            }
+
+  override fun update(id: String, field: String, value: Any) {
+    when (field) {
+      "interests" -> {
+        when (value) {
+          is Set<*> -> {
+            updateInterests(id, value as Set<Interests>)
+            return
           }
-        }
-        "userName" -> {
-          ifUsernameExists(value as String) { exists ->
-            if (exists) {
-              Log.d(TAG, "Username already exists")
-              return@ifUsernameExists
-            }
+          is List<*> -> { // This is already a misuse case please don't land here
+            Log.d(TAG, "Please use a Set instead of a List when updating interests of a profile")
+            updateInterests(id, value.toSet() as Set<Interests>)
+            return
+          }
+          is String -> {
+            super.update(id, field, value)
+            return
           }
         }
       }
-
-      super.update(id, field, value)
+      "userName" -> {
+        ifUsernameExists(value as String) { exists ->
+          if (exists) {
+            Log.d(TAG, "Username already exists")
+            return@ifUsernameExists
+          }
+        }
+      }
     }
+
+    super.update(id, field, value)
+  }
 
   fun update(profile: Profile) {
     this.add(profile)

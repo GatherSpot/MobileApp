@@ -93,8 +93,12 @@ class SignUpView {
                   label = { Text(text = "Username") },
                   modifier = Modifier.testTag("user"),
                   keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                  supportingText = { Text(userNameError.value!!, color = Color.Red) }
-              )
+                  supportingText = {
+                    Text(
+                        userNameError.value!!,
+                        color = Color.Red,
+                        modifier = Modifier.testTag("badUsername"))
+                  })
               Column(
                   modifier = Modifier.fillMaxWidth(),
                   horizontalAlignment = Alignment.CenterHorizontally,
@@ -105,8 +109,12 @@ class SignUpView {
                         label = { Text(text = "Email") },
                         modifier = Modifier.testTag("email"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        supportingText = {Text(emailError.value!!, color = Color.Red)}
-                    )
+                        supportingText = {
+                          Text(
+                              emailError.value!!,
+                              color = Color.Red,
+                              modifier = Modifier.testTag("badEmail"))
+                        })
                   }
 
               Column(
@@ -122,8 +130,13 @@ class SignUpView {
                             else PasswordVisualTransformation(),
                         modifier = Modifier.testTag("password"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        supportingText = { Text(passwordError.value!!, color = Color.Red)},
-                      trailingIcon = {
+                        supportingText = {
+                          Text(
+                              passwordError.value!!,
+                              color = Color.Red,
+                              modifier = Modifier.testTag("badPassword"))
+                        },
+                        trailingIcon = {
                           IconButton(
                               onClick = { flipPassword() },
                               content = {
