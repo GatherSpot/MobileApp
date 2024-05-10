@@ -34,7 +34,6 @@ import com.google.gson.GsonBuilder
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -351,9 +350,9 @@ class EventsTest {
         navigation(startDestination = "form", route = "createEvent") {
           composable("form") {
             CreateEvent(
-              nav = NavigationActions(navController),
-              eventUtils = EventUtils(),
-              viewModel = viewModel)
+                nav = NavigationActions(navController),
+                eventUtils = EventUtils(),
+                viewModel = viewModel)
           }
         }
         navigation(startDestination = "view", route = "event/{eventJson}") {
@@ -397,9 +396,7 @@ class EventsTest {
       }
     }
 
-    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule){
-      createMenu.performClick()
-    }
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
