@@ -4,8 +4,8 @@ import org.junit.Test
 
 class RatingTest {
 
-    @Test
-    fun fromInt() {
+  @Test
+  fun fromInt() {
     assert(Rating.fromInt(1) == Rating.ONE_STAR)
     assert(Rating.fromInt(2) == Rating.TWO_STARS)
     assert(Rating.fromInt(3) == Rating.THREE_STARS)
@@ -23,6 +23,4 @@ class RatingTest {
     assert(Rating.toInt(Rating.FIVE_STARS) == 5)
     assert(Rating.toInt(Rating.UNRATED) == 0)
   }
-
-
 }
