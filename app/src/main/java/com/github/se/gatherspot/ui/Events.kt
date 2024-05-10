@@ -57,8 +57,8 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
@@ -273,10 +273,9 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                           GsonBuilder()
                               .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
                               .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                              .registerTypeAdapter(LocalDateTime::class.java, LocalTimeSerializer())
                               .registerTypeAdapter(
-                                  LocalDateTime::class.java, LocalDateTimeSerializer())
-                              .registerTypeAdapter(
-                                  LocalDateTime::class.java, LocalDateTimeDeserializer())
+                                  LocalDateTime::class.java, LocalTimeDeserializer())
                               .create()
 
                       val eventJson = gson.toJson(event)

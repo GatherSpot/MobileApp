@@ -5,11 +5,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import com.github.se.gatherspot.model.utils.ImageBitmapSerializer
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.google.gson.JsonPrimitive
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.LocalTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -32,19 +32,19 @@ class JsonCustomsSerializerTest {
   }
 
   @Test
-  fun testLocalDateTimeSerializer() {
-    val localDateTime = LocalDateTime.of(2022, 12, 31, 23, 59)
-    val serializer = LocalDateTimeSerializer()
-    val jsonElement = serializer.serialize(localDateTime, localDateTime::class.java, null)
-    assertEquals(JsonPrimitive("2022-12-31T23:59:00"), jsonElement)
+  fun testLocalTimeSerializer() {
+    val localTime = LocalTime.of(23, 59)
+    val serializer = LocalTimeSerializer()
+    val jsonElement = serializer.serialize(localTime, localTime::class.java, null)
+    assertEquals(JsonPrimitive("23:59:00"), jsonElement)
   }
 
   @Test
-  fun testLocalDateTimeDeserializer() {
-    val jsonElement = JsonPrimitive("2022-12-31T23:59:00")
-    val deserializer = LocalDateTimeDeserializer()
-    val localDateTime = deserializer.deserialize(jsonElement, LocalDateTime::class.java, null)
-    assertEquals(LocalDateTime.of(2022, 12, 31, 23, 59), localDateTime)
+  fun testLocalTimeDeserializer() {
+    val jsonElement = JsonPrimitive("23:59:00")
+    val deserializer = LocalTimeDeserializer()
+    val localTime = deserializer.deserialize(jsonElement, LocalTime::class.java, null)
+    assertEquals(LocalTime.of(23, 59), localTime)
   }
 
   @Test

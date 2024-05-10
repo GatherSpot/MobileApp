@@ -25,8 +25,8 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.Chats
 import com.github.se.gatherspot.ui.Community
@@ -46,7 +46,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
   companion object {
@@ -88,8 +88,8 @@ class MainActivity : ComponentActivity() {
                     GsonBuilder()
                         .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
                         .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-                        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
                         .create()
                 val eventObject =
                     gson.fromJson(

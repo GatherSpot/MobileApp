@@ -15,7 +15,7 @@ import com.google.gson.JsonSerializer
 import java.io.ByteArrayOutputStream
 import java.lang.reflect.Type
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Base64
 
@@ -43,25 +43,25 @@ class LocalDateDeserializer : JsonDeserializer<LocalDate> {
 }
 
 // Custom serializer for LocalDateTime
-class LocalDateTimeSerializer : JsonSerializer<LocalDateTime> {
+class LocalTimeSerializer : JsonSerializer<LocalTime> {
   override fun serialize(
-      src: LocalDateTime,
+      src: LocalTime,
       typeOfSrc: Type,
       context: JsonSerializationContext?
   ): JsonElement {
-    return JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+    return JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_TIME))
   }
 }
 
 // Custom deserializer for LocalDateTime
-class LocalDateTimeDeserializer : JsonDeserializer<LocalDateTime> {
+class LocalTimeDeserializer : JsonDeserializer<LocalTime> {
   @Throws(JsonParseException::class)
   override fun deserialize(
       json: JsonElement,
       typeOfT: Type,
       context: JsonDeserializationContext?
-  ): LocalDateTime {
-    return LocalDateTime.parse(json.asString, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+  ): LocalTime {
+    return LocalTime.parse(json.asString, DateTimeFormatter.ISO_LOCAL_TIME)
   }
 }
 
