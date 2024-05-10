@@ -48,18 +48,13 @@ import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp as dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.EventStatus
-import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
@@ -74,7 +69,6 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -393,6 +387,7 @@ fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Int
       },
   )
 }
+/*
 // Preview for the Event UI, for testing purposes
 @Preview
 @Composable
@@ -425,3 +420,4 @@ fun EventUIPreview() {
       registrationViewModel = viewModel,
       eventsViewModel = EventsViewModel())
 }
+*/

@@ -158,7 +158,7 @@ fun EventUI(
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-              ProfileIndicator(organizerProfile.value ?: Profile.testOrganizer(), navActions)
+              ProfileIndicator(organizerProfile.value, navActions)
 
               // Event Description
               event.description?.let { description ->
@@ -337,7 +337,8 @@ fun Chip(interest: Interests) {
 }
 
 @Composable
-fun ProfileIndicator(profile: Profile, navActions: NavigationActions) {
+fun ProfileIndicator(profile: Profile?, navActions: NavigationActions) {
+  if (profile == null) return
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
