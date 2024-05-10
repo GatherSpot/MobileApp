@@ -63,4 +63,13 @@ class EventUIViewModel(private val event: Event) :
       }
     }
   }
+
+    fun isOrganizer(): Boolean {
+        return userID == event.organizerID
+    }
+
+    fun canRate(): Boolean {
+        return !isOrganizer() && event.registeredUsers.contains(userID)
+    }
+
 }

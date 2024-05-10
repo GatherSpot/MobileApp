@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.EnvironmentSetter
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
 import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -62,7 +63,7 @@ class EventUIViewModelTest {
             inscriptionLimitTime = null,
             eventStatus = EventStatus.COMPLETED,
             categories = setOf(),
-            organizerID = "TEST",
+            organizerID = testLoginUID, //uid of testLogin()
             registeredUsers = mutableListOf(),
             finalAttendees = listOf(),
             images = null,
@@ -114,13 +115,42 @@ class EventUIViewModelTest {
     @Test
     fun testRateEventAsOrganizer() {
         runBlocking {
-        //rate event he organized
-        val viewModel2 = EventUIViewModel(organizedEvent)
-        delay(1000)
-        assertEquals(Rating.UNRATED, viewModel2.rating.value)
-        viewModel2.rateEvent(Rating.FIVE_STARS) //rate event he organized
-        delay(1000)
-        assertEquals(Rating.UNRATED, viewModel2.rating.value)
+            //rate event he organized
+            val viewModel2 = EventUIViewModel(organizedEvent)
+            delay(1000)
+            assertEquals(Rating.UNRATED, viewModel2.rating.value)
+            viewModel2.rateEvent(Rating.FIVE_STARS) //rate event he organized
+            delay(1000)
+            assertEquals(Rating.UNRATED, viewModel2.rating.value)
+        }
+    }
+
+        @Test
+        fun testIsOrganizer() {
+            runBlocking {
+                val viewModel = EventUIViewModel(event)
+                delay(1000)
+                assertEquals(false, viewModel.isOrganizer())
+                val viewModel2 = EventUIViewModel(organizedEvent)
+                delay(1000)
+                assertEquals(true, viewModel2.isOrganizer())
+            }
+        }
+
+    @Test
+    fun testCanRate() {
+        runBlocking {
+            val uid = Firebase.auth.currentUser?.uid
+            val viewModel = EventUIViewModel(event)
+            delay(1000)
+            assertEquals(false, viewModel.canRate())
+            event.registeredUsers.add(uid!!)
+            val viewModel2 = EventUIViewModel(event)
+            delay(1000)
+            assertEquals(true, viewModel2.canRate())
+            val viewModel3 = EventUIViewModel(organizedEvent)
+            delay(1000)
+            assertEquals(false, viewModel3.canRate())
         }
     }
 
