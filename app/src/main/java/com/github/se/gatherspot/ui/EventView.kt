@@ -135,19 +135,20 @@ fun EventUI(
                     .padding(8.dp)
                     .testTag("eventColumn")
                     .verticalScroll(rememberScrollState())) {
-              // Event Image
-              event.images?.let { img ->
-                Image(
-                    bitmap = img,
-                    contentDescription = "Event Image",
-                    modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                    contentScale = ContentScale.FillBounds)
+              if (event.image.isNotEmpty())
+              {
+                //TODO : implement this using coil
+//                Image(
+//                    bitmap = img,
+//                    contentDescription = "Event Image",
+//                    modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
+//                    contentScale = ContentScale.FillBounds)
               }
-                  ?: Image(
-                      painter = painterResource(id = R.drawable.default_event_image),
-                      contentDescription = "Default Event Image",
-                      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                      contentScale = ContentScale.FillBounds)
+              else Image(
+                painter = painterResource(id = R.drawable.default_event_image),
+                contentDescription = "Default Event Image",
+                modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
+                contentScale = ContentScale.FillBounds)
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -392,6 +393,7 @@ fun EventUIPreview() {
           registeredUsers = mutableListOf(),
           timeBeginning = LocalTime.of(11, 0),
           timeEnding = LocalTime.of(13, 0),
+          image = "",
           organizerID = Profile.testOrganizer().id)
   val viewModel = EventRegistrationViewModel(listOf(""))
   EventUI(
