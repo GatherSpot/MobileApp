@@ -60,7 +60,7 @@ class EventUITest {
               location = null,
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
       EventUI(
           event,
           NavigationActions(navController),
@@ -110,7 +110,7 @@ class EventUITest {
               location = null,
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
       EventUI(
           event,
           NavigationActions(navController),
@@ -195,7 +195,7 @@ class EventUITest {
               registeredUsers = mutableListOf(),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
       EventUI(
           event,
           NavigationActions(navController),
@@ -264,7 +264,7 @@ class EventUITest {
               registeredUsers = mutableListOf(),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
       EventUI(
           event,
           NavigationActions(navController),
@@ -320,7 +320,7 @@ class EventUITest {
               registeredUsers = mutableListOf("1", "2"),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
 
       EventUI(
           event,
@@ -371,7 +371,7 @@ class EventUITest {
               registeredUsers = mutableListOf("TEST"),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
       val eventfirebase = EventFirebaseConnection()
       eventfirebase.add(event)
 
@@ -425,7 +425,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               globalRating = 4,
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
 
       EventUI(
           event,
@@ -460,7 +460,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               globalRating = 4,
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
 
       EventUI(
           event,

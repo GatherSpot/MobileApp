@@ -57,7 +57,7 @@ class ChatsTest {
                 registeredUsers = mutableListOf(),
                 timeBeginning = LocalTime.of(10, 0),
                 timeEnding = LocalTime.of(12, 0),
-            ))
+                image = ""))
   }
 
   @After

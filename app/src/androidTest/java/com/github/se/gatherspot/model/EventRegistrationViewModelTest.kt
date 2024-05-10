@@ -55,7 +55,7 @@ class EventRegistrationViewModelTest {
             registeredUsers = mutableListOf(),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
-        )
+            image = "")
     val eventFirebaseConnection = EventFirebaseConnection()
     eventFirebaseConnection.add(event)
     viewModel.registerForEvent(event)
@@ -87,7 +87,7 @@ class EventRegistrationViewModelTest {
             globalRating = null,
             inscriptionLimitDate = null,
             inscriptionLimitTime = null,
-        )
+            image = "")
 
     val eventFirebaseConnection = EventFirebaseConnection()
     eventFirebaseConnection.add(event)

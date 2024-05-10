@@ -72,7 +72,7 @@ class EventFirebaseConnectionTest {
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            image = null,
+            image = "",
             globalRating = null)
 
     EventFirebaseConnection.add(event)
@@ -113,7 +113,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
-    assertEquals(resultEvent!!.image, null)
+    assertEquals(resultEvent!!.image, "")
     EventFirebaseConnection.delete(eventID)
   }
 
@@ -245,7 +245,7 @@ class EventFirebaseConnectionTest {
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            image = null,
+            image = "",
             globalRating = null)
 
     EventFirebaseConnection.add(event)
@@ -279,7 +279,7 @@ class EventFirebaseConnectionTest {
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            image = null,
+            image = "",
             globalRating = null)
 
     EventFirebaseConnection.add(event)
@@ -302,7 +302,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
-    assertEquals(resultEvent!!.image, null)
+    assertEquals(resultEvent!!.image, "")
     EventFirebaseConnection.delete(eventID)
   }
 
