@@ -27,7 +27,7 @@ class RatingFirebaseConnection {
       suspendCancellableCoroutine { continuation ->
         var rating: Rating?
 
-          attendeesRatingsCollection(eventID)
+        attendeesRatingsCollection(eventID)
             .document(userID)
             .get()
             .addOnSuccessListener { document ->
