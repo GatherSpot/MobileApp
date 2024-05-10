@@ -5,22 +5,23 @@ import org.junit.Test
 class RatingTest {
 
   @Test
-  fun fromInt() {
-    assert(Rating.fromInt(1) == Rating.ONE_STAR)
-    assert(Rating.fromInt(2) == Rating.TWO_STARS)
-    assert(Rating.fromInt(3) == Rating.THREE_STARS)
-    assert(Rating.fromInt(4) == Rating.FOUR_STARS)
-    assert(Rating.fromInt(5) == Rating.FIVE_STARS)
-    assert(Rating.fromInt(0) == Rating.UNRATED)
+  fun fromLong() {
+    assert(Rating.fromLong(1L) == Rating.ONE_STAR)
+    assert(Rating.fromLong(2L) == Rating.TWO_STARS)
+    assert(Rating.fromLong(3L) == Rating.THREE_STARS)
+    assert(Rating.fromLong(4L) == Rating.FOUR_STARS)
+    assert(Rating.fromLong(5L) == Rating.FIVE_STARS)
+    assert(Rating.fromLong(0) == Rating.UNRATED)
+    assert(Rating.fromLong(-1) == Rating.UNRATED)
   }
 
   @Test
-  fun toInt() {
-    assert(Rating.toInt(Rating.ONE_STAR) == 1)
-    assert(Rating.toInt(Rating.TWO_STARS) == 2)
-    assert(Rating.toInt(Rating.THREE_STARS) == 3)
-    assert(Rating.toInt(Rating.FOUR_STARS) == 4)
-    assert(Rating.toInt(Rating.FIVE_STARS) == 5)
-    assert(Rating.toInt(Rating.UNRATED) == 0)
+  fun toLong() {
+    assert(Rating.toLong(Rating.ONE_STAR) == 1L)
+    assert(Rating.toLong(Rating.TWO_STARS) == 2L)
+    assert(Rating.toLong(Rating.THREE_STARS) == 3L)
+    assert(Rating.toLong(Rating.FOUR_STARS) == 4L)
+    assert(Rating.toLong(Rating.FIVE_STARS) == 5L)
+    assert(Rating.toLong(Rating.UNRATED) == 0L)
   }
 }

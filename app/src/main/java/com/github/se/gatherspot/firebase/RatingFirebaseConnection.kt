@@ -31,8 +31,8 @@ class RatingFirebaseConnection {
             .get()
             .addOnSuccessListener { document ->
               if (document != null) {
-                if (document.getString(uid) != null) {
-                  rating = Rating.valueOf(document.getString(uid)!!)
+                if (document.get(uid) != null) {
+                  rating = Rating.fromLong(document.get(uid)!! as Long)
                   Log.d(TAG, "User $uid rated the event $eventId as ${rating}")
                 }
               } else {
@@ -61,7 +61,7 @@ class RatingFirebaseConnection {
             .get()
             .addOnSuccessListener { document ->
               val ratings: Map<String, Rating>? =
-                  document.data?.mapValues { Rating.valueOf(it.value as String) }
+                  document.data?.mapValues { Rating.fromLong(it.value as Long) }
               Log.d(TAG, "DocumentSnapshot data: ${document.data}")
               continuation.resume(ratings)
             }
@@ -83,7 +83,7 @@ class RatingFirebaseConnection {
 
     var data: Map<String, Any> = mapOf(userID to FieldValue.delete())
     if (rating != Rating.UNRATED) {
-      data = mapOf(userID to rating.toString())
+      data = mapOf(userID to Rating.toLong(rating))
     }
 
     Firebase.firestore
