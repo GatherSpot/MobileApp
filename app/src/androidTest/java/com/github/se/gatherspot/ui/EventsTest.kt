@@ -399,7 +399,8 @@ class EventsTest {
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
+      composeTestRule.waitForIdle()
+      eventTitle.performScrollTo()
       eventTitle.performTextInput("Basketball Game")
       Espresso.closeSoftKeyboard()
       eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
