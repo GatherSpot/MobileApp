@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -33,33 +34,55 @@ private const val DEFAULT_ZOOM_LEVEL = 15f
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun Map(nav: NavigationActions, viewModel: MapViewModel? = MainActivity.mapViewModel) {
+fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
 
-  val viewModel = viewModel!!
-  val currentLocation by viewModel.currentLocation.observeAsState(LatLng(0.0, 0.0))
+  if (testPosition != null) {
+    MapComposable(
+        null,
+        nav,
+        rememberCameraPositionState {
+          position = CameraPosition.Builder().target(testPosition).zoom(DEFAULT_ZOOM_LEVEL).build()
+        },
+        null,
+        testPosition)
+  } else {
+    val viewModel = MainActivity.mapViewModel!!
+    val currentLocation by viewModel.currentLocation.observeAsState(LatLng(0.0, 0.0))
 
-  val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
-  }
-
-  LaunchedEffect(nav.controller.currentBackStackEntry) {
-    Log.d("Map", "LaunchedEffect1")
-    viewModel.fetchEvents()
-  }
-  LaunchedEffect(key1 = Unit) {
-    while (true) {
-      viewModel.fetchLocation()
-      delay(1000)
+    val cameraPositionState = rememberCameraPositionState {
+      position = CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
     }
-  }
-  LaunchedEffect(key1 = Unit) {
-    while (currentLocation == LatLng(0.0, 0.0)) {
-      delay(500)
-    }
-    cameraPositionState.position =
-        CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
-  }
 
+    LaunchedEffect(nav.controller.currentBackStackEntry) {
+      Log.d("Map", "LaunchedEffect1")
+      viewModel.fetchEvents()
+    }
+    LaunchedEffect(key1 = Unit) {
+      while (true) {
+        viewModel.fetchLocation()
+        delay(1000)
+      }
+    }
+    LaunchedEffect(key1 = Unit) {
+      while (currentLocation == LatLng(0.0, 0.0)) {
+        delay(500)
+      }
+      cameraPositionState.position =
+          CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
+    }
+    MapComposable(viewModel, nav, cameraPositionState, currentLocation, null)
+  }
+}
+
+@RequiresApi(Build.VERSION_CODES.S)
+@Composable
+fun MapComposable(
+    viewModel: MapViewModel?,
+    nav: NavigationActions,
+    cameraPositionState: CameraPositionState,
+    currentLocation: LatLng?,
+    testPosition: LatLng?
+) {
   Scaffold(
       bottomBar = {
         BottomNavigationMenu(
@@ -67,10 +90,12 @@ fun Map(nav: NavigationActions, viewModel: MapViewModel? = MainActivity.mapViewM
             tabList = TOP_LEVEL_DESTINATIONS,
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
       }) { paddingValues ->
-        LaunchedEffect(MainActivity.mapAccess) {
-          Log.d("MapAccess", MainActivity.mapAccess.toString())
-          MainActivity.mapLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-          viewModel.fetchLocation()
+        if (testPosition == null) {
+          LaunchedEffect(MainActivity.mapAccess) {
+            Log.d("MapAccess", MainActivity.mapAccess.toString())
+            MainActivity.mapLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            viewModel!!.fetchLocation()
+          }
         }
         GoogleMap(
             properties = MapProperties(mapType = MapType.HYBRID),
@@ -78,18 +103,25 @@ fun Map(nav: NavigationActions, viewModel: MapViewModel? = MainActivity.mapViewM
             contentPadding = paddingValues,
             cameraPositionState = cameraPositionState,
         ) {
-          Marker(
-              state = MarkerState(currentLocation),
-              title = "Your current position",
-              icon = BitmapDescriptorFactory.fromResource(R.drawable.person_pin))
-          for (event in viewModel.events) {
+          if (testPosition == null) {
             Marker(
-                state =
-                    MarkerState(
-                        LatLng(
-                            event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
-                title = event?.title ?: "Event",
-                icon = BitmapDescriptorFactory.fromResource(R.drawable.pin))
+                state = MarkerState(currentLocation!!),
+                title = "Your current position",
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.person_pin))
+            for (event in viewModel!!.events) {
+              Marker(
+                  state =
+                      MarkerState(
+                          LatLng(
+                              event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
+                  title = event?.title ?: "Event",
+                  icon = BitmapDescriptorFactory.fromResource(R.drawable.pin))
+            }
+          } else {
+            Marker(
+                state = MarkerState(testPosition),
+                title = "Your current position",
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.person_pin))
           }
         }
       }
