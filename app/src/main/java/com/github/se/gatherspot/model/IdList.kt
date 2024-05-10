@@ -13,17 +13,16 @@ import com.github.se.gatherspot.firebase.IdListFirebaseConnection
  * @param collection: the collection where the list will be stored useful for example to store a
  *   friend list, a list of events the user is attending, etc.
  */
-@Entity(
-  tableName = "id_list",
-  primaryKeys = ["id","collection"]
-)
+@Entity(tableName = "id_list", primaryKeys = ["id", "collection"])
 class IdList(
-  override val id: String,
-  var elements: List<String>,
-  val collection: FirebaseCollection
+    override val id: String,
+    var elements: List<String>,
+    val collection: FirebaseCollection
 ) : CollectionClass() {
   fun add(eventId: String) {
-    IdListFirebaseConnection().addElement(id, collection, eventId) { elements = elements.plus(eventId) }
+    IdListFirebaseConnection().addElement(id, collection, eventId) {
+      elements = elements.plus(eventId)
+    }
   }
 
   fun remove(eventId: String) {
@@ -38,6 +37,7 @@ class IdList(
 
     suspend fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) =
         IdListFirebaseConnection().fetch(id, collection) { onSuccess() }
+
     fun empty(id: String, collection: FirebaseCollection) = IdList(id, listOf(), collection)
   }
 }

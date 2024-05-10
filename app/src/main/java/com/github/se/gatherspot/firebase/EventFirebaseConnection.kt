@@ -13,10 +13,10 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.tasks.await
 
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
@@ -83,8 +83,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val categoriesList = d.get("categories") as List<String>
     val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
     val registeredUsers = d.get("registeredUsers") as MutableList<String>
-    val finalAttendee = d.get("finalAttendee") as List<String>
-    val images = null // TODO: Retrieve images from database
+    val finalAttendee = d.get("finalAttendee") as MutableList<String>
+    val image = d.getString("image")
     val globalRating =
         when (val rating = d.getString("globalRating")!!) {
           "null" -> null
@@ -108,7 +108,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         categories = categories,
         registeredUsers = registeredUsers,
         finalAttendees = finalAttendee,
-        images = images,
+        image = image ?: "",
         globalRating = globalRating,
         // TODO: Add organizer
         organizerID = organizerID)
@@ -363,7 +363,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                   null -> "null"
                   else -> element.globalRating.toString()
                 },
-            "images" to null, // TODO: ADD IMAGES
+            "image" to element.image,
             "organizerID" to element.organizerID,
             "eventStatus" to element.eventStatus)
 

@@ -44,7 +44,8 @@ class EventUtilsTest {
               LocalTime.parse(
                   "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
           eventStatus = EventStatus.CREATED,
-          globalRating = null)
+          globalRating = null,
+          image = "")
   private val eventUtils = EventUtils()
 
   // Write tests for validateParseEventData
@@ -479,7 +480,7 @@ class EventUtilsTest {
             registeredUsers = mutableListOf("test"),
             timeBeginning = LocalTime.of(13, 0),
             timeEnding = LocalTime.of(16, 0),
-        )
+            image = "")
     val eventUtils = EventUtils()
     EventFirebaseConnection.add(event)
     val eventFromDB = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }

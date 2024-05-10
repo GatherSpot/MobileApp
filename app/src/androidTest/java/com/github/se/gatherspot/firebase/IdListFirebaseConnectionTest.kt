@@ -2,11 +2,11 @@ package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.model.IdList
 import junit.framework.Assert.assertEquals
+import kotlin.random.Random
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import kotlin.random.Random
 
 class IdListFirebaseConnectionTest {
   private val tag = FirebaseCollection.REGISTERED_EVENTS
@@ -57,7 +57,6 @@ class IdListFirebaseConnectionTest {
     while (!idList1.isInitialized) {
       {}
     }
-    assert(
-        idList1.value!!.elements.toSet() == idList2.elements.toSet())
+    assert(idList1.value!!.elements.toSet() == idList2.elements.toSet())
   }
 }

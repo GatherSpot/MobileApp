@@ -6,9 +6,9 @@ import com.github.se.gatherspot.model.IdList
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resume
 
 class IdListFirebaseConnection {
   private val firestore = Firebase.firestore
