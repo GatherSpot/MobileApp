@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
@@ -336,30 +337,6 @@ class EventsTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun entireCreationFlow() {
-    val eventCreated =
-        Event(
-            id = "8",
-            title = "Basketball Game",
-            description = "Ayo, 5v5: Come show your skills",
-            attendanceMaxCapacity = 10,
-            attendanceMinCapacity = 5,
-            organizerID = uid,
-            categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2024, 6, 15),
-            eventStartDate = LocalDate.of(2024, 6, 15),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2024, 6, 11),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = null,
-            registeredUsers = mutableListOf(),
-            timeBeginning = LocalTime.of(13, 0),
-            timeEnding = LocalTime.of(19, 0),
-        )
-
-    val eventFirebase = EventFirebaseConnection()
-    eventFirebase.add(eventCreated)
-
-    runBlocking { eventFirebase.fetch(eventCreated.id) }
 
     val viewModel = EventsViewModel()
     Thread.sleep(6000)
@@ -373,11 +350,10 @@ class EventsTest {
         }
         navigation(startDestination = "form", route = "createEvent") {
           composable("form") {
-            EventDataForm(
-                eventUtils = EventUtils(),
-                viewModel = viewModel,
-                nav = NavigationActions(navController),
-                eventAction = EventAction.CREATE)
+            CreateEvent(
+              nav = NavigationActions(navController),
+              eventUtils = EventUtils(),
+              viewModel = viewModel)
           }
         }
         navigation(startDestination = "view", route = "event/{eventJson}") {
@@ -421,14 +397,48 @@ class EventsTest {
       }
     }
 
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule){
+      createMenu.performClick()
+    }
+
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
+      eventTitle.performTextInput("Basketball Game")
+      Espresso.closeSoftKeyboard()
+      eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
+      Espresso.closeSoftKeyboard()
+      eventStartDate.performTextInput("10/07/2024")
+      Espresso.closeSoftKeyboard()
+      eventEndDate.performTextInput("10/07/2024")
+      Espresso.closeSoftKeyboard()
+      eventTimeStart.performTextInput("13:00")
+      Espresso.closeSoftKeyboard()
+      eventTimeEnd.performTextInput("19:00")
+      Espresso.closeSoftKeyboard()
+      eventLocation.performTextInput("Bussy-Saint-Georges")
+      Espresso.closeSoftKeyboard()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
+      Espresso.closeSoftKeyboard()
+      locationProposition { performClick() }
+      Espresso.closeSoftKeyboard()
+      eventMaxAttendees.performTextInput("10")
+      Espresso.closeSoftKeyboard()
+      eventMinAttendees.performTextInput("5")
+      Espresso.closeSoftKeyboard()
+      eventInscriptionLimitDate.performTextInput("10/06/2024")
+      Espresso.closeSoftKeyboard()
+      eventInscriptionLimitTime.performTextInput("09:00")
+      Espresso.closeSoftKeyboard()
+      eventSaveButton.performScrollTo()
+      eventSaveButton.performClick()
+    }
+
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 12000)
       filterMenu { performClick() }
       myEvents {
         composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("myEvents"))
         performClick()
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 12000)
       assert(
           viewModel.uiState.value.list.any { event ->
             event.description == "Ayo, 5v5: Come show your skills"
