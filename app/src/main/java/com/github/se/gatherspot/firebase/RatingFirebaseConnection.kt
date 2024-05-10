@@ -13,27 +13,29 @@ class RatingFirebaseConnection {
   val COLLECTION = FirebaseCollection.EVENT_RATINGS.toString().lowercase()
   val TAG = "RatingFirebaseConnection"
 
+    private fun attendeesRatingsCollection(eventID: String) =
+        Firebase.firestore.collection(COLLECTION).document(eventID)
+            .collection("attendees_ratings")
   /**
    * Fetches the rating of the user for the event
    *
-   * @param eventId the id of the event
+   * @param eventID the id of the event
    * @param uid the id of the user
    * @return the rating of the user for the event if the user has not rated the event, returns
    *   UNRATED if the event doesn't have any ratings, or that get results in failure, returns null
    */
-  suspend fun fetchRating(eventId: String, uid: String): Rating? =
+  suspend fun fetchRating(eventID: String, uid: String): Rating? =
       suspendCancellableCoroutine { continuation ->
         var rating: Rating? = Rating.UNRATED
 
-        Firebase.firestore
-            .collection(COLLECTION)
-            .document(eventId)
+        attendeesRatingsCollection(eventID)
+            .document(eventID)
             .get()
             .addOnSuccessListener { document ->
               if (document != null) {
                 if (document.get(uid) != null) {
                   rating = Rating.fromLong(document.get(uid)!! as Long)
-                  Log.d(TAG, "User $uid rated the event $eventId as ${rating}")
+                  Log.d(TAG, "User $uid rated the event $eventID as ${rating}")
                 }
               } else {
                 Log.d(TAG, "No such rating")
@@ -55,8 +57,7 @@ class RatingFirebaseConnection {
    */
   suspend fun fetchRatings(eventID: String): Map<String, Rating>? =
       suspendCancellableCoroutine { continuation ->
-        Firebase.firestore
-            .collection(COLLECTION)
+          attendeesRatingsCollection(eventID)
             .document(eventID)
             .get()
             .addOnSuccessListener { document ->
@@ -86,8 +87,7 @@ class RatingFirebaseConnection {
       data = mapOf(userID to Rating.toLong(rating))
     }
 
-    Firebase.firestore
-        .collection(COLLECTION)
+      attendeesRatingsCollection(eventID)
         .document(eventID)
         .set(data, SetOptions.merge())
         .addOnSuccessListener {
@@ -106,8 +106,7 @@ class RatingFirebaseConnection {
    * - typically after a passed event is deleted even though atm we don't do that
    */
   fun deleteRatings(eventID: String) {
-    Firebase.firestore
-        .collection(COLLECTION)
+      attendeesRatingsCollection(eventID)
         .document(eventID)
         .delete()
         .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
