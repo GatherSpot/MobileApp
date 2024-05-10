@@ -94,7 +94,6 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
   LaunchedEffect(init) {
     if (!init) {
-      MainActivity.mapViewModel!!.fetchEvents()
       viewModel.fetchMyEvents()
       viewModel.fetchRegisteredTo()
       init = true
