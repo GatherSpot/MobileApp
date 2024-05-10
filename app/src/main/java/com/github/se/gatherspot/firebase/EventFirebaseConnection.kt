@@ -13,10 +13,10 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.tasks.await
 
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
@@ -108,7 +108,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         categories = categories,
         registeredUsers = registeredUsers,
         finalAttendees = finalAttendee,
-        image = image?:"",
+        image = image ?: "",
         globalRating = globalRating,
         // TODO: Add organizer
         organizerID = organizerID)

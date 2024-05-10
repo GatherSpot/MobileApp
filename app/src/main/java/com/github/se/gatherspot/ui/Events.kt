@@ -62,12 +62,12 @@ import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.delay
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.delay
 
 /** Composable that displays events * */
 
@@ -280,11 +280,12 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                 },
             verticalAlignment = Alignment.CenterVertically) {
               Column(modifier = Modifier.weight(1f)) {
-                //TODO : use coil to implement this
-//                Image(
-//                    bitmap =
-//                        event.image ?: ImageBitmap(120, 120, config = ImageBitmapConfig.Rgb565),
-//                    contentDescription = null)
+                // TODO : use coil to implement this
+                //                Image(
+                //                    bitmap =
+                //                        event.image ?: ImageBitmap(120, 120, config =
+                // ImageBitmapConfig.Rgb565),
+                //                    contentDescription = null)
               }
 
               Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
