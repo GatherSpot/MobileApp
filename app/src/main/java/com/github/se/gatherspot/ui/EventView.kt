@@ -51,6 +51,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -65,10 +66,11 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EventUI(
+    eventUIViewModel: EventUIViewModel,
     event: Event,
-    navActions: NavigationActions,
     registrationViewModel: EventRegistrationViewModel,
-    eventsViewModel: EventsViewModel
+    eventsViewModel: EventsViewModel,
+    navActions: NavigationActions
 ) {
 
   val showDialogRegistration by registrationViewModel.displayAlertRegistration.observeAsState()
@@ -77,7 +79,8 @@ fun EventUI(
       event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
   val eventUtils = EventUtils()
   val registrationState by registrationViewModel.registrationState.observeAsState()
-  val isButtonEnabled = registrationState == RegistrationState.NoError
+  val currentRating by eventUIViewModel.rating.observeAsState()
+  val isRegistrationButtonEnabled = registrationState == RegistrationState.NoError
   val buttonText =
       when (registrationState) {
         is RegistrationState.Success -> "Registered"
@@ -265,7 +268,7 @@ fun EventUI(
                       eventsViewModel.updateNewRegistered(event)
                       registrationViewModel.clickRegisterButton()
                     },
-                    enabled = isButtonEnabled,
+                    enabled = isRegistrationButtonEnabled,
                     modifier = Modifier.fillMaxWidth().testTag("registerButton"),
                     colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
                       Text(buttonText, color = Color.White)
@@ -395,6 +398,7 @@ fun EventUIPreview() {
           organizerID = Profile.testOrganizer().id)
   val viewModel = EventRegistrationViewModel(listOf(""))
   EventUI(
+      eventUIViewModel = EventUIViewModel(event),
       event = event,
       navActions = NavigationActions(rememberNavController()),
       registrationViewModel = viewModel,
