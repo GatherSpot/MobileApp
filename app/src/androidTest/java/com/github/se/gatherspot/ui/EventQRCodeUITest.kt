@@ -9,12 +9,12 @@ import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventQRcodeScreen
 import com.github.se.gatherspot.ui.qrcode.EventQRCodeUI
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class EventQRCodeUITest {
@@ -55,8 +55,7 @@ class EventQRCodeUITest {
                       "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
               eventStatus = EventStatus.CREATED,
               globalRating = null,
-              image = ""
-            )
+              image = "")
       EventQRCodeUI(event = event)
     }
     ComposeScreen.onComposeScreen<EventQRcodeScreen>(composeTestRule) {
