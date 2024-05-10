@@ -16,13 +16,13 @@ class EnvironmentSetter {
   companion object {
 
     val profileFirebaseConnection = ProfileFirebaseConnection()
-      val testLoginUID = "CpsyL2BH9TTQKEfpDC3YwZB6NLE2"
+    val testLoginUID = "CpsyL2BH9TTQKEfpDC3YwZB6NLE2"
 
     /** This function logs in the user for testing purposes this user has his email verified */
     fun testLogin() {
       runBlocking {
         Firebase.auth
-            .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;")//uid =
+            .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;") // uid =
             .await()
       }
     }
