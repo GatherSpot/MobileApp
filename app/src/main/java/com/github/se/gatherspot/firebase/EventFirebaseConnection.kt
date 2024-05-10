@@ -13,10 +13,10 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.tasks.await
 
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
@@ -164,7 +164,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
   suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
 
-    if (idlist?.events == null || idlist.events.isEmpty()) {
+    if (idlist?.elements == null || idlist.elements.isEmpty()) {
       return mutableListOf()
     }
     val querySnapshot: QuerySnapshot =
@@ -172,7 +172,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
-              .whereIn("eventID", idlist.events)
+              .whereIn("eventID", idlist.elements)
               .limit(number)
               .get()
               .await()
@@ -180,7 +180,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
-              .whereIn("eventID", idlist?.events ?: listOf())
+              .whereIn("eventID", idlist?.elements ?: listOf())
               .startAfter(offset!!.get("eventID"))
               .limit(number)
               .get()

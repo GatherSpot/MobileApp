@@ -2,8 +2,12 @@ package com.github.se.gatherspot.model.event
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.location.Location
 import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
@@ -31,12 +35,13 @@ import java.time.LocalTime
  * @param images: The images uploaded for the event
  * @param globalRating: The rating of the event by the attendees
  */
+@Entity
 data class Event(
     // How to generate a unique ID
-    override val id: String,
+    @PrimaryKey override val id: String,
     val title: String,
     val description: String?,
-    val location: Location?,
+    @Embedded val location: Location?,
     val eventStartDate: LocalDate?,
     val eventEndDate: LocalDate?,
     val timeBeginning: LocalTime?, // Beginning in the eventStartDate
@@ -51,8 +56,48 @@ data class Event(
     // List of the IDs of the users who registered for the event
     val registeredUsers: MutableList<String> = mutableListOf(),
     val finalAttendees: List<String>? = emptyList(),
-    // Find a way to upload image
+    // Find a way to upoad image
     var images: ImageBitmap? =
         ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image
     val globalRating: Int?,
-) : CollectionClass()
+) : CollectionClass() {
+    companion object {
+        val testEvent1 = Event(
+        id = "1",
+        title = "Event Title",
+        description = "Hello: I am a description",
+        attendanceMaxCapacity = 10,
+        attendanceMinCapacity = 1,
+        organizerID = Profile.testParticipant().id,
+        categories = setOf(Interests.BASKETBALL),
+        eventEndDate = LocalDate.of(2024, 4, 15),
+        eventStartDate = LocalDate.of(2024, 4, 14),
+        inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+        inscriptionLimitTime = LocalTime.of(23, 59),
+        location = null,
+        registeredUsers = mutableListOf("TEST"),
+        timeBeginning = LocalTime.of(13, 0),
+        globalRating = 4,
+        timeEnding = LocalTime.of(16, 0),
+        )
+        val testEvent2 = Event(
+            id = "2",
+            title = "Event Title2",
+            description = "Hello: I am a description2",
+            attendanceMaxCapacity = 20,
+            attendanceMinCapacity = 4,
+            organizerID = Profile.testParticipant().id,
+            categories = setOf(Interests.BASKETBALL),
+            eventEndDate = LocalDate.of(2024, 4, 15),
+            eventStartDate = LocalDate.of(2024, 4, 14),
+            globalRating = 4,
+            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+            inscriptionLimitTime = LocalTime.of(23, 59),
+            location = null,
+            registeredUsers = mutableListOf("TEST"),
+            timeBeginning = LocalTime.of(13, 0),
+            timeEnding = LocalTime.of(16, 0),
+        )
+    }
+}
+

@@ -2,11 +2,11 @@ package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.model.IdList
 import junit.framework.Assert.assertEquals
-import kotlin.random.Random
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import kotlin.random.Random
 
 class IdListFirebaseConnectionTest {
   private val tag = FirebaseCollection.REGISTERED_EVENTS
@@ -32,7 +32,7 @@ class IdListFirebaseConnectionTest {
   @Test
   fun addElementTest() = runBlocking {
     // create a new list
-    val idList1 = IdList.new(id, tag, listOf(randString1, randString2))
+    val idList1 = IdList.of(id, tag, listOf(randString1, randString2))
     while (!idList1.isInitialized) {
       {}
     }
@@ -47,18 +47,17 @@ class IdListFirebaseConnectionTest {
     while (!idList1.isInitialized) {
       {}
     }
-    assertEquals(idList1.value!!.events.toSet(), idList2.events.toSet())
+    assertEquals(idList1.value!!.elements.toSet(), idList2.elements.toSet())
   }
 
   @Test
   fun addTest() = runBlocking {
-    val idList1 = IdList.new(id, tag, listOf(randString1, randString2))
+    val idList1 = IdList.of(id, tag, listOf(randString1, randString2))
     val idList2 = IdList.fromFirebase(id, tag) {}
     while (!idList1.isInitialized) {
       {}
     }
     assert(
-        idList1.value!!.events.toSet().intersect(idList2.events.toSet()) ==
-            idList1.value!!.events.toSet())
+        idList1.value!!.elements.toSet() == idList2.elements.toSet())
   }
 }

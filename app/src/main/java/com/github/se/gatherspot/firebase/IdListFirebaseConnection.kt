@@ -6,9 +6,9 @@ import com.github.se.gatherspot.model.IdList
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
 
 class IdListFirebaseConnection {
   private val firestore = Firebase.firestore
@@ -44,7 +44,7 @@ class IdListFirebaseConnection {
             val data = document.data
             if (data != null) {
               val ids = data["ids"]
-              idSet.events = ids as List<String>
+              idSet.elements = ids as List<String>
               Log.d(logTag, "DocumentSnapshot data: ${document.data}")
             }
           } else {
@@ -68,7 +68,7 @@ class IdListFirebaseConnection {
     val tag = idSet.collection.name
     val id = idSet.id
     // TODO : check if this good way to store data
-    val data = hashMapOf("ids" to idSet.events.toList())
+    val data = hashMapOf("ids" to idSet.elements.toList())
     firestore
         .collection(tag)
         .document(id)
