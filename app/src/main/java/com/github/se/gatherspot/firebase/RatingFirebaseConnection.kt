@@ -10,7 +10,7 @@ import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 class RatingFirebaseConnection {
-  val COLLECTION = FirebaseCollection.RATINGS.toString().lowercase()
+  val COLLECTION = FirebaseCollection.EVENT_RATINGS.toString().lowercase()
   val TAG = "RatingFirebaseConnection"
 
   /**
