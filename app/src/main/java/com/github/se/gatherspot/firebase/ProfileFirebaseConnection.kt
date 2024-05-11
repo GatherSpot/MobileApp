@@ -84,8 +84,10 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
             .whereEqualTo("userName", userName)
             .get()
             .addOnSuccessListener { querysnps ->
-              val res = getFromDocument(querysnps.documents[0])
-              continuation.resume(res)
+              when {
+                querysnps.documents.isEmpty() -> continuation.resume(null)
+                else -> continuation.resume(getFromDocument(querysnps.documents[0]))
+              }
             }
             .addOnFailureListener { exception ->
               Log.d(TAG, exception.toString())
