@@ -15,7 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
-open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
+class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
   // TODO : use hilt injection instead of hardcoded userId to remove this test handle in production
   private val userId = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
 
