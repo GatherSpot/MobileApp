@@ -9,14 +9,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.qrcode.QRCodeUtils
-import com.google.gson.Gson
 
 @Composable
 fun EventQRCodeUI(event: Event) {
   var qrCodeBitmap: Bitmap? by remember { mutableStateOf(null) }
 
   LaunchedEffect(event) {
-    val json = "event/" + Gson().toJson(event)
+    val json = "event/" + event.toJson()
     qrCodeBitmap = QRCodeUtils().generateQRCode(json)
   }
 

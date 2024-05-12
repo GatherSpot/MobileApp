@@ -14,5 +14,5 @@ fun QRCodeDisplay(bitmap: Bitmap) {
   Image(
       bitmap = bitmap.asImageBitmap(),
       contentDescription = "Generated QR Code",
-      modifier = androidx.compose.ui.Modifier.size(200.dp).padding(16.dp).testTag("QRCodeImage"))
+      modifier = Modifier.size(200.dp).padding(16.dp).testTag("QRCodeImage"))
 }

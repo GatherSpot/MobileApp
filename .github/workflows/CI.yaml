@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - qr-code-scanner
 
   pull_request:
     types:
