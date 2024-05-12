@@ -22,7 +22,7 @@ import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
@@ -97,8 +97,9 @@ class MainActivity : ComponentActivity() {
                 EventUI(
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
-                    registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
-                    eventsViewModel = eventsViewModel)
+                    eventUIViewModel = EventUIViewModel(eventObject!!),
+                    eventsViewModel = eventsViewModel
+                )
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val gson = Gson()

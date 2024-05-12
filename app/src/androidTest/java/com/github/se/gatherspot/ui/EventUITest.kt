@@ -12,7 +12,7 @@ import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
@@ -64,8 +64,9 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+          EventUIViewModel(event),
+          EventsViewModel()
+      )
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
@@ -114,8 +115,9 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+          EventUIViewModel(event),
+          EventsViewModel()
+      )
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertIsDisplayed()
@@ -199,8 +201,9 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+          EventUIViewModel(event),
+          EventsViewModel()
+      )
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description {
@@ -268,8 +271,9 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+          EventUIViewModel(event),
+          EventsViewModel()
+      )
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -325,8 +329,9 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+          EventUIViewModel(event),
+          EventsViewModel()
+      )
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -378,8 +383,9 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+          EventUIViewModel(event),
+          EventsViewModel()
+      )
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -430,8 +436,9 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+          EventUIViewModel(event),
+          EventsViewModel()
+      )
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {}
   }
@@ -465,8 +472,9 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+          EventUIViewModel(event),
+          EventsViewModel()
+      )
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }
