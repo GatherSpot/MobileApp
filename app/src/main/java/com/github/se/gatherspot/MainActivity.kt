@@ -54,11 +54,11 @@ class MainActivity : ComponentActivity() {
   }
 
   private lateinit var navController: NavHostController
+  private var eventsViewModel: EventsViewModel? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    val eventsViewModel = EventsViewModel()
     // val chatViewModel = ChatViewModel()
 
     signInLauncher =
@@ -81,7 +81,12 @@ class MainActivity : ComponentActivity() {
             }
 
             navigation(startDestination = "events", route = "home") {
-              composable("events") { Events(eventsViewModel, NavigationActions(navController)) }
+              composable("events") {
+                if (eventsViewModel == null) {
+                  eventsViewModel = EventsViewModel()
+                }
+                Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
+              }
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
                 val gson: Gson =
@@ -98,10 +103,17 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
                     registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
-                    eventsViewModel = eventsViewModel)
+                    eventsViewModel = eventsViewModel!!)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
-                val gson = Gson()
+                val gson: Gson =
+                    GsonBuilder()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                        .create()
+
                 val eventObject =
                     gson.fromJson(
                         backStackEntry.arguments?.getString("eventJson"), Event::class.java)
@@ -109,7 +121,7 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
-                    viewModel = eventsViewModel)
+                    viewModel = eventsViewModel!!)
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -137,7 +149,7 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(
                     nav = NavigationActions(navController),
                     eventUtils = EventUtils(),
-                    eventsViewModel)
+                    eventsViewModel!!)
               }
 
               composable("setup") {

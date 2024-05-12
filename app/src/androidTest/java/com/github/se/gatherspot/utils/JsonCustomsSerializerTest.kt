@@ -33,18 +33,19 @@ class JsonCustomsSerializerTest {
 
   @Test
   fun testLocalTimeSerializer() {
-    val localTime = LocalTime.of(23, 59)
+    val localTime = LocalTime.of(10, 15)
     val serializer = LocalTimeSerializer()
-    val jsonElement = serializer.serialize(localTime, localTime::class.java, null)
-    assertEquals(JsonPrimitive("23:59"), jsonElement)
+    val jsonElement = serializer.serialize(localTime, LocalTime::class.java, null)
+    assertEquals(JsonPrimitive("10:15:00"), jsonElement)
+
   }
 
   @Test
   fun testLocalTimeDeserializer() {
-    val jsonElement = JsonPrimitive("23:59")
+    val jsonElement = JsonPrimitive("10:15")
     val deserializer = LocalTimeDeserializer()
-    val localTime = deserializer.deserialize(jsonElement, LocalTime::class.java, null)
-    assertEquals(LocalTime.of(23, 59), localTime)
+    val localTime = deserializer.deserialize(jsonElement, LocalDateTime::class.java, null)
+    assertEquals(LocalTime.of(10, 15), localTime)
   }
 
   @Test

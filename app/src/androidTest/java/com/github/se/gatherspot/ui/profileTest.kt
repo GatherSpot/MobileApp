@@ -13,6 +13,7 @@ import org.junit.runner.RunWith
 class ProfileInstrumentedTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @Before

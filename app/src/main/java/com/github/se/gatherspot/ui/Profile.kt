@@ -30,6 +30,7 @@ fun Profile(nav: NavigationActions) {
     composable("edit") { ProfileView().EditOwnProfile(nav, viewModel, navController) }
   }
 }
+
 /**
  * Show the profile of another user
  *

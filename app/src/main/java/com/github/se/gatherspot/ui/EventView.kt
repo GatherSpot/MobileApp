@@ -58,7 +58,6 @@ import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.gson.Gson
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -113,9 +112,8 @@ fun EventUI(
                 // Edit button
                 IconButton(
                     onClick = {
-                      val gson = Gson()
-                      val eventJson = gson.toJson(event)
-                      navActions.controller.navigate("event/$eventJson")
+                      val eventJsonWellFormed = event.toJson()
+                      navActions.controller.navigate("editEvent/$eventJsonWellFormed")
                     },
                     modifier = Modifier.testTag("editEventButton")) {
                       Icon(
@@ -378,3 +376,40 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions) {
             fontSize = 16.sp)
       }
 }
+
+
+/*
+// Preview for the Event UI, for testing purposes
+@Preview
+@Composable
+fun EventUIPreview() {
+  // Set global uid for testing
+  val event =
+      Event(
+          id = "idTestEvent",
+          title = "Event Title",
+          description =
+              "Hello: I am a description of the event just saying that I would love to say" +
+                  "that Messi is not the best player in the world, but I can't. I am sorry.",
+          attendanceMaxCapacity = 5,
+          attendanceMinCapacity = 1,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2025, 4, 15),
+          eventStartDate = LocalDate.of(2025, 4, 10),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2025, 4, 1),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(11, 0),
+          timeEnding = LocalTime.of(13, 0),
+          organizerID = Profile.testOrganizer().id)
+  val viewModel = EventRegistrationViewModel(listOf(""))
+  EventUI(
+      event = event,
+      navActions = NavigationActions(rememberNavController()),
+      registrationViewModel = viewModel,
+      eventsViewModel = EventsViewModel())
+}
+
+ */

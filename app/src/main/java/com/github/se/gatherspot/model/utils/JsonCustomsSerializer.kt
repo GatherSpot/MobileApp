@@ -44,26 +44,24 @@ class LocalDateDeserializer : JsonDeserializer<LocalDate> {
 
 // Custom serializer for LocalDateTime
 class LocalTimeSerializer : JsonSerializer<LocalTime> {
-    private val formatter = DateTimeFormatter.ofPattern("HH:mm")
   override fun serialize(
       src: LocalTime,
       typeOfSrc: Type,
       context: JsonSerializationContext?
   ): JsonElement {
-    return JsonPrimitive(src.format(formatter))
+    return JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_TIME))
   }
 }
 
 // Custom deserializer for LocalDateTime
 class LocalTimeDeserializer : JsonDeserializer<LocalTime> {
-    private val formatter = DateTimeFormatter.ofPattern("HH:mm")
   @Throws(JsonParseException::class)
   override fun deserialize(
       json: JsonElement,
       typeOfT: Type,
       context: JsonDeserializationContext?
   ): LocalTime {
-    return LocalTime.parse(json.asString, formatter)
+    return LocalTime.parse(json.asString, DateTimeFormatter.ISO_LOCAL_TIME)
   }
 }
 

@@ -22,4 +22,5 @@ class EventsScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
       enumValues<Interests>().toList().map { i -> onNode { hasTestTag(i.toString()) } }
   val myEvents: KNode = onNode { hasTestTag("myEvents") }
   val registeredTo: KNode = onNode { hasTestTag("registeredTo") }
+  val eventCreated: KNode = onNode { hasTestTag("Basketball Game") }
 }
