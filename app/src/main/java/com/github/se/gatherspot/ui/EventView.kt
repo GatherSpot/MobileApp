@@ -40,8 +40,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
@@ -50,9 +52,13 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
+import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.qrcode.EventQRCodeUI
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -247,6 +253,7 @@ fun EventUI(
                   Text(limitTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
                 }
               }
+              EventQRCodeUI(event = event)
 
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
@@ -361,7 +368,6 @@ fun ProfileIndicator(profile: Profile) {
       }
 }
 
-/*
 // Preview for the Event UI, for testing purposes
 @Preview
 @Composable
@@ -394,5 +400,3 @@ fun EventUIPreview() {
       registrationViewModel = viewModel,
       eventsViewModel = EventsViewModel())
 }
-
- */

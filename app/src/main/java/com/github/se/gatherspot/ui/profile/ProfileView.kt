@@ -42,6 +42,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
+import com.github.se.gatherspot.ui.qrcode.ProfileQRCodeUI
 
 class ProfileView {
   /**
@@ -260,6 +261,7 @@ class ProfileView {
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
         InterestsView().ShowInterests(interests)
+        ProfileQRCodeUI(viewModel._profile)
         Spacer(modifier = Modifier.height(56.dp))
       }
     }
@@ -326,6 +328,7 @@ class ProfileView {
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
         InterestsView().ShowInterests(interests)
+        ProfileQRCodeUI(viewModel._profile)
         Spacer(modifier = Modifier.height(56.dp))
       }
     }
