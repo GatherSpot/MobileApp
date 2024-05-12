@@ -78,6 +78,7 @@ data class Event(
     val eventJson = gson.toJson(this)
     return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
   }
+
   companion object {
     val testEvent1 =
         Event(
