@@ -238,8 +238,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
   val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests"
-  val isPastEvent = event.eventStartDate!!.isBefore(LocalDate.now())
-  val isToday = event.eventStartDate.isEqual(LocalDate.now())
+  val isPastEvent = event.eventStartDate?.isBefore(LocalDate.now()) ?: false
+  val isToday = event.eventStartDate?.isEqual(LocalDate.now()) ?: false
   val isOrganizer = event.organizerID == uid
   val isRegistered = event.registeredUsers.contains(uid)
   Box(
@@ -275,7 +275,7 @@ fun EventRow(event: Event, navigation: NavigationActions) {
             Text(
                 text =
                     "Start date: ${
-                            event.eventStartDate.format(
+                            event.eventStartDate?.format(
                                 DateTimeFormatter.ofPattern(
                                     EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                                 )
