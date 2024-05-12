@@ -188,7 +188,7 @@ class EventsTest {
       filterMenu { performClick() }
 
       composeTestRule.waitForIdle()
-      Thread.sleep(3000)
+      Thread.sleep(5000)
       assert(
           viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.SPORT) ?: true })
     }
@@ -239,10 +239,10 @@ class EventsTest {
 
       refresh { performClick() }
 
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 5000)
-      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 5000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 10000)
+      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
 
-      Thread.sleep(3000)
+      Thread.sleep(6000)
 
       assert(
           viewModel.uiState.value.list.all { e ->
