@@ -48,24 +48,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventStatus
-import com.github.se.gatherspot.model.utils.LocalDateDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -243,41 +234,35 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
-  val eventFirebaseConnection = com.github.se.gatherspot.firebase.EventFirebaseConnection()
+  val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests"
+  val isPastEvent = event.eventStartDate!!.isBefore(LocalDate.now())
+  val isToday = event.eventStartDate.isEqual(LocalDate.now())
+  val isOrganizer = event.organizerID == uid
+  val isRegistered = event.registeredUsers.contains(uid)
   Box(
       modifier =
           Modifier.background(
                   color =
-                      if (event.organizerID ==
-                          (FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")) {
+                      if (isPastEvent) {
+                        Color.LightGray
+                      } else if (isToday) {
+                        Color(255, 0, 0, 160)
+                      } else if (isOrganizer) {
                         Color(80, 50, 200, 120)
-                      } else if (event.registeredUsers.contains(
-                          FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")) {
+                      } else if (isRegistered) {
                         Color(46, 204, 113, 120)
                       } else {
                         Color.White
                       },
                   shape = RoundedCornerShape(5.dp))
+              .clickable {
+                val eventJsonWellFormed = event.toJson()
+                navigation.controller.navigate("event/$eventJsonWellFormed")
+              }
+              .testTag(event.title)
               .fillMaxSize()) {
         Row(
-            modifier =
-                Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
-                  // Create a new Gson instance with the custom serializers and deserializers
-                  val gson: Gson =
-                      GsonBuilder()
-                          .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                          .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                          .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-                          .registerTypeAdapter(
-                              LocalDateTime::class.java, LocalDateTimeDeserializer())
-                          .create()
-
-                  val eventJson = gson.toJson(event)
-                  val eventJsonWellFormed =
-                      URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString())
-                          .replace("+", "%20")
-                  navigation.controller.navigate("event/$eventJsonWellFormed")
-                },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically) {
               Column(modifier = Modifier.weight(1f)) {
                 // TODO : use coil to implement this
@@ -292,9 +277,9 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                 Text(
                     text =
                         "Start date: ${
-                            event.eventStartDate?.format(
+                            event.eventStartDate.format(
                                 DateTimeFormatter.ofPattern(
-                                    eventFirebaseConnection.DATE_FORMAT
+                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                                 )
                             )
                         }",
@@ -305,7 +290,7 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                         "End date: ${
                             event.eventEndDate?.format(
                                 DateTimeFormatter.ofPattern(
-                                    eventFirebaseConnection.DATE_FORMAT
+                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                                 )
                             )
                         }",
@@ -316,12 +301,10 @@ fun EventRow(event: Event, navigation: NavigationActions) {
 
               Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                  when (event.eventStatus) {
-                    EventStatus.CREATED ->
-                        Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
-                    EventStatus.ON_GOING ->
-                        Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
-                    EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
+                  if (isOrganizer) {
+                    Text("Organizer", fontSize = 14.sp)
+                  } else if (isRegistered) {
+                    Text("Registered", fontSize = 14.sp)
                   }
 
                   Icon(

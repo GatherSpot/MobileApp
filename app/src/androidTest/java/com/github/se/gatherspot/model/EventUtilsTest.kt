@@ -16,7 +16,7 @@ import org.junit.Assert
 import org.junit.Test
 
 class EventUtilsTest {
-  private val EventFirebaseConnection = EventFirebaseConnection()
+  private val eventFirebaseConnection = EventFirebaseConnection()
   private val testEvent =
       Event(
           id = "testID",
@@ -25,10 +25,12 @@ class EventUtilsTest {
           location = Location(0.0, 0.0, "Test Location"),
           eventStartDate =
               LocalDate.parse(
-                  "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                  "12/04/2026",
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
           eventEndDate =
               LocalDate.parse(
-                  "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                  "12/05/2026",
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
           timeBeginning =
               LocalTime.parse(
                   "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
@@ -39,7 +41,8 @@ class EventUtilsTest {
           attendanceMinCapacity = 10,
           inscriptionLimitDate =
               LocalDate.parse(
-                  "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                  "10/04/2025",
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
           inscriptionLimitTime =
               LocalTime.parse(
                   "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
@@ -83,7 +86,7 @@ class EventUtilsTest {
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
     // Keep a clean database: suppress immediately the event
-    EventFirebaseConnection.delete(event.id)
+    eventFirebaseConnection.delete(event.id)
   }
 
   @Test
@@ -121,7 +124,7 @@ class EventUtilsTest {
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
     // Keep a clean database: suppress immediately the event
-    EventFirebaseConnection.delete(event.id)
+    eventFirebaseConnection.delete(event.id)
   }
 
   @Test
@@ -482,12 +485,12 @@ class EventUtilsTest {
             timeEnding = LocalTime.of(16, 0),
             image = "")
     val eventUtils = EventUtils()
-    EventFirebaseConnection.add(event)
-    val eventFromDB = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }
+    eventFirebaseConnection.add(event)
+    val eventFromDB = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertEquals(event.id, eventFromDB?.id)
 
     eventUtils.deleteEvent(event)
-    val eventFromDBAfterDelete = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }
+    val eventFromDBAfterDelete = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertNull(eventFromDBAfterDelete)
   }
 

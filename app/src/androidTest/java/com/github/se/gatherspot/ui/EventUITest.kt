@@ -368,7 +368,7 @@ class EventUITest {
               inscriptionLimitDate = LocalDate.of(2024, 4, 11),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
-              registeredUsers = mutableListOf("TEST"),
+              registeredUsers = mutableListOf(FirebaseAuth.getInstance().currentUser!!.uid),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
               image = "")
@@ -378,22 +378,11 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
+          EventRegistrationViewModel(listOf(FirebaseAuth.getInstance().currentUser!!.uid)),
           EventsViewModel())
     }
+    Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      registerButton {
-        performScrollTo()
-        performClick()
-      }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
-      alertBox {
-        assertIsDisplayed()
-        hasText("Already registered for this event")
-      }
-
-      okButton.performClick()
-      Thread.sleep(2000)
       registerButton {
         performScrollTo()
         assertIsNotEnabled()

@@ -24,9 +24,16 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   override val COLLECTION = FirebaseCollection.EVENTS.toString().lowercase()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
   val EVENTS = "events" // Collection name for events
-  val DATE_FORMAT = "dd/MM/yyyy"
-  val TIME_FORMAT = "HH:mm"
+
+  companion object {
+    val DATE_FORMAT_DISPLAYED = "dd/MM/yyyy"
+    val DATE_FORMAT_STORED = "yyyy/MM/dd"
+    val TIME_FORMAT = "HH:mm"
+  }
+
   var offset: DocumentSnapshot? = null
+
+  // val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern())
 
   /**
    * Maps a document to an Event object
@@ -110,7 +117,6 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         finalAttendees = finalAttendee,
         image = image ?: "",
         globalRating = globalRating,
-        // TODO: Add organizer
         organizerID = organizerID)
   }
 
@@ -139,17 +145,23 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         if (offset == null) {
           Firebase.firestore
               .collection(EVENTS)
+              .orderBy("eventStartDate")
               .orderBy("eventID")
-              // .whereNotEqualTo("eventID",FirebaseAuth.getInstance().currentUser!!.uid)
+              .whereGreaterThanOrEqualTo(
+                  "eventStartDate",
+                  LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
               .limit(number)
               .get()
               .await()
         } else {
           Firebase.firestore
               .collection(EVENTS)
+              .orderBy("eventStartDate")
               .orderBy("eventID")
-              //  .whereNotEqualTo("eventID", FirebaseAuth.getInstance().currentUser!!.uid)
-              .startAfter(offset!!.get("eventID"))
+              .whereGreaterThanOrEqualTo(
+                  "eventStartDate",
+                  LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
+              .startAfter(offset!!.get("eventStartDate"), offset!!.get("eventID"))
               .limit(number)
               .get()
               .await()
@@ -197,8 +209,11 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         if (offset == null) {
           Firebase.firestore
               .collection(EVENTS)
+              .orderBy("eventStartDate")
               .orderBy("eventID")
-              .whereNotEqualTo("organizerID", FirebaseAuth.getInstance().currentUser!!.uid)
+              .whereGreaterThanOrEqualTo(
+                  "eventStartDate",
+                  LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
               .whereArrayContainsAny("categories", l.map { it.name })
               .limit(number)
               .get()
@@ -206,10 +221,13 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         } else {
           Firebase.firestore
               .collection(EVENTS)
+              .orderBy("eventStartDate")
               .orderBy("eventID")
-              .whereNotEqualTo("organizerID", FirebaseAuth.getInstance().currentUser!!.uid)
               .whereArrayContainsAny("categories", l.map { it.name })
-              .startAfter(offset!!.get("eventID"))
+              .whereGreaterThanOrEqualTo(
+                  "eventStartDate",
+                  LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
+              .startAfter(offset!!.get("eventStartDate"), offset!!.get("eventID"))
               .limit(number)
               .get()
               .await()
@@ -220,14 +238,13 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     return eventsFromQuerySnapshot(querySnapshot)
   }
 
-  // needs change cause events are not yet created with appropriate profile
-  // eventID-> organizerID
   suspend fun fetchMyEvents(): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
         Firebase.firestore
             .collection(EVENTS)
             .orderBy("eventID")
-            .whereEqualTo("organizerID", FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")
+            .whereEqualTo(
+                "organizerID", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
             .get()
             .await()
 
@@ -240,7 +257,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             .collection(EVENTS)
             .orderBy("eventID")
             .whereArrayContains(
-                "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "forTest")
+                "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
             .get()
             .await()
 
@@ -284,9 +301,13 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
       "null" -> null
       else ->
           try {
-            LocalDate.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT))
+            LocalDate.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
           } catch (e: Exception) {
-            null
+            try {
+              LocalDate.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
+            } catch (e: Exception) {
+              null
+            }
           }
     }
   }
@@ -320,12 +341,15 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             "eventStartDate" to
                 when (element.eventStartDate) {
                   null -> "null"
-                  else -> element.eventStartDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
+                  else ->
+                      element.eventStartDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                 },
             "eventEndDate" to
                 when (element.eventEndDate) {
                   null -> "null"
-                  else -> element.eventEndDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
+                  else ->
+                      element.eventEndDate.format(
+                          DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
                 },
             "timeBeginning" to
                 when (element.timeBeginning) {
@@ -347,7 +371,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                 when (element.inscriptionLimitDate) {
                   null -> "null"
                   else ->
-                      element.inscriptionLimitDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
+                      element.inscriptionLimitDate.format(
+                          DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
                 },
             "inscriptionLimitTime" to
                 when (element.inscriptionLimitTime) {

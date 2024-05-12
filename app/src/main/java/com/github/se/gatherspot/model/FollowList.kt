@@ -14,6 +14,7 @@ public class FollowList {
     suspend fun followers(uid: String): IdList {
       return IdListFirebaseConnection().fetch(uid, FirebaseCollection.FOLLOWERS) {}
     }
+
     /**
      * Get the list of users that a user is following
      *
@@ -33,6 +34,7 @@ public class FollowList {
     fun isFollowing(uid: String, targetUID: String): MutableLiveData<Boolean> {
       return IdListFirebaseConnection().exists(uid, FirebaseCollection.FOLLOWING, targetUID) {}
     }
+
     /**
      * Make user follow target
      *
@@ -48,6 +50,7 @@ public class FollowList {
           FirebaseCollection.FOLLOWERS,
           uid) {}
     }
+
     /**
      * Make user unfollow target
      *
