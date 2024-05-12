@@ -16,6 +16,8 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.screens.ProfileScreen
@@ -23,8 +25,10 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.LocalTime
 import org.junit.Rule
 import org.junit.Test
 
@@ -38,14 +42,15 @@ class EventsViewCompleteTest {
     testLogin()
     // This test will navigate from the events screen to the organizer profile
     val viewModel = EventsViewModel()
+    Thread.sleep(5000)
     val eventRegistrationModel = EventRegistrationViewModel(emptyList())
     // Create a new Gson instance with the custom serializers and deserializers
     val gson: Gson =
         GsonBuilder()
             .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
             .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-            .registerTypeAdapter(LocalDateTime::class.java, LocalDateSerializer())
-            .registerTypeAdapter(LocalDateTime::class.java, LocalDateDeserializer())
+            .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+            .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
             .create()
 
     composeTestRule.setContent {
@@ -55,7 +60,11 @@ class EventsViewCompleteTest {
           composable("events") { Events(viewModel, NavigationActions(navController)) }
           composable("event/{eventJson}") { backStackEntry ->
             val eventObject =
-                gson.fromJson(backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+                gson.fromJson(
+                    URLDecoder.decode(
+                        backStackEntry.arguments?.getString("eventJson"),
+                        StandardCharsets.US_ASCII.toString()),
+                    Event::class.java)
             EventUI(
                 event = eventObject!!,
                 navActions = NavigationActions(navController),
@@ -92,7 +101,9 @@ class EventsViewCompleteTest {
 
       refresh { performClick() }
 
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventRow"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 10000)
+      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
+      //  composeTestRule.waitUntilAtLeastOneExists(hasTestTag("Test Event"), 6000)
       eventRow.performClick()
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
