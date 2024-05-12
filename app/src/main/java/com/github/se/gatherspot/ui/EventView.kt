@@ -377,7 +377,6 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions) {
       }
 }
 
-
 /*
 // Preview for the Event UI, for testing purposes
 @Preview
