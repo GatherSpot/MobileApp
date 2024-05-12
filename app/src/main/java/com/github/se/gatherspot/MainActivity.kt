@@ -23,10 +23,6 @@ import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
-import com.github.se.gatherspot.model.utils.LocalDateDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.Chats
 import com.github.se.gatherspot.ui.Community
@@ -43,10 +39,6 @@ import com.github.se.gatherspot.ui.ViewProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import java.time.LocalDate
-import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
   companion object {
@@ -88,37 +80,18 @@ class MainActivity : ComponentActivity() {
                 Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
               }
               composable("event/{eventJson}") { backStackEntry ->
-                // Create a new Gson instance with the custom serializers and deserializers
-                val gson: Gson =
-                    GsonBuilder()
-                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                        .create()
-                val eventObject =
-                    gson.fromJson(
-                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+                val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
+
                 EventUI(
-                    event = eventObject!!,
+                    event = eventObject,
                     navActions = NavigationActions(navController),
                     registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
                     eventsViewModel = eventsViewModel!!)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
-                val gson: Gson =
-                    GsonBuilder()
-                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                        .create()
-
-                val eventObject =
-                    gson.fromJson(
-                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+                val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
                 EditEvent(
-                    event = eventObject!!,
+                    event = eventObject,
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
                     viewModel = eventsViewModel!!)
@@ -132,9 +105,9 @@ class MainActivity : ComponentActivity() {
 
               composable("profile") { Profile(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
-                backstackEntry.arguments?.getString("uid")?.let {
-                  ViewProfile(NavigationActions(navController), it)
-                }
+                ViewProfile(NavigationActions(navController),
+                  backstackEntry.arguments?.getString("uid")!!
+                )
               }
               composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
               composable("chat/{chatJson}") { backStackEntry ->

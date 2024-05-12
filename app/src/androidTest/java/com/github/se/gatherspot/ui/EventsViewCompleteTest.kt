@@ -44,14 +44,6 @@ class EventsViewCompleteTest {
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
     val eventRegistrationModel = EventRegistrationViewModel(emptyList())
-    // Create a new Gson instance with the custom serializers and deserializers
-    val gson: Gson =
-        GsonBuilder()
-            .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-            .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-            .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-            .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-            .create()
 
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -59,14 +51,10 @@ class EventsViewCompleteTest {
         navigation(startDestination = "events", route = "home") {
           composable("events") { Events(viewModel, NavigationActions(navController)) }
           composable("event/{eventJson}") { backStackEntry ->
-            val eventObject =
-                gson.fromJson(
-                    URLDecoder.decode(
-                        backStackEntry.arguments?.getString("eventJson"),
-                        StandardCharsets.US_ASCII.toString()),
-                    Event::class.java)
+            val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
+
             EventUI(
-                event = eventObject!!,
+                event = eventObject,
                 navActions = NavigationActions(navController),
                 registrationViewModel = eventRegistrationModel,
                 eventsViewModel = viewModel)

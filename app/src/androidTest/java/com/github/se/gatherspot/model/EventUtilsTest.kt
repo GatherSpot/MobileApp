@@ -1,5 +1,6 @@
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
@@ -17,37 +18,7 @@ import org.junit.Test
 
 class EventUtilsTest {
   private val eventFirebaseConnection = EventFirebaseConnection()
-  private val testEvent =
-      Event(
-          id = "testID",
-          title = "Test Event",
-          description = "This is a test event",
-          location = Location(0.0, 0.0, "Test Location"),
-          eventStartDate =
-              LocalDate.parse(
-                  "12/04/2026",
-                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
-          eventEndDate =
-              LocalDate.parse(
-                  "12/05/2026",
-                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
-          timeBeginning =
-              LocalTime.parse(
-                  "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          timeEnding =
-              LocalTime.parse(
-                  "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          attendanceMaxCapacity = 100,
-          attendanceMinCapacity = 10,
-          inscriptionLimitDate =
-              LocalDate.parse(
-                  "10/04/2025",
-                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
-          inscriptionLimitTime =
-              LocalTime.parse(
-                  "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          eventStatus = EventStatus.CREATED,
-          globalRating = null)
+  private val testEvent = DefaultEvents.trivialEvent1
   private val eventUtils = EventUtils()
 
   // Write tests for validateParseEventData
@@ -85,7 +56,7 @@ class EventUtilsTest {
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
     // Keep a clean database: suppress immediately the event
-    eventFirebaseConnection.delete(event.id)
+    runBlocking { eventFirebaseConnection.delete(event.id) }
   }
 
   @Test
@@ -123,14 +94,13 @@ class EventUtilsTest {
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
     // Keep a clean database: suppress immediately the event
-    eventFirebaseConnection.delete(event.id)
+    runBlocking { eventFirebaseConnection.delete(event.id) }
   }
 
   @Test
   fun validateEventData_withEventStartDateAfterEndDate_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event3",
               "This is a test event",
@@ -154,7 +124,6 @@ class EventUtilsTest {
   fun validateEventData_withInvalidStartDate_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event4",
               "This is a test event",
@@ -178,7 +147,6 @@ class EventUtilsTest {
   fun validateEventData_withInvalidEndDate_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event",
               "This is a test event",
@@ -202,7 +170,6 @@ class EventUtilsTest {
   fun validateEventData_withInvalidEndTime_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event5",
               "This is a test event",
@@ -226,7 +193,6 @@ class EventUtilsTest {
   fun validateEventData_withInvalidTime_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event6",
               "This is a test event",
@@ -250,7 +216,6 @@ class EventUtilsTest {
   fun validateEventDataForUpdate_withInvalidMaxCapacity_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event",
               "This is a test event",
@@ -275,7 +240,6 @@ class EventUtilsTest {
   fun validateEventData_withInvalidMinCapacity_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event",
               "This is a test event",
@@ -299,7 +263,6 @@ class EventUtilsTest {
   fun validateEventData_withEventDateBeforeToday_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event",
               "This is a test event",
@@ -323,7 +286,6 @@ class EventUtilsTest {
   fun validateEventData_withMinAttendeesGreaterThanMaxAttendees_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event",
               "This is a test event",
@@ -347,7 +309,6 @@ class EventUtilsTest {
   fun validateEventData_withInvalidInscriptionLimitDate_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event",
               "This is a test event",
@@ -371,7 +332,6 @@ class EventUtilsTest {
   fun validateEventData_withInvalidInscriptionLimitTime_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event",
               "This is a test event",
@@ -396,7 +356,6 @@ class EventUtilsTest {
   fun validateEventData_withEndTimeBeforeStartTime_returnsFalse() {
     // validate data parse strings
     try {
-      val result =
           eventUtils.validateAndCreateOrUpdateEvent(
               "Test Event",
               "This is a test event",
@@ -425,7 +384,7 @@ class EventUtilsTest {
   @Test
   fun validateDate_withInvalidDate_returnsException() {
     try {
-      val date = eventUtils.validateDate("12042026", "Invalid date format")
+      eventUtils.validateDate("12042026", "Invalid date format")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid date format", e.message)
     }
@@ -440,7 +399,7 @@ class EventUtilsTest {
   @Test
   fun validateTime_withInvalidTime_returnsException() {
     try {
-      val time = eventUtils.validateTime("1000", "Invalid time format")
+      eventUtils.validateTime("1000", "Invalid time format")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid time format", e.message)
     }
@@ -455,7 +414,7 @@ class EventUtilsTest {
   @Test
   fun validateNumber_withInvalidNumber_returnsException() {
     try {
-      val number = eventUtils.validateNumber("one", "Invalid number format")
+      eventUtils.validateNumber("one", "Invalid number format")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid number format", e.message)
     }
@@ -464,31 +423,12 @@ class EventUtilsTest {
   @Test
   fun deleteEventTest() {
     // create an event, add it to the database, then delete it
-    val event =
-        Event(
-            id = "myEventToDelete",
-            title = "Event Title",
-            description = "Hello: I am a description",
-            attendanceMaxCapacity = 10,
-            attendanceMinCapacity = 1,
-            categories = setOf(Interests.BASKETBALL),
-            organizerID = Profile.testOrganizer().id,
-            eventEndDate = LocalDate.of(2024, 4, 15),
-            eventStartDate = LocalDate.of(2024, 4, 14),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = null,
-            registeredUsers = mutableListOf("test"),
-            timeBeginning = LocalTime.of(13, 0),
-            timeEnding = LocalTime.of(16, 0),
-        )
     val eventUtils = EventUtils()
-    eventFirebaseConnection.add(event)
+    eventFirebaseConnection.add(testEvent)
     val eventFromDB = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
-    Assert.assertEquals(event.id, eventFromDB?.id)
+    Assert.assertEquals(testEvent.id, eventFromDB?.id)
 
-    eventUtils.deleteEvent(event)
+    eventUtils.deleteEvent(testEvent)
     val eventFromDBAfterDelete = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertNull(eventFromDBAfterDelete)
   }
