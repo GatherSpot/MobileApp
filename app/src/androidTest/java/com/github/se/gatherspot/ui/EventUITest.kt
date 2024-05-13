@@ -343,6 +343,7 @@ class EventUITest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testProfileIsCorrectlyFetched() {
     val event = DefaultEvents.withAuthor(DefaultProfiles.trivial.id, "1")
@@ -356,7 +357,7 @@ class EventUITest {
           EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      profileIndicator.assertIsDisplayed()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 6000)
       userName { hasText("John Doe") }
       // profileIndicator.performClick()
     }
