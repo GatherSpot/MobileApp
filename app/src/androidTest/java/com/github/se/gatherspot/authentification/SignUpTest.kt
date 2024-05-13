@@ -2,6 +2,7 @@ package com.github.se.gatherspot.authentification
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -128,12 +129,9 @@ class SignUpTest : TestCase() {
         assertIsDisplayed()
       }
       Espresso.closeSoftKeyboard()
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badUsername"), 6000)
-      badUsername.assertIsDisplayed()
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badEmail"), 1000)
-      badEmail.assertIsDisplayed()
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badPassword"), 1000)
-      badPassword.assertIsDisplayed()
+      badUsername { assertExists() }
+      badEmail { assertExists() }
+      badPassword { assertExists() }
     }
   }
 
@@ -157,7 +155,8 @@ class SignUpTest : TestCase() {
       emailField { performTextInput("test@test.com") }
       passwordField { performTextInput("Test,2024;") }
       button { performClick() }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badEmail"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(
+          hasText("Email already in use", substring = true), 6000)
     }
   }
 }

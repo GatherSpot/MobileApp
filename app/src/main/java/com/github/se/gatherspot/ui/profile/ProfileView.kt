@@ -223,7 +223,6 @@ private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel) {
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
       InterestsView().ShowInterests(interests)
-      Spacer(modifier = Modifier.height(56.dp))
     }
   }
 }
@@ -268,7 +267,6 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
       InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
         viewModel.flipInterests(it)
       }
-      Spacer(modifier = Modifier.height(56.dp))
     }
   }
 }
@@ -295,7 +293,6 @@ fun ProfileScreen(viewModel: ProfileViewModel) {
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
       InterestsView().ShowInterests(interests)
-      Spacer(modifier = Modifier.height(56.dp))
     }
   }
 }
