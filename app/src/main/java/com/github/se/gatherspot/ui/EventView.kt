@@ -31,6 +31,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -52,6 +54,7 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
@@ -74,120 +77,149 @@ fun EventUI(
     eventsViewModel: EventsViewModel
 ) {
 
-  val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
-  val showDialogDelete by eventUIViewModel.displayAlertDeletion.observeAsState()
-  val rating by eventUIViewModel.rating.observeAsState()
-  val isOrganizer =
-      event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
-  val eventUtils = EventUtils()
-  val registrationState by eventUIViewModel.registrationState.observeAsState()
-  val isButtonEnabled = registrationState == RegistrationState.NoError
-  val buttonText =
-      when (registrationState) {
-        is RegistrationState.Success -> "Registered"
-        is RegistrationState.Error ->
-            if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
-            else "Registered"
-        else -> "Register"
-      }
+    val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
+    val showDialogDelete by eventUIViewModel.displayAlertDeletion.observeAsState()
+    val rating by eventUIViewModel.rating.observeAsState()
+    val isOrganizer =
+        event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
+    val eventUtils = EventUtils()
+    val registrationState by eventUIViewModel.registrationState.observeAsState()
+    val isButtonEnabled = registrationState == RegistrationState.NoError
+    val buttonText =
+        when (registrationState) {
+            is RegistrationState.Success -> "Registered"
+            is RegistrationState.Error ->
+                if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
+                else "Registered"
 
-  Scaffold(
-      modifier = Modifier.testTag("EventUIScreen"),
-      topBar = {
-        TopAppBar(
-            modifier = Modifier.testTag("topBar"),
-            title = { Text(text = event.title) },
-            backgroundColor = Color.White,
-            navigationIcon = {
-              IconButton(
-                  onClick = { navActions.goBack() }, modifier = Modifier.testTag("goBackButton")) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Go back to overview")
-                  }
-            },
-            actions = {
-              if (isOrganizer) {
-                // Edit button
-                IconButton(
-                    onClick = {
-                      val gson = Gson()
-                      val eventJson = gson.toJson(event)
-                      navActions.controller.navigate("event/$eventJson")
-                    },
-                    modifier = Modifier.testTag("editEventButton")) {
-                      Icon(
-                          modifier = Modifier.size(24.dp).testTag("editEventIcon"),
-                          painter = painterResource(id = R.drawable.edit),
-                          contentDescription = "Edit event")
-                    }
-                // Delete button
-                IconButton(
-                    onClick = { eventUIViewModel.clickDeleteButton() },
-                    modifier = Modifier.testTag("deleteEventButton")) {
-                      Icon(
-                          modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
-                          painter = painterResource(id = R.drawable.delete),
-                          contentDescription = "Delete event")
-                    }
+            else -> "Register"
+        }
 
-              }
-            })
-      }) { innerPadding ->
+    Scaffold(
+        modifier = Modifier.testTag("EventUIScreen"),
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.testTag("topBar"),
+                title = { Text(text = event.title) },
+                backgroundColor = Color.White,
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navActions.goBack() },
+                        modifier = Modifier.testTag("goBackButton")
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Go back to overview"
+                        )
+                    }
+                },
+                actions = {
+                    if (isOrganizer) {
+                        // Edit button
+                        IconButton(
+                            onClick = {
+                                val gson = Gson()
+                                val eventJson = gson.toJson(event)
+                                navActions.controller.navigate("event/$eventJson")
+                            },
+                            modifier = Modifier.testTag("editEventButton")
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(24.dp).testTag("editEventIcon"),
+                                painter = painterResource(id = R.drawable.edit),
+                                contentDescription = "Edit event"
+                            )
+                        }
+                        // Delete button
+                        IconButton(
+                            onClick = { eventUIViewModel.clickDeleteButton() },
+                            modifier = Modifier.testTag("deleteEventButton")
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
+                                painter = painterResource(id = R.drawable.delete),
+                                contentDescription = "Delete event"
+                            )
+                        }
+
+                        // Export to calendar button
+                        IconButton(
+                            onClick = {
+                                // TODO : Export the event to the calendar
+                            },
+                            modifier = Modifier.testTag("exportToCalendarButton")
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .testTag("exportToCalendarIcon"),
+                                painter = rememberVectorPainter(image = Icons.Filled.DateRange),
+                                contentDescription = "Export to calendar"
+                            )
+                        }
+
+                    }
+                })
+        }) { innerPadding ->
         Column(
             modifier =
-                Modifier.padding(innerPadding)
-                    .padding(8.dp)
-                    .testTag("eventColumn")
-                    .verticalScroll(rememberScrollState())) {
-              // Event Image
-              event.images?.let { img ->
+            Modifier.padding(innerPadding)
+                .padding(8.dp)
+                .testTag("eventColumn")
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Event Image
+            event.images?.let { img ->
                 Image(
                     bitmap = img,
                     contentDescription = "Event Image",
                     modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                    contentScale = ContentScale.FillBounds)
-              }
-                  ?: Image(
-                      painter = painterResource(id = R.drawable.default_event_image),
-                      contentDescription = "Default Event Image",
-                      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                      contentScale = ContentScale.FillBounds)
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+                ?: Image(
+                    painter = painterResource(id = R.drawable.default_event_image),
+                    contentDescription = "Default Event Image",
+                    modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
+                    contentScale = ContentScale.FillBounds
+                )
 
-              Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-              // Event Host
-              var profile = Profile.testParticipant()
+            // Event Host
+            var profile = Profile.testParticipant()
 
-              /*
+            /*
               runBlocking {
               profile = async{ProfileFirebaseConnection().fetch(event.organizerID)}.await()
                       ?: Profile.testParticipant()
               }
 
                */
-              ProfileIndicator(profile)
+            ProfileIndicator(profile)
 
-              // Event Description
-              event.description?.let { description ->
+            // Event Description
+            event.description?.let { description ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     modifier = Modifier.testTag("eventDescription"),
                     text = description,
                     fontWeight = FontWeight(400),
-                    fontSize = 16.sp)
-              }
+                    fontSize = 16.sp
+                )
+            }
 
-              Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-              Text(
-                  text = "Number of attendees",
-                  modifier =
-                      Modifier.align(Alignment.CenterHorizontally).testTag("attendeesInfoTitle"),
-                  fontWeight = FontWeight.Bold)
+            Text(
+                text = "Number of attendees",
+                modifier =
+                Modifier.align(Alignment.CenterHorizontally).testTag("attendeesInfoTitle"),
+                fontWeight = FontWeight.Bold
+            )
 
-              // Event Capacity
-              Row(modifier = Modifier.testTag("attendeesInfo")) {
+            // Event Capacity
+            Row(modifier = Modifier.testTag("attendeesInfo")) {
                 Text("Min: ", fontWeight = FontWeight.Bold)
                 Text("${event.attendanceMinCapacity}")
                 Spacer(modifier = Modifier.width(100.dp))
@@ -196,138 +228,147 @@ fun EventUI(
                 Spacer(modifier = Modifier.width(100.dp))
                 Text("Max: ", fontWeight = FontWeight.Bold)
                 Text(text = "${event.attendanceMaxCapacity}")
-              }
+            }
 
-              // Categories
-              Spacer(modifier = Modifier.height(16.dp))
-              FlowRow(modifier = Modifier.testTag("categoriesRow")) {
+            // Categories
+            Spacer(modifier = Modifier.height(16.dp))
+            FlowRow(modifier = Modifier.testTag("categoriesRow")) {
                 event.categories?.forEach { interest -> Chip(interest = interest) }
-              }
+            }
 
-              // Map View Placeholder
-              Spacer(modifier = Modifier.height(16.dp))
-              Box(
-                  modifier =
-                      Modifier.height(200.dp)
-                          .fillMaxWidth()
-                          .background(Color.Gray)
-                          .testTag("mapView")) {
-                    // Here should be the code to integrate the actual map
-                    event.location?.let { location ->
-                      GeoMap(
-                          userCoordinates = location,
-                          interestsCoordinates = emptyList(),
-                          mapViewModifier = Modifier.fillMaxWidth().height(200.dp))
-                    } ?: BasicText(text = "No location provided for this event")
-                  }
-              // Event Dates and Times
-              Spacer(modifier = Modifier.height(16.dp))
-              Row(modifier = Modifier.testTag("eventDatesTimes")) {
+            // Map View Placeholder
+            Spacer(modifier = Modifier.height(16.dp))
+            Box(
+                modifier =
+                Modifier.height(200.dp)
+                    .fillMaxWidth()
+                    .background(Color.Gray)
+                    .testTag("mapView")
+            ) {
+                // Here should be the code to integrate the actual map
+                event.location?.let { location ->
+                    GeoMap(
+                        userCoordinates = location,
+                        interestsCoordinates = emptyList(),
+                        mapViewModifier = Modifier.fillMaxWidth().height(200.dp)
+                    )
+                } ?: BasicText(text = "No location provided for this event")
+            }
+            // Event Dates and Times
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(modifier = Modifier.testTag("eventDatesTimes")) {
                 Column {
-                  Text("Event Start:", fontWeight = FontWeight.Bold)
-                  event.eventStartDate?.let { startDate ->
-                    Text(startDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                  }
-                  event.timeBeginning?.let { startTime ->
-                    Text(startTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
-                  }
+                    Text("Event Start:", fontWeight = FontWeight.Bold)
+                    event.eventStartDate?.let { startDate ->
+                        Text(startDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+                    }
+                    event.timeBeginning?.let { startTime ->
+                        Text(startTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
+                    }
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
-                  Text("Event End:", fontWeight = FontWeight.Bold)
-                  event.eventEndDate?.let { endDate ->
-                    Text(endDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                  }
-                  event.timeEnding?.let { endTime ->
-                    Text(endTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
-                  }
+                    Text("Event End:", fontWeight = FontWeight.Bold)
+                    event.eventEndDate?.let { endDate ->
+                        Text(endDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+                    }
+                    event.timeEnding?.let { endTime ->
+                        Text(endTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
+                    }
                 }
-              }
+            }
 
-              // Inscription Limit Date and Time
-              Spacer(modifier = Modifier.height(8.dp))
-              Text(
-                  "Inscription Limit:",
-                  fontWeight = FontWeight.Bold,
-                  modifier = Modifier.testTag("inscriptionLimitTitle"))
-              Row(modifier = Modifier.testTag("inscriptionLimitDateAndTime")) {
+            // Inscription Limit Date and Time
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "Inscription Limit:",
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.testTag("inscriptionLimitTitle")
+            )
+            Row(modifier = Modifier.testTag("inscriptionLimitDateAndTime")) {
                 event.inscriptionLimitDate?.let { limitDate ->
-                  Text(limitDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+                    Text(limitDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 event.inscriptionLimitTime?.let { limitTime ->
-                  Text(limitTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
+                    Text(limitTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
                 }
-              }
+            }
 
-              // Registration Button
-              Spacer(modifier = Modifier.height(16.dp))
+            // Registration Button
+            Spacer(modifier = Modifier.height(16.dp))
 
-              if (!isOrganizer) {
+            if (!isOrganizer) {
                 Button(
                     onClick = {
-                      eventUIViewModel.registerForEvent(event)
-                      eventsViewModel.updateNewRegistered(event)
-                      eventUIViewModel.clickRegisterButton()
+                        eventUIViewModel.registerForEvent(event)
+                        eventsViewModel.updateNewRegistered(event)
+                        eventUIViewModel.clickRegisterButton()
                     },
                     enabled = isButtonEnabled,
                     modifier = Modifier.fillMaxWidth().testTag("registerButton"),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-                      Text(buttonText, color = Color.White)
-                    }
-              }
+                    colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))
+                ) {
+                    Text(buttonText, color = Color.White)
+                }
             }
+        }
 
         if (showDialogRegistration!!) {
-          AlertDialog(
-              modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { eventUIViewModel.dismissAlert() },
-              title = { Text("Registration Result") },
-              text = {
-                when (val state = registrationState) {
-                  is RegistrationState.Success -> Text("You have been successfully registered!")
-                  is RegistrationState.Error -> Text(state.message)
-                  else -> Text("Unknown state")
-                }
-              },
-              confirmButton = {
-                Button(
-                    modifier = Modifier.testTag("okButton"),
-                    onClick = { eventUIViewModel.dismissAlert() }) {
-                      Text("OK")
+            AlertDialog(
+                modifier = Modifier.testTag("alertBox"),
+                onDismissRequest = { eventUIViewModel.dismissAlert() },
+                title = { Text("Registration Result") },
+                text = {
+                    when (val state = registrationState) {
+                        is RegistrationState.Success -> Text("You have been successfully registered!")
+                        is RegistrationState.Error -> Text(state.message)
+                        else -> Text("Unknown state")
                     }
-              })
+                },
+                confirmButton = {
+                    Button(
+                        modifier = Modifier.testTag("okButton"),
+                        onClick = { eventUIViewModel.dismissAlert() }) {
+                        Text("OK")
+                    }
+                })
         }
 
         if (showDialogDelete!!) {
-          AlertDialog(
-              modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { eventUIViewModel.dismissAlert() },
-              title = { Text("Delete Event") },
-              text = {
-                Text("Are you sure you want to delete this event? This action cannot be undone.")
-              },
-              confirmButton = {
-                Button(
-                    modifier = Modifier.testTag("okButton"),
-                    onClick = {
-                      // Delete the event
-                      eventUtils.deleteEvent(event)
-                      navActions.goBack()
-                      eventUIViewModel.dismissAlert()
-                    }) {
-                      Text("Delete")
+            AlertDialog(
+                modifier = Modifier.testTag("alertBox"),
+                onDismissRequest = { eventUIViewModel.dismissAlert() },
+                title = { Text("Delete Event") },
+                text = {
+                    Text("Are you sure you want to delete this event? This action cannot be undone.")
+                },
+                confirmButton = {
+                    Button(
+                        modifier = Modifier.testTag("okButton"),
+                        onClick = {
+                            // Delete the event
+                            eventUtils.deleteEvent(event)
+                            navActions.goBack()
+                            eventUIViewModel.dismissAlert()
+                        }) {
+                        Text("Delete")
                     }
-              },
-              dismissButton = {
-                Button(
-                    modifier = Modifier.testTag("cancelButton"),
-                    onClick = { eventUIViewModel.dismissAlert() }) {
-                      Text("Cancel")
+                },
+                dismissButton = {
+                    Button(
+                        modifier = Modifier.testTag("cancelButton"),
+                        onClick = { eventUIViewModel.dismissAlert() }) {
+                        Text("Cancel")
                     }
-              })
+                })
         }
-      }
+
+        // Rating
+        if (eventUIViewModel.canRate()) {
+            RatingDisplay(rating = rating ?: Rating.UNRATED, eventUIViewModel = eventUIViewModel)
+        }
+    }
 }
 
 @Composable
@@ -377,7 +418,7 @@ fun ProfileIndicator(profile: Profile) {
  * StarRating displays 5 stars, where the user can click on a star to rate the event.
  */
 @Composable
-fun StarRating(rating: Long, onRatingChanged: (Int) -> Unit) {
+fun StarRating(rating: Long, onRatingChanged: (Long) -> Unit) {
     Row(
         modifier = Modifier.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically) {
@@ -390,7 +431,7 @@ fun StarRating(rating: Long, onRatingChanged: (Int) -> Unit) {
                 Modifier
                     .size(40.dp)
                     .testTag("starRating $i")
-                    .clickable { onRatingChanged(i) })
+                    .clickable { onRatingChanged(i.toLong())})
         }
     }
 }
@@ -400,13 +441,13 @@ fun StarRating(rating: Long, onRatingChanged: (Int) -> Unit) {
  * composable.
  */
 @Composable
-fun RatingDisplay(rating: Long) {
+fun RatingDisplay(rating: Rating, eventUIViewModel: EventUIViewModel) {
     Row(
         modifier = Modifier.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically) {
         Text(text = "Rate this event", fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.width(8.dp))
-        StarRating(rating = rating, onRatingChanged = {} )
+        StarRating(rating = Rating.toLong(rating), onRatingChanged = { eventUIViewModel.rateEvent(Rating.fromLong(it)) })
     }
 }
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.firebase.RatingFirebaseConnection
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
 import com.google.firebase.Firebase
@@ -68,6 +69,6 @@ class EventUIViewModel(private val event: Event) :
   }
 
   fun canRate(): Boolean {
-    return !isOrganizer() && event.registeredUsers.contains(userID)
+    return !isOrganizer() && event.registeredUsers.contains(userID) && EventUtils().isEventOver(event)
   }
 }
