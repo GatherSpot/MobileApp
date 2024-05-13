@@ -47,6 +47,7 @@ class EventUITest {
     testLoginCleanUp()
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testEverythingExists() {
     composeTestRule.setContent {
@@ -65,7 +66,7 @@ class EventUITest {
 
       formColumn.assertExists()
       image.assertExists()
-      profileIndicator.assertExists()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 6000)
       description.assertExists()
       attendeesInfoTitle.assertExists()
       attendeesInfo.assertExists()
@@ -78,6 +79,7 @@ class EventUITest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testEverythingIsDisplayed() {
 
@@ -100,6 +102,8 @@ class EventUITest {
         performScrollTo()
         assertIsDisplayed()
       }
+
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 6000)
       profileIndicator {
         performScrollTo()
         assertIsDisplayed()
