@@ -196,6 +196,7 @@ class EventUITest {
           EventRegistrationViewModel(listOf()),
           EventsViewModel())
     }
+    runBlocking { EventFirebaseConnection().add(trivialEvent) }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
         performScrollTo()
@@ -219,6 +220,7 @@ class EventUITest {
         assert(hasText("Registered"))
       }
     }
+    runBlocking { EventFirebaseConnection().delete(trivialEvent.id) }
   }
 
   @OptIn(ExperimentalTestApi::class)
