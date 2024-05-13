@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -23,7 +22,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
 
-
   @get:Rule val composeTestRule = createComposeRule()
 
   // for useful documentation on testing compose
@@ -34,6 +32,8 @@ class ProfileInstrumentedTest {
       ProfileFirebaseConnection().add(Profile.testOrganizer())
       ProfileFirebaseConnection().add(Profile.testParticipant())
   }
+
+
 
   @OptIn(ExperimentalTestApi::class)
   @Test

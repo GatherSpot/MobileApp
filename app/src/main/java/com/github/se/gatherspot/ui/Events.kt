@@ -238,8 +238,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
   val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests"
-  val isPastEvent = event.eventStartDate!!.isBefore(LocalDate.now())
-  val isToday = event.eventStartDate.isEqual(LocalDate.now())
+  val isPastEvent = event.eventStartDate?.isBefore(LocalDate.now()) ?: false
+  val isToday = event.eventStartDate?.isEqual(LocalDate.now()) ?: false
   val isOrganizer = event.organizerID == uid
   val isRegistered = event.registeredUsers.contains(uid)
   Box(
@@ -264,57 +264,54 @@ fun EventRow(event: Event, navigation: NavigationActions) {
               }
               .testTag(event.title)
               .fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-              Column(modifier = Modifier.weight(1f)) {
-                Image(
-                    bitmap =
-                        event.images ?: ImageBitmap(120, 120, config = ImageBitmapConfig.Rgb565),
-                    contentDescription = null)
-              }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Column(modifier = Modifier.weight(1f)) {
+            Image(
+                bitmap = event.images ?: ImageBitmap(120, 120, config = ImageBitmapConfig.Rgb565),
+                contentDescription = null)
+          }
 
-              Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
-                Text(
-                    text =
-                        "Start date: ${
-                            event.eventStartDate.format(
+          Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
+            Text(
+                text =
+                    "Start date: ${
+                            event.eventStartDate?.format(
                                 DateTimeFormatter.ofPattern(
                                     EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                                 )
                             )
                         }",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 10.sp)
-                Text(
-                    text =
-                        "End date: ${
+                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp)
+            Text(
+                text =
+                    "End date: ${
                             event.eventEndDate?.format(
                                 DateTimeFormatter.ofPattern(
                                     EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                                 )
                             )
                         }",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 10.sp)
-                Text(text = event.title, fontSize = 14.sp)
+                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp)
+            Text(text = event.title, fontSize = 14.sp)
+          }
+
+          Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              if (isOrganizer) {
+                Text("Organizer", fontSize = 14.sp)
+              } else if (isRegistered) {
+                Text("Registered", fontSize = 14.sp)
               }
 
-              Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                  if (isOrganizer) {
-                    Text("Organizer", fontSize = 14.sp)
-                  } else if (isRegistered) {
-                    Text("Registered", fontSize = 14.sp)
-                  }
-
-                  Icon(
-                      painter = painterResource(R.drawable.arrow_right),
-                      contentDescription = null,
-                      modifier = Modifier.width(24.dp).height(24.dp).clickable {})
-                }
-              }
+              Icon(
+                  painter = painterResource(R.drawable.arrow_right),
+                  contentDescription = null,
+                  modifier = Modifier.width(24.dp).height(24.dp).clickable {})
             }
+          }
+        }
         Divider(color = Color.Black, thickness = 1.dp)
       }
 }
@@ -366,3 +363,37 @@ fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Int
       },
   )
 }
+/*
+// Preview for the Event UI, for testing purposes
+@Preview
+@Composable
+fun EventUIPreview() {
+  // Set global uid for testing
+  val event =
+      Event(
+          id = "idTestEvent",
+          title = "Event Title",
+          description =
+              "Hello: I am a description of the event just saying that I would love to say" +
+                  "that Messi is not the best player in the world, but I can't. I am sorry.",
+          attendanceMaxCapacity = 5,
+          attendanceMinCapacity = 1,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2025, 4, 15),
+          eventStartDate = LocalDate.of(2025, 4, 10),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2025, 4, 1),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(11, 0),
+          timeEnding = LocalTime.of(13, 0),
+          organizerID = Profile.testOrganizer().id)
+  val viewModel = EventRegistrationViewModel(listOf(""))
+  EventUI(
+      event = event,
+      navActions = NavigationActions(rememberNavController()),
+      registrationViewModel = viewModel,
+      eventsViewModel = EventsViewModel())
+}
+*/

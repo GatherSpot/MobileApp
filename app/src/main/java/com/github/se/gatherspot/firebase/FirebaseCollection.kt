@@ -11,5 +11,5 @@ enum class FirebaseCollection {
   FOLLOWERS,
   REQUESTED_FRIENDS,
   PENDING_FRIENDS,
-  RATINGS
+  EVENT_RATINGS
 }

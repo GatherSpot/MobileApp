@@ -9,7 +9,6 @@ import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.google.gson.JsonPrimitive
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -44,7 +43,7 @@ class JsonCustomsSerializerTest {
   fun testLocalTimeDeserializer() {
     val jsonElement = JsonPrimitive("10:15")
     val deserializer = LocalTimeDeserializer()
-    val localTime = deserializer.deserialize(jsonElement, LocalDateTime::class.java, null)
+    val localTime = deserializer.deserialize(jsonElement, LocalTime::class.java, null)
     assertEquals(LocalTime.of(10, 15), localTime)
   }
 
