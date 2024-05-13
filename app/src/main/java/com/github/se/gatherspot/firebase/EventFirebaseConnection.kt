@@ -9,6 +9,7 @@ import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
@@ -30,6 +31,10 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val DATE_FORMAT_STORED = "yyyy/MM/dd"
     val TIME_FORMAT = "HH:mm"
   }
+    val BATTLE_OF_THE_APPS_START_DATE = LocalDate.parse("2024/05/28", DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
+    val BATTLE_OF_THE_APPS_END_DATE = LocalDate.parse("2024/05/28", DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
+    val BATTLE_OF_THE_APPS_START_TIME = LocalTime.parse("10:15", DateTimeFormatter.ofPattern(TIME_FORMAT))
+    val BATTLE_OF_THE_APPS_END_TIME = LocalTime.parse("12:00", DateTimeFormatter.ofPattern(TIME_FORMAT))
 
   var offset: DocumentSnapshot? = null
 
@@ -318,10 +323,18 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
    * @param element: The event to add
    */
   override fun add(element: Event) {
-    val eventItem =
+      val eventItem =
         hashMapOf(
-            "eventID" to element.id,
-            "title" to element.title,
+            "eventID" to
+                when (element.id){
+                    "" -> getNewID()
+                    else -> element.id
+                 },
+            "title" to
+                    when (element.title){
+                                    "" -> element.id
+                                    else -> element.title
+                                        },
             "description" to element.description,
             "locationLatitude" to
                 when (element.location) {
@@ -340,25 +353,25 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                 },
             "eventStartDate" to
                 when (element.eventStartDate) {
-                  null -> "null"
+                  null -> BATTLE_OF_THE_APPS_START_DATE.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                   else ->
                       element.eventStartDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                 },
             "eventEndDate" to
                 when (element.eventEndDate) {
-                  null -> "null"
+                  null -> BATTLE_OF_THE_APPS_END_DATE.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                   else ->
                       element.eventEndDate.format(
                           DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
                 },
             "timeBeginning" to
                 when (element.timeBeginning) {
-                  null -> "null"
+                  null -> BATTLE_OF_THE_APPS_START_TIME.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   else -> element.timeBeginning.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                 },
             "timeEnding" to
                 when (element.timeEnding) {
-                  null -> "null"
+                  null -> BATTLE_OF_THE_APPS_END_TIME.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   else -> element.timeEnding.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                 },
             "attendanceMaxCapacity" to
@@ -369,28 +382,34 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             "attendanceMinCapacity" to element.attendanceMinCapacity.toString(),
             "inscriptionLimitDate" to
                 when (element.inscriptionLimitDate) {
-                  null -> "null"
+                  null -> element.eventEndDate?.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)) ?: element.eventStartDate?.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)) ?: BATTLE_OF_THE_APPS_START_DATE.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                   else ->
                       element.inscriptionLimitDate.format(
                           DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
                 },
             "inscriptionLimitTime" to
                 when (element.inscriptionLimitTime) {
-                  null -> "null"
+                  null -> element.timeEnding?.format(DateTimeFormatter.ofPattern(TIME_FORMAT)) ?: element.timeEnding?.format(DateTimeFormatter.ofPattern(TIME_FORMAT)) ?: BATTLE_OF_THE_APPS_END_TIME.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   else ->
                       element.inscriptionLimitTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                 },
             "categories" to element.categories?.toList(),
             "registeredUsers" to element.registeredUsers,
-            "finalAttendee" to element.finalAttendees,
-            "globalRating" to
+            "finalAttendee" to when (element.finalAttendees) { //TODO Harmonize spelling to one or the other
+                null -> mutableListOf<String>()
+              else -> element.finalAttendees
+            },
+            "globalRating" to  //TODO Change globalRating to an Int ?
                 when (element.globalRating) {
                   null -> "null"
                   else -> element.globalRating.toString()
                 },
             "image" to element.image,
-            "organizerID" to element.organizerID,
-            "eventStatus" to element.eventStatus)
+            "organizerID" to when (element.organizerID){
+                "" -> Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id
+                else -> element.organizerID
+                                                       },
+            "eventStatus" to element.eventStatus) //TODO remove ?
 
     Firebase.firestore
         .collection(EVENTS)
@@ -398,4 +417,47 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         .set(eventItem)
         .addOnFailureListener { exception -> Log.e(TAG, "Error adding new Event", exception) }
   }
+
+    fun cleanCollection(){
+        Firebase.firestore
+            .collection(EVENTS)
+            .whereNotEqualTo("organizerID", "")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                Log.d(TAG, "Found ${querySnapshot.documents.size} documents with non empty organizerID")
+                querySnapshot.documents.forEach { document ->
+                    Firebase.firestore
+                        .collection("clean_events")
+                        .document(document.id)
+                        .set(document.data!!)
+                        .addOnSuccessListener {
+                            Log.d(TAG, "DocumentSnapshot successfully moved to clean_events : ${document.id}")
+                        }
+                        .addOnFailureListener { e -> Log.w(TAG, "Error moving document", e) }
+                }
+
+            }
+            .addOnFailureListener { exception ->
+                Log.d(TAG, exception.toString())
+            }
+    }
+
+    fun retrieveEvents(){
+        Firebase.firestore
+            .collection("clean_events")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                Log.d(TAG, "Found ${querySnapshot.documents.size} documents in clean_events")
+                querySnapshot.documents.forEach { document ->
+                    val event = getFromDocument(document)
+                    if (event != null) {
+                        add(event)
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d(TAG, exception.toString())
+            }
+    }
+
 }
