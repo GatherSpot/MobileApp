@@ -130,6 +130,7 @@ fun EventUI(
                           painter = painterResource(id = R.drawable.delete),
                           contentDescription = "Delete event")
                     }
+
               }
             })
       }) { innerPadding ->
