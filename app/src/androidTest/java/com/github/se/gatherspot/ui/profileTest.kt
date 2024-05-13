@@ -1,19 +1,20 @@
 package com.github.se.gatherspot.ui
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlin.coroutines.resume
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -22,18 +23,16 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
 
+
   @get:Rule val composeTestRule = createComposeRule()
+
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @Before
   fun setUp() = runBlocking {
     FollowList.unfollow("TEST", "TEST2")
-    suspendCancellableCoroutine { continuation ->
-      ProfileFirebaseConnection().add(Profile.testOrganizer()) { continuation.resume(Unit) }
-    }
-    suspendCancellableCoroutine { continuation ->
-      ProfileFirebaseConnection().add(Profile.testParticipant()) { continuation.resume(Unit) }
-    }
+      ProfileFirebaseConnection().add(Profile.testOrganizer())
+      ProfileFirebaseConnection().add(Profile.testParticipant())
   }
 
   @OptIn(ExperimentalTestApi::class)

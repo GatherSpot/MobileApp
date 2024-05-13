@@ -18,7 +18,7 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 class OwnProfileViewModel : ViewModel() {
-  private lateinit var _profile: Profile
+  private var _profile: Profile
   private var _username = MutableLiveData<String>()
   private var _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
@@ -26,7 +26,8 @@ class OwnProfileViewModel : ViewModel() {
   private var _usernameValid = MutableLiveData("")
   private var _bioValid = MutableLiveData("")
   private var _saved = MutableLiveData<Boolean>()
-  private var userNameIsUniqueCheck = MutableLiveData(true)
+  private var _userNameIsUniqueCheck = MutableLiveData(true)
+  private var _isEditing = MutableLiveData(false)
 
   init {
     // TODO: replace this with hilt injection
@@ -53,15 +54,17 @@ class OwnProfileViewModel : ViewModel() {
 
   val saved: LiveData<Boolean>
     get() = _saved
+  val isEditing: LiveData<Boolean>
+    get() = _isEditing
 
   fun resetSaved() {
     _saved.value = false
   }
 
-  fun saveText() {
+  private fun saveText() {
     if (_usernameValid.value == "" &&
         _bioValid.value == "" &&
-        userNameIsUniqueCheck.value == true) {
+        _userNameIsUniqueCheck.value == true) {
       _profile.userName = _username.value!!
       _profile.bio = _bio.value!!
       _profile.interests = _interests.value!!
@@ -77,7 +80,7 @@ class OwnProfileViewModel : ViewModel() {
     _image.value = _profile.image
   }
 
-  fun cancelText() {
+  private fun cancelText() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _interests.value = _profile.interests
@@ -86,9 +89,9 @@ class OwnProfileViewModel : ViewModel() {
   // TODO : add sanitization to these function !!!
   fun updateUsername(userName: String) {
     _username.value = userName
-    userNameIsUniqueCheck.value = false
+    _userNameIsUniqueCheck.value = false
     _usernameValid =
-        Profile.checkUsername(userName, _profile.userName) { userNameIsUniqueCheck.value = true }
+        Profile.checkUsername(userName, _profile.userName) { _userNameIsUniqueCheck.value = true }
   }
 
   fun updateBio(bio: String) {
@@ -96,11 +99,11 @@ class OwnProfileViewModel : ViewModel() {
     _bio.value = bio
   }
 
-  fun updateProfileImage(newImageUrl: String) {
+  private fun updateProfileImage(newImageUrl: String) {
     _image.value = newImageUrl
   }
 
-  fun uploadProfileImage(newImageUri: Uri?) {
+  private fun uploadProfileImage(newImageUri: Uri?) {
     viewModelScope.launch {
       if (newImageUri != null || newImageUri != EMPTY) {
         Log.d("New image uri : ", newImageUri.toString())
@@ -115,7 +118,7 @@ class OwnProfileViewModel : ViewModel() {
     }
   }
 
-  fun removeProfilePicture() {
+  private fun removeProfilePicture() {
     viewModelScope.launch {
       FirebaseImages().removeProfilePicture(_profile.id)
       ProfileFirebaseConnection().update(_profile.id, "image", "")
@@ -149,7 +152,7 @@ class OwnProfileViewModel : ViewModel() {
     imageEditAction.value = newImageEditAction
   }
 
-  fun saveImage() {
+  private fun saveImage() {
     when (imageEditAction.value) {
       ImageEditAction.UPLOAD -> uploadProfileImage(localImageUriToUpload.value)
       ImageEditAction.REMOVE -> removeProfilePicture()
@@ -157,7 +160,7 @@ class OwnProfileViewModel : ViewModel() {
     }
   }
 
-  fun cancelImage() {
+  private fun cancelImage() {
     imageEditAction.value = ImageEditAction.NO_ACTION
     localImageUriToUpload.value = Uri.EMPTY
   }
@@ -165,11 +168,16 @@ class OwnProfileViewModel : ViewModel() {
   fun save() {
     saveImage()
     saveText()
+    _isEditing.value = false
   }
 
   fun cancel() {
     cancelText()
     cancelImage()
+    _isEditing.value = false
+  }
+  fun edit() {
+    _isEditing.value = true
   }
 }
 
@@ -217,7 +225,7 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
   }
 
   fun requestFriend() {
-    // TODO : even if implemented this will not be visible until we add a friendrequest view, hence
+    // TODO : even if implemented this will not be visible until we add a friend request view, hence
     // I prefer to add ViewProfile functionality to other classes first
   }
 

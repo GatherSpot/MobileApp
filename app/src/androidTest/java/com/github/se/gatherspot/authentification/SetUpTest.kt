@@ -1,30 +1,32 @@
 package com.github.se.gatherspot.authentification
 
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
-import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.screens.SetUpScreen
+import com.github.se.gatherspot.ui.Profile
+import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.setUp.SetUpBio
-import com.github.se.gatherspot.ui.setUp.SetUpDone
-import com.github.se.gatherspot.ui.setUp.SetUpImage
-import com.github.se.gatherspot.ui.setUp.SetUpInterests
-import com.github.se.gatherspot.ui.setUp.SetUpViewModel
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlin.coroutines.resume
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 class SetUpTest : TestCase() {
@@ -32,79 +34,60 @@ class SetUpTest : TestCase() {
 
   @Before
   fun setUp() = runBlocking {
-    suspendCancellableCoroutine { continuation ->
-      ProfileFirebaseConnection().add(Profile.testOrganizer()) { continuation.resume(Unit) }
-    }
+    testLogin()
+    ProfileFirebaseConnection().add(
+      com.github.se.gatherspot.model.Profile(
+        userName = "SetUpTest",
+        bio = "",
+        image = "",
+        id = Firebase.auth.uid!!,
+        interests = setOf()
+      )
+    )
+  }
+  @After
+  fun cleanUp() = runBlocking {
+    ProfileFirebaseConnection().delete(Firebase.auth.uid!!)
+    testLoginCleanUp()
   }
 
+
+
+  @OptIn(ExperimentalTestApi::class)
   @Test
-  fun setUpInterestsTest() {
+  fun setUpTest() {
+    val string = "123bioText"
     composeTestRule.setContent {
       val navController = rememberNavController()
       val nav = NavigationActions(navController)
-      val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
-      val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
-      NavHost(navController, startDestination = "Interests") {
-        composable("Interests") { SetUpInterests(viewModel, nav, "Interests") }
+      NavHost(navController, startDestination = "setup") {
+        composable("home") { Profile(nav) }
+        composable("setup") { SetUpProfile(nav) }
       }
     }
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
+      composeTestRule.waitForIdle()
       setUpInterests { assertExists() }
       addBasketball { performClick() }
       removeBasketball { assertExists() }
       next { performClick() }
-    }
-  }
-
-  @Test
-  fun setUpBioTest() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val nav = NavigationActions(navController)
-      val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
-      val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
-      NavHost(navController, startDestination = "bio") {
-        composable("bio") { SetUpBio(viewModel, nav, "bio") }
-      }
-    }
-    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
+      composeTestRule.waitForIdle()
       setUpBio { assertExists() }
-      bioInput { performTextInput("I like haskell") }
+      bioInput { performTextInput(string) }
+      sleep(2000)
       next { performClick() }
-    }
-  }
-
-  @Test
-  fun setUpImageTest() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val nav = NavigationActions(navController)
-      val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
-      val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
-      NavHost(navController, startDestination = "image") {
-        composable("image") { SetUpImage(viewModel, nav, "image") }
-      }
-    }
-    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
+      composeTestRule.waitForIdle()
       setUpImage { assertExists() }
+      //TODO: maybe add image test when it will be implemented
       next { performClick() }
-    }
-  }
-
-  @Test
-  fun setUpDoneTest() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val nav = NavigationActions(navController)
-      val navHostViewModelStoreOwner = LocalViewModelStoreOwner.current!!
-      val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = navHostViewModelStoreOwner)
-      NavHost(navController, startDestination = "done") {
-        composable("done") { SetUpDone(viewModel, nav, "done") }
-      }
-    }
-    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
+      composeTestRule.waitForIdle()
       setUpDone { assertExists() }
-      done { assertHasClickAction() } // do not click here as it has not valid data
+      composeTestRule.waitUntilAtLeastOneExists(isEnabled())
+      done { performClick() }
+    }
+    ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
+      composeTestRule.waitUntilAtLeastOneExists(hasText(string),5000)
+      basketball { assertExists() }
     }
   }
 }

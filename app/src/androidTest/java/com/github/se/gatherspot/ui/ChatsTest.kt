@@ -18,6 +18,7 @@ import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -36,6 +37,7 @@ class ChatsTest {
     Firebase.auth
         .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;")
         .addOnSuccessListener { id = Firebase.auth.currentUser?.uid ?: "" }
+        .await()
 
     EventFirebaseConnection()
         .add(

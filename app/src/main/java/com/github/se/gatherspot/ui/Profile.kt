@@ -7,13 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
-import com.github.se.gatherspot.ui.profile.ProfileView
+import com.github.se.gatherspot.ui.profile.ProfileScaffold
+import com.github.se.gatherspot.ui.profile.ProfileScreen
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
+import kotlinx.coroutines.runBlocking
 
 /**
  * This function is the one that should be called when navigating to the profile screen from the
@@ -22,14 +23,11 @@ import com.github.se.gatherspot.ui.profile.ProfileViewModel
 @Composable
 fun Profile(nav: NavigationActions) {
   // This new navController will navigate between seeing profile and editing profile
-  val navController = rememberNavController()
   val viewModelStoreOwner = LocalViewModelStoreOwner.current!!
   val viewModel = ViewModelProvider(viewModelStoreOwner)[OwnProfileViewModel::class.java]
-  NavHost(navController, startDestination = "view") {
-    composable("view") { ProfileView().ViewOwnProfile(nav, viewModel, navController) }
-    composable("edit") { ProfileView().EditOwnProfile(nav, viewModel, navController) }
-  }
+  ProfileScaffold(nav,viewModel)
 }
+
 /**
  * Show the profile of another user
  *
@@ -38,16 +36,19 @@ fun Profile(nav: NavigationActions) {
  */
 @Composable
 fun ViewProfile(nav: NavigationActions, uid: String) {
-  ProfileView().ProfileScreen(ProfileViewModel(uid, nav))
+  ProfileScreen(ProfileViewModel(uid, nav))
 }
 
 // Those preview should show you all the functions you can call when it comes to profiles
 @Preview
 @Composable
 fun ProfilePreview() {
+  runBlocking { ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
+  }
   val navController = rememberNavController()
   Profile(NavigationActions(navController))
 }
+
 
 @Preview
 @Composable

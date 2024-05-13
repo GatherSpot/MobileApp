@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.ui.setUp
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +11,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,18 +22,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.profile.BioField
 import com.github.se.gatherspot.ui.profile.InterestsView
 
 @Composable
-fun NextButton(nav: NavigationActions, dest: String) {
+fun NextButton(next: ()-> Unit) {
   Button(
       colors = ButtonDefaults.buttonColors(Color.Transparent),
-      onClick = { nav.controller.navigate(dest) },
+      onClick = { next() },
       modifier =
-          Modifier.testTag("nextButton")
-              .clickable(onClick = { nav.controller.navigate(dest) })
-              .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
-              .wrapContentSize()) {
+      Modifier
+        .testTag("nextButton")
+        .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
+        .wrapContentSize()) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -44,10 +44,13 @@ fun NextButton(nav: NavigationActions, dest: String) {
 }
 
 @Composable
-fun DoneButton(done: () -> Unit) {
+fun DoneButton(isDone: Boolean,nav: NavigationActions) {
   Button(
-      onClick = { done() },
-      modifier = Modifier.testTag("doneButton").clickable(onClick = { done() }).wrapContentSize()) {
+      enabled = isDone,
+      onClick = { nav.controller.navigate("home") },
+      modifier = Modifier
+        .testTag("doneButton")
+        .wrapContentSize()) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -57,63 +60,77 @@ fun DoneButton(done: () -> Unit) {
 }
 
 @Composable
-fun BioField(bio: String, updateBio: (String) -> Unit) {
-  OutlinedTextField(
-      label = { Text("Bio") },
-      value = bio,
-      onValueChange = { updateBio(it) },
-      modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
-}
-
-@Composable
-fun SetUpInterests(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
+private fun Interests(vm: SetUpViewModel) {
   val interests = vm.interests.observeAsState()
   val flipInterests = vm::flipInterests
   Column(
-      modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpInterests")) {
+      modifier = Modifier
+        .padding(horizontal = 20.dp, vertical = 30.dp)
+        .testTag("setUpInterests")) {
         // TODO : add scroll ???
         // TODO : add condition minimum 3 interests ?
         Text(text = "Choose your interests", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
         InterestsView().EditInterests(Interests.toList(), interests, flipInterests)
-        NextButton(nav, dest)
       }
 }
 
 @Composable
-fun SetUpBio(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
+private fun Bio(vm: SetUpViewModel) {
   val bio = vm.bio.observeAsState()
+  val bioError = vm.bioError.observeAsState()
   val setBio = vm::setBio
-  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpBioTag")) {
+  Column(modifier = Modifier
+    .padding(horizontal = 20.dp, vertical = 30.dp)
+    .testTag("setUpBioTag")) {
     Text(text = "Tell us a bit about yourself", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
-    BioField(bio.value ?: "", setBio)
-    NextButton(nav, dest)
+    BioField(bio.value!!, bioError.value, setBio, edit = true)
   }
 }
 
 @Composable
-fun SetUpImage(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
-  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpImage")) {
+private fun Image(vm: SetUpViewModel) {
+  Column(modifier = Modifier
+    .padding(horizontal = 20.dp, vertical = 30.dp)
+    .testTag("setUpImage")) {
     Text(text = "Choose a profile picture", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
     // TODO : add image picker
-    Text(text = "Not implemented yet, maybe in v3 :)")
-    NextButton(nav, dest)
+    Text(text = "Not implemented yet")
   }
 }
 
 @Composable
-fun SetUpDone(vm: SetUpViewModel, nav: NavigationActions, dest: String) {
-  val done = vm::done
-  val isDone = vm.isDone.observeAsState()
-  if (isDone.value == true) {
-    nav.controller.navigate(dest)
-  }
-  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpDone")) {
+private fun Done() {
+  Column(modifier = Modifier
+    .padding(horizontal = 20.dp, vertical = 30.dp)
+    .testTag("setUpDone")) {
     Text(text = "You're all set!", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
     Text(text = "Welcome and have fun using GatherSpot !!!", fontSize = 20.sp)
-    DoneButton(done)
   }
+}
+
+@Composable
+fun SetUpView(vm: SetUpViewModel,nav: NavigationActions){
+  val currentStep = vm.currentStep.observeAsState()
+  val isDone = vm.isDone.observeAsState(false)
+  val doneButton = vm.doneButton.observeAsState(false)
+  Scaffold(
+      bottomBar = {
+        Box(modifier = Modifier.padding(16.dp)) {
+          if (doneButton.value == true) DoneButton(isDone.value, nav) else NextButton(vm::next)
+        }
+      },
+      content = { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            when (currentStep.value) {
+                "Interests" -> Interests(vm)
+                "Bio" -> Bio(vm)
+                "Image" -> Image(vm)
+                "Done" -> Done()
+          }
+        }
+      })
 }

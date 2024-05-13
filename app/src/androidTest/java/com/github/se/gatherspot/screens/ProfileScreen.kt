@@ -8,7 +8,6 @@ class ProfileScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
     ComposeScreen<ProfileScreen>(
         semanticsProvider = semanticsProvider,
         viewBuilderAction = { hasTestTag("EditOwnProfileScreen") }) {
-  // Structural elements of the UI
   val edit: KNode = onNode { hasTestTag("edit") }
   val cancel: KNode = onNode { hasTestTag("cancel") }
   val save: KNode = onNode { hasTestTag("save") }
@@ -17,4 +16,5 @@ class ProfileScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val profileImage: KNode = onNode { hasTestTag("profileImage") }
   val addFriend: KNode = onNode { hasTestTag("addFriend") }
   val follow: KNode = onNode { hasTestTag("follow") }
+  val basketball: KNode = onNode { hasTestTag("BASKETBALL") }
 }
