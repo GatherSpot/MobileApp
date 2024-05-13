@@ -2,6 +2,7 @@ package com.github.se.gatherspot.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -31,8 +32,11 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
@@ -69,6 +74,12 @@ fun EventUI(
   val showDialogDelete by registrationViewModel.displayAlertDeletion.observeAsState()
   val isOrganizer =
       event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
+
+  val organizerProfile = remember { mutableStateOf<Profile?>(null) }
+  LaunchedEffect(Unit) {
+    organizerProfile.value = ProfileFirebaseConnection().fetch(event.organizerID) {}
+  }
+
   val eventUtils = EventUtils()
   val registrationState by registrationViewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == RegistrationState.NoError
@@ -146,16 +157,7 @@ fun EventUI(
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-              var profile = Profile.testParticipant()
-
-              /*
-              runBlocking {
-              profile = async{ProfileFirebaseConnection().fetch(event.organizerID)}.await()
-                      ?: Profile.testParticipant()
-              }
-
-               */
-              ProfileIndicator(profile)
+              ProfileIndicator(organizerProfile.value, navActions)
 
               // Event Description
               event.description?.let { description ->
@@ -334,11 +336,21 @@ fun Chip(interest: Interests) {
 }
 
 @Composable
-fun ProfileIndicator(profile: Profile) {
+fun ProfileIndicator(profile: Profile?, navActions: NavigationActions) {
+  if (profile == null) return
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
-          Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("profileIndicator")) {
+          Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+              .testTag("profileIndicator")
+              .clickable {
+                // Navigate to the profile of the organizer
+                if (profile.id != Firebase.auth.currentUser?.uid) {
+                  navActions.controller.navigate("viewProfile/${profile.id}")
+                } else {
+                  navActions.controller.navigate("profile")
+                }
+              }) {
         // TODO implement image here: do it later
         Box(
             contentAlignment = Alignment.Center,
@@ -358,7 +370,11 @@ fun ProfileIndicator(profile: Profile) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = "Hosted by", fontWeight = FontWeight.Light, fontSize = 16.sp)
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = profile.userName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Text(
+            modifier = Modifier.testTag("userName"),
+            text = profile.userName,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp)
       }
 }
 
