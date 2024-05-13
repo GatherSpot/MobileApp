@@ -8,10 +8,10 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.defaults.DefaultEvents
+import com.github.se.gatherspot.defaults.DefaultProfiles
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
@@ -30,14 +30,22 @@ class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
   private val trivialEvent = DefaultEvents.trivialEvent1
   private lateinit var ownEvent: Event
+  private val profile = DefaultProfiles.trivial
 
   @Before
   fun setUp() = runBlocking {
     testLogin()
+    ProfileFirebaseConnection().add(profile)
+    ProfileFirebaseConnection().add(DefaultProfiles.withId(Firebase.auth.uid!!))
     ownEvent = DefaultEvents.withAuthor(Firebase.auth.uid!!, "1")
   }
 
-  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
+  @After
+  fun cleanUp() = runBlocking {
+    ProfileFirebaseConnection().delete(profile.id)
+    ProfileFirebaseConnection().delete(Firebase.auth.uid!!)
+    testLoginCleanUp()
+  }
 
   @Test
   fun testEverythingExists() {
@@ -138,12 +146,10 @@ class EventUITest {
 
   @Test
   fun textsDisplayedAreCorrect() {
-
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event = trivialEvent
       // make sure the profile used in showProfile is there
-      runBlocking { ProfileFirebaseConnection().add(Profile.testOrganizer()) }
       EventUI(
           event,
           NavigationActions(navController),
@@ -154,7 +160,7 @@ class EventUITest {
       description { assert(hasText(DefaultEvents.trivialEvent1.description!!)) }
       profileIndicator {
         hasText("Hosted by")
-        hasText("John Doe")
+        hasText(profile.id)
       }
       attendeesInfoTitle.assertTextEquals("Number of attendees")
       attendeesInfo {
@@ -257,15 +263,13 @@ class EventUITest {
     }
   }
 
-  @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testAlreadyRegistered(): Unit {
+  fun testAlreadyRegistered() {
+    val event =
+        DefaultEvents.withRegistered(FirebaseAuth.getInstance().currentUser!!.uid, eventId = "2")
+    runBlocking { EventFirebaseConnection().add(event) }
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event =
-          DefaultEvents.withRegistered(FirebaseAuth.getInstance().currentUser!!.uid, eventId = "2")
-      val eventfirebase = EventFirebaseConnection()
-      runBlocking { eventfirebase.add(event) }
 
       EventUI(
           event,
@@ -281,6 +285,7 @@ class EventUITest {
         assert(hasText("Registered"))
       }
     }
+    runBlocking { EventFirebaseConnection().delete(event.id) }
   }
 
   @Test
@@ -336,10 +341,10 @@ class EventUITest {
 
   @Test
   fun testProfileIsCorrectlyFetched() {
+    val event = DefaultEvents.withAuthor(DefaultProfiles.trivial.id, "1")
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = DefaultEvents.withAuthor(Profile.testOrganizer().id, "1")
-      runBlocking { ProfileFirebaseConnection().add(Profile.testOrganizer()) }
+
       EventUI(
           event,
           NavigationActions(navController),

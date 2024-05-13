@@ -72,8 +72,7 @@ fun EventUI(
 
   val showDialogRegistration by registrationViewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by registrationViewModel.displayAlertDeletion.observeAsState()
-  val isOrganizer =
-      event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
+  val isOrganizer = event.organizerID == (Firebase.auth.currentUser?.uid!!)
 
   val organizerProfile = remember { mutableStateOf<Profile?>(null) }
   LaunchedEffect(Unit) {

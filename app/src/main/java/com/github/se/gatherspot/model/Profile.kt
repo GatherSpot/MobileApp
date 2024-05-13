@@ -12,7 +12,7 @@ import com.github.se.gatherspot.firebase.CollectionClass
  * @param _interests the interests of the user
  * @param id the id of the user
  */
-class Profile(
+data class Profile(
     private var _userName: String,
     private var _bio: String,
     private var _image: String,
@@ -56,16 +56,6 @@ class Profile(
     set(value) {
       _interests = value
     }
-
-  companion object {
-    fun testOrganizer(): Profile {
-      return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))
-    }
-
-    fun testParticipant(): Profile {
-      return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
-    }
-  }
 
   constructor(id: String) : this("", "", "", id, setOf())
 }

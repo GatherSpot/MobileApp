@@ -3,7 +3,6 @@ package com.github.se.gatherspot.firebase
 import android.util.Log
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -97,7 +96,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           "null" -> null
           else -> rating.toInt()
         }
-    val organizerID = d.getString("organizerID") ?: Profile.testOrganizer().id
+    val organizerID = d.getString("organizerID")!!
     return Event(
         id = eventID,
         title = title,
