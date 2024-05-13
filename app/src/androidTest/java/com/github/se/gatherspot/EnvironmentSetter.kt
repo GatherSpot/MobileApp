@@ -27,6 +27,14 @@ class EnvironmentSetter {
       }
     }
 
+    fun melvinLogin() {
+      runBlocking {
+        Firebase.auth
+            .signInWithEmailAndPassword("melvinmalongamatouba@gmail.com", "Password12")
+            .await()
+      }
+    }
+
     fun testLoginCleanUp() {
       Firebase.auth.signOut()
     }
