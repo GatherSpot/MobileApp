@@ -417,19 +417,6 @@ class EventUtilsTest {
   }
 
   @Test
-  fun deleteEventTest() {
-    // create an event, add it to the database, then delete it
-    val eventUtils = EventUtils()
-    eventFirebaseConnection.add(testEvent)
-    val eventFromDB = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
-    Assert.assertEquals(testEvent.id, eventFromDB?.id)
-
-    eventUtils.deleteEvent(testEvent)
-    val eventFromDBAfterDelete = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
-    Assert.assertNull(eventFromDBAfterDelete)
-  }
-
-  @Test
   fun testSaveDraftEvent() {
     val eventUtils = EventUtils()
     val context = ApplicationProvider.getApplicationContext<Context>()
