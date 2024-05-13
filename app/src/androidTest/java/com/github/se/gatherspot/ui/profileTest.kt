@@ -3,10 +3,8 @@ package com.github.se.gatherspot.ui
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Profile
@@ -29,11 +27,9 @@ class ProfileInstrumentedTest {
   @Before
   fun setUp() = runBlocking {
     FollowList.unfollow("TEST", "TEST2")
-      ProfileFirebaseConnection().add(Profile.testOrganizer())
-      ProfileFirebaseConnection().add(Profile.testParticipant())
+    ProfileFirebaseConnection().add(Profile.testOrganizer())
+    ProfileFirebaseConnection().add(Profile.testParticipant())
   }
-
-
 
   @OptIn(ExperimentalTestApi::class)
   @Test

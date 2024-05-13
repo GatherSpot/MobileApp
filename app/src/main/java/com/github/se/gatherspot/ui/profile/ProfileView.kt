@@ -79,13 +79,7 @@ fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit) {
   Row(
       modifier = Modifier.fillMaxWidth().padding(8.dp),
       horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(
-            text = "Cancel",
-            modifier =
-                Modifier.clickable {
-                      cancel()
-                    }
-                    .testTag("cancel"))
+        Text(text = "Cancel", modifier = Modifier.clickable { cancel() }.testTag("cancel"))
         Text(text = "Save", modifier = Modifier.clickable { save() }.testTag("save"))
       }
 }

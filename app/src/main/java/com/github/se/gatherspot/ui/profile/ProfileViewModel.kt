@@ -54,6 +54,7 @@ class OwnProfileViewModel : ViewModel() {
 
   val saved: LiveData<Boolean>
     get() = _saved
+
   val isEditing: LiveData<Boolean>
     get() = _isEditing
 
@@ -176,6 +177,7 @@ class OwnProfileViewModel : ViewModel() {
     cancelImage()
     _isEditing.value = false
   }
+
   fun edit() {
     _isEditing.value = true
   }

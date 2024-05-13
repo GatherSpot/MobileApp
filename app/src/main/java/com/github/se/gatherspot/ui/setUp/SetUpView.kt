@@ -26,15 +26,14 @@ import com.github.se.gatherspot.ui.profile.BioField
 import com.github.se.gatherspot.ui.profile.InterestsView
 
 @Composable
-fun NextButton(next: ()-> Unit) {
+fun NextButton(next: () -> Unit) {
   Button(
       colors = ButtonDefaults.buttonColors(Color.Transparent),
       onClick = { next() },
       modifier =
-      Modifier
-        .testTag("nextButton")
-        .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
-        .wrapContentSize()) {
+          Modifier.testTag("nextButton")
+              .border(width = 0.7.dp, Color.Black, shape = RoundedCornerShape(100.dp))
+              .wrapContentSize()) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -44,13 +43,11 @@ fun NextButton(next: ()-> Unit) {
 }
 
 @Composable
-fun DoneButton(isDone: Boolean,nav: NavigationActions) {
+fun DoneButton(isDone: Boolean, nav: NavigationActions) {
   Button(
       enabled = isDone,
       onClick = { nav.controller.navigate("home") },
-      modifier = Modifier
-        .testTag("doneButton")
-        .wrapContentSize()) {
+      modifier = Modifier.testTag("doneButton").wrapContentSize()) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -64,9 +61,7 @@ private fun Interests(vm: SetUpViewModel) {
   val interests = vm.interests.observeAsState()
   val flipInterests = vm::flipInterests
   Column(
-      modifier = Modifier
-        .padding(horizontal = 20.dp, vertical = 30.dp)
-        .testTag("setUpInterests")) {
+      modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpInterests")) {
         // TODO : add scroll ???
         // TODO : add condition minimum 3 interests ?
         Text(text = "Choose your interests", fontSize = 30.sp)
@@ -80,9 +75,7 @@ private fun Bio(vm: SetUpViewModel) {
   val bio = vm.bio.observeAsState()
   val bioError = vm.bioError.observeAsState()
   val setBio = vm::setBio
-  Column(modifier = Modifier
-    .padding(horizontal = 20.dp, vertical = 30.dp)
-    .testTag("setUpBioTag")) {
+  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpBioTag")) {
     Text(text = "Tell us a bit about yourself", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
     BioField(bio.value!!, bioError.value, setBio, edit = true)
@@ -91,9 +84,7 @@ private fun Bio(vm: SetUpViewModel) {
 
 @Composable
 private fun Image(vm: SetUpViewModel) {
-  Column(modifier = Modifier
-    .padding(horizontal = 20.dp, vertical = 30.dp)
-    .testTag("setUpImage")) {
+  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpImage")) {
     Text(text = "Choose a profile picture", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
     // TODO : add image picker
@@ -103,9 +94,7 @@ private fun Image(vm: SetUpViewModel) {
 
 @Composable
 private fun Done() {
-  Column(modifier = Modifier
-    .padding(horizontal = 20.dp, vertical = 30.dp)
-    .testTag("setUpDone")) {
+  Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpDone")) {
     Text(text = "You're all set!", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
     Text(text = "Welcome and have fun using GatherSpot !!!", fontSize = 20.sp)
@@ -113,7 +102,7 @@ private fun Done() {
 }
 
 @Composable
-fun SetUpView(vm: SetUpViewModel,nav: NavigationActions){
+fun SetUpView(vm: SetUpViewModel, nav: NavigationActions) {
   val currentStep = vm.currentStep.observeAsState()
   val isDone = vm.isDone.observeAsState(false)
   val doneButton = vm.doneButton.observeAsState(false)
@@ -125,11 +114,11 @@ fun SetUpView(vm: SetUpViewModel,nav: NavigationActions){
       },
       content = { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            when (currentStep.value) {
-                "Interests" -> Interests(vm)
-                "Bio" -> Bio(vm)
-                "Image" -> Image(vm)
-                "Done" -> Done()
+          when (currentStep.value) {
+            "Interests" -> Interests(vm)
+            "Bio" -> Bio(vm)
+            "Image" -> Image(vm)
+            "Done" -> Done()
           }
         }
       })

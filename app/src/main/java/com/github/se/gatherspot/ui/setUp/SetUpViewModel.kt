@@ -20,6 +20,7 @@ class SetUpViewModel() : ViewModel() {
   var isDone = MutableLiveData(false)
   var doneButton = MutableLiveData(false)
   var currentStep = MutableLiveData("Interests")
+
   fun flipInterests(interest: Interests) {
     interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
@@ -40,12 +41,16 @@ class SetUpViewModel() : ViewModel() {
           .invokeOnCompletion { isDone.postValue(true) }
     }
   }
-  fun next(){
-   when (currentStep.value){
-        "Interests" -> currentStep.value = "Bio"
-        "Bio" -> currentStep.value = "Image"
-        "Image" -> {currentStep.value = "Done"; done()}
-        else -> {}
-   }
+
+  fun next() {
+    when (currentStep.value) {
+      "Interests" -> currentStep.value = "Bio"
+      "Bio" -> currentStep.value = "Image"
+      "Image" -> {
+        currentStep.value = "Done"
+        done()
+      }
+      else -> {}
+    }
   }
 }

@@ -20,13 +20,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.lang.Thread.sleep
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 class SetUpTest : TestCase() {
@@ -35,23 +35,21 @@ class SetUpTest : TestCase() {
   @Before
   fun setUp() = runBlocking {
     testLogin()
-    ProfileFirebaseConnection().add(
-      com.github.se.gatherspot.model.Profile(
-        userName = "SetUpTest",
-        bio = "",
-        image = "",
-        id = Firebase.auth.uid!!,
-        interests = setOf()
-      )
-    )
+    ProfileFirebaseConnection()
+        .add(
+            com.github.se.gatherspot.model.Profile(
+                userName = "SetUpTest",
+                bio = "",
+                image = "",
+                id = Firebase.auth.uid!!,
+                interests = setOf()))
   }
+
   @After
   fun cleanUp() = runBlocking {
     ProfileFirebaseConnection().delete(Firebase.auth.uid!!)
     testLoginCleanUp()
   }
-
-
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -78,7 +76,7 @@ class SetUpTest : TestCase() {
       next { performClick() }
       composeTestRule.waitForIdle()
       setUpImage { assertExists() }
-      //TODO: maybe add image test when it will be implemented
+      // TODO: maybe add image test when it will be implemented
       next { performClick() }
       composeTestRule.waitForIdle()
       setUpDone { assertExists() }
@@ -86,7 +84,7 @@ class SetUpTest : TestCase() {
       done { performClick() }
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
-      composeTestRule.waitUntilAtLeastOneExists(hasText(string),5000)
+      composeTestRule.waitUntilAtLeastOneExists(hasText(string), 5000)
       basketball { assertExists() }
     }
   }

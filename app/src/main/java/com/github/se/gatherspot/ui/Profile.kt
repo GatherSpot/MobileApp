@@ -25,7 +25,7 @@ fun Profile(nav: NavigationActions) {
   // This new navController will navigate between seeing profile and editing profile
   val viewModelStoreOwner = LocalViewModelStoreOwner.current!!
   val viewModel = ViewModelProvider(viewModelStoreOwner)[OwnProfileViewModel::class.java]
-  ProfileScaffold(nav,viewModel)
+  ProfileScaffold(nav, viewModel)
 }
 
 /**
@@ -43,12 +43,12 @@ fun ViewProfile(nav: NavigationActions, uid: String) {
 @Preview
 @Composable
 fun ProfilePreview() {
-  runBlocking { ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
+  runBlocking {
+    ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
   }
   val navController = rememberNavController()
   Profile(NavigationActions(navController))
 }
-
 
 @Preview
 @Composable
