@@ -90,7 +90,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
     val registeredUsers = d.get("registeredUsers") as MutableList<String>
     val finalAttendee = d.get("finalAttendee") as List<String>
-    val images = null // TODO: Retrieve images from database
+    val image = d.getString("image")
     val globalRating =
         when (val rating = d.getString("globalRating")!!) {
           "null" -> null
@@ -114,7 +114,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         categories = categories,
         registeredUsers = registeredUsers,
         finalAttendees = finalAttendee,
-        images = images,
+        image = image ?: "",
         globalRating = globalRating,
         organizerID = organizerID)
   }
@@ -387,7 +387,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                   null -> "null"
                   else -> element.globalRating.toString()
                 },
-            "images" to null, // TODO: ADD IMAGES
+            "image" to element.image,
             "organizerID" to element.organizerID,
             "eventStatus" to element.eventStatus)
 

@@ -53,7 +53,8 @@ class EditEventTest {
               LocalTime.parse(
                   "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
           eventStatus = EventStatus.CREATED,
-          globalRating = null)
+          globalRating = null,
+          image = "")
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test

@@ -30,7 +30,7 @@ class DefaultEvents {
             categories = setOf(),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null,
         )
 
@@ -54,7 +54,7 @@ class DefaultEvents {
             registeredUsers = mutableListOf(),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
-            images = null,
+            image = "",
             organizerID = DefaultProfiles.trivial.id)
 
     fun withInterests(vararg interests: Interests, eventId: String) =
@@ -90,7 +90,7 @@ class DefaultEvents {
             categories = interests.toSet(),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null,
             organizerID = DefaultProfiles.trivial.id)
 
@@ -127,7 +127,7 @@ class DefaultEvents {
             categories = setOf(Interests.CHESS),
             registeredUsers = registered.toMutableList(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null,
             organizerID = DefaultProfiles.trivial.id)
 
@@ -164,7 +164,7 @@ class DefaultEvents {
             categories = setOf(Interests.BASKETBALL),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null,
             organizerID = authorId)
 
@@ -187,7 +187,7 @@ class DefaultEvents {
             registeredUsers = mutableListOf("1", "2", "3", "4", "5"),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
-            images = null,
+            image = "",
             organizerID = DefaultProfiles.trivial.id)
   }
 }
