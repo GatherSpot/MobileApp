@@ -16,6 +16,7 @@ import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -28,16 +29,12 @@ class EventsTest {
   private lateinit var uid: String
 
   @Before
-  fun setUp() {
+  fun setUp() = runBlocking {
     testLogin()
     uid = FirebaseAuth.getInstance().currentUser!!.uid
   }
 
-  @After
-  fun cleanUp() {
-    testLoginCleanUp()
-    Thread.sleep(1000)
-  }
+  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
 
   @Test
   fun testEverythingExists() {

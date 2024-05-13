@@ -23,6 +23,7 @@ import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -36,15 +37,9 @@ class CreateEventTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @Before
-  fun setUp() {
-    testLogin()
-  }
+  @Before fun setUp() = runBlocking { testLogin() }
 
-  @After
-  fun cleanUp() {
-    testLoginCleanUp()
-  }
+  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
 
   // Restructured to use EventDataFormScreen
   @Test

@@ -1,107 +1,63 @@
 package com.github.se.gatherspot.model
 
-import android.util.Log
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
-import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import java.time.LocalDate
-import java.time.LocalTime
+import java.lang.Thread.sleep
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
 class EventRegistrationViewModelTest {
 
-  @Before
-  fun setUp() {
-    testLogin()
-  }
+  private val eventFirebaseConnection = EventFirebaseConnection()
 
-  @After
-  fun cleanUp() {
-    testLoginCleanUp()
-  }
+  @Before fun setUp() = runBlocking { testLogin() }
+
+  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
 
   @Test
-  fun testRegisterForEventChangeEventListRegistered() = runBlocking {
+  fun testRegisterForEventChangeEventListRegistered() = runTest {
     // Set global uid
 
     val viewModel = EventRegistrationViewModel(listOf())
 
-    val event =
-        Event(
-            id = "idTestEvent",
-            title = "Event Title",
-            description =
-                "Hello: I am a description of the event just saying that I would love to say" +
-                    "that Messi is not the best player in the world, but I can't. I am sorry.",
-            attendanceMaxCapacity = 5,
-            attendanceMinCapacity = 1,
-            categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2024, 4, 15),
-            eventStartDate = LocalDate.of(2024, 4, 14),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = null,
-            registeredUsers = mutableListOf(),
-            timeBeginning = LocalTime.of(10, 0),
-            timeEnding = LocalTime.of(12, 0),
-        )
-    val eventFirebaseConnection = EventFirebaseConnection()
-    eventFirebaseConnection.add(event)
+    val event = DefaultEvents.withRegistered(eventId = "1")
+
+    runBlocking { eventFirebaseConnection.add(event) }
+
     viewModel.registerForEvent(event)
-    delay(2000)
+
+    // sadly did not find a way to do without a sleep and I don't want to waste too much time here
+    sleep(4000)
+    val result = viewModel.registrationState
+
     assertEquals(event.registeredUsers.size, 1)
-    EventFirebaseConnection().delete("idTestEvent")
+
+    runBlocking { EventFirebaseConnection().delete(event.id) }
   }
 
   @Test
-  fun testAlreadyRegistered(): Unit = runBlocking {
-    if (Firebase.auth.currentUser == null) Log.d("testAlreadyRegistered", "User is null")
+  fun testAlreadyRegistered(): Unit = runTest {
     val viewModel = EventRegistrationViewModel(listOf())
-    val event =
-        Event(
-            id = "idTestEvent",
-            title = "Event Title",
-            description =
-                "Hello: I am a description of the event just saying that I would love to say" +
-                    "that Messi is not the best player in the world, but I can't. I am sorry.",
-            attendanceMaxCapacity = 5,
-            attendanceMinCapacity = 1,
-            categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2024, 4, 15),
-            eventStartDate = LocalDate.of(2024, 4, 14),
-            location = null,
-            registeredUsers = mutableListOf(),
-            timeBeginning = LocalTime.of(10, 0),
-            timeEnding = LocalTime.of(12, 0),
-            globalRating = null,
-            inscriptionLimitDate = null,
-            inscriptionLimitTime = null,
-        )
+    val event = DefaultEvents.withRegistered(Firebase.auth.uid!!, eventId = "1")
+    runBlocking { eventFirebaseConnection.add(event) }
 
-    val eventFirebaseConnection = EventFirebaseConnection()
-    eventFirebaseConnection.add(event)
     viewModel.registerForEvent(event)
-    delay(5000)
-    viewModel.registerForEvent(event)
-    runBlocking {
-      delay(1000)
-      val error = viewModel.registrationState.value
-      assertEquals(RegistrationState.Error("Already registered for this event"), error)
-    }
+    val error = viewModel.registrationState
+    // sadly did not find a way to do without a sleep and I don't want to waste too much time here
+    sleep(4000)
+    assertEquals(RegistrationState.Error("Already registered for this event"), error.value)
 
     // To keep a clean database delete the test event
-    EventFirebaseConnection().delete("idTestEvent")
-    testLoginCleanUp()
+    runBlocking { EventFirebaseConnection().delete("idTestEvent") }
   }
 }
