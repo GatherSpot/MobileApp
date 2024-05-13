@@ -37,11 +37,9 @@ class CreateEventTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @Before
-  fun setUp() = runBlocking { testLogin() }
+  @Before fun setUp() = runBlocking { testLogin() }
 
-  @After
-  fun cleanUp() = runBlocking { testLoginCleanUp() }
+  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
 
   // Restructured to use EventDataFormScreen
   @Test

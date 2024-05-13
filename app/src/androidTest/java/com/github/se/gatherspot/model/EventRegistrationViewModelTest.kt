@@ -8,23 +8,21 @@ import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import java.lang.Thread.sleep
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.lang.Thread.sleep
 
 class EventRegistrationViewModelTest {
 
   private val eventFirebaseConnection = EventFirebaseConnection()
-  @Before
-  fun setUp() = runBlocking { testLogin()}
 
-  @After
-  fun cleanUp() = runBlocking { testLoginCleanUp() }
+  @Before fun setUp() = runBlocking { testLogin() }
 
+  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
 
   @Test
   fun testRegisterForEventChangeEventListRegistered() = runTest {
@@ -44,7 +42,7 @@ class EventRegistrationViewModelTest {
 
     assertEquals(event.registeredUsers.size, 1)
 
-    runBlocking {EventFirebaseConnection().delete(event.id)}
+    runBlocking { EventFirebaseConnection().delete(event.id) }
   }
 
   @Test
@@ -60,7 +58,6 @@ class EventRegistrationViewModelTest {
     assertEquals(RegistrationState.Error("Already registered for this event"), error.value)
 
     // To keep a clean database delete the test event
-    runBlocking {
-    EventFirebaseConnection().delete("idTestEvent")}
+    runBlocking { EventFirebaseConnection().delete("idTestEvent") }
   }
 }

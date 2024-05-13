@@ -4,14 +4,10 @@ import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.Profile
-import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
@@ -101,20 +97,20 @@ class EventUtilsTest {
   fun validateEventData_withEventStartDateAfterEndDate_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event3",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/03/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.ART, Interests.SPORT),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event3",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/03/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.ART, Interests.SPORT),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Event end date must be after start date", e.message)
     }
@@ -124,20 +120,20 @@ class EventUtilsTest {
   fun validateEventData_withInvalidStartDate_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event4",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12022020",
-              "12/03/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.ART, Interests.SPORT),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event4",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12022020",
+          "12/03/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.ART, Interests.SPORT),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Invalid date format", e.message)
     }
@@ -147,20 +143,20 @@ class EventUtilsTest {
   fun validateEventData_withInvalidEndDate_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "10/04/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.ART, Interests.SPORT),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "10/04/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.ART, Interests.SPORT),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Event end date must be after start date", e.message)
     }
@@ -170,20 +166,20 @@ class EventUtilsTest {
   fun validateEventData_withInvalidEndTime_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event5",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "",
-              "10:00",
-              "12:00",
-              emptyList(),
-              "",
-              "",
-              "",
-              "",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event5",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "",
+          "10:00",
+          "12:00",
+          emptyList(),
+          "",
+          "",
+          "",
+          "",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Event end date must be after start date", e.message)
     }
@@ -193,20 +189,20 @@ class EventUtilsTest {
   fun validateEventData_withInvalidTime_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event6",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/05/2026",
-              "10:00",
-              "25:00",
-              emptyList(),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event6",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/05/2026",
+          "10:00",
+          "25:00",
+          emptyList(),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Invalid time format for end time", e.message)
     }
@@ -216,21 +212,21 @@ class EventUtilsTest {
   fun validateEventDataForUpdate_withInvalidMaxCapacity_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              emptyList(),
-              "two",
-              "0",
-              "10/04/2025",
-              "09:00",
-              EventAction.EDIT,
-              testEvent)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          emptyList(),
+          "two",
+          "0",
+          "10/04/2025",
+          "09:00",
+          EventAction.EDIT,
+          testEvent)
     } catch (e: Exception) {
       Assert.assertEquals("Invalid max attendees format, must be a number", e.message)
     }
@@ -240,20 +236,20 @@ class EventUtilsTest {
   fun validateEventData_withInvalidMinCapacity_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              emptyList(),
-              "100",
-              "two",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          emptyList(),
+          "100",
+          "two",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Invalid min attendees format, must be a number", e.message)
     }
@@ -263,20 +259,20 @@ class EventUtilsTest {
   fun validateEventData_withEventDateBeforeToday_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2020",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              emptyList(),
-              "100",
-              "10",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2020",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          emptyList(),
+          "100",
+          "10",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Event date must be in the future", e.message)
     }
@@ -286,20 +282,20 @@ class EventUtilsTest {
   fun validateEventData_withMinAttendeesGreaterThanMaxAttendees_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.BASKETBALL),
-              "100",
-              "200",
-              "10/04/2025",
-              "09:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.BASKETBALL),
+          "100",
+          "200",
+          "10/04/2025",
+          "09:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Minimum attendees must be less than maximum attendees", e.message)
     }
@@ -309,20 +305,20 @@ class EventUtilsTest {
   fun validateEventData_withInvalidInscriptionLimitDate_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "12/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.BASKETBALL),
-              "100",
-              "10",
-              "10/04/2020",
-              "09:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "12/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.BASKETBALL),
+          "100",
+          "10",
+          "10/04/2020",
+          "09:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Inscription limit date must be in the future", e.message)
     }
@@ -332,20 +328,20 @@ class EventUtilsTest {
   fun validateEventData_withInvalidInscriptionLimitTime_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "10/04/2026",
-              "12/04/2026",
-              "10:00",
-              "12:00",
-              listOf(Interests.BASKETBALL),
-              "100",
-              "10",
-              "10/04/2026",
-              "11:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "10/04/2026",
+          "12/04/2026",
+          "10:00",
+          "12:00",
+          listOf(Interests.BASKETBALL),
+          "100",
+          "10",
+          "10/04/2026",
+          "11:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals(
           "Inscription limit time must be before event start time on the same day", e.message)
@@ -356,20 +352,20 @@ class EventUtilsTest {
   fun validateEventData_withEndTimeBeforeStartTime_returnsFalse() {
     // validate data parse strings
     try {
-          eventUtils.validateAndCreateOrUpdateEvent(
-              "Test Event",
-              "This is a test event",
-              Location(0.0, 0.0, "Test Location"),
-              "10/04/2026",
-              "10/04/2026",
-              "12:00",
-              "10:00",
-              listOf(Interests.BASKETBALL),
-              "100",
-              "10",
-              "10/04/2026",
-              "09:00",
-              EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+          "Test Event",
+          "This is a test event",
+          Location(0.0, 0.0, "Test Location"),
+          "10/04/2026",
+          "10/04/2026",
+          "12:00",
+          "10:00",
+          listOf(Interests.BASKETBALL),
+          "100",
+          "10",
+          "10/04/2026",
+          "09:00",
+          EventAction.CREATE)
     } catch (e: Exception) {
       Assert.assertEquals("Event end time must be after start time", e.message)
     }

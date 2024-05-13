@@ -29,18 +29,15 @@ import org.junit.Test
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
   private val trivialEvent = DefaultEvents.trivialEvent1
-  private lateinit var ownEvent : Event
+  private lateinit var ownEvent: Event
 
-@Before
+  @Before
   fun setUp() = runBlocking {
     testLogin()
-    ownEvent = DefaultEvents.withAuthor(Firebase.auth.uid!!,"1")
+    ownEvent = DefaultEvents.withAuthor(Firebase.auth.uid!!, "1")
   }
 
-  @After
-  fun cleanUp() = runBlocking {
-    testLoginCleanUp()
-  }
+  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
 
   @Test
   fun testEverythingExists() {
@@ -154,11 +151,7 @@ class EventUITest {
           EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      description {
-        assert(
-            hasText(
-                DefaultEvents.trivialEvent1.description!!))
-      }
+      description { assert(hasText(DefaultEvents.trivialEvent1.description!!)) }
       profileIndicator {
         hasText("Hosted by")
         hasText("John Doe")
@@ -267,9 +260,10 @@ class EventUITest {
   fun testAlreadyRegistered(): Unit {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = DefaultEvents.withRegistered(Firebase.auth.uid!!, eventId = "1")
-      val eventFirebase = EventFirebaseConnection()
-      runBlocking { eventFirebase.add(event) }
+      val event =
+          DefaultEvents.withRegistered(FirebaseAuth.getInstance().currentUser!!.uid, eventId = "2")
+      val eventfirebase = EventFirebaseConnection()
+      runBlocking { eventfirebase.add(event) }
 
       EventUI(
           event,
@@ -277,6 +271,7 @@ class EventUITest {
           EventRegistrationViewModel(listOf(FirebaseAuth.getInstance().currentUser!!.uid)),
           EventsViewModel())
     }
+    Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
         performScrollTo()
@@ -339,10 +334,9 @@ class EventUITest {
 
   @Test
   fun testProfileIsCorrectlyFetched() {
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = DefaultEvents.withAuthor(Profile.testOrganizer().id,"1")
+      val event = DefaultEvents.withAuthor(Profile.testOrganizer().id, "1")
       runBlocking { ProfileFirebaseConnection().add(Profile.testOrganizer()) }
       EventUI(
           event,

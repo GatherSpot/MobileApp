@@ -28,6 +28,7 @@ class ChatsTest {
 
   @get:Rule val composeTestRule = createComposeRule()
   val event = DefaultEvents.trivialEvent1
+
   @Before
   fun setup() = runBlocking {
     testLogin()

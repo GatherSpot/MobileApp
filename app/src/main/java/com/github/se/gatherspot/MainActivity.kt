@@ -105,9 +105,8 @@ class MainActivity : ComponentActivity() {
 
               composable("profile") { Profile(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
-                ViewProfile(NavigationActions(navController),
-                  backstackEntry.arguments?.getString("uid")!!
-                )
+                ViewProfile(
+                    NavigationActions(navController), backstackEntry.arguments?.getString("uid")!!)
               }
               composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
               composable("chat/{chatJson}") { backStackEntry ->

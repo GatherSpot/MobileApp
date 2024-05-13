@@ -34,10 +34,7 @@ class EventsTest {
     uid = FirebaseAuth.getInstance().currentUser!!.uid
   }
 
-  @After
-  fun cleanUp() = runBlocking {
-    testLoginCleanUp()
-  }
+  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
 
   @Test
   fun testEverythingExists() {

@@ -22,6 +22,6 @@ class EventTest {
 
     val json = event.toJson()
     val resultEvent = Event.fromJson(json)
-    assertEquals(event,resultEvent)
+    assertEquals(event, resultEvent)
   }
 }
