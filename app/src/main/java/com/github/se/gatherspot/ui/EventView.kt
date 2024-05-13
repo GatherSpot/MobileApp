@@ -2,6 +2,7 @@ package com.github.se.gatherspot.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -30,6 +31,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -73,6 +76,7 @@ fun EventUI(
 
   val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by eventUIViewModel.displayAlertDeletion.observeAsState()
+  val rating by eventUIViewModel.rating.observeAsState()
   val isOrganizer =
       event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
   val eventUtils = EventUtils()
@@ -367,6 +371,44 @@ fun ProfileIndicator(profile: Profile) {
         Text(text = profile.userName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
       }
 }
+
+/**
+ * StarRating displays 5 stars, where the user can click on a star to rate the event.
+ */
+@Composable
+fun StarRating(rating: Long, onRatingChanged: (Int) -> Unit) {
+    Row(
+        modifier = Modifier.padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        for (i in 1..5) {
+            Icon(
+                imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.Star,
+                contentDescription = null,
+                tint = if (i <= rating) MaterialTheme.colors.primary else Color.Gray,
+                modifier =
+                Modifier
+                    .size(40.dp)
+                    .testTag("starRating $i")
+                    .clickable { onRatingChanged(i) })
+        }
+    }
+}
+
+/**
+ * RatingDisplay is a composable that displays a row with a text "Rate this event" and a StarRating
+ * composable.
+ */
+@Composable
+fun RatingDisplay(rating: Long) {
+    Row(
+        modifier = Modifier.padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(text = "Rate this event", fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.width(8.dp))
+        StarRating(rating = rating, onRatingChanged = {} )
+    }
+}
+
 
 // Preview for the Event UI, for testing purposes
 @Preview
