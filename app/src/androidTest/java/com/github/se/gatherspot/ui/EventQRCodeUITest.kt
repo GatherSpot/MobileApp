@@ -53,7 +53,8 @@ class EventQRCodeUITest {
                   LocalTime.parse(
                       "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
               eventStatus = EventStatus.CREATED,
-              globalRating = null)
+              globalRating = null,
+              image = "")
       EventQRCodeUI(event = event)
     }
     ComposeScreen.onComposeScreen<EventQRcodeScreen>(composeTestRule) {

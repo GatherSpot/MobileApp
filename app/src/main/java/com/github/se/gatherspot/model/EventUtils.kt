@@ -79,6 +79,7 @@ class EventUtils {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
+            image = "",
             categories = categories?.toSet(),
             eventStatus = EventStatus.CREATED)
 
@@ -291,7 +292,7 @@ class EventUtils {
             globalRating = oldEvent.globalRating,
             categories = categories?.toSet(),
             registeredUsers = oldEvent.registeredUsers,
-            images = oldEvent.images,
+            image = oldEvent.image,
             eventStatus = EventStatus.CREATED,
         )
     // Add the event to the database
