@@ -6,7 +6,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
+import org.junit.Before
 import org.junit.Test
 
 class RatingFirebaseConnectionTest {
@@ -19,24 +19,44 @@ class RatingFirebaseConnectionTest {
   private val firstRating = Rating.FIVE_STARS
   private val firstRater = "testRater1"
 
+  @Before
+  fun setup() {
+    runTest {
+      val unrated = Rating.UNRATED
+      ratingFirebaseConnection.update(eventID, userID, unrated)
+      async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
+      ratingFirebaseConnection.update(eventID, firstRater, unrated)
+      async { ratingFirebaseConnection.fetchRating(eventID, firstRater) }.await()
+      ratingFirebaseConnection.update(eventID, secondRater, unrated)
+      async { ratingFirebaseConnection.fetchRating(eventID, secondRater) }.await()
+    }
+  }
+
+  fun tearDown() {
+    runTest {
+      val unrated = Rating.UNRATED
+      ratingFirebaseConnection.update(eventID, userID, unrated)
+      async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
+      ratingFirebaseConnection.update(eventID, firstRater, unrated)
+      async { ratingFirebaseConnection.fetchRating(eventID, firstRater) }.await()
+      ratingFirebaseConnection.update(eventID, secondRater, unrated)
+      async { ratingFirebaseConnection.fetchRating(eventID, secondRater) }.await()
+    }
+  }
+
   @Test
   fun testRatingUnRatedEvent() {
     runTest {
-      ratingFirebaseConnection.deleteRatings(eventID)
-
       ratingFirebaseConnection.update(eventID, userID, rating)
       var fetched: Rating? = null
       async { fetched = ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
       assertEquals(rating, fetched)
-      ratingFirebaseConnection.deleteRatings(eventID)
     }
   }
 
   @Test
   fun testRatingsMergeCorrectly() {
     runTest {
-      ratingFirebaseConnection.deleteRatings(eventID)
-
       ratingFirebaseConnection.update(eventID, firstRater, firstRating)
       ratingFirebaseConnection.update(eventID, secondRater, secondRating)
 
@@ -49,15 +69,12 @@ class RatingFirebaseConnectionTest {
       assertNotNull(fetched2)
       // both exist
 
-      ratingFirebaseConnection.deleteRatings(eventID)
     }
   }
 
   @Test
   fun testFetchRatings() {
     runTest {
-      ratingFirebaseConnection.deleteRatings(eventID)
-
       ratingFirebaseConnection.update(eventID, userID, rating)
       ratingFirebaseConnection.update(eventID, secondRater, secondRating)
       val fetched = async { ratingFirebaseConnection.fetchRatings(eventID) }.await()
@@ -65,15 +82,12 @@ class RatingFirebaseConnectionTest {
       assertNotNull(fetched)
       assertEquals(rating, fetched?.get(userID))
       assertEquals(secondRating, fetched?.get(secondRater))
-      ratingFirebaseConnection.deleteRatings(eventID)
     }
   }
 
   @Test
   fun testDeleteARating() {
     runTest {
-      ratingFirebaseConnection.deleteRatings(eventID)
-
       ratingFirebaseConnection.update(eventID, userID, rating)
       ratingFirebaseConnection.update(eventID, secondRater, secondRating)
       ratingFirebaseConnection.update(eventID, firstRater, firstRating)
@@ -85,23 +99,6 @@ class RatingFirebaseConnectionTest {
       assertEquals(null, fetched?.get(firstRater))
       assertEquals(rating, fetched?.get(userID))
       assertEquals(secondRating, fetched?.get(secondRater))
-      ratingFirebaseConnection.deleteRatings(eventID)
-    }
-  }
-
-  @Test
-  fun testDeleteRatings() {
-    runTest {
-      val rating = Rating.FIVE_STARS
-      val eventID = "testRating"
-      val userID = "testRater1"
-
-      ratingFirebaseConnection.update(eventID, userID, rating)
-      ratingFirebaseConnection.deleteRatings(eventID)
-      val fetched = async { ratingFirebaseConnection.fetchRatings(eventID) }.await()
-      Log.d("RatingFirebaseConnectionTest", "Ratings are ${fetched.toString()}")
-      assertNull(fetched)
-      assertEquals(null, fetched?.get(userID))
     }
   }
 
