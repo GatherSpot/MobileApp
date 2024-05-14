@@ -18,25 +18,34 @@ import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.lang.Thread.sleep
 import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class EventsViewCompleteTest {
   @get:Rule val composeTestRule = createComposeRule()
   private val event = DefaultEvents.trivialEvent1
-  private val eventJson = event.toJson()
   private val profile = DefaultProfiles.trivial
+
+  @Before
+  fun setUp() = runBlocking {
+    testLogin()
+    ProfileFirebaseConnection().add(profile)
+    sleep(3000) // somehow profile is still not available for fetching
+  }
+
+  @After
+  fun cleanup() = runBlocking {
+    testLoginCleanUp()
+    ProfileFirebaseConnection().delete(profile.id)
+  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun fromEventsToOrganizerProfile() {
-    // The test need to be logged in
-    runBlocking {
-      testLogin()
-      ProfileFirebaseConnection().add(profile)
-    }
-
     // This test will navigate from the events screen to the organizer profile
     val viewModel = EventsViewModel()
     val eventRegistrationModel = EventRegistrationViewModel(emptyList())
@@ -60,7 +69,6 @@ class EventsViewCompleteTest {
         }
       }
     }
-
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       // click on the profile indicator
       composeTestRule.waitUntilAtLeastOneExists(hasText(profile.userName), 4000)
@@ -78,10 +86,6 @@ class EventsViewCompleteTest {
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       // Check that the event screen is displayed
       composeTestRule.waitUntilAtLeastOneExists(hasText(event.title))
-    }
-    runBlocking {
-      testLoginCleanUp()
-      ProfileFirebaseConnection().delete(profile.id)
     }
   }
 }
