@@ -44,6 +44,7 @@ class EventUITest {
               ProfileFirebaseConnection().getCurrentUserUid()!!,
               setOf(Interests.FOOTBALL))
       ProfileFirebaseConnection().add(p)
+      ProfileFirebaseConnection().add(Profile.testParticipant())
       delay(3000)
     }
   }
@@ -52,6 +53,7 @@ class EventUITest {
   fun cleanUp() {
     runBlocking {
       ProfileFirebaseConnection().delete(uid)
+      ProfileFirebaseConnection().delete(Profile.testParticipant().id)
       testLoginCleanUp()
     }
   }
@@ -191,7 +193,6 @@ class EventUITest {
 
   @Test
   fun textsDisplayedAreCorrect() {
-    ProfileFirebaseConnection().add(Profile.testParticipant())
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -499,7 +500,6 @@ class EventUITest {
 
   @Test
   fun testProfileIsCorrectlyFetched() {
-    ProfileFirebaseConnection().add(Profile.testOrganizer())
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -509,7 +509,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = Profile.testOrganizer().id,
+              organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
