@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -43,6 +44,7 @@ class EventUITest {
               ProfileFirebaseConnection().getCurrentUserUid()!!,
               setOf(Interests.FOOTBALL))
       ProfileFirebaseConnection().add(p)
+      delay(3000)
     }
   }
 
