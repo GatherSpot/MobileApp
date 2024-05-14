@@ -35,8 +35,8 @@ class EventUITest {
   @Before
   fun setUp() = runBlocking {
     testLogin()
-    ProfileFirebaseConnection().add(profile)
-    ProfileFirebaseConnection().add(DefaultProfiles.withId(Firebase.auth.uid!!))
+    ProfileFirebaseConnection().addBlocking(profile)
+    ProfileFirebaseConnection().addBlocking(DefaultProfiles.withId(Firebase.auth.uid!!))
     ownEvent = DefaultEvents.withAuthor(Firebase.auth.uid!!, "1")
   }
 

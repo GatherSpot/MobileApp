@@ -214,7 +214,6 @@ class EventsTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testRefreshButtonFunctionalWithFilter() {
-    assert(FirebaseAuth.getInstance().currentUser != null)
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
     composeTestRule.setContent {

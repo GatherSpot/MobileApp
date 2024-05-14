@@ -114,6 +114,23 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
         .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
   }
+  // this is a temporary solution, will clean this up later
+  suspend fun addBlocking(element: Profile) {
+    suspendCancellableCoroutine { continuation ->
+      val data =
+          hashMapOf(
+              "userName" to element.userName,
+              "bio" to element.bio,
+              "image" to element.image,
+              "interests" to Interests.toCompressedString(element.interests))
+      Firebase.firestore
+          .collection(COLLECTION)
+          .document(element.id)
+          .set(data)
+          .addOnSuccessListener { continuation.resume(Unit) }
+          .addOnFailureListener { error -> continuation.resume(error) }
+    }
+  }
 
   /**
    * Updates a field of a profile in the database

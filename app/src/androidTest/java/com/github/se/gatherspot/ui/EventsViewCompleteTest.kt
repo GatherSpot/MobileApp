@@ -18,7 +18,6 @@ import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import java.lang.Thread.sleep
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -33,7 +32,7 @@ class EventsViewCompleteTest {
   @Before
   fun setUp() = runBlocking {
     testLogin()
-    ProfileFirebaseConnection().add(profile)
+    ProfileFirebaseConnection().addBlocking(profile)
   }
 
   @After
@@ -48,7 +47,6 @@ class EventsViewCompleteTest {
     // This test will navigate from the events screen to the organizer profile
     val viewModel = EventsViewModel()
     val eventRegistrationModel = EventRegistrationViewModel(emptyList())
-    sleep(3000)
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "home") {
@@ -68,7 +66,6 @@ class EventsViewCompleteTest {
         }
       }
     }
-    sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       // click on the profile indicator
       composeTestRule.waitUntilAtLeastOneExists(hasText(profile.userName), 4000)
