@@ -28,15 +28,30 @@ import org.junit.Test
 
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
+  private lateinit var uid: String
 
   @Before
   fun setUp() {
-    testLogin()
+    runBlocking {
+      testLogin()
+      uid = ProfileFirebaseConnection().getCurrentUserUid()!!
+      val p =
+          Profile(
+              "EventUITest",
+              "Here for testing purposes",
+              "",
+              ProfileFirebaseConnection().getCurrentUserUid()!!,
+              setOf(Interests.FOOTBALL))
+      ProfileFirebaseConnection().add(p)
+    }
   }
 
   @After
   fun cleanUp() {
-    testLoginCleanUp()
+    runBlocking {
+      ProfileFirebaseConnection().delete(uid)
+      testLoginCleanUp()
+    }
   }
 
   @Test
@@ -174,7 +189,7 @@ class EventUITest {
 
   @Test
   fun textsDisplayedAreCorrect() {
-
+    ProfileFirebaseConnection().add(Profile.testParticipant())
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -394,6 +409,7 @@ class EventUITest {
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
+
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -481,7 +497,7 @@ class EventUITest {
 
   @Test
   fun testProfileIsCorrectlyFetched() {
-    testLogin()
+    ProfileFirebaseConnection().add(Profile.testOrganizer())
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
