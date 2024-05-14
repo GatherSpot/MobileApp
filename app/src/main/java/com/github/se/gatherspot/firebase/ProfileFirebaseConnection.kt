@@ -100,22 +100,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param element the profile to add
    */
-  override fun add(element: Profile) {
-    val data =
-        hashMapOf(
-            "userName" to element.userName,
-            "bio" to element.bio,
-            "image" to element.image,
-            "interests" to Interests.toCompressedString(element.interests))
-    Firebase.firestore
-        .collection(COLLECTION)
-        .document(element.id)
-        .set(data)
-        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
-        .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
-  }
-  // this is a temporary solution, will clean this up later
-  suspend fun addBlocking(element: Profile) {
+  override suspend fun add(element: Profile) {
     suspendCancellableCoroutine { continuation ->
       val data =
           hashMapOf(
@@ -139,7 +124,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @param field the field to update : {userName, bio, image, interests}
    * @param value the new value of the field
    */
-  override fun update(id: String, field: String, value: Any) {
+  override suspend fun update(id: String, field: String, value: Any) {
     when (field) {
       "interests" -> {
         when (value) {
@@ -177,7 +162,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   /** Calls the add function to update the profile in the database */
-  fun update(profile: Profile) {
+  suspend fun update(profile: Profile) {
     this.add(profile)
   }
 
@@ -209,7 +194,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   */
 
   /** Deletes a profile from the database */
-  override fun delete(id: String) {
+  override suspend fun delete(id: String) {
     // delete associated data from other collection TODO
     // delete ratings using registrations to find such events
     // delete registrations

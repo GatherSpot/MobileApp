@@ -45,7 +45,7 @@ class EventUtils {
    */
   private val eventFirebaseConnection = EventFirebaseConnection()
 
-  private fun createEvent(
+  private suspend fun createEvent(
       title: String,
       description: String,
       location: Location?,
@@ -94,7 +94,7 @@ class EventUtils {
    *
    * @param event: The event to delete
    */
-  fun deleteEvent(event: Event) {
+  suspend fun deleteEvent(event: Event) {
     // Remove the event from all the users who registered for it
     val idListFirebase = IdListFirebaseConnection()
     runBlocking {
@@ -129,7 +129,7 @@ class EventUtils {
    * @return true if the data is valid
    * @throws Exception if the data is not valid
    */
-  fun validateAndCreateOrUpdateEvent(
+  suspend fun validateAndCreateOrUpdateEvent(
       title: String,
       description: String,
       location: Location?,
@@ -260,7 +260,7 @@ class EventUtils {
     }
   }
 
-  private fun editEvent(
+  private suspend fun editEvent(
       title: String,
       description: String,
       location: Location?,

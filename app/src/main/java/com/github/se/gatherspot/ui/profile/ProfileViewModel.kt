@@ -45,7 +45,7 @@ class OwnProfileViewModel : ViewModel() {
     _profile.userName = _username.value!!
     _profile.bio = _bio.value!!
     _profile.interests = _interests.value!!
-    ProfileFirebaseConnection().add(_profile)
+    viewModelScope.launch { ProfileFirebaseConnection().add(_profile) }
   }
 
   fun update() {

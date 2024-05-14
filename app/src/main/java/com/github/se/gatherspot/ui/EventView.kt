@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,6 +61,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -73,6 +75,7 @@ fun EventUI(
   val showDialogRegistration by registrationViewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by registrationViewModel.displayAlertDeletion.observeAsState()
   val isOrganizer = event.organizerID == (Firebase.auth.currentUser?.uid!!)
+  val coroutineScope = rememberCoroutineScope()
 
   val organizerProfile = remember { mutableStateOf<Profile?>(null) }
   LaunchedEffect(Unit) {
@@ -302,7 +305,7 @@ fun EventUI(
                     modifier = Modifier.testTag("okButton"),
                     onClick = {
                       // Delete the event
-                      eventUtils.deleteEvent(event)
+                      coroutineScope.launch { eventUtils.deleteEvent(event) }
                       navActions.goBack()
                       registrationViewModel.dismissAlert()
                     }) {

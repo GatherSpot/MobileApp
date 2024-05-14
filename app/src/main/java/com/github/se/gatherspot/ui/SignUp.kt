@@ -29,6 +29,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +51,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -67,6 +69,7 @@ fun SignUp(nav: NavigationActions) {
   var verifEmailSent by remember { mutableStateOf(false) }
   val t = remember { mutableStateOf("") }
   val ProfileFirebaseConnection = ProfileFirebaseConnection()
+  val coroutineContext = rememberCoroutineScope()
 
   LaunchedEffect(isClicked) {
     if (isClicked) {
@@ -228,15 +231,19 @@ fun SignUp(nav: NavigationActions) {
             modifier =
                 Modifier.testTag("verification").clickable {
                   verifEmailSent = false
-                  ProfileFirebaseConnection.add(
-                      Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
-                  nav.controller.navigate("setup")
+                  coroutineContext.launch {
+                    ProfileFirebaseConnection.add(
+                        Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
+                    nav.controller.navigate("setup")
+                  }
                 },
             onDismissRequest = {
               verifEmailSent = false
-              ProfileFirebaseConnection.add(
-                  Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
-              nav.controller.navigate("setup")
+              coroutineContext.launch {
+                ProfileFirebaseConnection.add(
+                    Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
+                nav.controller.navigate("setup")
+              }
             },
             confirmButton = {},
             title = { Text("Verification Email Sent") },
