@@ -21,8 +21,8 @@ class RatingFirebaseConnection {
   private fun attendeesRatingsCollection(eventID: String) =
       Firebase.firestore.collection(EVENT_COLLECTION).document(eventID).collection("attendees_ratings")
 
-    private fun organizedEventsRatingsCollection(organizerID: String) =
-        Firebase.firestore.collection(ORGANIZER_COLLECTION).document(organizerID).collection("event_ratings")
+    private fun organizedEventsCollection(organizerID: String) =
+        Firebase.firestore.collection(ORGANIZER_COLLECTION).document(organizerID).collection("organized")
   /**
    * Fetches the rating of the user for the event
    *
@@ -107,6 +107,7 @@ class RatingFirebaseConnection {
           .set(data)
           .addOnSuccessListener {
             Log.d(TAG, "added Rating of event $eventID, of $rating for user $userID")
+              ORGANIZER_COLLECTION
           }
           .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
     } else {
@@ -215,29 +216,6 @@ class RatingFirebaseConnection {
             .addOnFailureListener { exception ->
                 Log.d(TAG, "Aggregate query get failed with :", exception)}
 
-    }
-
-   fun updateOrganizerRating(eventID: String, data : Map<String, Any>) {
-       fun fetchOrganizerID(eventID: String): String? {
-           val eventFirebaseConnection = EventFirebaseConnection()
-           var organizerID: String? = null
-           runBlocking {
-               async { organizerID = eventFirebaseConnection.fetch(eventID)?.organizerID }.await()
-           }
-           return organizerID
-       }
-
-       val organizerID = fetchOrganizerID(eventID)
-       if (organizerID != null) {
-           organizedEventsRatingsCollection(organizerID = organizerID)
-               .document(eventID)
-               .set(data, SetOptions.merge())
-       }
-   }
-    fun updateOrganizerRating(eventID: String, organizerID : String, data : Map<String, Any>){
-        organizedEventsRatingsCollection(organizerID)
-            .document(eventID)
-            .set(data, SetOptions.merge())
     }
 
 
