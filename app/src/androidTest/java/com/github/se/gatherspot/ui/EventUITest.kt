@@ -418,7 +418,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-        calendarButton { assertIsDisplayed() }
+      calendarButton { assertIsDisplayed() }
       editEventButton { assertIsDisplayed() }
       deleteButton { assertIsDisplayed() }
     }
@@ -452,7 +452,6 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-
       editEventButton { assertIsDisplayed() }
       deleteButton {
         assertIsDisplayed()
@@ -485,17 +484,21 @@ class EventUITest {
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
-        Log.e("In the list", pastEventRegisteredTo.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid).toString())
-        Log.e("isEventOver", EventUtils().isEventOver(pastEventRegisteredTo).toString())
-        assert(eventUIViewModel.canRate())
-        starRow {
-            performScrollTo()
-            assertIsDisplayed()
-        }
-        star {
-            performScrollTo()
-            assertIsDisplayed()
-        }
+      Log.e(
+          "In the list",
+          pastEventRegisteredTo.registeredUsers
+              .contains(FirebaseAuth.getInstance().currentUser!!.uid)
+              .toString())
+      Log.e("isEventOver", EventUtils().isEventOver(pastEventRegisteredTo).toString())
+      assert(eventUIViewModel.canRate())
+      starRow {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      star {
+        performScrollTo()
+        assertIsDisplayed()
+      }
     }
   }
 
@@ -532,5 +535,4 @@ class EventUITest {
       // profileIndicator.performClick()
     }
   }
-
 }

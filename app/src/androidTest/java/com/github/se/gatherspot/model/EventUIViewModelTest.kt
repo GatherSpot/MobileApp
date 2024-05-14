@@ -39,7 +39,7 @@ class EventUIViewModelTest {
           description = null,
           location = null,
           eventStartDate = LocalDate.of(2024, 5, 10),
-          eventEndDate = LocalDate.of(2024, 5,11),
+          eventEndDate = LocalDate.of(2024, 5, 11),
           timeBeginning = null,
           timeEnding = null,
           attendanceMaxCapacity = null,
