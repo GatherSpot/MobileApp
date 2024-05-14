@@ -7,8 +7,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
-import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
@@ -23,27 +23,28 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @return the profile NOTE : The profile will be initially empty, to use it in a view, you need
    *   to update the view using with a lambda function that updates the view
    */
-  fun fetch(id: String, onSuccess: () -> Unit): Profile {
-    Log.d(TAG, "id: $id")
+  override suspend fun fetch(id: String): Profile {
     val profile = Profile("", "", "", id, Interests.new())
-    Firebase.firestore
-        .collection(COLLECTION)
-        .document(id)
-        .get()
-        .addOnSuccessListener { document ->
-          if (document != null) {
-            Log.d(TAG, "Document is empty")
-            profile.userName = document.get("userName") as String
-            profile.bio = document.get("bio") as String
-            profile.image = document.get("image") as String
-            profile.interests = Interests.fromCompressedString(document.get("interests") as String)
-            onSuccess()
-            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-          } else {
-            Log.d(TAG, "No such document")
+    suspendCancellableCoroutine { continuation ->
+      Log.d(TAG, "id: $id")
+      Firebase.firestore
+          .collection(COLLECTION)
+          .document(id)
+          .get()
+          .addOnSuccessListener { document ->
+              profile.userName = document.get("userName") as String
+              profile.bio = document.get("bio") as String
+              profile.image = document.get("image") as String
+              profile.interests =
+                  Interests.fromCompressedString(document.get("interests") as String)
+              continuation.resume(profile)
+              Log.d(TAG, "DocumentSnapshot data: ${document.data}")
           }
-        }
-        .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
+          .addOnFailureListener { exception ->
+            Log.d(TAG, "get failed with :", exception)
+            continuation.resume(exception)
+          }
+    }
     return profile
   }
 

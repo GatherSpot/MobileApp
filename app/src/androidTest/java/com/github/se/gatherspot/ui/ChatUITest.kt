@@ -10,11 +10,11 @@ import com.github.se.gatherspot.screens.ChatMessagesScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.firestore.FirebaseFirestore
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
 class ChatUITest {
@@ -55,6 +55,6 @@ class ChatUITest {
         .document(eventId)
         .delete()
         .addOnFailureListener {}
-    eventFirebaseConnection.delete(eventId)
+    runBlocking { eventFirebaseConnection.delete(eventId) }
   }
 }

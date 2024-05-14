@@ -6,11 +6,12 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
-import java.time.LocalDate
-import java.time.LocalTime
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
+import java.time.LocalDate
+import java.time.LocalTime
 
 class EventUtilsTest {
   private val eventFirebaseConnection = EventFirebaseConnection()
@@ -19,10 +20,10 @@ class EventUtilsTest {
 
   // Write tests for validateParseEventData
   @Test
-  fun validateEventData_withValidData_returnsValidEvent() {
+  fun validateEventData_withValidData_returnsValidEvent() = runTest{
     // validate data parse strings
     val event =
-        eventUtils.validateAndCreateOrUpdateEvent(
+      eventUtils.validateAndCreateOrUpdateEvent(
             "Test Event2",
             "This is a test event",
             Location(0.0, 0.0, "Test Location"),
@@ -56,7 +57,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventDataForUpdate_withValidData_returnsValidEvent() {
+  fun validateEventDataForUpdate_withValidData_returnsValidEvent() = runTest {
     // validate data parse strings
     val event =
         eventUtils.validateAndCreateOrUpdateEvent(
@@ -94,7 +95,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withEventStartDateAfterEndDate_returnsFalse() {
+  fun validateEventData_withEventStartDateAfterEndDate_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -117,7 +118,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withInvalidStartDate_returnsFalse() {
+  fun validateEventData_withInvalidStartDate_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -140,7 +141,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withInvalidEndDate_returnsFalse() {
+  fun validateEventData_withInvalidEndDate_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -163,7 +164,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withInvalidEndTime_returnsFalse() {
+  fun validateEventData_withInvalidEndTime_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -186,7 +187,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withInvalidTime_returnsFalse() {
+  fun validateEventData_withInvalidTime_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -209,7 +210,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventDataForUpdate_withInvalidMaxCapacity_returnsFalse() {
+  fun validateEventDataForUpdate_withInvalidMaxCapacity_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -233,7 +234,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withInvalidMinCapacity_returnsFalse() {
+  fun validateEventData_withInvalidMinCapacity_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -256,7 +257,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withEventDateBeforeToday_returnsFalse() {
+  fun validateEventData_withEventDateBeforeToday_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -279,7 +280,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withMinAttendeesGreaterThanMaxAttendees_returnsFalse() {
+  fun validateEventData_withMinAttendeesGreaterThanMaxAttendees_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -302,7 +303,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withInvalidInscriptionLimitDate_returnsFalse() {
+  fun validateEventData_withInvalidInscriptionLimitDate_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -325,7 +326,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withInvalidInscriptionLimitTime_returnsFalse() {
+  fun validateEventData_withInvalidInscriptionLimitTime_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(
@@ -349,7 +350,7 @@ class EventUtilsTest {
   }
 
   @Test
-  fun validateEventData_withEndTimeBeforeStartTime_returnsFalse() {
+  fun validateEventData_withEndTimeBeforeStartTime_returnsFalse() = runTest {
     // validate data parse strings
     try {
       eventUtils.validateAndCreateOrUpdateEvent(

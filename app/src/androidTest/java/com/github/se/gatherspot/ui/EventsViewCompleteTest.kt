@@ -32,7 +32,7 @@ class EventsViewCompleteTest {
   @Before
   fun setUp() = runBlocking {
     testLogin()
-    ProfileFirebaseConnection().addBlocking(profile)
+    ProfileFirebaseConnection().add(profile)
   }
 
   @After

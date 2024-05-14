@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.FirebaseImages
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
@@ -18,15 +19,16 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 class OwnProfileViewModel : ViewModel() {
-  private lateinit var _profile: Profile
+  private var _profile = MutableLiveData<Profile>()
   private var _username = MutableLiveData<String>()
   private var _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
   private val _interests = MutableLiveData<Set<Interests>>()
 
-  init {
-    // TODO: replace this with hilt injection
-    _profile = ProfileFirebaseConnection().fetch(Firebase.auth.uid ?: "TEST") { update() }
+  init{
+    viewModelScope.launch {
+      _profile.postValue(ProfileFirebaseConnection().fetch(Firebase.auth.uid!!))
+    }
   }
 
   val username: LiveData<String>
@@ -41,24 +43,21 @@ class OwnProfileViewModel : ViewModel() {
   val interests: LiveData<Set<Interests>>
     get() = _interests
 
-  fun saveText() {
-    _profile.userName = _username.value!!
-    _profile.bio = _bio.value!!
-    _profile.interests = _interests.value!!
-    viewModelScope.launch { ProfileFirebaseConnection().add(_profile) }
+  private fun saveText() {
+    if (_profile.isInitialized){
+    _profile.value!!.userName = _username.value!!
+    _profile.value!!.bio = _bio.value!!
+    _profile.value!!.interests = _interests.value!!
+    viewModelScope.launch { ProfileFirebaseConnection().add(_profile.value!!) }
+    }
   }
 
-  fun update() {
-    _username.value = _profile.userName
-    _bio.value = _profile.bio
-    _interests.value = _profile.interests
-    _image.value = _profile.image
-  }
-
-  fun cancelText() {
-    _username.value = _profile.userName
-    _bio.value = _profile.bio
-    _interests.value = _profile.interests
+  private fun cancelText() {
+    if (_profile.isInitialized){
+    _username.value = _profile.value!!.userName
+    _bio.value = _profile.value!!.bio
+    _interests.value = _profile.value!!.interests
+    }
   }
 
   // TODO : add sanitization to these function !!!
@@ -70,29 +69,29 @@ class OwnProfileViewModel : ViewModel() {
     _bio.value = bio
   }
 
-  fun updateProfileImage(newImageUrl: String) {
+  private fun updateProfileImage(newImageUrl: String) {
     _image.value = newImageUrl
   }
 
-  fun uploadProfileImage(newImageUri: Uri?) {
+  private fun uploadProfileImage(newImageUri: Uri?) {
     viewModelScope.launch {
       if (newImageUri != null || newImageUri != EMPTY) {
         Log.d("New image uri : ", newImageUri.toString())
-        val newUrl = FirebaseImages().pushProfilePicture(newImageUri!!, _profile.id)
+        val newUrl = FirebaseImages().pushProfilePicture(newImageUri!!, _profile.value!!.id)
         if (newUrl.isNotEmpty()) {
           Log.d("Successfully uploaded: ", newUrl)
           updateProfileImage(newUrl)
-          ProfileFirebaseConnection().update(_profile.id, "image", newUrl)
+          ProfileFirebaseConnection().update(_profile.value!!.id, "image", newUrl)
         }
       }
       imageEditAction.value = ImageEditAction.NO_ACTION
     }
   }
 
-  fun removeProfilePicture() {
+  private fun removeProfilePicture() {
     viewModelScope.launch {
-      FirebaseImages().removeProfilePicture(_profile.id)
-      ProfileFirebaseConnection().update(_profile.id, "image", "")
+      FirebaseImages().removeProfilePicture(_profile.value!!.id)
+      ProfileFirebaseConnection().update(_profile.value!!.id, "image", "")
       updateProfileImage("")
       imageEditAction.value = ImageEditAction.NO_ACTION
     }
@@ -123,7 +122,7 @@ class OwnProfileViewModel : ViewModel() {
     imageEditAction.value = newImageEditAction
   }
 
-  fun saveImage() {
+  private fun saveImage() {
     when (imageEditAction.value) {
       ImageEditAction.UPLOAD -> uploadProfileImage(localImageUriToUpload.value)
       ImageEditAction.REMOVE -> removeProfilePicture()
@@ -131,7 +130,7 @@ class OwnProfileViewModel : ViewModel() {
     }
   }
 
-  fun cancelImage() {
+  private fun cancelImage() {
     imageEditAction.value = ImageEditAction.NO_ACTION
     localImageUriToUpload.value = Uri.EMPTY
   }
@@ -147,39 +146,29 @@ class OwnProfileViewModel : ViewModel() {
   }
 }
 
-class ProfileViewModel(private val _target: String, private val nav: NavigationActions) {
-  private var _profile: Profile
-  private val _username = MutableLiveData<String>()
-  private val _bio = MutableLiveData<String>()
-  private val _image = MutableLiveData<String>()
-  private val _interests = MutableLiveData<Set<Interests>>()
-  private val _id = Firebase.auth.uid ?: "TEST"
+class ProfileViewModel(private val _target: String, private val nav: NavigationActions): ViewModel() {
+  private var _profile = MutableLiveData<Profile>()
+  private val _id = Firebase.auth.uid!!
   private val _isFollowing = FollowList.isFollowing(_id, _target)
   val username: LiveData<String>
-    get() = _username
+    get() = _profile.map { it.userName  }
 
   val bio: LiveData<String>
-    get() = _bio
+    get() = _profile.map { it.bio  }
 
   val image: LiveData<String>
-    get() = _image
+    get() = _profile.map { it.image }
 
   val interests: LiveData<Set<Interests>>
-    get() = _interests
+    get() = _profile.map { it.interests }
 
   val isFollowing: LiveData<Boolean>
     get() = _isFollowing
 
   init {
-    let { _profile = ProfileFirebaseConnection().fetch(_target) { update() } }
+    viewModelScope.launch { _profile.value = ProfileFirebaseConnection().fetch(_target) }
   }
 
-  private fun update() {
-    _username.value = _profile.userName
-    _bio.value = _profile.bio
-    _image.value = _profile.image
-    _interests.value = _profile.interests.toMutableSet()
-  }
 
   // TODO : replace ?: with hilt injection
   fun follow() {
@@ -196,8 +185,6 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
   }
 
   fun back() {
-    // TODO : need to test this with either end to end test or manually when someone actually uses
-    // this class
     nav.goBack()
   }
 }

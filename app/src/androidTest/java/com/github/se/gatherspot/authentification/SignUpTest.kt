@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -41,8 +42,10 @@ class SignUpTest : TestCase() {
   fun cleanUp() {
     val currentUser = FirebaseAuth.getInstance().currentUser
     if (currentUser != null) {
-      ProfileFirebaseConnection().delete(currentUser.uid)
-      testLoginCleanUp()
+      runBlocking {
+        ProfileFirebaseConnection().delete(currentUser.uid)
+        testLoginCleanUp()
+      }
     }
   }
 
