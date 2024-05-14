@@ -61,12 +61,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventUIViewModel(event),
-          EventsViewModel()
-      )
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
@@ -112,12 +107,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventUIViewModel(event),
-          EventsViewModel()
-      )
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertIsDisplayed()
@@ -198,12 +188,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventUIViewModel(event),
-          EventsViewModel()
-      )
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description {
@@ -268,12 +253,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
           )
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventUIViewModel(event),
-          EventsViewModel()
-      )
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -326,12 +306,7 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventUIViewModel(event),
-          EventsViewModel()
-      )
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -380,12 +355,7 @@ class EventUITest {
       val eventfirebase = EventFirebaseConnection()
       eventfirebase.add(event)
 
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventUIViewModel(event),
-          EventsViewModel()
-      )
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -433,12 +403,7 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventUIViewModel(event),
-          EventsViewModel()
-      )
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {}
   }
@@ -469,12 +434,7 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
           )
 
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventUIViewModel(event),
-          EventsViewModel()
-      )
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }

@@ -34,7 +34,8 @@ class EventUIViewModel(private val event: Event) :
       _rating.value =
           RatingFirebaseConnection()
               .fetchRating(
-                  event.id, (Firebase.auth.currentUser?.uid ?: Profile.testParticipant().id)) ?: Rating.UNRATED
+                  event.id, (Firebase.auth.currentUser?.uid ?: Profile.testParticipant().id))
+              ?: Rating.UNRATED
 
       delay(500)
     }
@@ -69,6 +70,8 @@ class EventUIViewModel(private val event: Event) :
   }
 
   fun canRate(): Boolean {
-    return !isOrganizer() && event.registeredUsers.contains(userID) && EventUtils().isEventOver(event)
+    return !isOrganizer() &&
+        event.registeredUsers.contains(userID) &&
+        EventUtils().isEventOver(event)
   }
 }

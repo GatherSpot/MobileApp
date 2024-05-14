@@ -406,16 +406,16 @@ class EventUtils {
     }
   }
 
-    /**
-     * Check if an event is over
-     *
-     * @param event: The event to check
-     * @return true if the event is over
-     */
-    fun isEventOver(event: Event): Boolean {
-        val now = LocalDate.now()
-        val timeNow = LocalTime.now()
-        return event.eventEndDate?.isBefore(now) == true ||
-                (event.eventEndDate == now && event.timeEnding?.isBefore(timeNow) == true)
-    }
+  /**
+   * Check if an event is over
+   *
+   * @param event: The event to check
+   * @return true if the event is over
+   */
+  fun isEventOver(event: Event): Boolean {
+    val now = LocalDate.now()
+    val timeNow = LocalTime.now()
+    return event.eventEndDate?.isBefore(now) == true ||
+        (event.eventEndDate == now && event.timeEnding?.isBefore(timeNow) == true)
+  }
 }

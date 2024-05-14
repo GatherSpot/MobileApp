@@ -555,16 +555,16 @@ class EventUtilsTest {
     Assert.assertNull(draftEvent)
   }
 
-    @Test
-    fun eventIsOverTestNotOver(){
-        assert(!eventUtils.isEventOver(testEvent))
-    }
+  @Test
+  fun eventIsOverTestNotOver() {
+    assert(!eventUtils.isEventOver(testEvent))
+  }
 
-    @Test
-    fun eventIsOverReturnTrue(){
-        /*val eventOver = Event(
-            title = "Title",
+  @Test
+  fun eventIsOverReturnTrue() {
+    /*val eventOver = Event(
+        title = "Title",
 
-        )*/
-    }
+    )*/
+  }
 }

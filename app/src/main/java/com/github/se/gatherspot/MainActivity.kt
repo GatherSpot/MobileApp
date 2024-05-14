@@ -98,8 +98,7 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
                     eventUIViewModel = EventUIViewModel(eventObject!!),
-                    eventsViewModel = eventsViewModel
-                )
+                    eventsViewModel = eventsViewModel)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val gson = Gson()
