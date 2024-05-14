@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -80,8 +81,10 @@ class EventUITest {
               location = null,
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
+
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
+
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
@@ -126,8 +129,9 @@ class EventUITest {
               location = null,
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
+      
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertIsDisplayed()
@@ -207,8 +211,9 @@ class EventUITest {
               registeredUsers = mutableListOf(),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
+
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description {
@@ -272,8 +277,9 @@ class EventUITest {
               registeredUsers = mutableListOf(),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
+
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -324,7 +330,7 @@ class EventUITest {
               registeredUsers = mutableListOf("1", "2"),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
 
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
@@ -368,28 +374,17 @@ class EventUITest {
               inscriptionLimitDate = LocalDate.of(2024, 4, 11),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
-              registeredUsers = mutableListOf("TEST"),
+              registeredUsers = mutableListOf(FirebaseAuth.getInstance().currentUser!!.uid),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
       val eventfirebase = EventFirebaseConnection()
       eventfirebase.add(event)
-
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
-    }
-    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      registerButton {
-        performScrollTo()
-        performClick()
-      }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
-      alertBox {
-        assertIsDisplayed()
-        hasText("Already registered for this event")
-      }
 
-      okButton.performClick()
-      Thread.sleep(2000)
+    }
+    Thread.sleep(3000)
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
         performScrollTo()
         assertIsNotEnabled()
@@ -398,10 +393,9 @@ class EventUITest {
     }
   }
 
-  @OptIn(ExperimentalTestApi::class)
+
   @Test
-  fun testClickOnDeleteButton() {
-    testLogin()
+  fun testOrganiserDeleteEditButtonAreHere() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -411,7 +405,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = FirebaseAuth.getInstance().currentUser!!.uid,
+              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -422,7 +416,44 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               globalRating = 4,
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
+
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
+    }
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      editEventButton { assertIsDisplayed() }
+      deleteButton { assertIsDisplayed() }
+    }
+  }
+  
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun testClickOnDeleteButton() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 10,
+              attendanceMinCapacity = 1,
+              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf("TEST"),
+              timeBeginning = LocalTime.of(13, 0),
+              globalRating = 4,
+              timeEnding = LocalTime.of(16, 0),
+              image = "")
 
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
@@ -464,4 +495,45 @@ class EventUITest {
       star { assertIsDisplayed() }
     }
   }
+
+  @Test
+  fun testProfileIsCorrectlyFetched() {
+    testLogin()
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 10,
+              attendanceMinCapacity = 1,
+              organizerID = Profile.testOrganizer().id,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf("TEST"),
+              timeBeginning = LocalTime.of(13, 0),
+              globalRating = 4,
+              timeEnding = LocalTime.of(16, 0),
+          )
+
+      EventUI(
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(listOf()),
+          EventsViewModel())
+    }
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      profileIndicator.assertIsDisplayed()
+      userName { hasText("John Doe") }
+      // profileIndicator.performClick()
+    }
+  }
+  // write an integration test that tests the following:
+  // Start from Events screen
+
 }

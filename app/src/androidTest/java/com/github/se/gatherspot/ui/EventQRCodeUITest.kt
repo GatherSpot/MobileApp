@@ -21,9 +21,8 @@ class EventQRCodeUITest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test
-  fun testEveryhtingExists() {
+  fun testEverythingExists() {
     composeTestRule.setContent {
-      val EventFirebaseConnection = EventFirebaseConnection()
       val event =
           Event(
               id = "testID",
@@ -33,11 +32,11 @@ class EventQRCodeUITest {
               eventStartDate =
                   LocalDate.parse(
                       "12/04/2026",
-                      DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                      DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
               eventEndDate =
                   LocalDate.parse(
                       "12/05/2026",
-                      DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                      DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
               timeBeginning =
                   LocalTime.parse(
                       "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
@@ -49,12 +48,13 @@ class EventQRCodeUITest {
               inscriptionLimitDate =
                   LocalDate.parse(
                       "10/04/2025",
-                      DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                      DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
               inscriptionLimitTime =
                   LocalTime.parse(
                       "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
               eventStatus = EventStatus.CREATED,
-              globalRating = null)
+              globalRating = null,
+              image = "")
       EventQRCodeUI(event = event)
     }
     ComposeScreen.onComposeScreen<EventQRcodeScreen>(composeTestRule) {

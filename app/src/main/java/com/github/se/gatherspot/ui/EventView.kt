@@ -37,8 +37,11 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
@@ -79,6 +83,12 @@ fun EventUI(
   val rating by eventUIViewModel.rating.observeAsState()
   val isOrganizer =
       event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
+
+  val organizerProfile = remember { mutableStateOf<Profile?>(null) }
+  LaunchedEffect(Unit) {
+    organizerProfile.value = ProfileFirebaseConnection().fetch(event.organizerID) {}
+  }
+
   val eventUtils = EventUtils()
   val registrationState by eventUIViewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == RegistrationState.NoError
@@ -111,9 +121,8 @@ fun EventUI(
                 // Edit button
                 IconButton(
                     onClick = {
-                      val gson = Gson()
-                      val eventJson = gson.toJson(event)
-                      navActions.controller.navigate("event/$eventJson")
+                      val eventJsonWellFormed = event.toJson()
+                      navActions.controller.navigate("editEvent/$eventJsonWellFormed")
                     },
                     modifier = Modifier.testTag("editEventButton")) {
                       Icon(
@@ -151,15 +160,16 @@ fun EventUI(
                     .padding(8.dp)
                     .testTag("eventColumn")
                     .verticalScroll(rememberScrollState())) {
-              // Event Image
-              event.images?.let { img ->
-                Image(
-                    bitmap = img,
-                    contentDescription = "Event Image",
-                    modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                    contentScale = ContentScale.FillBounds)
-              }
-                  ?: Image(
+              if (event.image.isNotEmpty()) {
+                // TODO : implement this using coil
+                //                Image(
+                //                    bitmap = img,
+                //                    contentDescription = "Event Image",
+                //                    modifier =
+                // Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
+                //                    contentScale = ContentScale.FillBounds)
+              } else
+                  Image(
                       painter = painterResource(id = R.drawable.default_event_image),
                       contentDescription = "Default Event Image",
                       modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
@@ -168,16 +178,7 @@ fun EventUI(
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-              var profile = Profile.testParticipant()
-
-              /*
-              runBlocking {
-              profile = async{ProfileFirebaseConnection().fetch(event.organizerID)}.await()
-                      ?: Profile.testParticipant()
-              }
-
-               */
-              ProfileIndicator(profile)
+              ProfileIndicator(organizerProfile.value, navActions)
 
               // Event Description
               event.description?.let { description ->
@@ -362,11 +363,21 @@ fun Chip(interest: Interests) {
 }
 
 @Composable
-fun ProfileIndicator(profile: Profile) {
+fun ProfileIndicator(profile: Profile?, navActions: NavigationActions) {
+  if (profile == null) return
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
-          Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("profileIndicator")) {
+          Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+              .testTag("profileIndicator")
+              .clickable {
+                // Navigate to the profile of the organizer
+                if (profile.id != Firebase.auth.currentUser?.uid) {
+                  navActions.controller.navigate("viewProfile/${profile.id}")
+                } else {
+                  navActions.controller.navigate("profile")
+                }
+              }) {
         // TODO implement image here: do it later
         Box(
             contentAlignment = Alignment.Center,
@@ -386,7 +397,11 @@ fun ProfileIndicator(profile: Profile) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = "Hosted by", fontWeight = FontWeight.Light, fontSize = 16.sp)
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = profile.userName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Text(
+            modifier = Modifier.testTag("userName"),
+            text = profile.userName,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp)
       }
 }
 
@@ -434,6 +449,8 @@ fun RatingDisplay(rating: Rating, eventUIViewModel: EventUIViewModel) {
       }
 }
 
+
+
 // Preview for the Event UI, for testing purposes
 /*
 @Preview
@@ -459,6 +476,7 @@ fun EventUIPreview() {
           registeredUsers = mutableListOf(),
           timeBeginning = LocalTime.of(11, 0),
           timeEnding = LocalTime.of(13, 0),
+          image = "",
           organizerID = Profile.testOrganizer().id)
   val viewModel = EventUIViewModel(event)
   EventUI(
@@ -468,3 +486,4 @@ fun EventUIPreview() {
       eventsViewModel = EventsViewModel())
 }
 */
+

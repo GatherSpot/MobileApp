@@ -43,7 +43,7 @@ class EventUtils {
    * @param timeLimitInscription: The last time to register for the event
    * @return The event created
    */
-  private val EventFirebaseConnection = EventFirebaseConnection()
+  private val eventFirebaseConnection = EventFirebaseConnection()
 
   private fun createEvent(
       title: String,
@@ -61,7 +61,7 @@ class EventUtils {
   ): Event {
 
     // First fetch an unique ID for the event
-    val eventID = EventFirebaseConnection.getNewID()
+    val eventID = eventFirebaseConnection.getNewID()
 
     // Create the event
     val event =
@@ -79,11 +79,12 @@ class EventUtils {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
+            image = "",
             categories = categories?.toSet(),
             eventStatus = EventStatus.CREATED)
 
     // Add the event to the database
-    EventFirebaseConnection.add(event)
+    eventFirebaseConnection.add(event)
 
     return event
   }
@@ -106,7 +107,7 @@ class EventUtils {
         }
       }
     }
-    EventFirebaseConnection.delete(event.id)
+    eventFirebaseConnection.delete(event.id)
   }
 
   /**
@@ -206,7 +207,8 @@ class EventUtils {
           validateDate(dateLimitInscription, "Invalid inscription limit date format")
       try {
         LocalDate.parse(
-            dateLimitInscription, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))
+            dateLimitInscription,
+            DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       } catch (e: Exception) {
         throw Exception("Invalid inscription limit date format")
       }
@@ -290,17 +292,18 @@ class EventUtils {
             globalRating = oldEvent.globalRating,
             categories = categories?.toSet(),
             registeredUsers = oldEvent.registeredUsers,
-            images = oldEvent.images,
+            image = oldEvent.image,
             eventStatus = EventStatus.CREATED,
         )
     // Add the event to the database
-    EventFirebaseConnection.add(event)
+    eventFirebaseConnection.add(event)
     return event
   }
 
   fun validateDate(date: String, eMessage: String): LocalDate {
     try {
-      return LocalDate.parse(date, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT))
+      return LocalDate.parse(
+          date, DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
     } catch (e: Exception) {
       throw Exception(eMessage)
     }

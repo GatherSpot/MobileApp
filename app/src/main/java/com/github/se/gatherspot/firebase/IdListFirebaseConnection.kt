@@ -268,6 +268,7 @@ class IdListFirebaseConnection {
         .addOnFailureListener { e -> Log.d(TAG, getErrorMsg, e) }
     return data
   }
+
   // TODO : keep an eye on this function as it might create problems in the future
   /**
    * Deletes a list
