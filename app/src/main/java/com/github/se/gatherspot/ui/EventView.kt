@@ -3,6 +3,7 @@ package com.github.se.gatherspot.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,10 +47,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
@@ -58,13 +58,10 @@ import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
-import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.gson.Gson
-import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -274,6 +271,12 @@ fun EventUI(
                 }
               }
 
+              // Rating
+              if (eventUIViewModel.canRate()) {
+                RatingDisplay(
+                    rating = rating ?: Rating.UNRATED, eventUIViewModel = eventUIViewModel)
+              }
+
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -341,11 +344,6 @@ fun EventUI(
                     }
               })
         }
-
-        // Rating
-        if (eventUIViewModel.canRate()) {
-          RatingDisplay(rating = rating ?: Rating.UNRATED, eventUIViewModel = eventUIViewModel)
-        }
       }
 }
 
@@ -396,17 +394,18 @@ fun ProfileIndicator(profile: Profile) {
 @Composable
 fun StarRating(rating: Long, onRatingChanged: (Long) -> Unit) {
   Row(
-      modifier = Modifier.padding(vertical = 8.dp).testTag("StarRow"),
-      verticalAlignment = Alignment.CenterVertically) {
+      modifier = Modifier.testTag("starRow"),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.Center) {
         for (i in 1..5) {
           Icon(
               imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.Star,
               contentDescription = null,
-              tint = if (i <= rating) MaterialTheme.colors.primary else Color.Gray,
+              tint = if (i <= rating) Color(0xFFFFB907) else Color.Gray,
               modifier =
-                  Modifier.size(40.dp).testTag("starRating $i").clickable {
-                    onRatingChanged(i.toLong())
-                  })
+                  Modifier.size(40.dp)
+                      .clickable { onRatingChanged(i.toLong()) }
+                      .testTag("starIcon $i"))
         }
       }
 }
@@ -417,11 +416,18 @@ fun StarRating(rating: Long, onRatingChanged: (Long) -> Unit) {
  */
 @Composable
 fun RatingDisplay(rating: Rating, eventUIViewModel: EventUIViewModel) {
-  Row(
-      modifier = Modifier.padding(vertical = 8.dp),
-      verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "Rate this event", fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.width(8.dp))
+  Column(
+      modifier =
+          Modifier.padding(vertical = 8.dp)
+              .fillMaxWidth()
+              .wrapContentHeight()
+              .testTag("ratingColumn"),
+      horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = "Rate this event",
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.testTag("rateText"))
+        Spacer(modifier = Modifier.height(8.dp))
         StarRating(
             rating = Rating.toLong(rating),
             onRatingChanged = { eventUIViewModel.rateEvent(Rating.fromLong(it)) })
@@ -429,6 +435,7 @@ fun RatingDisplay(rating: Rating, eventUIViewModel: EventUIViewModel) {
 }
 
 // Preview for the Event UI, for testing purposes
+/*
 @Preview
 @Composable
 fun EventUIPreview() {
@@ -443,8 +450,8 @@ fun EventUIPreview() {
           attendanceMaxCapacity = 5,
           attendanceMinCapacity = 1,
           categories = setOf(Interests.BASKETBALL),
-          eventEndDate = LocalDate.of(2025, 4, 15),
-          eventStartDate = LocalDate.of(2025, 4, 10),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 10),
           globalRating = 4,
           inscriptionLimitDate = LocalDate.of(2025, 4, 1),
           inscriptionLimitTime = LocalTime.of(23, 59),
@@ -460,3 +467,4 @@ fun EventUIPreview() {
       eventUIViewModel = viewModel,
       eventsViewModel = EventsViewModel())
 }
+*/

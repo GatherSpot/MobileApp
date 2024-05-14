@@ -59,8 +59,8 @@ class EventUIViewModel(private val event: Event) :
         Log.e("RateEvent", "User $userID cannot rate the event ${event.id} that he didn't attend")
         return@launch
       } else {
-        RatingFirebaseConnection().update(event.id, userID, newRating)
         _rating.value = newRating
+        RatingFirebaseConnection().update(event.id, userID, newRating)
       }
     }
   }
