@@ -6,7 +6,6 @@ import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.auth.FirebaseAuth
-import kotlin.time.Duration
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -15,6 +14,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.time.Duration
 
 class EventFirebaseConnectionTest {
 
@@ -40,7 +40,7 @@ class EventFirebaseConnectionTest {
   fun testAddAndFetchEvent() = runTest {
     val event = DefaultEvents.trivialEvent1
     runBlocking { eventFirebaseConnection.add(event) }
-    var resultEvent: Event? = null
+    var resultEvent: Event?
     runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
     assertEquals(resultEvent, event)
     runBlocking { eventFirebaseConnection.delete(event.id) }
