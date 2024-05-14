@@ -1,14 +1,17 @@
 package com.github.se.gatherspot.ui
 
+import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -54,7 +57,7 @@ class EventUITest {
           inscriptionLimitDate = LocalDate.of(2024, 4, 11),
           inscriptionLimitTime = LocalTime.of(23, 59),
           location = null,
-          registeredUsers = mutableListOf("TEST"),
+          registeredUsers = mutableListOf(EnvironmentSetter.testLoginUID),
           timeBeginning = LocalTime.of(13, 0),
           timeEnding = LocalTime.of(16, 0),
           image = "")
@@ -480,9 +483,18 @@ class EventUITest {
           EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      assert(eventUIViewModel.canRate())
-      starRow { assertIsDisplayed() }
-      star { assertIsDisplayed() }
+      Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
+        Log.e("In the list", pastEventRegisteredTo.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid).toString())
+        Log.e("isEventOver", EventUtils().isEventOver(pastEventRegisteredTo).toString())
+        assert(eventUIViewModel.canRate())
+        starRow {
+            performScrollTo()
+            assertIsDisplayed()
+        }
+        star {
+            performScrollTo()
+            assertIsDisplayed()
+        }
     }
   }
 
@@ -519,7 +531,5 @@ class EventUITest {
       // profileIndicator.performClick()
     }
   }
-  // write an integration test that tests the following:
-  // Start from Events screen
 
 }
