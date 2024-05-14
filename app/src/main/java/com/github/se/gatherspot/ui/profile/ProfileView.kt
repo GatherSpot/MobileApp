@@ -98,12 +98,37 @@ class ProfileView {
 
   @Composable
   fun EditButton(nav: NavController) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
-      // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
-      Icon(
-          painter = painterResource(R.drawable.edit),
-          contentDescription = "edit",
-          modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
+    Icon(
+        painter = painterResource(R.drawable.edit),
+        contentDescription = "edit",
+        modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
+  }
+
+  @Composable
+  fun TopBar(nav: NavController) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
+      Followers(nav)
+      Following(nav)
+      Spacer(modifier = Modifier.padding(horizontal = 70.dp))
+      EditButton(nav)
+    }
+  }
+
+  @Composable
+  fun Followers(nav: NavController) {
+    Column(horizontalAlignment = Alignment.Start) {
+      Text(
+          text = "Followers",
+          modifier = Modifier.testTag("followersButton").clickable { nav.navigate("followers") })
+    }
+  }
+
+  @Composable
+  fun Following(nav: NavController) {
+    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
+      Text(
+          text = "Following",
+          modifier = Modifier.testTag("followingButton").clickable { nav.navigate("following") })
     }
   }
 
@@ -252,9 +277,8 @@ class ProfileView {
     val bio by viewModel.bio.observeAsState("")
     val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
-    Column {
-      EditButton(navController)
-
+    Column(modifier = Modifier.testTag("ProfileScreen")) {
+      TopBar(navController)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)

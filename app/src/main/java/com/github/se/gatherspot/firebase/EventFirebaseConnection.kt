@@ -176,7 +176,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
   suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
 
-    if (idlist?.events == null || idlist.events.isEmpty()) {
+    if (idlist?.elements == null || idlist.elements.isEmpty()) {
       return mutableListOf()
     }
     val querySnapshot: QuerySnapshot =
@@ -184,7 +184,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
-              .whereIn("eventID", idlist.events)
+              .whereIn("eventID", idlist.elements)
               .limit(number)
               .get()
               .await()
@@ -192,7 +192,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
-              .whereIn("eventID", idlist?.events ?: listOf())
+              .whereIn("eventID", idlist?.elements ?: listOf())
               .startAfter(offset!!.get("eventID"))
               .limit(number)
               .get()

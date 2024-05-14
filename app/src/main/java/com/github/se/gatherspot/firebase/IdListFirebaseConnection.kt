@@ -44,7 +44,7 @@ class IdListFirebaseConnection {
             val data = document.data
             if (data != null) {
               val ids = data["ids"]
-              idSet.events = ids as List<String>
+              idSet.elements = ids as List<String>
               Log.d(logTag, "DocumentSnapshot data: ${document.data}")
             }
           } else {
@@ -68,7 +68,7 @@ class IdListFirebaseConnection {
     val tag = idSet.collection.name
     val id = idSet.id
     // TODO : check if this good way to store data
-    val data = hashMapOf("ids" to idSet.events.toList())
+    val data = hashMapOf("ids" to idSet.elements.toList())
     firestore
         .collection(tag)
         .document(id)
@@ -136,10 +136,13 @@ class IdListFirebaseConnection {
   }
 
   suspend fun fetch(id: String, category: FirebaseCollection, onSuccess: () -> Unit): IdList {
+    Log.d(TAG, "Current id: $id")
     val tag = category.name
+    Log.d(TAG, "TAG should be FOLLOWERS: $tag")
     val data: IdList
     val querySnapshot: QuerySnapshot = fcoll.document(tag).collection(id).get().await()
     data = IdList(id, querySnapshot.documents.map { it.id }, category)
+    Log.d(TAG, "???? ${data.elements}")
     return data
   }
 

@@ -20,7 +20,7 @@ class NavigationActions(val controller: NavHostController) {
   }
 
   fun goBack() {
-    controller.navigate("home")
+    controller.popBackStack()
   }
 }
 

@@ -128,8 +128,6 @@ class MainActivity : ComponentActivity() {
 
               composable("community") { Community(NavigationActions(navController)) }
 
-              // composable("chats") { Chats(chatViewModel, NavigationActions(navController)) }
-
               composable("profile") { Profile(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
                 backstackEntry.arguments?.getString("uid")?.let {
