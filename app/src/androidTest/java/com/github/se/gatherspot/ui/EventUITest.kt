@@ -392,7 +392,7 @@ class EventUITest {
   }
 
   @Test
-  fun testOrganiserDeleteEditButtonAreHere() {
+  fun testOrganiserDeleteEditCalendarButtonsAreHere() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -418,6 +418,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+        calendarButton { assertIsDisplayed() }
       editEventButton { assertIsDisplayed() }
       deleteButton { assertIsDisplayed() }
     }
@@ -451,7 +452,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      calendarButton { assertIsDisplayed() }
+
       editEventButton { assertIsDisplayed() }
       deleteButton {
         assertIsDisplayed()
