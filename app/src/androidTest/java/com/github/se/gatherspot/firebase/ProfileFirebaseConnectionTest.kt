@@ -41,15 +41,15 @@ class ProfileFirebaseConnectionTest {
 
   @Test
   fun testDelete() {
-      var fetched: Profile?
-      runBlocking {
-        profileFirebaseConnection.add(profile)
-        fetched = profileFirebaseConnection.fetch(profile.id)
-      }
-      assertNotNull(fetched)
-      runBlocking { profileFirebaseConnection.delete(profile.id) }
-    // TODO
+    var fetched: Profile?
+    runBlocking {
+      profileFirebaseConnection.add(profile)
+      fetched = profileFirebaseConnection.fetch(profile.id)
     }
+    assertNotNull(fetched)
+    runBlocking { profileFirebaseConnection.delete(profile.id) }
+    // TODO
+  }
 
   @Test
   fun testGetCurrentUserUid() {

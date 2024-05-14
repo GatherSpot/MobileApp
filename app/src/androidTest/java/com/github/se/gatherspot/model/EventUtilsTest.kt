@@ -6,12 +6,12 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
+import java.time.LocalDate
+import java.time.LocalTime
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
-import java.time.LocalDate
-import java.time.LocalTime
 
 class EventUtilsTest {
   private val eventFirebaseConnection = EventFirebaseConnection()
@@ -20,10 +20,10 @@ class EventUtilsTest {
 
   // Write tests for validateParseEventData
   @Test
-  fun validateEventData_withValidData_returnsValidEvent() = runTest{
+  fun validateEventData_withValidData_returnsValidEvent() = runTest {
     // validate data parse strings
     val event =
-      eventUtils.validateAndCreateOrUpdateEvent(
+        eventUtils.validateAndCreateOrUpdateEvent(
             "Test Event2",
             "This is a test event",
             Location(0.0, 0.0, "Test Location"),

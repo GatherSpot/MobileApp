@@ -25,7 +25,7 @@ class OwnProfileViewModel : ViewModel() {
   private val _image = MutableLiveData<String>()
   private val _interests = MutableLiveData<Set<Interests>>()
 
-  init{
+  init {
     viewModelScope.launch {
       _profile.postValue(ProfileFirebaseConnection().fetch(Firebase.auth.uid!!))
     }
@@ -44,19 +44,19 @@ class OwnProfileViewModel : ViewModel() {
     get() = _interests
 
   private fun saveText() {
-    if (_profile.isInitialized){
-    _profile.value!!.userName = _username.value!!
-    _profile.value!!.bio = _bio.value!!
-    _profile.value!!.interests = _interests.value!!
-    viewModelScope.launch { ProfileFirebaseConnection().add(_profile.value!!) }
+    if (_profile.isInitialized) {
+      _profile.value!!.userName = _username.value!!
+      _profile.value!!.bio = _bio.value!!
+      _profile.value!!.interests = _interests.value!!
+      viewModelScope.launch { ProfileFirebaseConnection().add(_profile.value!!) }
     }
   }
 
   private fun cancelText() {
-    if (_profile.isInitialized){
-    _username.value = _profile.value!!.userName
-    _bio.value = _profile.value!!.bio
-    _interests.value = _profile.value!!.interests
+    if (_profile.isInitialized) {
+      _username.value = _profile.value!!.userName
+      _bio.value = _profile.value!!.bio
+      _interests.value = _profile.value!!.interests
     }
   }
 
@@ -146,15 +146,16 @@ class OwnProfileViewModel : ViewModel() {
   }
 }
 
-class ProfileViewModel(private val _target: String, private val nav: NavigationActions): ViewModel() {
+class ProfileViewModel(private val _target: String, private val nav: NavigationActions) :
+    ViewModel() {
   private var _profile = MutableLiveData<Profile>()
   private val _id = Firebase.auth.uid!!
   private val _isFollowing = FollowList.isFollowing(_id, _target)
   val username: LiveData<String>
-    get() = _profile.map { it.userName  }
+    get() = _profile.map { it.userName }
 
   val bio: LiveData<String>
-    get() = _profile.map { it.bio  }
+    get() = _profile.map { it.bio }
 
   val image: LiveData<String>
     get() = _profile.map { it.image }
@@ -168,7 +169,6 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
   init {
     viewModelScope.launch { _profile.value = ProfileFirebaseConnection().fetch(_target) }
   }
-
 
   // TODO : replace ?: with hilt injection
   fun follow() {
