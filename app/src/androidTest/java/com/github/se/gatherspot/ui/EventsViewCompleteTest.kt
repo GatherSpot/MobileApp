@@ -18,12 +18,12 @@ import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.lang.Thread.sleep
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.lang.Thread.sleep
 
 class EventsViewCompleteTest {
   @get:Rule val composeTestRule = createComposeRule()
