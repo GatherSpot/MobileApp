@@ -2,7 +2,6 @@ package com.github.se.gatherspot.ui
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,12 +42,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp as dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -245,6 +242,7 @@ fun EventRow(event: Event, navigation: NavigationActions) {
   val isToday = event.eventStartDate?.isEqual(LocalDate.now()) ?: false
   val isOrganizer = event.organizerID == uid
   val isRegistered = event.registeredUsers.contains(uid)
+  
   Box(
       modifier =
           Modifier.background(
@@ -267,15 +265,16 @@ fun EventRow(event: Event, navigation: NavigationActions) {
               }
               .testTag(event.title)
               .fillMaxSize()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
-              Column(modifier = Modifier.weight(1f)) {
-                Image(
-                    bitmap =
-                        event.images ?: ImageBitmap(120, 120, config = ImageBitmapConfig.Rgb565),
-                    contentDescription = null)
-              }
+
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
+          Column(modifier = Modifier.weight(1f)) {
+              // TODO : use coil to implement this
+                //                Image(
+                //                    bitmap =
+                //                        event.image ?: ImageBitmap(120, 120, config =
+                // ImageBitmapConfig.Rgb565),
+                //                    contentDescription = null)
+          }
 
               Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
                 Text(

@@ -9,18 +9,18 @@ enum class Rating {
   FIVE_STARS;
 
   companion object {
-    fun fromInt(rating: Int): Rating {
+    fun fromLong(rating: Long): Rating {
       return when (rating) {
-        1 -> ONE_STAR
-        2 -> TWO_STARS
-        3 -> THREE_STARS
-        4 -> FOUR_STARS
-        5 -> FIVE_STARS
+        1L -> ONE_STAR
+        2L -> TWO_STARS
+        3L -> THREE_STARS
+        4L -> FOUR_STARS
+        5L -> FIVE_STARS
         else -> UNRATED
       }
     }
 
-    fun toInt(rating: Rating): Int {
+    fun toLong(rating: Rating): Long {
       return when (rating) {
         ONE_STAR -> 1
         TWO_STARS -> 2

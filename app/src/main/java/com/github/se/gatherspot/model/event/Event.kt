@@ -1,7 +1,5 @@
 package com.github.se.gatherspot.model.event
 
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
@@ -37,7 +35,7 @@ import java.time.LocalTime
  * @param organizerID: Id of the Profile of the organizer
  * @param registeredUsers: The list of users who registered for the event
  * @param finalAttendees: The list of users who attended the event
- * @param images: The images uploaded for the event
+ * @param image: The images uploaded for the event
  * @param globalRating: The rating of the event by the attendees
  */
 data class Event(
@@ -61,8 +59,7 @@ data class Event(
     val registeredUsers: MutableList<String> = mutableListOf(),
     val finalAttendees: List<String>? = emptyList(),
     // Find a way to upload image
-    var images: ImageBitmap? =
-        ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image
+    var image: String,
     val globalRating: Int?,
 ) : CollectionClass() {
 
