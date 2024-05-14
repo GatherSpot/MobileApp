@@ -57,7 +57,7 @@ class EventUITest {
           registeredUsers = mutableListOf("TEST"),
           timeBeginning = LocalTime.of(13, 0),
           timeEnding = LocalTime.of(16, 0),
-      )
+          image = "")
 
   @Test
   fun testEverythingExists() {
@@ -84,7 +84,6 @@ class EventUITest {
               image = "")
 
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
-
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
@@ -131,7 +130,6 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "")
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
-      
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertIsDisplayed()
@@ -213,7 +211,6 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "")
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
-
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description {
@@ -279,7 +276,6 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "")
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
-
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -381,7 +377,6 @@ class EventUITest {
       val eventfirebase = EventFirebaseConnection()
       eventfirebase.add(event)
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
-
     }
     Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -392,7 +387,6 @@ class EventUITest {
       }
     }
   }
-
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
@@ -418,18 +412,14 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "")
 
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }
       deleteButton { assertIsDisplayed() }
     }
   }
-  
+
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testClickOnDeleteButton() {
@@ -480,7 +470,7 @@ class EventUITest {
 
   @Test
   fun ratingIsDisplayed() {
-      val eventUIViewModel = EventUIViewModel(pastEventRegisteredTo)
+    val eventUIViewModel = EventUIViewModel(pastEventRegisteredTo)
     composeTestRule.setContent {
       val navController = rememberNavController()
       EventUI(
@@ -490,7 +480,7 @@ class EventUITest {
           EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-       assert(eventUIViewModel.canRate())
+      assert(eventUIViewModel.canRate())
       starRow { assertIsDisplayed() }
       star { assertIsDisplayed() }
     }
@@ -519,13 +509,9 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               globalRating = 4,
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
 
-      EventUI(
-          event,
-          NavigationActions(navController),
-          EventRegistrationViewModel(listOf()),
-          EventsViewModel())
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       profileIndicator.assertIsDisplayed()

@@ -13,7 +13,7 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
@@ -43,7 +43,6 @@ class EventsViewCompleteTest {
     // This test will navigate from the events screen to the organizer profile
     val viewModel = EventsViewModel()
     Thread.sleep(5000)
-    val eventRegistrationModel = EventRegistrationViewModel(emptyList())
     // Create a new Gson instance with the custom serializers and deserializers
     val gson: Gson =
         GsonBuilder()
@@ -68,7 +67,7 @@ class EventsViewCompleteTest {
             EventUI(
                 event = eventObject!!,
                 navActions = NavigationActions(navController),
-                registrationViewModel = eventRegistrationModel,
+                eventUIViewModel = EventUIViewModel(eventObject),
                 eventsViewModel = viewModel)
           }
           composable("profile") { Profile(NavigationActions(navController)) }

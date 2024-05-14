@@ -581,7 +581,8 @@ class EventUtilsTest {
             inscriptionLimitDate = LocalDate.of(2020, 4, 11),
             inscriptionLimitTime = LocalTime.of(23, 59),
             eventStatus = EventStatus.COMPLETED,
-            globalRating = null)
+            globalRating = null,
+            image = "")
     assert(eventUtils.isEventOver(event))
   }
 }

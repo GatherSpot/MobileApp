@@ -120,8 +120,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.image, "")
-    EventFirebaseConnection.delete(eventID)
-
+    EventFirebaseConnection().delete(eventID)
   }
 
   @Test
@@ -313,7 +312,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.image, "")
-    EventFirebaseConnection.delete(eventID)
+    EventFirebaseConnection().delete(eventID)
   }
 
   @Test

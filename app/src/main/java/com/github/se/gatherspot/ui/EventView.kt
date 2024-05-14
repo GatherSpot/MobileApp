@@ -65,7 +65,6 @@ import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.gson.Gson
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -449,8 +448,6 @@ fun RatingDisplay(rating: Rating, eventUIViewModel: EventUIViewModel) {
       }
 }
 
-
-
 // Preview for the Event UI, for testing purposes
 /*
 @Preview
@@ -486,4 +483,3 @@ fun EventUIPreview() {
       eventsViewModel = EventsViewModel())
 }
 */
-

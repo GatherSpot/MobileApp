@@ -51,7 +51,7 @@ class EventUIViewModelTest {
           organizerID = "T1qNNU05QeeqB2OqIBb7GAtQd093",
           registeredUsers = mutableListOf(),
           finalAttendees = listOf(),
-          images = null,
+          image = "",
           globalRating = null)
 
   private val organizedEvent =
@@ -73,7 +73,7 @@ class EventUIViewModelTest {
           organizerID = testLoginUID, // uid of testLogin()
           registeredUsers = mutableListOf(),
           finalAttendees = listOf(),
-          images = null,
+          image = "",
           globalRating = null)
 
   @Before
@@ -185,7 +185,7 @@ class EventUIViewModelTest {
             registeredUsers = mutableListOf(),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
-        )
+            image = "")
     val eventFirebaseConnection = EventFirebaseConnection()
     eventFirebaseConnection.add(event)
     viewModel.registerForEvent(event)
@@ -217,7 +217,7 @@ class EventUIViewModelTest {
             globalRating = null,
             inscriptionLimitDate = null,
             inscriptionLimitTime = null,
-        )
+            image = "")
 
     val eventFirebaseConnection = EventFirebaseConnection()
     eventFirebaseConnection.add(event)

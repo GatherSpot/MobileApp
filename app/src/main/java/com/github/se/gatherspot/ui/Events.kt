@@ -239,7 +239,7 @@ fun EventRow(event: Event, navigation: NavigationActions) {
   val isToday = event.eventStartDate?.isEqual(LocalDate.now()) ?: false
   val isOrganizer = event.organizerID == uid
   val isRegistered = event.registeredUsers.contains(uid)
-  
+
   Box(
       modifier =
           Modifier.background(
@@ -262,57 +262,59 @@ fun EventRow(event: Event, navigation: NavigationActions) {
               }
               .testTag(event.title)
               .fillMaxSize()) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
-          Column(modifier = Modifier.weight(1f)) {
-              // TODO : use coil to implement this
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
+              Column(modifier = Modifier.weight(1f)) {
+                // TODO : use coil to implement this
                 //                Image(
                 //                    bitmap =
                 //                        event.image ?: ImageBitmap(120, 120, config =
                 // ImageBitmapConfig.Rgb565),
                 //                    contentDescription = null)
-          }
+              }
 
-          Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
-            Text(
-                text =
-                    "Start date: ${
+              Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
+                Text(
+                    text =
+                        "Start date: ${
                             event.eventStartDate?.format(
                                 DateTimeFormatter.ofPattern(
                                     EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                                 )
                             )
                         }",
-                fontWeight = FontWeight.Bold,
-                fontSize = 10.sp)
-            Text(
-                text =
-                    "End date: ${
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp)
+                Text(
+                    text =
+                        "End date: ${
                             event.eventEndDate?.format(
                                 DateTimeFormatter.ofPattern(
                                     EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                                 )
                             )
                         }",
-                fontWeight = FontWeight.Bold,
-                fontSize = 10.sp)
-            Text(text = event.title, fontSize = 14.sp)
-          }
-
-          Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              if (isOrganizer) {
-                Text("Organizer", fontSize = 14.sp)
-              } else if (isRegistered) {
-                Text("Registered", fontSize = 14.sp)
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp)
+                Text(text = event.title, fontSize = 14.sp)
               }
 
-              Icon(
-                  painter = painterResource(R.drawable.arrow_right),
-                  contentDescription = null,
-                  modifier = Modifier.width(24.dp).height(24.dp).clickable {})
+              Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                  if (isOrganizer) {
+                    Text("Organizer", fontSize = 14.sp)
+                  } else if (isRegistered) {
+                    Text("Registered", fontSize = 14.sp)
+                  }
+
+                  Icon(
+                      painter = painterResource(R.drawable.arrow_right),
+                      contentDescription = null,
+                      modifier = Modifier.width(24.dp).height(24.dp).clickable {})
+                }
+              }
             }
-          }
-        }
         Divider(color = Color.Black, thickness = 1.dp)
       }
 }
