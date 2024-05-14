@@ -3,7 +3,6 @@ package com.github.se.gatherspot.model.event
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
-import com.github.se.gatherspot.model.utils.ImageBitmapSerializer
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
@@ -70,7 +69,7 @@ data class Event(
             .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
             .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
             .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-            .registerTypeAdapter(ImageBitmap::class.java, ImageBitmapSerializer())
+            // .registerTypeAdapter(ImageBitmap::class.java, ImageBitmapSerializer())
             .create()
     val eventJson = gson.toJson(this)
     return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
