@@ -10,6 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
+import java.text.DecimalFormat
 
 class RatingFirebaseConnectionTest {
   private val ratingFirebaseConnection = RatingFirebaseConnection()
@@ -24,22 +25,22 @@ class RatingFirebaseConnectionTest {
   @Before
   fun setup() {
     runTest {
-      ratingFirebaseConnection.delete(eventID, userID)
+      ratingFirebaseConnection.deleteRating(eventID, userID)
       async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
-      ratingFirebaseConnection.delete(eventID, firstRater)
+      ratingFirebaseConnection.deleteRating(eventID, firstRater)
       async { ratingFirebaseConnection.fetchRating(eventID, firstRater) }.await()
-      ratingFirebaseConnection.delete(eventID, secondRater)
+      ratingFirebaseConnection.deleteRating(eventID, secondRater)
       async { ratingFirebaseConnection.fetchRating(eventID, secondRater) }.await()
     }
   }
 
   fun tearDown() {
     runTest {
-      ratingFirebaseConnection.delete(eventID, userID)
+      ratingFirebaseConnection.deleteRating(eventID, userID)
       async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
-      ratingFirebaseConnection.delete(eventID, firstRater)
+      ratingFirebaseConnection.deleteRating(eventID, firstRater)
       async { ratingFirebaseConnection.fetchRating(eventID, firstRater) }.await()
-      ratingFirebaseConnection.delete(eventID, secondRater)
+      ratingFirebaseConnection.deleteRating(eventID, secondRater)
       async { ratingFirebaseConnection.fetchRating(eventID, secondRater) }.await()
     }
   }
@@ -125,7 +126,7 @@ class RatingFirebaseConnectionTest {
       ratingFirebaseConnection.update(eventID, secondRater, secondRating)
       ratingFirebaseConnection.update(eventID, firstRater, firstRating)
 
-      ratingFirebaseConnection.delete(eventID, firstRater)
+      ratingFirebaseConnection.deleteRating(eventID, firstRater)
       val fetched = async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
       Log.d("RatingFirebaseConnectionTest", "Ratings are ${fetched.toString()}")
       assertNotNull(fetched)
@@ -171,13 +172,19 @@ class RatingFirebaseConnectionTest {
       ratingFirebaseConnection.update(eventID, secondRater, secondRating) // testRating testRater2 3
       ratingFirebaseConnection.update(eventID, firstRater, firstRating) // testRating testRater1 1
 
+      delay(400)
       ratingFirebaseConnection.aggregateAttendeeRatings(eventID)
       delay(400)
       val fetched = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
       Log.d("RatingFirebaseConnectionTest", "fetched Event is ${fetched.toString()}")
-      //assertNotNull(fetched)
-      //assertEquals(4.666666666666667, fetched?.get("average"))
-      //assertEquals(3, fetched?.get("count"))
+      assertNotNull(fetched)
+      val df = DecimalFormat("#.##")
+      df.roundingMode = java.math.RoundingMode.HALF_UP
+      var expected_average : Double = (Rating.toLong(firstRating) + Rating.toLong(rating) + Rating.toLong(secondRating)) / 3.0
+      expected_average= df.format(expected_average).toDouble()
+
+      assertEquals(expected_average, fetched?.get("average"))
+      assertEquals(3L, fetched?.get("count"))
 
     }
   }

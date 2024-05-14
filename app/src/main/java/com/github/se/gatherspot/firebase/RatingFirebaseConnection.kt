@@ -7,7 +7,7 @@ import com.google.firebase.firestore.AggregateField
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -15,10 +15,14 @@ import java.text.DecimalFormat
 
 class RatingFirebaseConnection {
   private val EVENT_COLLECTION = FirebaseCollection.EVENT_RATINGS.toString().lowercase()
+    private val ORGANIZER_COLLECTION = FirebaseCollection.ORGANIZER_RATINGS.toString().lowercase()
   private val TAG = "RatingFirebaseConnection"
 
   private fun attendeesRatingsCollection(eventID: String) =
       Firebase.firestore.collection(EVENT_COLLECTION).document(eventID).collection("attendees_ratings")
+
+    private fun organizedEventsRatingsCollection(organizerID: String) =
+        Firebase.firestore.collection(ORGANIZER_COLLECTION).document(organizerID).collection("event_ratings")
   /**
    * Fetches the rating of the user for the event
    *
@@ -103,7 +107,6 @@ class RatingFirebaseConnection {
           .set(data)
           .addOnSuccessListener {
             Log.d(TAG, "added Rating of event $eventID, of $rating for user $userID")
-              aggregateAttendeeRatings(eventID)
           }
           .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
     } else {
@@ -122,28 +125,27 @@ class RatingFirebaseConnection {
      * @param userID the id of the user
      *
      */
-    fun delete(eventID: String, userID: String){
+    fun deleteRating(eventID: String, userID: String){
         update(eventID, userID, Rating.UNRATED)
     }
 
     /**
-     * Deletes the file containing the ratings of the event
-     *
+     * Deletes the attendees ratings of the event as well as the event rating document
+     * @param eventID the id of the event
      *
      */
     fun deleteEvent(eventID: String){
         runBlocking {
-            var size = 0
-            fun deleteAttendeesRating(eventID: String) {
+            suspend fun deleteAttendeesRating(eventID: String) : Boolean
+                = suspendCancellableCoroutine { continuation ->
                 attendeesRatingsCollection(eventID).get().addOnSuccessListener { documents ->
-                    size = documents.size()
                     for (document in documents) {
                         document.reference.delete()
                     }
+                    continuation.resume(true)
                 }
             }
-            deleteAttendeesRating(eventID)
-            delay(300L*size)
+            async {deleteAttendeesRating(eventID)}.await()
             Firebase.firestore.collection(EVENT_COLLECTION).document(eventID).delete()
         }
     }
@@ -203,11 +205,40 @@ class RatingFirebaseConnection {
             Log.d(TAG, "count of event $eventID is $count")
             val data = mapOf("average" to avg, "count" to count)
             Firebase.firestore.collection(EVENT_COLLECTION).document(eventID).set(data, SetOptions.merge())
+                .addOnSuccessListener {
+                     Log.d(TAG, "Event $eventID updated with average rating $avg and count $count")
+                    //updateOrganizerRating(eventID, data)
+                }
+
 
         }
             .addOnFailureListener { exception ->
                 Log.d(TAG, "Aggregate query get failed with :", exception)}
 
     }
+
+   fun updateOrganizerRating(eventID: String, data : Map<String, Any>) {
+       fun fetchOrganizerID(eventID: String): String? {
+           val eventFirebaseConnection = EventFirebaseConnection()
+           var organizerID: String? = null
+           runBlocking {
+               async { organizerID = eventFirebaseConnection.fetch(eventID)?.organizerID }.await()
+           }
+           return organizerID
+       }
+
+       val organizerID = fetchOrganizerID(eventID)
+       if (organizerID != null) {
+           organizedEventsRatingsCollection(organizerID = organizerID)
+               .document(eventID)
+               .set(data, SetOptions.merge())
+       }
+   }
+    fun updateOrganizerRating(eventID: String, organizerID : String, data : Map<String, Any>){
+        organizedEventsRatingsCollection(organizerID)
+            .document(eventID)
+            .set(data, SetOptions.merge())
+    }
+
 
 }
