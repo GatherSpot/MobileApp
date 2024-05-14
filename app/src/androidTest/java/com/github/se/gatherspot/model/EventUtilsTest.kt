@@ -554,4 +554,17 @@ class EventUtilsTest {
     val draftEvent = eventUtils.retrieveFromDraft(context)
     Assert.assertNull(draftEvent)
   }
+
+    @Test
+    fun eventIsOverTestNotOver(){
+        assert(!eventUtils.isEventOver(testEvent))
+    }
+
+    @Test
+    fun eventIsOverReturnTrue(){
+        /*val eventOver = Event(
+            title = "Title",
+
+        )*/
+    }
 }

@@ -420,7 +420,7 @@ fun ProfileIndicator(profile: Profile) {
 @Composable
 fun StarRating(rating: Long, onRatingChanged: (Long) -> Unit) {
     Row(
-        modifier = Modifier.padding(vertical = 8.dp),
+        modifier = Modifier.padding(vertical = 8.dp).testTag("StarRow"),
         verticalAlignment = Alignment.CenterVertically) {
         for (i in 1..5) {
             Icon(
