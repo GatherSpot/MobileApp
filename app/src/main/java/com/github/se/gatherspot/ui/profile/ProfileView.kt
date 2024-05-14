@@ -130,6 +130,7 @@ class ProfileView {
                       .testTag("save"))
         }
   }
+
   // TODO: add state for the buttons for better ui when we have time, I want to catch up to
   // propagate functionalities first
   @Composable
