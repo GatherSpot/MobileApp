@@ -502,7 +502,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               globalRating = 4,
               timeEnding = LocalTime.of(16, 0),
-          )
+              image = "")
 
       EventUI(
           event,
