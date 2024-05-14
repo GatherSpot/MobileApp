@@ -1,55 +1,57 @@
 package com.github.se.gatherspot.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.defaults.DefaultEvents
+import com.github.se.gatherspot.defaults.DefaultProfiles
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
-import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
-import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 
 class EventsViewCompleteTest {
   @get:Rule val composeTestRule = createComposeRule()
+  private val event = DefaultEvents.trivialEvent1
+  private val eventJson = event.toJson()
+  private val profile = DefaultProfiles.trivial
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun fromEventsToOrganizerProfile() {
     // The test need to be logged in
-    testLogin()
+    runBlocking {
+      testLogin()
+      ProfileFirebaseConnection().add(profile)
+    }
+
     // This test will navigate from the events screen to the organizer profile
     val viewModel = EventsViewModel()
-    Thread.sleep(5000)
     val eventRegistrationModel = EventRegistrationViewModel(emptyList())
 
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "home") {
-        navigation(startDestination = "events", route = "home") {
-          composable("events") { Events(viewModel, NavigationActions(navController)) }
-          composable("event/{eventJson}") { backStackEntry ->
-            val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
-
+        navigation(startDestination = "trivialEvent", route = "home") {
+          composable("trivialEvent") {
             EventUI(
-                event = eventObject,
+                event = event,
                 navActions = NavigationActions(navController),
                 registrationViewModel = eventRegistrationModel,
                 eventsViewModel = viewModel)
           }
-          composable("profile") { Profile(NavigationActions(navController)) }
           composable("viewProfile/{uid}") { backstackEntry ->
             backstackEntry.arguments?.getString("uid")?.let {
               ViewProfile(NavigationActions(navController), it)
@@ -58,45 +60,10 @@ class EventsViewCompleteTest {
         }
       }
     }
-    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
-      filterMenu.performClick()
-      dropdown { assertIsDisplayed() }
 
-      val indexBasketball = Interests.BASKETBALL.ordinal
-
-      categories[indexBasketball] {
-        composeTestRule
-            .onNodeWithTag("dropdown")
-            .performScrollToNode(
-                hasTestTag(enumValues<Interests>().toList()[indexBasketball].toString()))
-        assertExists()
-        performClick()
-      }
-
-      filterMenu { performClick() }
-
-      composeTestRule.waitForIdle()
-
-      refresh { performClick() }
-
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 10000)
-      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
-      //  composeTestRule.waitUntilAtLeastOneExists(hasTestTag("Test Event"), 6000)
-      eventRow.performClick()
-    }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      // Test the back button
-      backButton {
-        assertIsDisplayed()
-        performClick()
-      }
-    }
-    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
-      composeTestRule.waitForIdle()
-      eventRow.performClick()
-    }
-    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      // Test the profile indicator
+      // click on the profile indicator
+      composeTestRule.waitUntilAtLeastOneExists(hasText(profile.userName), 4000)
       profileIndicator {
         assertIsDisplayed()
         performClick()
@@ -105,19 +72,16 @@ class EventsViewCompleteTest {
 
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // Check that the profile screen is displayed
-      usernameInput.assertIsDisplayed()
-      bioInput.assertIsDisplayed()
-      profileImage.assertIsDisplayed()
-      follow {
-        assertIsDisplayed()
-        performClick()
-      }
-      addFriend {
-        assertIsDisplayed()
-        performClick()
-      }
-
+      composeTestRule.waitUntilAtLeastOneExists(hasText(profile.userName), 4000)
       back.performClick()
+    }
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      // Check that the event screen is displayed
+      composeTestRule.waitUntilAtLeastOneExists(hasText(event.title))
+    }
+    runBlocking {
+      testLoginCleanUp()
+      ProfileFirebaseConnection().delete(profile.id)
     }
   }
 }

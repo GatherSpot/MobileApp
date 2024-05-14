@@ -10,6 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.defaults.DefaultEvents
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.EventsScreen
@@ -27,14 +29,32 @@ import org.junit.runner.RunWith
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var uid: String
+  private val events =
+      listOf(
+          DefaultEvents.withInterests(Interests.SPORT, Interests.BASKETBALL, eventId = "1"),
+          DefaultEvents.withInterests(Interests.SPORT, Interests.CHESS, eventId = "2"),
+          DefaultEvents.withInterests(Interests.SPORT, Interests.FOOTBALL, eventId = "3"),
+          DefaultEvents.withInterests(Interests.SPORT, Interests.BASKETBALL, eventId = "4"),
+          DefaultEvents.withInterests(eventId = "5"),
+          DefaultEvents.withInterests(eventId = "6"),
+          DefaultEvents.withInterests(Interests.ROLE_PLAY, eventId = "7"),
+          DefaultEvents.withInterests(Interests.BASKETBALL, eventId = "8"),
+          DefaultEvents.withInterests(Interests.CHESS, eventId = "9"),
+          DefaultEvents.withInterests(Interests.FOOTBALL, eventId = "10"),
+          DefaultEvents.withInterests(Interests.BOARD_GAMES, eventId = "11"))
 
   @Before
   fun setUp() = runBlocking {
     testLogin()
     uid = FirebaseAuth.getInstance().currentUser!!.uid
+    events.forEach { event -> EventFirebaseConnection().add(event) }
   }
 
-  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
+  @After
+  fun cleanUp() = runBlocking {
+    testLoginCleanUp()
+    events.forEach { event -> EventFirebaseConnection().delete(event.id) }
+  }
 
   @Test
   fun testEverythingExists() {
@@ -209,23 +229,17 @@ class EventsTest {
 
       dropdown { assertIsDisplayed() }
 
-      val indexBasketball = Interests.BASKETBALL.ordinal
-      val indexChess = Interests.CHESS.ordinal
+      val basketball = Interests.BASKETBALL
+      val chess = Interests.CHESS
 
-      categories[indexBasketball] {
-        composeTestRule
-            .onNodeWithTag("dropdown")
-            .performScrollToNode(
-                hasTestTag(enumValues<Interests>().toList()[indexBasketball].toString()))
+      categories[basketball.ordinal] {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag(basketball.name))
         assertExists()
         performClick()
       }
 
-      categories[indexChess] {
-        composeTestRule
-            .onNodeWithTag("dropdown")
-            .performScrollToNode(
-                hasTestTag(enumValues<Interests>().toList()[indexChess].toString()))
+      categories[chess.ordinal] {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag(chess.name))
         assertExists()
         performClick()
       }
@@ -239,16 +253,9 @@ class EventsTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 10000)
       composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
 
-      Thread.sleep(6000)
-
       assert(
           viewModel.uiState.value.list.all { e ->
-            if (e.categories == null) {
-              false
-            } else {
-              e.categories!!.contains(Interests.BASKETBALL) ||
-                  e.categories!!.contains(Interests.CHESS)
-            }
+            e.categories!!.contains(basketball) || e.categories!!.contains(chess)
           })
     }
   }
