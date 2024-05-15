@@ -35,11 +35,22 @@ class EventUITest {
   @Before
   fun setUp() {
     testLogin()
+    val myProfile = Profile("myUserName", "BIO", "", EnvironmentSetter.testLoginUID, setOf())
+    runBlocking {
+      ProfileFirebaseConnection().add(Profile.testParticipant())
+      ProfileFirebaseConnection().add(Profile.testOrganizer())
+      ProfileFirebaseConnection().add(myProfile)
+    }
   }
 
   @After
   fun cleanUp() {
     testLoginCleanUp()
+    runBlocking {
+      ProfileFirebaseConnection().delete(EnvironmentSetter.testLoginUID)
+      ProfileFirebaseConnection().delete(Profile.testParticipant().id)
+      ProfileFirebaseConnection().delete(Profile.testOrganizer().id)
+    }
   }
 
   private val pastEventRegisteredTo =
