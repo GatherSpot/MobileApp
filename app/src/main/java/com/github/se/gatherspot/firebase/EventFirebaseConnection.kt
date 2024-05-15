@@ -265,14 +265,19 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
   suspend fun fetchEventsFromFollowedUsers(ids: List<String>): MutableList<Event> {
-    val querySnapshot: QuerySnapshot =
-        Firebase.firestore
-            .collection(EVENTS)
-            .orderBy("eventID")
-            .whereIn("organizerID", ids)
-            .get()
-            .await()
-    return eventsFromQuerySnapshot(querySnapshot)
+    return when {
+      ids.isEmpty() -> mutableListOf()
+      else -> {
+        val querySnapshot: QuerySnapshot =
+            Firebase.firestore
+                .collection(EVENTS)
+                .orderBy("eventID")
+                .whereIn("organizerID", ids)
+                .get()
+                .await()
+        eventsFromQuerySnapshot(querySnapshot)
+      }
+    }
   }
 
   suspend fun addRegisteredUser(eventID: String, uid: String) {

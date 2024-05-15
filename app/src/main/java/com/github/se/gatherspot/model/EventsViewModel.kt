@@ -39,7 +39,7 @@ class EventsViewModel : ViewModel() {
   }
 
   suspend fun fetchEventsFromFollowedUsers() {
-    val ids = FollowList.following(FirebaseAuth.getInstance().currentUser!!.uid)
+    val ids = FollowList.following(FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")
     fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.events)
   }
 
