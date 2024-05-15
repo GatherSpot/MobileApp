@@ -4,6 +4,7 @@ import android.util.Log
 import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -83,12 +84,20 @@ class EventUIViewModelTest {
     // Unrate events
     ratingFirebaseConnection.update(event.id, testLoginUID, Rating.UNRATED)
     ratingFirebaseConnection.update(organizedEvent.id, testLoginUID, Rating.UNRATED)
+
+    // Add profile to database
+    val profile1 = Profile("organizer", "bio", "image", "T1qNNU05QeeqB2OqIBb7GAtQd093", setOf())
+    val profileTestOrganiser = Profile("testOrganiser", "bio", "image", testLoginUID, setOf())
+    ProfileFirebaseConnection().add(profile1)
+    ProfileFirebaseConnection().add(profileTestOrganiser)
   }
 
   @After
   fun tearDown() {
     // Clean up the test environment
     EnvironmentSetter.testLoginCleanUp()
+    ProfileFirebaseConnection().delete("T1qNNU05QeeqB2OqIBb7GAtQd093")
+    ProfileFirebaseConnection().delete(testLoginUID)
   }
 
   @Test

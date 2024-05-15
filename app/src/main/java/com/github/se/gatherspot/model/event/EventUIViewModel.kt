@@ -30,7 +30,8 @@ class EventUIViewModel(private val event: Event) :
       Log.d(
           "EventUIViewModel",
           "Fetching organizer and registered users organizerID : ${event.organizerID}, eventID : ${event.id}")
-      _organizer = ProfileFirebaseConnection().fetch(event.organizerID) ?: Profile.testOrganizer()
+      _organizer =
+          ProfileFirebaseConnection().fetch(event.organizerID) {} ?: Profile.testOrganizer()
       _rating.value =
           RatingFirebaseConnection()
               .fetchRating(
