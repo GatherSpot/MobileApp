@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model.event
 
-import androidx.compose.ui.graphics.ImageBitmap
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location

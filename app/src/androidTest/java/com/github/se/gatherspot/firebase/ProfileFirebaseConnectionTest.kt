@@ -62,17 +62,17 @@ class ProfileFirebaseConnectionTest {
   @Test
   fun testIfUsernameExists() {
     // bogus does not actually test correctly
-//    runBlocking { profileFirebaseConnection.add(profile) }
-//    var wasSet = false
-//    profileFirebaseConnection.ifUsernameExists(profile.userName) {
-//      assertTrue(it)
-//      wasSet = true
-//    }
-//
-//    profileFirebaseConnection.ifUsernameExists("nonExistentUsername") {
-//      assertFalse(it)
-//      wasSet = true
-//    }
+    //    runBlocking { profileFirebaseConnection.add(profile) }
+    //    var wasSet = false
+    //    profileFirebaseConnection.ifUsernameExists(profile.userName) {
+    //      assertTrue(it)
+    //      wasSet = true
+    //    }
+    //
+    //    profileFirebaseConnection.ifUsernameExists("nonExistentUsername") {
+    //      assertFalse(it)
+    //      wasSet = true
+    //    }
 
     // assert(wasSet)
   }
