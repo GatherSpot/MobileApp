@@ -21,13 +21,10 @@ class EventsViewModel : ViewModel() {
   private var loadedFilteredEvents: MutableList<Event> = mutableListOf()
   val eventFirebaseConnection = EventFirebaseConnection()
   var previousInterests = mutableListOf<Interests>()
-  private lateinit var idsFromFollowed: IdList
 
   init {
     viewModelScope.launch {
       val events = eventFirebaseConnection.fetchNextEvents(PAGESIZE)
-      idsFromFollowed =
-          FollowList.following(FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")
       loadedEvents = events.toMutableList()
       _uiState.value = UIState(loadedEvents)
     }
@@ -42,7 +39,8 @@ class EventsViewModel : ViewModel() {
   }
 
   suspend fun fetchEventsFromFollowedUsers() {
-    fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(idsFromFollowed.events)
+    val ids = FollowList.following(FirebaseAuth.getInstance().currentUser!!.uid)
+    fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.events)
   }
 
   fun displayMyEvents() {

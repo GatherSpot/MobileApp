@@ -11,11 +11,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -26,11 +28,15 @@ import org.junit.runner.RunWith
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var uid: String
+  private lateinit var ids: List<String>
 
   @Before
   fun setUp() {
-    testLogin()
-    uid = FirebaseAuth.getInstance().currentUser!!.uid
+    runBlocking {
+      testLogin()
+      uid = FirebaseAuth.getInstance().currentUser!!.uid
+      ids = FollowList.following(uid).events
+    }
   }
 
   @After
@@ -312,6 +318,37 @@ class EventsTest {
       if (listOfEvents.isNotEmpty()) {
         assert(listOfEvents.all { event -> event.registeredUsers.contains(uid) })
       }
+    }
+  }
+
+  @Test
+  fun testFromFollowedWorks() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
+
+    composeTestRule.setContent {
+      val nav = NavigationActions(rememberNavController())
+      Events(viewModel = viewModel, nav = nav)
+    }
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      dropdown { assertIsDisplayed() }
+
+      fromFollowed {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("fromFollowed"))
+        performClick()
+      }
+
+      composeTestRule.waitForIdle()
+
+      val l = viewModel.uiState.value.list
+
+      assert(l.all { event -> event.organizerID in ids })
     }
   }
 

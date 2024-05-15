@@ -157,7 +157,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.AccountCircle, "fromFollowed") },
-                            modifier = Modifier.testTag("registeredTo"))
+                            modifier = Modifier.testTag("fromFollowed"))
 
                         filters.forEach { s -> StatefulDropdownItem(s, interestsSelected) }
                       }
