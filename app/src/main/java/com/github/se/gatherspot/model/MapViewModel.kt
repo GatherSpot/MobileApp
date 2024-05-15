@@ -18,15 +18,21 @@ import com.github.se.gatherspot.model.event.Event
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 @RequiresApi(Build.VERSION_CODES.S)
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val SQUARE_RADIUS = 0.01
   private val fusedLocationClient =
       LocationServices.getFusedLocationProviderClient(application.applicationContext)
   private val _currentLocation = MutableLiveData<LatLng>()
 
-  private var _events = mutableListOf<Event?>()
+  private var _registered_events = mutableListOf<Event?>()
+    private var _events = mutableListOf<Event?>()
 
   val currentLocation: LiveData<LatLng>
     get() = _currentLocation
@@ -34,7 +40,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
   var events: MutableList<Event?>
     get() = _events
     set(value) {
-      _events = value
+      _registered_events = value
+    }
+
+
+    var registered_events: MutableList<Event?>
+    get() = _registered_events
+    set(value) {
+      _registered_events = value
     }
 
   init {
@@ -65,7 +78,33 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 FirebaseCollection.REGISTERED_EVENTS) {}!!
             .events
             .toMutableList()
-    events = list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
-    return
+    registered_events = list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
+
+      val latitude = _currentLocation.value?.latitude ?: 0.0
+        val longitude = _currentLocation.value?.longitude ?: 0.0
+
+      val tempEvents = mutableListOf<Event?>()
+
+      suspendCancellableCoroutine { continuation ->
+
+
+          Firebase.firestore.collection("events")
+              .orderBy("locationLatitude")
+              .whereLessThanOrEqualTo("locationLatitude", latitude + SQUARE_RADIUS)
+              .whereGreaterThan("locationLatitude", latitude - SQUARE_RADIUS)
+              .orderBy("locationLatitude").whereLessThanOrEqualTo("locationLongitude", longitude + SQUARE_RADIUS)
+              .whereGreaterThan("locationLongitude", longitude - SQUARE_RADIUS)
+              .get().addOnSuccessListener {
+
+                  tempEvents.addAll(it.documents.map { doc -> doc.toObject(Event::class.java) })
+                  continuation.resume(tempEvents)
+              }
+              .addOnFailureListener {
+                  continuation.resume(null)
+              }
+
+      }
+      events = tempEvents
+
   }
 }
