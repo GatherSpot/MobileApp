@@ -1,7 +1,9 @@
 package com.github.se.gatherspot.firebase
 
 import android.util.Log
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
+import com.github.se.gatherspot.model.event.Event
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -21,6 +23,26 @@ class RatingFirebaseConnectionTest {
   private val secondRating = Rating.FOUR_STARS
   private val firstRating = Rating.ONE_STAR
   private val firstRater = "testRater1"
+  private val event = Event(
+      id = eventID,
+      title = eventID,
+      description = eventID,
+      location = null,
+      eventStartDate = null,
+      eventEndDate = null,
+      timeBeginning = null,
+      timeEnding = null,
+      attendanceMaxCapacity = 10,
+      attendanceMinCapacity = 0,
+      inscriptionLimitDate = null,
+      inscriptionLimitTime = null,
+      categories = setOf(),
+      organizerID = Profile.testOrganizer().id,
+      registeredUsers = mutableListOf("testRating"),
+      finalAttendees = listOf("testRating"),
+      image = "testRating",
+      globalRating = null
+  )
 
   @Before
   fun setup() {
@@ -180,14 +202,46 @@ class RatingFirebaseConnectionTest {
       assertNotNull(fetched)
       val df = DecimalFormat("#.##")
       df.roundingMode = java.math.RoundingMode.HALF_UP
-      var expected_average : Double = (Rating.toLong(firstRating) + Rating.toLong(rating) + Rating.toLong(secondRating)) / 3.0
-      expected_average= df.format(expected_average).toDouble()
+      var expectedAverage : Double = (Rating.toLong(firstRating) + Rating.toLong(rating) + Rating.toLong(secondRating)) / 3.0
+      expectedAverage= df.format(expectedAverage).toDouble()
 
-      assertEquals(expected_average, fetched?.get("average"))
+      assertEquals(expectedAverage, fetched?.get("average"))
       assertEquals(3L, fetched?.get("count"))
 
     }
   }
+
+
+
+@Test
+fun testUpdateOrganizerRating(){
+    runBlocking {
+        ratingFirebaseConnection.update(eventID, userID, rating) // testRating testRater 5
+        ratingFirebaseConnection.update(eventID, secondRater, secondRating) // testRating testRater2 3
+        ratingFirebaseConnection.update(eventID, firstRater, firstRating) // testRating testRater1 1
+
+        delay(400)
+        ratingFirebaseConnection.aggregateAttendeeRatings(eventID)
+        delay(400)
+        val fetchedData = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
+        Log.d("RatingFirebaseConnectionTest", "fetched Event is ${fetchedData.toString()}")
+        assertNotNull(fetchedData)
+        val df = DecimalFormat("#.##")
+        df.roundingMode = java.math.RoundingMode.HALF_UP
+        var expectedAverage : Double = (Rating.toLong(firstRating) + Rating.toLong(rating) + Rating.toLong(secondRating)) / 3.0
+        expectedAverage= df.format(expectedAverage).toDouble()
+
+        assertEquals(expectedAverage, fetchedData?.get("average"))
+        assertEquals(3L, fetchedData?.get("count"))
+
+        ratingFirebaseConnection.updateOrganizerRating(eventID, fetchedData!!)
+        val fetched2 = async {ratingFirebaseConnection.fetchOrganizerRatings(event.organizerID)}.await()
+        delay(400)
+        Log.d("RatingFirebaseConnectionTest", "fetched2  is ${fetched2.toString()}")
+        assertNotNull(fetched2)
+        assertNotNull(fetched2?.get(eventID))
+    }
+}
 
 
 }
