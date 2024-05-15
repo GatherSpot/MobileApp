@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
 
     super.onCreate(savedInstanceState)
     // val chatViewModel = ChatViewModel()
+    app = application
 
     signInLauncher =
         registerForActivityResult(
