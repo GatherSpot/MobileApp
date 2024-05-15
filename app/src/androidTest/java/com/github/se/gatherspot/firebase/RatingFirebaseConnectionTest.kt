@@ -201,13 +201,14 @@ class RatingFirebaseConnectionTest {
 
   @Test
   fun testDeleteEvent() {
-    runTest {
+    runBlocking {
       ratingFirebaseConnection.update(eventID, userID, rating)
       ratingFirebaseConnection.update(eventID, secondRater, secondRating)
       ratingFirebaseConnection.update(eventID, firstRater, firstRating)
 
-        delay(6000)
+        delay(2000)
       ratingFirebaseConnection.deleteEventRating(eventID)
+        delay(1000)
       val fetchedAttendees = async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
       val fetchedEvent = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
       Log.d("RatingFirebaseConnectionTest", "Ratings are ${fetchedAttendees.toString()}")
@@ -312,6 +313,7 @@ fun testUpdateOrganizerRating(){
     }
 
 
+
     fun testEndToEndRating(){
         runBlocking {
             ratingFirebaseConnection.update(eventID, userID, rating) // testRating testRater 5
@@ -364,7 +366,6 @@ fun testUpdateOrganizerRating(){
         }
     }
 
-    @Test
     fun testing() {
         runBlocking {
 
