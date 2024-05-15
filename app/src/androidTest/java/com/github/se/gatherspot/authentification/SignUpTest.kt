@@ -9,9 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testDelete
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
@@ -44,7 +43,7 @@ class SignUpTest : TestCase() {
     if (currentUser != null) {
       runBlocking {
         ProfileFirebaseConnection().delete(currentUser.uid)
-        testLoginCleanUp()
+        testDelete()
       }
     }
   }
@@ -96,10 +95,8 @@ class SignUpTest : TestCase() {
 
       verifDialog.assertExists()
       verifDialog.assertIsDisplayed()
-      verifDialog.performClick()
+      verifDialog.assertHasClickAction()
     }
-
-    signUpCleanUp(userName)
   }
 
   @OptIn(ExperimentalTestApi::class)

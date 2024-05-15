@@ -25,6 +25,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.Thread.sleep
 
 const val USERNAME = "AuthEndToEndTest"
 const val EMAIL = "AuthEndToEnd@test.com"
@@ -82,6 +83,7 @@ class AllTest : TestCase() {
         performClick()
       }
     }
+   sleep(1000)
     composeTestRule.waitForIdle()
     ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
       lazyColumn {
