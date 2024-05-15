@@ -122,7 +122,6 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.image, "")
 
     eventFirebaseConnection.delete(eventID)
-
   }
 
   @Test
