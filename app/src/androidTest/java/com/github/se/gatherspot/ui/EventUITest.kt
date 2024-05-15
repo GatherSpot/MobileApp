@@ -1,5 +1,34 @@
 package com.github.se.gatherspot.ui
 
+
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.screens.EventUIScreen
+import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.auth.FirebaseAuth
+import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.time.LocalDate
+import java.time.LocalTime
+import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+
 class EventUITest {
   /*
   @get:Rule val composeTestRule = createComposeRule()
@@ -7,6 +36,7 @@ class EventUITest {
   @Before
   fun setUp() {
     testLogin()
+    profileFirebaseConnection.add(Profile.testOrganizer())
   }
 
   @After
@@ -369,6 +399,7 @@ class EventUITest {
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
+    melvinLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -406,6 +437,7 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testClickOnDeleteButton() {
+    melvinLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -456,7 +488,6 @@ class EventUITest {
 
   @Test
   fun testProfileIsCorrectlyFetched() {
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -477,7 +508,8 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               globalRating = 4,
               timeEnding = LocalTime.of(16, 0),
-              image = "")
+              image = "EventUITestImage")
+
 
       EventUI(
           event,
