@@ -71,22 +71,20 @@ class ProfileFirebaseConnectionTest {
     }
   }
 
-  // Isolate it for now as it is not working
-  /*
-    @Test
-    fun testDelete() {
-      runTest {
-        var fetched: Profile? = null
-        profileFirebaseConnection.add(toAdd)
-        async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-        assertNotNull(fetched)
-        profileFirebaseConnection.delete(toAdd.id)
+  @Test
+  fun testDelete() {
+    runTest {
+      var fetched: Profile? = null
+      profileFirebaseConnection.add(toAdd)
+      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
+      assertNotNull(fetched)
+      profileFirebaseConnection.delete(toAdd.id)
 
-        async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-        assertEquals(null, fetched)
-      }
+      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
+      assertEquals(null, fetched)
     }
-  */
+  }
+
   @Test
   fun testGetCurrentUserUid() {
     runTest {
