@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -44,19 +43,6 @@ class BarCodeAnalyser(
       lastAnalyzedTimeStamp = currentTimestamp
     } else {
       image.close()
-    }
-  }
-
-  companion object {
-    fun analyseAppQRCode(text: String, navigationActions: NavigationActions) {
-      val parts = text.split("/")
-      if (parts.size == 2) {
-        if (parts[0] == "event") {
-          navigationActions.controller.navigate("event/${parts[1]}")
-        } else if (parts[0] == "profile") {
-          navigationActions.controller.navigate("viewProfile/${parts[1]}")
-        }
-      }
     }
   }
 }

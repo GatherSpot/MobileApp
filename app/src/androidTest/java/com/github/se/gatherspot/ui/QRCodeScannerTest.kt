@@ -6,7 +6,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.screens.QRCodeScannerScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
+import com.github.se.gatherspot.ui.qrcode.analyseAppQRCode
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import junit.framework.TestCase.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,7 +19,10 @@ class QRCodeScannerTest {
 
   @Test
   fun testEverythingExists() {
-    composeTestRule.setContent { QRCodeScanner(NavigationActions(rememberNavController())) }
+    composeTestRule.setContent {
+      val navigationActions = NavigationActions(rememberNavController())
+      QRCodeScanner(navigationActions)
+    }
     ComposeScreen.onComposeScreen<QRCodeScannerScreen>(composeTestRule) {
       cameraPermissionButton.assertExists()
       cameraPermissionButton.assertIsDisplayed()
@@ -26,5 +31,19 @@ class QRCodeScannerTest {
       scaffold.assertExists()
       scaffold.assertIsDisplayed()
     }
+  }
+
+  @Test
+  fun testAnalysis() {
+    val event = "event/123"
+    val profile = "profile/123"
+    val invalid = "invalid"
+
+    val eventWorks = analyseAppQRCode(event)
+    assertEquals(eventWorks, "event/123")
+    val profileWorks = analyseAppQRCode(profile)
+    assertEquals(profileWorks, "viewProfile/123")
+    val invalidReturnsEmpty = analyseAppQRCode(invalid)
+    assertEquals(invalidReturnsEmpty, "")
   }
 }

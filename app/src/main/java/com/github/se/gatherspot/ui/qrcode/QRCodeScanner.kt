@@ -99,7 +99,10 @@ fun CameraPreview(navigationActions: NavigationActions) {
                 if (barcodes.isNotEmpty()) {
                   val code = barcodes[0].rawValue
                   if (code != null) {
-                    BarCodeAnalyser.analyseAppQRCode(code, navigationActions)
+                    val navString = analyseAppQRCode(code)
+                    if (navString != "") {
+                      navigationActions.controller.navigate(navString)
+                    }
                   }
                 }
               }
@@ -119,6 +122,21 @@ fun CameraPreview(navigationActions: NavigationActions) {
             },
             ContextCompat.getMainExecutor(context))
       })
+}
+
+fun analyseAppQRCode(text: String): String {
+  val parts = text.split("/")
+  if (parts.size == 2) {
+    if (parts[0] == "event") {
+      return "event/${parts[1]}"
+    } else if (parts[0] == "profile") {
+      return "viewProfile/${parts[1]}"
+    } else {
+      return ""
+    }
+  } else {
+    return ""
+  }
 }
 
 @androidx.compose.ui.tooling.preview.Preview
