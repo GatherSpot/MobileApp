@@ -6,6 +6,7 @@ import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -79,6 +80,7 @@ class ProfileFirebaseConnectionTest {
       async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
       assertNotNull(fetched)
       profileFirebaseConnection.delete(toAdd.id)
+      delay(2000)
 
       async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
       assertEquals(null, fetched)
