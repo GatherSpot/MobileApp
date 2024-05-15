@@ -14,6 +14,7 @@ class RatingFirebaseConnection {
 
   private fun attendeesRatingsCollection(eventID: String) =
       Firebase.firestore.collection(COLLECTION).document(eventID).collection("attendees_ratings")
+
   /**
    * Fetches the rating of the user for the event
    *
