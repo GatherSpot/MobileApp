@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.model
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -39,7 +41,10 @@ class EventsViewModel : ViewModel() {
   }
 
   suspend fun fetchEventsFromFollowedUsers() {
-    val ids = FollowList.following(FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")
+    val ids =
+        FollowList.following(
+            FirebaseAuth.getInstance().currentUser?.uid ?: "CpsyL2BH9TTQKEfpDC3YwZB6NLE2")
+    Log.d(TAG, "ids from viewModel ${ids.events}")
     fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.events)
   }
 

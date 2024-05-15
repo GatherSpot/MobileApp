@@ -268,6 +268,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     return when {
       ids.isEmpty() -> mutableListOf()
       else -> {
+        Log.d(TAG, "goodForCoverage")
         val querySnapshot: QuerySnapshot =
             Firebase.firestore
                 .collection(EVENTS)

@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.ui
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -345,7 +347,7 @@ class EventsTest {
       }
 
       composeTestRule.waitForIdle()
-
+      Log.d(TAG, "IDS followed $ids")
       val l = viewModel.uiState.value.list
 
       assert(l.all { event -> event.organizerID in ids })
