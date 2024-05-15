@@ -141,12 +141,11 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
 
-
-
-
-
-
-
+  // QR Code
+  // ZXing Core
+  implementation("com.google.zxing:core:3.5.1")
+  // ZXing Android Embedded (for scanning)
+  implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 

@@ -68,8 +68,7 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    val eventsViewModel = EventsViewModel()
-    app = application
+    // val chatViewModel = ChatViewModel()
 
     signInLauncher =
         registerForActivityResult(
