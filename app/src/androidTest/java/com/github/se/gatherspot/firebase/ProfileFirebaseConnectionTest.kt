@@ -106,7 +106,7 @@ class ProfileFirebaseConnectionTest {
     runTest {
       profileFirebaseConnection.add(toAdd)
       var wasSet = false
-      profileFirebaseConnection.ifUsernameExists("melvin") {
+      profileFirebaseConnection.ifUsernameExists(toAdd.userName) {
         assertTrue(it)
         wasSet = true
       }
