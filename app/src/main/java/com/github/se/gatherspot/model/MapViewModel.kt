@@ -26,7 +26,7 @@ import kotlin.coroutines.resume
 @RequiresApi(Build.VERSION_CODES.S)
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val SQUARE_RADIUS = 0.03
+    private val SQUARE_RADIUS = 2
   private val fusedLocationClient =
       LocationServices.getFusedLocationProviderClient(application.applicationContext)
   private val _currentLocation = MutableLiveData<LatLng>()
@@ -40,7 +40,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
   var events: MutableList<Event?>
     get() = _events
     set(value) {
-      _registered_events = value
+      _events = value
     }
 
 
@@ -91,7 +91,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
               .orderBy("locationLatitude")
               .whereLessThanOrEqualTo("locationLatitude", latitude + SQUARE_RADIUS)
               .whereGreaterThan("locationLatitude", latitude - SQUARE_RADIUS)
-              .orderBy("locationLatitude")
+              .orderBy("locationLongitude")
               .whereLessThanOrEqualTo("locationLongitude", longitude + SQUARE_RADIUS)
               .whereGreaterThan("locationLongitude", longitude - SQUARE_RADIUS)
               .get().addOnSuccessListener {
