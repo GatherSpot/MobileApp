@@ -107,7 +107,7 @@ class RatingFirebaseConnection {
           .set(data)
           .addOnSuccessListener {
             Log.d(TAG, "added Rating of event $eventID, of $rating for user $userID")
-            //aggregateAttendeeRatings(eventID)
+            aggregateAttendeeRatings(eventID)
           }
           .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
     } else {
@@ -116,7 +116,7 @@ class RatingFirebaseConnection {
           .delete()
           .addOnSuccessListener {
               Log.d(TAG, "Deleted rating of user $userID for event $eventID")
-              //aggregateAttendeeRatings(eventID)
+              aggregateAttendeeRatings(eventID)
           }
           .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
     }
@@ -217,10 +217,20 @@ class RatingFirebaseConnection {
 
     }
 
+    /**
+     * Updates the organizer rating document with the average rating and the count of ratings of the event
+     * @param eventID the id of the event
+     * @param data the data to update the organizer rating document with
+     *
+     */
     fun updateOrganizerRating(eventID: String, data: Map<String, Any>) {
         runBlocking {
             val eventFirebaseConnection = EventFirebaseConnection()
             val event = async { eventFirebaseConnection.fetch(eventID) }.await() ?: return@runBlocking
+
+            Firebase.firestore.collection(ORGANIZER_COLLECTION).document(event.organizerID).set(mapOf("organizerID" to event.organizerID), SetOptions.merge() )
+
+
 
             organizedEventsCollection(event.organizerID)
                 .document(eventID)
@@ -233,8 +243,11 @@ class RatingFirebaseConnection {
     }
 
 
-
-
+    /**
+     * Fetches the ratings of the the events organized by the organizer
+     * @param organizerID the id of the organizer
+     * @return a map of event id to the fields of the event document as pairs
+     */
     suspend fun fetchOrganizerRatings(organizerID : String) : Map<String, List<Pair<String, Any>>>? =
         suspendCancellableCoroutine { continuation ->
                 runBlocking {
@@ -297,6 +310,10 @@ class RatingFirebaseConnection {
 
      */
 
+    /**
+     * Aggregates the ratings of the organizer
+     * @param organizerID the id of the organizer
+     */
     fun aggregateOrganizerRatings(organizerID: String) {
         runBlocking {
             val ratings = async { fetchOrganizerRatings(organizerID) }.await() ?: return@runBlocking
@@ -330,6 +347,11 @@ class RatingFirebaseConnection {
     }
 
 
+    /**
+     * Fetches the organizer's overall rating document
+     * @param organizerID the id of the organizer
+     * @return the document of the organizer
+     */
     suspend fun fetchOrganizer(organizerID: String) : Map<String, Any>? =
         suspendCancellableCoroutine { continuation ->
             Firebase.firestore.collection(ORGANIZER_COLLECTION)

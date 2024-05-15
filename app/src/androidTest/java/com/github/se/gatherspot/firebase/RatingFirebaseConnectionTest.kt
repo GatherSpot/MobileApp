@@ -251,7 +251,7 @@ fun testUpdateOrganizerRating(){
 
 
         delay(400)
-        ratingFirebaseConnection.aggregateAttendeeRatings(eventID)
+        //ratingFirebaseConnection.aggregateAttendeeRatings(eventID)
         delay(400)
         val fetchedData = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
         Log.d("RatingFirebaseConnectionTest", "fetched Event is ${fetchedData.toString()}")
@@ -362,6 +362,22 @@ fun testUpdateOrganizerRating(){
             assertEquals(5L, fetchOrganizer?.get("nRatings"))
 
         }
+    }
+
+    @Test
+    fun testing() {
+        runBlocking {
+
+            ratingFirebaseConnection.update(eventID, userID, rating) // testRating testRater 5
+            ratingFirebaseConnection.update(eventID, secondRater, secondRating) // testRating testRater2 3
+            ratingFirebaseConnection.update(eventID, firstRater, firstRating) // testRating testRater1 1
+            ratingFirebaseConnection.update(eventID2, userID, rating) // testRating2 testRater 5
+            ratingFirebaseConnection.update(eventID2, secondRater, secondRating) // testRating2 testRater2 3
+
+            delay(4000)
+
+        }
+
     }
 
 
