@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -35,12 +36,12 @@ import java.util.concurrent.Executors
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun QRCodeScanner(navigationActions: NavigationActions) {
-  Column(horizontalAlignment = Alignment.CenterHorizontally) {
+  Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.testTag("QRCodeScanner")) {
     Spacer(modifier = Modifier.height(10.dp))
 
     val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
 
-    Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
+    Button(onClick = { cameraPermissionState.launchPermissionRequest() }, modifier = Modifier.testTag("cameraPermissionButton")) {
       Text(text = "Camera Permission")
     }
 
@@ -69,7 +70,7 @@ fun CameraPreview(navigationActions: NavigationActions) {
           implementationMode = PreviewView.ImplementationMode.COMPATIBLE
         }
       },
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.fillMaxSize().testTag("CameraPreview"),
       update = { previewView ->
         val cameraSelector: CameraSelector =
             CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
