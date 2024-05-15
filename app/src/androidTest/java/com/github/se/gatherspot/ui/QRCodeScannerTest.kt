@@ -3,7 +3,6 @@ package com.github.se.gatherspot.ui
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.screens.QRCodeScannerScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
@@ -14,21 +13,18 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class QRCodeScannerTest {
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @Test
-    fun testEverythingExists(){
-        composeTestRule.setContent {
-            QRCodeScanner(NavigationActions(rememberNavController()))
-        }
-        ComposeScreen.onComposeScreen<QRCodeScannerScreen>(composeTestRule) {
-            cameraPermissionButton.assertExists()
-            cameraPermissionButton.assertIsDisplayed()
-            cameraPreview.assertExists()
-            cameraPreview.assertIsDisplayed()
-            scaffold.assertExists()
-            scaffold.assertIsDisplayed()
-        }
+  @Test
+  fun testEverythingExists() {
+    composeTestRule.setContent { QRCodeScanner(NavigationActions(rememberNavController())) }
+    ComposeScreen.onComposeScreen<QRCodeScannerScreen>(composeTestRule) {
+      cameraPermissionButton.assertExists()
+      cameraPermissionButton.assertIsDisplayed()
+      cameraPreview.assertExists()
+      cameraPreview.assertIsDisplayed()
+      scaffold.assertExists()
+      scaffold.assertIsDisplayed()
     }
+  }
 }

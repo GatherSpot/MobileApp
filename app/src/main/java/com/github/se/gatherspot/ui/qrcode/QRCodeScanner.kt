@@ -36,19 +36,23 @@ import java.util.concurrent.Executors
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun QRCodeScanner(navigationActions: NavigationActions) {
-  Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.testTag("QRCodeScanner")) {
-    Spacer(modifier = Modifier.height(10.dp))
+  Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.testTag("QRCodeScanner")) {
+        Spacer(modifier = Modifier.height(10.dp))
 
-    val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+        val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
 
-    Button(onClick = { cameraPermissionState.launchPermissionRequest() }, modifier = Modifier.testTag("cameraPermissionButton")) {
-      Text(text = "Camera Permission")
-    }
+        Button(
+            onClick = { cameraPermissionState.launchPermissionRequest() },
+            modifier = Modifier.testTag("cameraPermissionButton")) {
+              Text(text = "Camera Permission")
+            }
 
-    Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-    CameraPreview(navigationActions = navigationActions)
-  }
+        CameraPreview(navigationActions = navigationActions)
+      }
 }
 
 @Composable
