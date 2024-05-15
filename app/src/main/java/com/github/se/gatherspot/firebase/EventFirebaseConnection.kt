@@ -430,7 +430,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             "image" to element.image,
             "organizerID" to
                 when (element.organizerID) {
-                  "" -> Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id
+                  "" -> Firebase.auth.currentUser?.uid!!
                   else -> element.organizerID
                 },
             "eventStatus" to element.eventStatus) // TODO remove ?

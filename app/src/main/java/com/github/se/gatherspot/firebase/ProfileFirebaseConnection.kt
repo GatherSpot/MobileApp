@@ -7,8 +7,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
-import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
 
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
@@ -25,7 +26,6 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    */
   override suspend fun fetch(id: String): Profile {
     val profile = Profile("", "", "", id, Interests.new())
-    suspendCancellableCoroutine { continuation ->
       Log.d(TAG, "id: $id")
       Firebase.firestore
           .collection(COLLECTION)
@@ -36,14 +36,12 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
             profile.bio = document.get("bio") as String
             profile.image = document.get("image") as String
             profile.interests = Interests.fromCompressedString(document.get("interests") as String)
-            continuation.resume(profile)
             Log.d(TAG, "DocumentSnapshot data: ${document.data}")
           }
           .addOnFailureListener { exception ->
             Log.d(TAG, "get failed with :", exception)
-            continuation.resume(exception)
-          }
     }
+        .await()
     return profile
   }
 
