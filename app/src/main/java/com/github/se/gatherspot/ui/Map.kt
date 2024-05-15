@@ -53,9 +53,7 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
       position = CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
     }
 
-    LaunchedEffect(nav.controller.currentBackStackEntry) {
-      viewModel.fetchEvents()
-    }
+    LaunchedEffect(nav.controller.currentBackStackEntry) { viewModel.fetchEvents() }
     LaunchedEffect(key1 = Unit) {
       while (true) {
         viewModel.fetchLocation()
@@ -66,7 +64,7 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
       while (currentLocation == LatLng(0.0, 0.0)) {
         delay(500)
       }
-        viewModel.fetchEvents()
+      viewModel.fetchEvents()
       cameraPositionState.position =
           CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
     }
