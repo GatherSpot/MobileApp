@@ -111,9 +111,19 @@ fun MapComposable(
                       MarkerState(
                           LatLng(
                               event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
-                  title = event?.title ?: "Event",
+                  title = ("inscope " + event?.title) ?: "Event",
                   icon = BitmapDescriptorFactory.fromResource(R.drawable.pin))
             }
+              for (event in (viewModel.registered_events.toSet().subtract(viewModel.events.toList().toSet()))) {
+                Marker(
+                    state =
+                        MarkerState(
+                            LatLng(
+                                event?.location?.latitude ?: 0.0,
+                                event?.location?.longitude ?: 0.0)),
+                    title = ("Registered to " +event?.title) ?: "Event",
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.pin))
+              }
           } else {
             Marker(
                 state = MarkerState(testPosition),

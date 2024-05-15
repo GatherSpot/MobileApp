@@ -26,7 +26,7 @@ import kotlin.coroutines.resume
 @RequiresApi(Build.VERSION_CODES.S)
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val SQUARE_RADIUS = 0.01
+    private val SQUARE_RADIUS = 0.03
   private val fusedLocationClient =
       LocationServices.getFusedLocationProviderClient(application.applicationContext)
   private val _currentLocation = MutableLiveData<LatLng>()
@@ -85,26 +85,26 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
       val tempEvents = mutableListOf<Event?>()
 
+      val list2 =
       suspendCancellableCoroutine { continuation ->
-
-
           Firebase.firestore.collection("events")
               .orderBy("locationLatitude")
               .whereLessThanOrEqualTo("locationLatitude", latitude + SQUARE_RADIUS)
               .whereGreaterThan("locationLatitude", latitude - SQUARE_RADIUS)
-              .orderBy("locationLatitude").whereLessThanOrEqualTo("locationLongitude", longitude + SQUARE_RADIUS)
+              .orderBy("locationLatitude")
+              .whereLessThanOrEqualTo("locationLongitude", longitude + SQUARE_RADIUS)
               .whereGreaterThan("locationLongitude", longitude - SQUARE_RADIUS)
               .get().addOnSuccessListener {
-
-                  tempEvents.addAll(it.documents.map { doc -> doc.toObject(Event::class.java) })
+                    tempEvents.addAll(it.toObjects(Event::class.java))
                   continuation.resume(tempEvents)
               }
               .addOnFailureListener {
                   continuation.resume(null)
               }
 
+
       }
-      events = tempEvents
+      events = list2?.toMutableList()?: mutableListOf()
 
   }
 }
