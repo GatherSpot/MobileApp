@@ -45,32 +45,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventStatus
-import com.github.se.gatherspot.model.utils.LocalDateDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -249,92 +238,85 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
 @Composable
 fun EventRow(event: Event, navigation: NavigationActions) {
-  val eventFirebaseConnection = com.github.se.gatherspot.firebase.EventFirebaseConnection()
+  val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests"
+  val isPastEvent = event.eventStartDate?.isBefore(LocalDate.now()) ?: false
+  val isToday = event.eventStartDate?.isEqual(LocalDate.now()) ?: false
+  val isOrganizer = event.organizerID == uid
+  val isRegistered = event.registeredUsers.contains(uid)
+  
   Box(
       modifier =
           Modifier.background(
                   color =
-                      if (event.organizerID ==
-                          (FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")) {
+                      if (isPastEvent) {
+                        Color.LightGray
+                      } else if (isToday) {
+                        Color(255, 0, 0, 160)
+                      } else if (isOrganizer) {
                         Color(80, 50, 200, 120)
-                      } else if (event.registeredUsers.contains(
-                          FirebaseAuth.getInstance().currentUser?.uid ?: "forTests")) {
+                      } else if (isRegistered) {
                         Color(46, 204, 113, 120)
                       } else {
                         Color.White
                       },
                   shape = RoundedCornerShape(5.dp))
-              .fillMaxSize()) {
-        Row(
-            modifier =
-                Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp).clickable {
-                  // Create a new Gson instance with the custom serializers and deserializers
-                  val gson: Gson =
-                      GsonBuilder()
-                          .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                          .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                          .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-                          .registerTypeAdapter(
-                              LocalDateTime::class.java, LocalDateTimeDeserializer())
-                          .create()
-
-                  val eventJson = gson.toJson(event)
-                  val eventJsonWellFormed =
-                      URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString())
-                          .replace("+", "%20")
-                  navigation.controller.navigate("event/$eventJsonWellFormed")
-                },
-            verticalAlignment = Alignment.CenterVertically) {
-              Column(modifier = Modifier.weight(1f)) {
-                Image(
-                    bitmap =
-                        event.images ?: ImageBitmap(120, 120, config = ImageBitmapConfig.Rgb565),
-                    contentDescription = null)
+              .clickable {
+                val eventJsonWellFormed = event.toJson()
+                navigation.controller.navigate("event/$eventJsonWellFormed")
               }
+              .testTag(event.title)
+              .fillMaxSize()) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
+          Column(modifier = Modifier.weight(1f)) {
+              // TODO : use coil to implement this
+                //                Image(
+                //                    bitmap =
+                //                        event.image ?: ImageBitmap(120, 120, config =
+                // ImageBitmapConfig.Rgb565),
+                //                    contentDescription = null)
+          }
 
-              Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
-                Text(
-                    text =
-                        "Start date: ${
+          Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
+            Text(
+                text =
+                    "Start date: ${
                             event.eventStartDate?.format(
                                 DateTimeFormatter.ofPattern(
-                                    eventFirebaseConnection.DATE_FORMAT
+                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                                 )
                             )
                         }",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 10.sp)
-                Text(
-                    text =
-                        "End date: ${
+                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp)
+            Text(
+                text =
+                    "End date: ${
                             event.eventEndDate?.format(
                                 DateTimeFormatter.ofPattern(
-                                    eventFirebaseConnection.DATE_FORMAT
+                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                                 )
                             )
                         }",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 10.sp)
-                Text(text = event.title, fontSize = 14.sp)
+                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp)
+            Text(text = event.title, fontSize = 14.sp)
+          }
+
+          Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              if (isOrganizer) {
+                Text("Organizer", fontSize = 14.sp)
+              } else if (isRegistered) {
+                Text("Registered", fontSize = 14.sp)
               }
 
-              Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                  when (event.eventStatus) {
-                    EventStatus.CREATED ->
-                        Text("Planned", color = Color(0xFF00668A), fontSize = 14.sp)
-                    EventStatus.ON_GOING ->
-                        Text("On going", color = Color(255, 165, 0), fontSize = 14.sp)
-                    EventStatus.COMPLETED -> Text("Completed", color = Color.Gray, fontSize = 14.sp)
-                  }
-
-                  Icon(
-                      painter = painterResource(R.drawable.arrow_right),
-                      contentDescription = null,
-                      modifier = Modifier.width(24.dp).height(24.dp).clickable {})
-                }
-              }
+              Icon(
+                  painter = painterResource(R.drawable.arrow_right),
+                  contentDescription = null,
+                  modifier = Modifier.width(24.dp).height(24.dp).clickable {})
             }
+          }
+        }
         Divider(color = Color.Black, thickness = 1.dp)
       }
 }
@@ -386,3 +368,37 @@ fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Int
       },
   )
 }
+/*
+// Preview for the Event UI, for testing purposes
+@Preview
+@Composable
+fun EventUIPreview() {
+  // Set global uid for testing
+  val event =
+      Event(
+          id = "idTestEvent",
+          title = "Event Title",
+          description =
+              "Hello: I am a description of the event just saying that I would love to say" +
+                  "that Messi is not the best player in the world, but I can't. I am sorry.",
+          attendanceMaxCapacity = 5,
+          attendanceMinCapacity = 1,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2025, 4, 15),
+          eventStartDate = LocalDate.of(2025, 4, 10),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2025, 4, 1),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(11, 0),
+          timeEnding = LocalTime.of(13, 0),
+          organizerID = Profile.testOrganizer().id)
+  val viewModel = EventRegistrationViewModel(listOf(""))
+  EventUI(
+      event = event,
+      navActions = NavigationActions(rememberNavController()),
+      registrationViewModel = viewModel,
+      eventsViewModel = EventsViewModel())
+}
+*/

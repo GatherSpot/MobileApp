@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -81,7 +81,6 @@ fun ScrollableContent(content: @Composable () -> Unit) {
   }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDataForm(
@@ -92,22 +91,42 @@ fun EventDataForm(
     event: Event? = null
 ) {
   // State of the event
-  var title by remember { mutableStateOf(TextFieldValue("")) }
-  var description by remember { mutableStateOf(TextFieldValue("")) }
-  var location by remember { mutableStateOf<Location?>(null) }
-  var eventStartDate by remember { mutableStateOf(TextFieldValue("")) }
-  var eventEndDate by remember { mutableStateOf(TextFieldValue("")) }
-  var eventTimeStart by remember { mutableStateOf(TextFieldValue("")) }
-  var eventTimeEnd by remember { mutableStateOf(TextFieldValue("")) }
-  var maxAttendees by remember { mutableStateOf(TextFieldValue("")) }
-  var minAttendees by remember { mutableStateOf(TextFieldValue("")) }
-  var inscriptionLimitDate by remember { mutableStateOf(TextFieldValue("")) }
-  var inscriptionLimitTime by remember { mutableStateOf(TextFieldValue("")) }
+  val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+  val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+  var title by remember { mutableStateOf(TextFieldValue(event?.title ?: "")) }
+  var description by remember { mutableStateOf(TextFieldValue(event?.description ?: "")) }
+  var location by remember { mutableStateOf(event?.location) }
+  var eventStartDate by remember {
+    mutableStateOf(TextFieldValue(event?.eventStartDate?.format(dateFormatter) ?: ""))
+  }
+  var eventEndDate by remember {
+    mutableStateOf(TextFieldValue(event?.eventEndDate?.format(dateFormatter) ?: ""))
+  }
+  var eventTimeStart by remember {
+    mutableStateOf(TextFieldValue(event?.timeBeginning?.format(timeFormatter) ?: ""))
+  }
+  var eventTimeEnd by remember {
+    mutableStateOf(TextFieldValue(event?.timeEnding?.format(timeFormatter) ?: ""))
+  }
+  var maxAttendees by remember {
+    mutableStateOf(TextFieldValue(event?.attendanceMaxCapacity?.toString() ?: ""))
+  }
+  var minAttendees by remember {
+    mutableStateOf(TextFieldValue(event?.attendanceMinCapacity?.toString() ?: ""))
+  }
+  var inscriptionLimitDate by remember {
+    mutableStateOf(TextFieldValue(event?.inscriptionLimitDate?.format(dateFormatter) ?: ""))
+  }
+  var inscriptionLimitTime by remember {
+    mutableStateOf(TextFieldValue(event?.inscriptionLimitTime?.format(timeFormatter) ?: ""))
+  }
 
   var showErrorDialog by remember { mutableStateOf(false) }
   var errorMessage = ""
-  var locationName by remember { mutableStateOf("") }
-  val categories: MutableList<Interests> = remember { mutableStateListOf() }
+  var locationName by remember { mutableStateOf(event?.location?.name ?: "") }
+  val categories: MutableList<Interests> = remember {
+    event?.categories?.toMutableStateList() ?: mutableStateListOf()
+  }
   // Flow for query text input
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
   // Context to use for draft saving
@@ -115,40 +134,47 @@ fun EventDataForm(
 
   // Coroutine scope for launching coroutines
   val coroutineScope = rememberCoroutineScope()
+  /*
+   if (eventAction == EventAction.EDIT) {
+     event!!
+     title = TextFieldValue(event.title)
+     description = TextFieldValue(event.description!!)
+     location = event.location
+     locationName = event.location?.name ?: ""
+     Log.d("ll", event.categories?.size.toString() ?: "0")
+     event.categories?.let { categories.addAll(it) }
+     eventStartDate = TextFieldValue(event.eventStartDate!!.format(dateFormatter) ?: "")
+     eventEndDate = TextFieldValue(event.eventEndDate?.format(dateFormatter) ?: "")
+     eventTimeStart = TextFieldValue(event.timeBeginning!!.format(timeFormatter) ?: "")
+     eventTimeEnd = TextFieldValue(event.timeEnding!!.format(timeFormatter) ?: "")
+     maxAttendees = TextFieldValue(event.attendanceMaxCapacity?.toString() ?: "")
+     minAttendees = TextFieldValue(event.attendanceMinCapacity.toString())
+     inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.format(dateFormatter) ?: "")
+     inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
+   }
 
-  if (eventAction == EventAction.EDIT) {
-    event!!
-    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    title = TextFieldValue(event.title)
-    description = TextFieldValue(event.description!!)
-    location = event.location
-    eventStartDate = TextFieldValue(event.eventStartDate!!.format(dateFormatter) ?: "")
-    eventEndDate = TextFieldValue(event.eventEndDate?.format(dateFormatter) ?: "")
-    eventTimeStart = TextFieldValue(event.timeBeginning!!.format(timeFormatter) ?: "")
-    eventTimeEnd = TextFieldValue(event.timeEnding!!.format(timeFormatter) ?: "")
-    maxAttendees = TextFieldValue(event.attendanceMaxCapacity?.toString() ?: "")
-    minAttendees = TextFieldValue(event.attendanceMinCapacity.toString())
-    inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.format(dateFormatter) ?: "")
-    inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
-  }
+  */
 
-  val draft = eventUtils.retrieveFromDraft(context)
-  if (eventAction == EventAction.CREATE && draft != null) {
+  if (eventAction == EventAction.CREATE) {
     // Restore the draft
-    title = TextFieldValue(draft.title ?: "")
-    description = TextFieldValue(draft.description ?: "")
-    location = draft.location
-    eventStartDate = TextFieldValue(draft.eventStartDate ?: "")
-    eventEndDate = TextFieldValue(draft.eventEndDate ?: "")
-    eventTimeStart = TextFieldValue(draft.timeBeginning ?: "")
-    eventTimeEnd = TextFieldValue(draft.timeEnding ?: "")
-    maxAttendees = TextFieldValue(draft.attendanceMaxCapacity ?: "")
-    minAttendees = TextFieldValue(draft.attendanceMinCapacity ?: "")
-    inscriptionLimitDate = TextFieldValue(draft.inscriptionLimitDate ?: "")
-    inscriptionLimitTime = TextFieldValue(draft.inscriptionLimitTime ?: "")
-    categories.addAll(draft.categories ?: emptySet())
+    val draft = eventUtils.retrieveFromDraft(context)
+    if (draft != null) {
+      title = TextFieldValue(draft.title ?: "")
+      description = TextFieldValue(draft.description ?: "")
+      location = draft.location
+      eventStartDate = TextFieldValue(draft.eventStartDate ?: "")
+      eventEndDate = TextFieldValue(draft.eventEndDate ?: "")
+      eventTimeStart = TextFieldValue(draft.timeBeginning ?: "")
+      eventTimeEnd = TextFieldValue(draft.timeEnding ?: "")
+      maxAttendees = TextFieldValue(draft.attendanceMaxCapacity ?: "")
+      minAttendees = TextFieldValue(draft.attendanceMinCapacity ?: "")
+      inscriptionLimitDate = TextFieldValue(draft.inscriptionLimitDate ?: "")
+      inscriptionLimitTime = TextFieldValue(draft.inscriptionLimitTime ?: "")
+      categories.addAll(draft.categories ?: emptySet())
+    }
   }
+
+  Log.d("ll", "untilll")
 
   Scaffold(
       modifier = Modifier.testTag("EventDataFormScreen"),
@@ -162,21 +188,23 @@ fun EventDataForm(
             navigationIcon = {
               IconButton(
                   onClick = {
-                    eventUtils.saveDraftEvent(
-                        title.text,
-                        description.text,
-                        location,
-                        eventStartDate.text,
-                        eventEndDate.text,
-                        eventTimeStart.text,
-                        eventTimeEnd.text,
-                        maxAttendees.text,
-                        minAttendees.text,
-                        inscriptionLimitDate.text,
-                        inscriptionLimitTime.text,
-                        categories.toSet(),
-                        image = null,
-                        context = context)
+                    if (eventAction == EventAction.CREATE) {
+                      eventUtils.saveDraftEvent(
+                          title.text,
+                          description.text,
+                          location,
+                          eventStartDate.text,
+                          eventEndDate.text,
+                          eventTimeStart.text,
+                          eventTimeEnd.text,
+                          maxAttendees.text,
+                          minAttendees.text,
+                          inscriptionLimitDate.text,
+                          inscriptionLimitTime.text,
+                          categories.toSet(),
+                          image = null,
+                          context = context)
+                    }
                     nav.goBack()
                   },
                   modifier = Modifier.testTag("goBackButton")) {
@@ -265,14 +293,14 @@ fun EventDataForm(
                 value = eventStartDate,
                 onValueChange = { eventStartDate = it },
                 label = { Text("Start Date of the event*") },
-                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
+                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
             // End Date
             OutlinedTextField(
                 modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
                 value = eventEndDate,
                 onValueChange = { eventEndDate = it },
                 label = { Text("End date of the event") },
-                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
+                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -374,7 +402,7 @@ fun EventDataForm(
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
                 label = { Text("Inscription Limit Date") },
-                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT) })
+                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
             // Inscription limit time
             OutlinedTextField(
                 modifier =
@@ -448,6 +476,8 @@ fun EventDataForm(
           }
         }
       }
+
+  Log.d("ll", "end")
 }
 
 /** Composable function that displays a dropdown menu to select the interests */

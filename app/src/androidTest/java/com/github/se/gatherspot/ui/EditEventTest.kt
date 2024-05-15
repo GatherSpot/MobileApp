@@ -23,7 +23,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class EditEventTest {
 
-  private val EventFirebaseConnection = EventFirebaseConnection()
+  private val eventFirebaseConnection = EventFirebaseConnection()
   private val testEvent =
       Event(
           id = "testID",
@@ -32,10 +32,12 @@ class EditEventTest {
           location = Location(0.0, 0.0, "Test Location"),
           eventStartDate =
               LocalDate.parse(
-                  "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                  "12/04/2026",
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
           eventEndDate =
               LocalDate.parse(
-                  "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                  "12/05/2026",
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
           timeBeginning =
               LocalTime.parse(
                   "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
@@ -46,12 +48,14 @@ class EditEventTest {
           attendanceMinCapacity = 10,
           inscriptionLimitDate =
               LocalDate.parse(
-                  "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                  "10/04/2025",
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
           inscriptionLimitTime =
               LocalTime.parse(
                   "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
           eventStatus = EventStatus.CREATED,
-          globalRating = null)
+          globalRating = null,
+          image = "")
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test

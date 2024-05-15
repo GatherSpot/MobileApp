@@ -1,104 +1,87 @@
 plugins {
-    id("com.android.application")
-    id("com.google.gms.google-services")
-    id ("org.jetbrains.kotlin.android")
-    id("com.ncorti.ktfmt.gradle") version "0.16.0"
-    id("jacoco")
-    id("org.sonarqube") version "4.4.1.3373"
-    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+  id("com.android.application")
+  id("com.google.gms.google-services")
+  id("org.jetbrains.kotlin.android")
+  id("com.ncorti.ktfmt.gradle") version "0.16.0"
+  id("jacoco")
+  id("org.sonarqube") version "4.4.1.3373"
+  id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 secrets {
-    // Optionally specify a different file name containing your secrets.
-    // The plugin defaults to "local.properties"
-    propertiesFileName = "secrets.properties"
+  // Optionally specify a different file name containing your secrets.
+  // The plugin defaults to "local.properties"
+  propertiesFileName = "secrets.properties"
 
-    // A properties file containing default secret values. This file can be
-    // checked in version control.
-    defaultPropertiesFileName = "local.defaults.properties"
+  // A properties file containing default secret values. This file can be
+  // checked in version control.
+  defaultPropertiesFileName = "local.defaults.properties"
 }
 
 android {
-    namespace = "com.github.se.gatherspot"
-    compileSdk = 34
-    packagingOptions {
-        exclude("META-INF/LICENSE.md")
-        exclude("META-INF/LICENSE-notice.md")
-    }
-    testCoverage {
-        jacocoVersion = "0.8.8"
-    }
+  namespace = "com.github.se.gatherspot"
+  compileSdk = 34
+  packagingOptions {
+    exclude("META-INF/LICENSE.md")
+    exclude("META-INF/LICENSE-notice.md")
+  }
+  testCoverage { jacocoVersion = "0.8.8" }
 
-    sonar {
-        properties {
-            property("sonar.projectKey", "GatherSpot_MobileApp")
-            property("sonar.projectName", "MobileApp")
-            property("sonar.organization", "gatherspot")
-            property("sonar.host.url", "https://sonarcloud.io")
-            // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
-            property(
-                "sonar.junit.reportPaths",
-                "${project.layout.buildDirectory.get()}/test-results/testDebugunitTest/"
-            )
-            // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will have to be changed too.
-            property(
-                "sonar.androidLint.reportPaths",
-                "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml"
-            )
-            // Paths to JaCoCo XML coverage report files.
-            property(
-                "sonar.coverage.jacoco.xmlReportPaths",
-                "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
-            )
-        }
+  sonar {
+    properties {
+      property("sonar.projectKey", "GatherSpot_MobileApp")
+      property("sonar.projectName", "MobileApp")
+      property("sonar.organization", "gatherspot")
+      property("sonar.host.url", "https://sonarcloud.io")
+      // Comma-separated paths to the various directories containing the *.xml JUnit report files.
+      // Each path may be absolute or relative to the project base directory.
+      property(
+          "sonar.junit.reportPaths",
+          "${project.layout.buildDirectory.get()}/test-results/testDebugunitTest/")
+      // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will
+      // have to be changed too.
+      property(
+          "sonar.androidLint.reportPaths",
+          "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
+      // Paths to JaCoCo XML coverage report files.
+      property(
+          "sonar.coverage.jacoco.xmlReportPaths",
+          "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
     }
-    defaultConfig {
-        applicationId = "com.github.se.gatherspot"
-        minSdk = 29
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+  }
+  defaultConfig {
+    applicationId = "com.github.se.gatherspot"
+    minSdk = 29
+    targetSdk = 34
+    versionCode = 1
+    versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-    }
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    vectorDrawables { useSupportLibrary = true }
+  }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-        debug {
-            enableUnitTestCoverage = true
-            enableAndroidTestCoverage = true
-        }
+  buildTypes {
+    release {
+      isMinifyEnabled = false
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+    debug {
+      enableUnitTestCoverage = true
+      enableAndroidTestCoverage = true
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+  }
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
+  kotlinOptions { jvmTarget = "1.8" }
+  buildFeatures { compose = true }
+  composeOptions { kotlinCompilerExtensionVersion = "1.5.1" }
+  packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 }
 
 dependencies {
+
 
     // ---------------------- </IMPLEMENTATION ------------------
     //</ Android COMPOSE
@@ -251,55 +234,63 @@ dependencies {
     // Image fetching library
     implementation("io.coil-kt:coil-compose:2.6.0")
 }
+
 tasks.withType<Test> {
-    // Configure Jacoco for each tests
-    configure<JacocoTaskExtension> {
-        isIncludeNoLocationClasses = true
-        excludes = listOf("jdk.internal.*")
-    }
+  // Configure Jacoco for each tests
+  configure<JacocoTaskExtension> {
+    isIncludeNoLocationClasses = true
+    excludes = listOf("jdk.internal.*")
+  }
 }
+
 tasks.register("jacocoTestReport", JacocoReport::class) {
-    mustRunAfter("testDebugUnitTest", "connectedDebugAndroidTest")
+  mustRunAfter("testDebugUnitTest", "connectedDebugAndroidTest")
 
-    reports {
-        xml.required = true
-        html.required = true
-    }
+  reports {
+    xml.required = true
+    html.required = true
+  }
 
-    val fileFilter = listOf(
-        "**/R.class",
-        "**/R$*.class",
-        "**/BuildConfig.*",
-        "**/Manifest*.*",
-        "**/*Test*.*",
-        "android/**/*.*",
-    )
-    val debugTree = fileTree("${project.buildDir}/tmp/kotlin-classes/debug") {
-        exclude(fileFilter)
-    }
-    val mainSrc = "${project.projectDir}/src/main/java"
+  val fileFilter =
+      listOf(
+          "**/R.class",
+          "**/R$*.class",
+          "**/BuildConfig.*",
+          "**/Manifest*.*",
+          "**/*Test*.*",
+          "android/**/*.*",
+      )
+  val debugTree = fileTree("${project.buildDir}/tmp/kotlin-classes/debug") { exclude(fileFilter) }
+  val mainSrc = "${project.projectDir}/src/main/java"
 
-    sourceDirectories.setFrom(files(mainSrc))
-    classDirectories.setFrom(files(debugTree))
-    executionData.setFrom(fileTree(project.buildDir) {
+  sourceDirectories.setFrom(files(mainSrc))
+  classDirectories.setFrom(files(debugTree))
+  executionData.setFrom(
+      fileTree(project.buildDir) {
         include("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
         include("outputs/code_coverage/debugAndroidTest/connected/*/coverage.ec")
-    })
+      })
 }
 
-sonar{
-    properties {
-        property("sonar.projectKey", "GatherSpot_MobileApp")
-        property("sonar.projectName", "MobileApp")
-        property("sonar.organization", "gatherspot")
-        property("sonar.host.url", "https://sonarcloud.io")
-        // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
-        property("sonar.junit.reportPaths", "${project.layout.buildDirectory.get()}/test-results/testDebugunitTest/")
-        // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will have to be changed too.
-        property("sonar.androidLint.reportPaths", "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
-        // Paths to JaCoCo XML coverage report files.
-        property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-    }
-
+sonar {
+  properties {
+    property("sonar.projectKey", "GatherSpot_MobileApp")
+    property("sonar.projectName", "MobileApp")
+    property("sonar.organization", "gatherspot")
+    property("sonar.host.url", "https://sonarcloud.io")
+    // Comma-separated paths to the various directories containing the *.xml JUnit report files.
+    // Each path may be absolute or relative to the project base directory.
+    property(
+        "sonar.junit.reportPaths",
+        "${project.layout.buildDirectory.get()}/test-results/testDebugunitTest/")
+    // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will
+    // have to be changed too.
+    property(
+        "sonar.androidLint.reportPaths",
+        "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
+    // Paths to JaCoCo XML coverage report files.
+    property(
+        "sonar.coverage.jacoco.xmlReportPaths",
+        "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+  }
 }
-
