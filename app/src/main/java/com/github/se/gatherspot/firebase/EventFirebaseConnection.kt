@@ -8,6 +8,7 @@ import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
@@ -29,6 +30,20 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val DATE_FORMAT_STORED = "yyyy/MM/dd"
     val TIME_FORMAT = "HH:mm"
   }
+
+  val BATTLE_OF_THE_APPS_START_DATE =
+      LocalDate.parse("2024/05/28", DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
+  val BATTLE_OF_THE_APPS_END_DATE =
+      LocalDate.parse("2024/05/28", DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
+  val BATTLE_OF_THE_APPS_START_TIME =
+      LocalTime.parse("10:15", DateTimeFormatter.ofPattern(TIME_FORMAT))
+  val BATTLE_OF_THE_APPS_END_TIME =
+      LocalTime.parse("12:00", DateTimeFormatter.ofPattern(TIME_FORMAT))
+
+  val EVENT_START_DATE_DEFAULT_VALUE = BATTLE_OF_THE_APPS_START_DATE
+  val EVENT_END_DATE_DEFAULT_VALUE = BATTLE_OF_THE_APPS_END_DATE
+  val EVENT_START_TIME_DEFAULT_VALUE = BATTLE_OF_THE_APPS_START_TIME
+  val EVENT_END_TIME_DEFAULT_VALUE = BATTLE_OF_THE_APPS_END_TIME
 
   var offset: DocumentSnapshot? = null
 
@@ -319,8 +334,16 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   override suspend fun add(element: Event) {
     val eventItem =
         hashMapOf(
-            "eventID" to element.id,
-            "title" to element.title,
+            "eventID" to
+                when (element.id) {
+                  "" -> getNewID()
+                  else -> element.id
+                },
+            "title" to
+                when (element.title) {
+                  "" -> element.id
+                  else -> element.title
+                },
             "description" to element.description,
             "locationLatitude" to
                 when (element.location) {
@@ -339,25 +362,32 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                 },
             "eventStartDate" to
                 when (element.eventStartDate) {
-                  null -> "null"
+                  null ->
+                      EVENT_START_DATE_DEFAULT_VALUE.format(
+                          DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                   else ->
                       element.eventStartDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                 },
             "eventEndDate" to
                 when (element.eventEndDate) {
-                  null -> "null"
+                  null ->
+                      EVENT_END_DATE_DEFAULT_VALUE.format(
+                          DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                   else ->
                       element.eventEndDate.format(
                           DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
                 },
             "timeBeginning" to
                 when (element.timeBeginning) {
-                  null -> "null"
+                  null ->
+                      EVENT_START_TIME_DEFAULT_VALUE.format(
+                          DateTimeFormatter.ofPattern(TIME_FORMAT))
                   else -> element.timeBeginning.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                 },
             "timeEnding" to
                 when (element.timeEnding) {
-                  null -> "null"
+                  null ->
+                      EVENT_END_TIME_DEFAULT_VALUE.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                   else -> element.timeEnding.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                 },
             "attendanceMaxCapacity" to
@@ -368,28 +398,42 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             "attendanceMinCapacity" to element.attendanceMinCapacity.toString(),
             "inscriptionLimitDate" to
                 when (element.inscriptionLimitDate) {
-                  null -> "null"
+                  null ->
+                      element.eventEndDate?.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
+                          ?: EVENT_START_DATE_DEFAULT_VALUE.format(
+                              DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                   else ->
                       element.inscriptionLimitDate.format(
                           DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
                 },
             "inscriptionLimitTime" to
                 when (element.inscriptionLimitTime) {
-                  null -> "null"
+                  null ->
+                      element.timeEnding?.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
+                          ?: EVENT_END_TIME_DEFAULT_VALUE.format(
+                              DateTimeFormatter.ofPattern(TIME_FORMAT))
                   else ->
                       element.inscriptionLimitTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
                 },
             "categories" to element.categories?.toList(),
             "registeredUsers" to element.registeredUsers,
-            "finalAttendee" to element.finalAttendees,
-            "globalRating" to
+            "finalAttendee" to
+                when (element.finalAttendees) { // TODO Harmonize spelling to one or the other
+                  null -> mutableListOf<String>()
+                  else -> element.finalAttendees
+                },
+            "globalRating" to // TODO Change globalRating to an Int ?
                 when (element.globalRating) {
                   null -> "null"
                   else -> element.globalRating.toString()
                 },
             "image" to element.image,
-            "organizerID" to element.organizerID,
-            "eventStatus" to element.eventStatus)
+            "organizerID" to
+                when (element.organizerID) {
+                  "" -> Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id
+                  else -> element.organizerID
+                },
+            "eventStatus" to element.eventStatus) // TODO remove ?
 
     Firebase.firestore
         .collection(EVENTS)
