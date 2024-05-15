@@ -38,6 +38,7 @@ class QRCodeScannerTest {
     val event = "event/123"
     val profile = "profile/123"
     val invalid = "invalid"
+    val invalid2 = "invalid/123"
 
     val eventWorks = analyseAppQRCode(event)
     assertEquals(eventWorks, "event/123")
@@ -45,5 +46,7 @@ class QRCodeScannerTest {
     assertEquals(profileWorks, "viewProfile/123")
     val invalidReturnsEmpty = analyseAppQRCode(invalid)
     assertEquals(invalidReturnsEmpty, "")
+    val invalid2ReturnsEmpty = analyseAppQRCode(invalid2)
+    assertEquals(invalid2ReturnsEmpty, "")
   }
 }

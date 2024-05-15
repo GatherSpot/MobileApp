@@ -138,9 +138,3 @@ fun analyseAppQRCode(text: String): String {
     return ""
   }
 }
-
-@androidx.compose.ui.tooling.preview.Preview
-@Composable
-fun PreviewQRCodeScanner() {
-  QRCodeScanner(navigationActions = NavigationActions(rememberNavController()))
-}
