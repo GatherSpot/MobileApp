@@ -26,7 +26,7 @@ import kotlin.coroutines.resume
 @RequiresApi(Build.VERSION_CODES.S)
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val SQUARE_RADIUS = 2
+    private val SQUARE_RADIUS = 0.02
   private val fusedLocationClient =
       LocationServices.getFusedLocationProviderClient(application.applicationContext)
   private val _currentLocation = MutableLiveData<LatLng>()
