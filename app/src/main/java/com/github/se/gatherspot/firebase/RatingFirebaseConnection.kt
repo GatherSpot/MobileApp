@@ -2,7 +2,6 @@ package com.github.se.gatherspot.firebase
 
 import android.util.Log
 import com.github.se.gatherspot.model.Rating
-import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.AggregateField
 import com.google.firebase.firestore.AggregateSource
@@ -102,12 +101,8 @@ class RatingFirebaseConnection {
    * @param rating the new value for the rating of the event by the user if the rating is UNRATED,
    *   the rating is deleted
    */
-  fun update(eventID: String, userID: String, rating: Rating) {
+  fun update(eventID: String, userID: String, rating: Rating, organizerID: String) {
     if (rating != Rating.UNRATED) {
-      Firebase.firestore
-          .collection(EVENT_COLLECTION)
-          .document(eventID)
-          .set(mapOf("eventID" to eventID), SetOptions.merge())
 
       val data: Map<String, Any> = mapOf("rating" to Rating.toLong(rating))
 
@@ -116,7 +111,7 @@ class RatingFirebaseConnection {
           .set(data)
           .addOnSuccessListener {
             Log.d(TAG, "added Rating of event $eventID, of $rating for user $userID")
-            aggregateAttendeeRatings(eventID)
+            aggregateAttendeeRatings(eventID, organizerID)
           }
           .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
     } else {
@@ -125,7 +120,7 @@ class RatingFirebaseConnection {
           .delete()
           .addOnSuccessListener {
             Log.d(TAG, "Deleted rating of user $userID for event $eventID")
-            aggregateAttendeeRatings(eventID)
+            aggregateAttendeeRatings(eventID, organizerID)
           }
           .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
     }
@@ -137,8 +132,8 @@ class RatingFirebaseConnection {
    * @param eventID the id of the event
    * @param userID the id of the user
    */
-  fun deleteRating(eventID: String, userID: String) {
-    update(eventID, userID, Rating.UNRATED)
+  fun deleteRating(eventID: String, userID: String, organizerID: String) {
+    update(eventID, userID, Rating.UNRATED, organizerID)
   }
 
   /**
@@ -192,7 +187,7 @@ class RatingFirebaseConnection {
    * @param eventID the id of the event
    * @return the average rating and the count of ratings
    */
-  fun aggregateAttendeeRatings(eventID: String) {
+  fun aggregateAttendeeRatings(eventID: String, organizerID: String) {
     val aggregateQuery =
         attendeesRatingsCollection(eventID)
             .aggregate(AggregateField.count(), AggregateField.average("rating"))
@@ -216,14 +211,14 @@ class RatingFirebaseConnection {
           }
           Log.d(TAG, "Average rating of event $eventID is $avg")
           Log.d(TAG, "count of event $eventID is $count")
-          val data = mapOf("average" to avg, "count" to count)
+          val data = mapOf("eventID" to eventID, "average" to avg, "count" to count)
           Firebase.firestore
               .collection(EVENT_COLLECTION)
               .document(eventID)
               .set(data, SetOptions.merge())
               .addOnSuccessListener {
                 Log.d(TAG, "Event $eventID updated with average rating $avg and count $count")
-                // updateOrganizerRating(eventID, data)
+                updateOrganizerRating(eventID, data, organizerID)
               }
         }
         .addOnFailureListener { exception ->
@@ -238,28 +233,21 @@ class RatingFirebaseConnection {
    * @param eventID the id of the event
    * @param data the data to update the organizer rating document with
    */
-  fun updateOrganizerRating(eventID: String, data: Map<String, Any>) {
-
-    val eventFirebaseConnection = EventFirebaseConnection()
-    var event: Event? = null
-    runBlocking {
-      event = async { eventFirebaseConnection.fetch(eventID) }.await() ?: return@runBlocking
-    }
-    if (event == null) return
+  fun updateOrganizerRating(eventID: String, data: Map<String, Any>, organizerID: String) {
 
     Firebase.firestore
         .collection(ORGANIZER_COLLECTION)
-        .document(event!!.organizerID)
-        .set(mapOf("organizerID" to event!!.organizerID), SetOptions.merge())
+        .document(organizerID)
+        .set(mapOf("organizerID" to organizerID), SetOptions.merge())
 
-    organizedEventsCollection(event!!.organizerID)
+    organizedEventsCollection(organizerID)
         .document(eventID)
         .set(data, SetOptions.merge())
         .addOnSuccessListener {
           Log.d(
               TAG,
-              "Organizer ${event!!.organizerID} updated with average rating ${data["average"]} and count ${data["count"]} for event $eventID")
-          // aggregateOrganizerRatings(event!!.organizerID)
+              "Organizer ${organizerID} updated with average rating ${data["average"]} and count ${data["count"]} for event $eventID")
+          aggregateOrganizerRatings(organizerID)
         }
   }
 
@@ -287,42 +275,86 @@ class RatingFirebaseConnection {
       }
 
   /*
-   THis would be the more appropriate way to aggregate the ratings of the organizer
-   however this requires an index on the organized_events collection
-   Since this collection is created at runtime and that the index creation is not supported in the emulator
-   another solution is created below.
+    THis would be the more appropriate way to aggregate the ratings of the organizer
+    however this requires an index on the organized_events collection
+    Since this collection is created at runtime and that the index creation is not supported in the emulator
+    another solution is created below.
 
-   However, should there be a way to instantiate an index through code relatively quickly this would be the way to go
+    However, should there be a way to instantiate an index through code relatively quickly this would be the way to go
+
+  */
+
+  /**
+   * Aggregates the ratings of the organizer
+   *
+   * @param organizerID the id of the organizer
+   * @return the average rating and the count of ratings
+   */
   fun aggregateOrganizerRatings(organizerID: String) {
-      val aggregateQuery = organizedEventsCollection(organizerID).aggregate(
-          AggregateField.count(),
-          AggregateField.sum("count"),
-          AggregateField.average("average")
-      )
+    fun nRatings() {
+      organizedEventsCollection(organizerID)
+          .aggregate(AggregateField.count(), AggregateField.sum("count"))
+          .get(AggregateSource.SERVER)
+          .addOnSuccessListener {
+            Log.d(TAG, "Aggregate query get succeeded")
+            val nRatings = it.get(AggregateField.sum("count"))
+            Log.d(TAG, "number of ratings of $organizerID is $nRatings")
+            val data = mapOf("nRatings" to nRatings)
+            Firebase.firestore
+                .collection(ORGANIZER_COLLECTION)
+                .document(organizerID)
+                .set(data, SetOptions.merge())
+                .addOnSuccessListener {
+                  Log.d(TAG, "Organizer $organizerID updated with average nRatings $nRatings")
+                }
+          }
+    }
+
+    fun organizerAverage() {
+      val aggregateQuery =
+          organizedEventsCollection(organizerID)
+              .aggregate(AggregateField.count(), AggregateField.average("average"))
       val task = aggregateQuery.get(AggregateSource.SERVER)
-          task
+      task
           .addOnSuccessListener { result ->
-          Log.d(TAG, "Aggregate query get succeeded")
-          val nEvents = result.get(AggregateField.count())
-          val nRatings = result.get(AggregateField.sum("count"))
-          val df = DecimalFormat("#.##")
-          df.roundingMode = java.math.RoundingMode.HALF_UP
-          var avg = result.get(AggregateField.average("average"))
-          avg= df.format(avg).toDouble()
-          Log.d(TAG, "Average rating of organizer $organizerID is $avg")
-          Log.d(TAG, "number of Events by $organizerID is $nEvents")
-          Log.d(TAG, "total number of ratings of $organizerID is $nRatings")
-          val data = mapOf("overallAverage" to avg, "nEvents" to nEvents, "nRatings" to nRatings)
-          Firebase.firestore.collection(ORGANIZER_COLLECTION).document(organizerID).set(data, SetOptions.merge())
-              .addOnSuccessListener {
-                  Log.d(TAG, "Organizer $organizerID updated with average rating $avg and rating count $nRatings")
-              }
-      }
+            Log.d(TAG, "Aggregate query get succeeded")
+            val nEvents = result.get(AggregateField.count())
+            if (nEvents == 0L) {
+              return@addOnSuccessListener
+            }
+            val df = DecimalFormat("#.##")
+            df.roundingMode = java.math.RoundingMode.HALF_UP
+            var avg = result.get(AggregateField.average("average"))
+            try {
+              avg = df.format(avg).toDouble()
+            } catch (e: Exception) {
+              Log.e(
+                  TAG,
+                  "Error formatting average rating average is $avg " + "nEvents is $nEvents ",
+                  e)
+              return@addOnSuccessListener
+            }
+            Log.d(TAG, "Average rating of organizer $organizerID is $avg")
+            Log.d(TAG, "number of Events by $organizerID is $nEvents")
+            val data = mapOf("overallAverage" to avg, "nEvents" to nEvents)
+            Firebase.firestore
+                .collection(ORGANIZER_COLLECTION)
+                .document(organizerID)
+                .set(data, SetOptions.merge())
+                .addOnSuccessListener {
+                  Log.d(TAG, "Organizer $organizerID updated with average rating $avg")
+                }
+          }
           .addOnFailureListener { exception ->
-              Log.e(TAG, "Aggregate query get failed with :" + exception.localizedMessage)}
+            Log.e(TAG, "Aggregate query get failed with :" + exception.localizedMessage)
+          }
+    }
+
+    organizerAverage()
+    nRatings()
   }
 
-   */
+  /*
 
   /**
    * Aggregates the ratings of the organizer
@@ -369,6 +401,8 @@ class RatingFirebaseConnection {
         }
   }
 
+     */
+
   /**
    * Fetches the organizer's overall rating document
    *
@@ -390,4 +424,22 @@ class RatingFirebaseConnection {
               }
             }
       }
+
+  /**
+   * Deletes the organizer's organized events ratings as well as the organizer rating document
+   *
+   * @param organizerID the id of the organizer
+   */
+  fun deleteOrganizer(organizerID: String) {
+    suspend fun deleteOrganizedRating(): Boolean = suspendCancellableCoroutine { continuation ->
+      organizedEventsCollection(organizerID).get().addOnSuccessListener { documents ->
+        for (document in documents) {
+          document.reference.delete()
+        }
+        continuation.resume(true)
+      }
+    }
+    runBlocking { async { deleteOrganizedRating() }.await() }
+    Firebase.firestore.collection(ORGANIZER_COLLECTION).document(organizerID).delete()
+  }
 }
