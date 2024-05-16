@@ -10,6 +10,7 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.ChatMessagesScreen
+import com.github.se.gatherspot.ui.TopLevelDestinations.ChatUI
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.firestore.FirebaseFirestore
 import io.github.kakaocup.compose.node.element.ComposeScreen

@@ -14,8 +14,8 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
-import com.github.se.gatherspot.ui.SetUpProfile
-import com.github.se.gatherspot.ui.SignUp
+import com.github.se.gatherspot.ui.TopLevelDestinations.SetUpProfile
+import com.github.se.gatherspot.ui.TopLevelDestinations.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth

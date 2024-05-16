@@ -10,6 +10,7 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
+import com.github.se.gatherspot.ui.TopLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.event.EditEvent
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen

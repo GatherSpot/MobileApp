@@ -59,8 +59,8 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.ui.EventsViewModel
-import com.github.se.gatherspot.ui.GeoMap
+import com.github.se.gatherspot.ui.TopLevelDestinations.EventsViewModel
+import com.github.se.gatherspot.ui.TopLevelDestinations.GeoMap
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth

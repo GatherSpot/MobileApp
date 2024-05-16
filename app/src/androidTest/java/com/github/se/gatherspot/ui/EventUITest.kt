@@ -17,6 +17,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.screens.EventUIScreen
+import com.github.se.gatherspot.ui.TopLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.event.EventUI
 import com.github.se.gatherspot.ui.event.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions

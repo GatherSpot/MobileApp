@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.ui
+package com.github.se.gatherspot.ui.TopLevelDestinations
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

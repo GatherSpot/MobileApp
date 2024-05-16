@@ -1,4 +1,4 @@
-package com.github.se.gatherspot
+package com.github.se.gatherspot.firebase
 
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage

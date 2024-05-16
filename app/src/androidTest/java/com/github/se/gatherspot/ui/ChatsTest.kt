@@ -11,6 +11,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.screens.ChatsScreen
+import com.github.se.gatherspot.ui.TopLevelDestinations.Chats
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth

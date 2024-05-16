@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.ui.TopLevelDestinations.GeoMap
 import org.junit.Rule
 import org.junit.Test
 
