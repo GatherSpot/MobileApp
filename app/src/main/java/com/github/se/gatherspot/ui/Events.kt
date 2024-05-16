@@ -2,6 +2,7 @@ package com.github.se.gatherspot.ui
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -52,6 +54,7 @@ import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.getEventIcon
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
@@ -89,7 +92,9 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
       topBar = {
         Column {
           Row(
-              modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+              modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(vertical = 10.dp),
               horizontalArrangement = Arrangement.Center,
               verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -100,18 +105,21 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                       imageVector = Icons.Filled.Menu,
                       contentDescription = null,
                       modifier =
-                          Modifier.clickable {
-                                showDropdownMenu = !showDropdownMenu
-                                if (!showDropdownMenu) {
+                      Modifier
+                          .clickable {
+                              showDropdownMenu = !showDropdownMenu
+                              if (!showDropdownMenu) {
                                   viewModel.filter(interestsSelected)
-                                } else {
+                              } else {
                                   interestsSelected = mutableListOf()
-                                }
                               }
-                              .testTag("filterMenu"))
+                          }
+                          .testTag("filterMenu"))
 
                   DropdownMenu(
-                      modifier = Modifier.height(300.dp).testTag("dropdown"),
+                      modifier = Modifier
+                          .height(300.dp)
+                          .testTag("dropdown"),
                       expanded = showDropdownMenu,
                       onDismissRequest = {
                         showDropdownMenu = false
@@ -155,7 +163,9 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                 Icon(
                     Icons.Filled.Refresh,
                     "fetch",
-                    modifier = Modifier.clickable { fetch = true }.testTag("refresh"))
+                    modifier = Modifier
+                        .clickable { fetch = true }
+                        .testTag("refresh"))
 
                 LaunchedEffect(fetch) {
                   if (fetch) {
@@ -175,8 +185,9 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
                     modifier =
-                        Modifier.clickable { nav.controller.navigate("createEvent") }
-                            .testTag("createMenu"))
+                    Modifier
+                        .clickable { nav.controller.navigate("createEvent") }
+                        .testTag("createMenu"))
               }
 
           if (loading) {
@@ -195,7 +206,9 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
       }) { paddingValues ->
         if (fetch) {
           Text(
-              modifier = Modifier.testTag("fetch").padding(vertical = 40.dp),
+              modifier = Modifier
+                  .testTag("fetch")
+                  .padding(vertical = 40.dp),
               text = "Fetching new events matching: ${interestsSelected.joinToString(", ")}",
               fontSize = 12.sp)
         }
@@ -208,7 +221,9 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
           else -> {
             LazyColumn(
                 state = lazyState,
-                modifier = Modifier.padding(paddingValues).testTag("eventsList")) {
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .testTag("eventsList")) {
                   items(events) { event -> EventRow(event, nav) }
                 }
 
@@ -242,39 +257,44 @@ fun EventRow(event: Event, navigation: NavigationActions) {
 
   Box(
       modifier =
-          Modifier.background(
-                  color =
-                      if (isPastEvent) {
-                        Color.LightGray
-                      } else if (isToday) {
-                        Color(255, 0, 0, 160)
-                      } else if (isOrganizer) {
-                        Color(80, 50, 200, 120)
-                      } else if (isRegistered) {
-                        Color(46, 204, 113, 120)
-                      } else {
-                        Color.White
-                      },
-                  shape = RoundedCornerShape(5.dp))
-              .clickable {
-                val eventJsonWellFormed = event.toJson()
-                navigation.controller.navigate("event/$eventJsonWellFormed")
-              }
-              .testTag(event.title)
-              .fillMaxSize()) {
+      Modifier
+          .background(
+              color =
+              if (isPastEvent) {
+                  Color.LightGray
+              } else if (isToday) {
+                  Color(255, 0, 0, 160)
+              } else if (isOrganizer) {
+                  Color(80, 50, 200, 120)
+              } else if (isRegistered) {
+                  Color(46, 204, 113, 120)
+              } else {
+                  Color.White
+              },
+              shape = RoundedCornerShape(5.dp)
+          )
+          .clickable {
+              val eventJsonWellFormed = event.toJson()
+              navigation.controller.navigate("event/$eventJsonWellFormed")
+          }
+          .testTag(event.title)
+          .fillMaxSize()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
-              Column(modifier = Modifier.weight(1f)) {
-                // TODO : use coil to implement this
-                //                Image(
-                //                    bitmap =
-                //                        event.image ?: ImageBitmap(120, 120, config =
-                // ImageBitmapConfig.Rgb565),
-                //                    contentDescription = null)
+              Row(
+                  modifier = Modifier.weight(1f),
+                  horizontalArrangement = Arrangement.Center
+              ) {
+                  Image(
+                      painter = painterResource(id= getEventIcon(event.categories)),
+                      contentDescription = "event icon",
+                      modifier = Modifier.size(40.dp)
+                  )
               }
-
-              Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
+              Column(modifier = Modifier
+                  .weight(1f)
+                  .padding(end = 1.dp)) {
                 Text(
                     text =
                         "Start date: ${
@@ -311,7 +331,10 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                   Icon(
                       painter = painterResource(R.drawable.arrow_right),
                       contentDescription = null,
-                      modifier = Modifier.width(24.dp).height(24.dp).clickable {})
+                      modifier = Modifier
+                          .width(24.dp)
+                          .height(24.dp)
+                          .clickable {})
                 }
               }
             }
@@ -322,7 +345,9 @@ fun EventRow(event: Event, navigation: NavigationActions) {
 @Composable
 fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: () -> Unit) {
 
-  Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
+  Box(modifier = Modifier
+      .fillMaxSize()
+      .testTag("empty"), contentAlignment = Alignment.Center) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
       Text("No loaded events matched your query")
       Row {

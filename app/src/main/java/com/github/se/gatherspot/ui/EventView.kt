@@ -55,6 +55,7 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
+import com.github.se.gatherspot.model.getEventImageHeader
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -117,7 +118,9 @@ fun EventUI(
                     },
                     modifier = Modifier.testTag("editEventButton")) {
                       Icon(
-                          modifier = Modifier.size(24.dp).testTag("editEventIcon"),
+                          modifier = Modifier
+                              .size(24.dp)
+                              .testTag("editEventIcon"),
                           painter = painterResource(id = R.drawable.edit),
                           contentDescription = "Edit event")
                     }
@@ -126,7 +129,9 @@ fun EventUI(
                     onClick = { registrationViewModel.clickDeleteButton() },
                     modifier = Modifier.testTag("deleteEventButton")) {
                       Icon(
-                          modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
+                          modifier = Modifier
+                              .size(24.dp)
+                              .testTag("deleteEventIcon"),
                           painter = painterResource(id = R.drawable.delete),
                           contentDescription = "Delete event")
                     }
@@ -135,24 +140,12 @@ fun EventUI(
       }) { innerPadding ->
         Column(
             modifier =
-                Modifier.padding(innerPadding)
-                    .padding(8.dp)
-                    .testTag("eventColumn")
-                    .verticalScroll(rememberScrollState())) {
-              if (event.image.isNotEmpty()) {
-                // TODO : implement this using coil
-                //                Image(
-                //                    bitmap = img,
-                //                    contentDescription = "Event Image",
-                //                    modifier =
-                // Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                //                    contentScale = ContentScale.FillBounds)
-              } else
-                  Image(
-                      painter = painterResource(id = R.drawable.default_event_image),
-                      contentDescription = "Default Event Image",
-                      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                      contentScale = ContentScale.FillBounds)
+            Modifier
+                .padding(innerPadding)
+                .padding(8.dp)
+                .testTag("eventColumn")
+                .verticalScroll(rememberScrollState())) {
+              EventTypeIcon(event.categories)
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -174,7 +167,9 @@ fun EventUI(
               Text(
                   text = "Number of attendees",
                   modifier =
-                      Modifier.align(Alignment.CenterHorizontally).testTag("attendeesInfoTitle"),
+                  Modifier
+                      .align(Alignment.CenterHorizontally)
+                      .testTag("attendeesInfoTitle"),
                   fontWeight = FontWeight.Bold)
 
               // Event Capacity
@@ -199,16 +194,19 @@ fun EventUI(
               Spacer(modifier = Modifier.height(16.dp))
               Box(
                   modifier =
-                      Modifier.height(200.dp)
-                          .fillMaxWidth()
-                          .background(Color.Gray)
-                          .testTag("mapView")) {
+                  Modifier
+                      .height(200.dp)
+                      .fillMaxWidth()
+                      .background(Color.Gray)
+                      .testTag("mapView")) {
                     // Here should be the code to integrate the actual map
                     event.location?.let { location ->
                       GeoMap(
                           userCoordinates = location,
                           interestsCoordinates = emptyList(),
-                          mapViewModifier = Modifier.fillMaxWidth().height(200.dp))
+                          mapViewModifier = Modifier
+                              .fillMaxWidth()
+                              .height(200.dp))
                     } ?: BasicText(text = "No location provided for this event")
                   }
               // Event Dates and Times
@@ -262,7 +260,9 @@ fun EventUI(
                       registrationViewModel.clickRegisterButton()
                     },
                     enabled = isButtonEnabled,
-                    modifier = Modifier.fillMaxWidth().testTag("registerButton"),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("registerButton"),
                     colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
                       Text(buttonText, color = Color.White)
                     }
@@ -324,7 +324,9 @@ fun EventUI(
 @Composable
 fun Chip(interest: Interests) {
   Surface(
-      modifier = Modifier.padding(4.dp).testTag("chip"),
+      modifier = Modifier
+          .padding(4.dp)
+          .testTag("chip"),
       elevation = 4.dp,
       shape = RoundedCornerShape(50), // Circular shaped corners
       color = Color(0xFF3A89C9) // Use the primary color from the theme
@@ -341,24 +343,27 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions) {
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
-          Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-              .testTag("profileIndicator")
-              .clickable {
-                // Navigate to the profile of the organizer
-                if (profile.id != Firebase.auth.currentUser?.uid) {
+      Modifier
+          .padding(horizontal = 16.dp, vertical = 8.dp)
+          .testTag("profileIndicator")
+          .clickable {
+              // Navigate to the profile of the organizer
+              if (profile.id != Firebase.auth.currentUser?.uid) {
                   navActions.controller.navigate("viewProfile/${profile.id}")
-                } else {
+              } else {
                   navActions.controller.navigate("profile")
-                }
-              }) {
+              }
+          }) {
         // TODO implement image here: do it later
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-                Modifier.size(40.dp) // Set the size of the circle
-                    .background(
-                        color = Color(0xFF9C27B0),
-                        shape = CircleShape) // Set the background color and shape of the circle
+            Modifier
+                .size(40.dp) // Set the size of the circle
+                .background(
+                    color = Color(0xFF9C27B0),
+                    shape = CircleShape
+                ) // Set the background color and shape of the circle
             ) {
               Text(
                   text =
@@ -376,6 +381,18 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions) {
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp)
       }
+}
+
+@Composable
+fun EventTypeIcon(eventCategories: Set<Interests>?){
+    Image(
+        painter = painterResource(id = getEventImageHeader(eventCategories)),
+        contentDescription = "Default Event Image",
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .testTag("eventImage"),
+        contentScale = ContentScale.Crop)
 }
 
 /*
