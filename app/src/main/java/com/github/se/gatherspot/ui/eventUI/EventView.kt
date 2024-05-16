@@ -79,13 +79,13 @@ fun EventUI(
     eventsViewModel: EventsViewModel
 ) {
 
-    val context = LocalContext.current
+  val context = LocalContext.current
 
   val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by eventUIViewModel.displayAlertDeletion.observeAsState()
   val ownRating by eventUIViewModel.ownRating.observeAsState()
-    val eventRating by eventUIViewModel.eventRating.observeAsState()
-    val organizerRating by eventUIViewModel.organizerRating.observeAsState()
+  val eventRating by eventUIViewModel.eventRating.observeAsState()
+  val organizerRating by eventUIViewModel.organizerRating.observeAsState()
   val isOrganizer =
       event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
 
@@ -131,9 +131,7 @@ fun EventUI(
                     },
                     modifier = Modifier.testTag("editEventButton")) {
                       Icon(
-                          modifier = Modifier
-                              .size(24.dp)
-                              .testTag("editEventIcon"),
+                          modifier = Modifier.size(24.dp).testTag("editEventIcon"),
                           painter = painterResource(id = R.drawable.edit),
                           contentDescription = "Edit event")
                     }
@@ -142,9 +140,7 @@ fun EventUI(
                     onClick = { eventUIViewModel.clickDeleteButton() },
                     modifier = Modifier.testTag("deleteEventButton")) {
                       Icon(
-                          modifier = Modifier
-                              .size(24.dp)
-                              .testTag("deleteEventIcon"),
+                          modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
                           painter = painterResource(id = R.drawable.delete),
                           contentDescription = "Delete event")
                     }
@@ -156,9 +152,7 @@ fun EventUI(
                     },
                     modifier = Modifier.testTag("exportToCalendarButton")) {
                       Icon(
-                          modifier = Modifier
-                              .size(24.dp)
-                              .testTag("exportToCalendarIcon"),
+                          modifier = Modifier.size(24.dp).testTag("exportToCalendarIcon"),
                           painter = rememberVectorPainter(image = Icons.Filled.DateRange),
                           contentDescription = "Export to calendar")
                     }
@@ -167,11 +161,10 @@ fun EventUI(
       }) { innerPadding ->
         Column(
             modifier =
-            Modifier
-                .padding(innerPadding)
-                .padding(8.dp)
-                .testTag("eventColumn")
-                .verticalScroll(rememberScrollState())) {
+                Modifier.padding(innerPadding)
+                    .padding(8.dp)
+                    .testTag("eventColumn")
+                    .verticalScroll(rememberScrollState())) {
               if (event.image.isNotEmpty()) {
                 // TODO : implement this using coil
                 //                Image(
@@ -184,10 +177,7 @@ fun EventUI(
                   Image(
                       painter = painterResource(id = R.drawable.default_event_image),
                       contentDescription = "Default Event Image",
-                      modifier = Modifier
-                          .fillMaxWidth()
-                          .height(150.dp)
-                          .testTag("eventImage"),
+                      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
                       contentScale = ContentScale.FillBounds)
 
               Spacer(modifier = Modifier.height(16.dp))
@@ -210,9 +200,7 @@ fun EventUI(
               Text(
                   text = "Number of attendees",
                   modifier =
-                  Modifier
-                      .align(Alignment.CenterHorizontally)
-                      .testTag("attendeesInfoTitle"),
+                      Modifier.align(Alignment.CenterHorizontally).testTag("attendeesInfoTitle"),
                   fontWeight = FontWeight.Bold)
 
               // Event Capacity
@@ -237,19 +225,16 @@ fun EventUI(
               Spacer(modifier = Modifier.height(16.dp))
               Box(
                   modifier =
-                  Modifier
-                      .height(200.dp)
-                      .fillMaxWidth()
-                      .background(Color.Gray)
-                      .testTag("mapView")) {
+                      Modifier.height(200.dp)
+                          .fillMaxWidth()
+                          .background(Color.Gray)
+                          .testTag("mapView")) {
                     // Here should be the code to integrate the actual map
                     event.location?.let { location ->
                       GeoMap(
                           userCoordinates = location,
                           interestsCoordinates = emptyList(),
-                          mapViewModifier = Modifier
-                              .fillMaxWidth()
-                              .height(200.dp))
+                          mapViewModifier = Modifier.fillMaxWidth().height(200.dp))
                     } ?: BasicText(text = "No location provided for this event")
                   }
               // Event Dates and Times
@@ -295,7 +280,9 @@ fun EventUI(
               // Rating
               if (eventUIViewModel.canRate()) {
                 RatingDisplay(
-                    ownRating = ownRating ?: Rating.UNRATED, eventUIViewModel = eventUIViewModel, eventRating = eventRating ?: 0.0)
+                    ownRating = ownRating ?: Rating.UNRATED,
+                    eventUIViewModel = eventUIViewModel,
+                    eventRating = eventRating ?: 0.0)
               }
 
               // Registration Button
@@ -309,21 +296,17 @@ fun EventUI(
                       eventUIViewModel.clickRegisterButton()
                     },
                     enabled = isButtonEnabled,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("registerButton"),
+                    modifier = Modifier.fillMaxWidth().testTag("registerButton"),
                     colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
                       Text(buttonText, color = Color.White)
                     }
               }
 
-            // Export to calendar
-            ClickableText(
-                AnnotatedString("Export to calendar"), modifier = Modifier.testTag("exportToCalendar"),
-                onClick = {
-                    CalendarReminderGenerator.generateCalendarReminder(context, event)
-                })
-
+              // Export to calendar
+              ClickableText(
+                  AnnotatedString("Export to calendar"),
+                  modifier = Modifier.testTag("exportToCalendar"),
+                  onClick = { CalendarReminderGenerator.generateCalendarReminder(context, event) })
             }
 
         if (showDialogRegistration!!) {
@@ -381,9 +364,7 @@ fun EventUI(
 @Composable
 fun Chip(interest: Interests) {
   Surface(
-      modifier = Modifier
-          .padding(4.dp)
-          .testTag("chip"),
+      modifier = Modifier.padding(4.dp).testTag("chip"),
       elevation = 4.dp,
       shape = RoundedCornerShape(50), // Circular shaped corners
       color = Color(0xFF3A89C9) // Use the primary color from the theme
@@ -400,27 +381,24 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
-      Modifier
-          .padding(horizontal = 16.dp, vertical = 8.dp)
-          .testTag("profileIndicator")
-          .clickable {
-              // Navigate to the profile of the organizer
-              if (profile.id != Firebase.auth.currentUser?.uid) {
+          Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+              .testTag("profileIndicator")
+              .clickable {
+                // Navigate to the profile of the organizer
+                if (profile.id != Firebase.auth.currentUser?.uid) {
                   navActions.controller.navigate("viewProfile/${profile.id}")
-              } else {
+                } else {
                   navActions.controller.navigate("profile")
-              }
-          }) {
+                }
+              }) {
         // TODO implement image here: do it later
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-            Modifier
-                .size(40.dp) // Set the size of the circle
-                .background(
-                    color = Color(0xFF9C27B0),
-                    shape = CircleShape
-                ) // Set the background color and shape of the circle
+                Modifier.size(40.dp) // Set the size of the circle
+                    .background(
+                        color = Color(0xFF9C27B0),
+                        shape = CircleShape) // Set the background color and shape of the circle
             ) {
               Text(
                   text =
@@ -437,23 +415,23 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
             text = profile.userName,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp)
-      if (organizerRating > 0.0) {
+        if (organizerRating > 0.0) {
           Spacer(modifier = Modifier.width(8.dp))
-             Text(text = "was rated:", fontWeight = FontWeight.Light, fontSize = 16.sp)
+          Text(text = "was rated:", fontWeight = FontWeight.Light, fontSize = 16.sp)
           Spacer(modifier = Modifier.width(4.dp))
           Text(text = "$organizerRating", fontWeight = FontWeight.Bold, fontSize = 16.sp)
           Text(text = "/ 5.0", fontWeight = FontWeight.Light, fontSize = 16.sp)
+        }
       }
-
-  }
-
 }
 
-/** StarRating displays 5 stars, where the user can click on a star to rate the event
- * from 1 to 5 stars.
+/**
+ * StarRating displays 5 stars, where the user can click on a star to rate the event from 1 to 5
+ * stars.
+ *
  * @param ownRating the current rating of the event
  * @param onRatingChanged the function to call when the user clicks on a star
-  */
+ */
 @Composable
 fun StarRating(ownRating: Long, onRatingChanged: (Long) -> Unit) {
   Row(
@@ -466,10 +444,9 @@ fun StarRating(ownRating: Long, onRatingChanged: (Long) -> Unit) {
               contentDescription = null,
               tint = if (i <= ownRating) Color(0xFFFFB907) else Color.Gray,
               modifier =
-              Modifier
-                  .size(40.dp)
-                  .clickable { onRatingChanged(i.toLong()) }
-                  .testTag("starIcon $i"))
+                  Modifier.size(40.dp)
+                      .clickable { onRatingChanged(i.toLong()) }
+                      .testTag("starIcon $i"))
         }
       }
 }
@@ -479,14 +456,13 @@ fun StarRating(ownRating: Long, onRatingChanged: (Long) -> Unit) {
  * composable.
  */
 @Composable
-fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel, eventRating : Double){
+fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel, eventRating: Double) {
   Column(
       modifier =
-      Modifier
-          .padding(vertical = 8.dp)
-          .fillMaxWidth()
-          .wrapContentHeight()
-          .testTag("ratingColumn"),
+          Modifier.padding(vertical = 8.dp)
+              .fillMaxWidth()
+              .wrapContentHeight()
+              .testTag("ratingColumn"),
       horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = "Rate this event",
@@ -496,14 +472,13 @@ fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel, eventRa
         StarRating(
             ownRating = Rating.toLong(ownRating),
             onRatingChanged = { eventUIViewModel.rateEvent(Rating.fromLong(it)) })
-      if (eventRating >0.0){
+        if (eventRating > 0.0) {
           Spacer(modifier = Modifier.height(4.dp))
           Row {
-              Text(text = "$eventRating", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-              Text(text = "/ 5.0", fontWeight = FontWeight.Light, fontSize = 16.sp)
+            Text(text = "$eventRating", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(text = "/ 5.0", fontWeight = FontWeight.Light, fontSize = 16.sp)
           }
-      }
-
+        }
       }
 }
 

@@ -59,21 +59,19 @@ class SignUpTest : TestCase() {
   @Before
   fun setUp() {
     runBlocking {
-      Firebase.auth.createUserWithEmailAndPassword(inUseEmail,"Test,2024;" )
+      Firebase.auth.createUserWithEmailAndPassword(inUseEmail, "Test,2024;")
 
       profileFirebaseConnection.ifUsernameExists(unavailableUsername) {
         if (!it) {
-          ProfileFirebaseConnection().add(
-            Profile(
-              _userName = unavailableUsername,
-              _bio = "bio",
-              _image = "image",
-              id = profileFirebaseConnection.getNewID(),
-              _interests = setOf()
-            )
-          )
+          ProfileFirebaseConnection()
+              .add(
+                  Profile(
+                      _userName = unavailableUsername,
+                      _bio = "bio",
+                      _image = "image",
+                      id = profileFirebaseConnection.getNewID(),
+                      _interests = setOf()))
         }
-
       }
       Firebase.auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
         if (it.isSuccessful) {
@@ -81,14 +79,9 @@ class SignUpTest : TestCase() {
         }
       }
 
-
       delay(2000)
-
-
     }
   }
-
-
 
   @OptIn(ExperimentalTestApi::class)
   @Test

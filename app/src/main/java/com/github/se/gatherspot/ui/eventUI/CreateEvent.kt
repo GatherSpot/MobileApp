@@ -15,8 +15,7 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 @Composable
 fun CreateEvent(nav: NavigationActions, eventUtils: EventUtils, viewModel: EventsViewModel) {
   EventDataForm(
-      eventUtils = eventUtils, viewModel = viewModel, nav = nav, eventAction = EventAction.CREATE
-  )
+      eventUtils = eventUtils, viewModel = viewModel, nav = nav, eventAction = EventAction.CREATE)
 }
 
 // Not sure if instantiating a new viewModel for preview is ok?

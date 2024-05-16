@@ -493,8 +493,7 @@ class EventUITest {
           pastEventRegisteredTo,
           NavigationActions(navController),
           eventUIViewModel,
-          EventsViewModel()
-      )
+          EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())

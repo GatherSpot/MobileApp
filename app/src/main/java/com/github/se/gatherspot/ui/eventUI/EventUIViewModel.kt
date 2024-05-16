@@ -24,10 +24,10 @@ class EventUIViewModel(private val event: Event) :
   private lateinit var _organizer: Profile
   private lateinit var _attendees: List<String>
   private var _ownRating = MutableLiveData<Rating>()
-    private var _organizerRating = MutableLiveData<Double>()
-    private var _eventRating = MutableLiveData<Double>()
+  private var _organizerRating = MutableLiveData<Double>()
+  private var _eventRating = MutableLiveData<Double>()
   private val userID = Firebase.auth.currentUser?.uid ?: "TEST"
-    private val ratingFirebaseConnection = RatingFirebaseConnection()
+  private val ratingFirebaseConnection = RatingFirebaseConnection()
 
   init {
     viewModelScope.launch {
@@ -37,25 +37,20 @@ class EventUIViewModel(private val event: Event) :
       _organizer =
           ProfileFirebaseConnection().fetch(event.organizerID) {} ?: Profile.testOrganizer()
       _ownRating.value =
-          ratingFirebaseConnection
-              .fetchRating(
-                  event.id, (Firebase.auth.currentUser?.uid ?: Profile.testParticipant().id))
+          ratingFirebaseConnection.fetchRating(
+              event.id, (Firebase.auth.currentUser?.uid ?: Profile.testParticipant().id))
               ?: Rating.UNRATED
-        _organizerRating.value =
-            ratingFirebaseConnection
-                .fetchOrganizerGlobalRating(event.organizerID) ?: 0.0
-        _eventRating.value =
-            ratingFirebaseConnection
-                .fetchEventGlobalRating(event.id) ?: 0.0
-
+      _organizerRating.value =
+          ratingFirebaseConnection.fetchOrganizerGlobalRating(event.organizerID) ?: 0.0
+      _eventRating.value = ratingFirebaseConnection.fetchEventGlobalRating(event.id) ?: 0.0
 
       delay(500)
     }
   }
 
   val ownRating: LiveData<Rating> = _ownRating
-    val organizerRating : LiveData<Double> = _organizerRating
-    val eventRating : LiveData<Double> = _eventRating
+  val organizerRating: LiveData<Double> = _organizerRating
+  val eventRating: LiveData<Double> = _eventRating
 
   fun rateEvent(newRating: Rating) {
     viewModelScope.launch {
@@ -75,9 +70,11 @@ class EventUIViewModel(private val event: Event) :
       } else {
         _ownRating.value = newRating
         ratingFirebaseConnection.update(event.id, userID, newRating, event.organizerID)
-          delay(1000)
-          _eventRating.value = ratingFirebaseConnection.fetchEventGlobalRating(event.id) ?: 0.0
-          _organizerRating.value = ratingFirebaseConnection.fetchOrganizerGlobalRating(organizerID = event.organizerID) ?: 0.0
+        delay(1000)
+        _eventRating.value = ratingFirebaseConnection.fetchEventGlobalRating(event.id) ?: 0.0
+        _organizerRating.value =
+            ratingFirebaseConnection.fetchOrganizerGlobalRating(organizerID = event.organizerID)
+                ?: 0.0
       }
     }
   }
