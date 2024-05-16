@@ -51,13 +51,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
-import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
@@ -67,7 +67,11 @@ import kotlinx.coroutines.delay
 // listOf("Your interests", "None")
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
-fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
+fun Events(
+    viewModel: EventsViewModel,
+    nav: NavigationActions,
+    profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection()
+) {
 
   val state = viewModel.uiState.collectAsState()
   var previousScrollPosition by remember { mutableIntStateOf(0) }
@@ -212,7 +216,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
             LazyColumn(
                 state = lazyState,
                 modifier = Modifier.padding(paddingValues).testTag("eventsList")) {
-                  items(events) { event -> EventRow(event, nav) }
+                  items(events) { event -> EventRow(event, nav, profileFirebaseConnection) }
                 }
 
             LaunchedEffect(lazyState.isScrollInProgress) {
@@ -236,8 +240,12 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 }
 
 @Composable
-fun EventRow(event: Event, navigation: NavigationActions) {
-  val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests"
+fun EventRow(
+    event: Event,
+    navigation: NavigationActions,
+    profileFirebaseConnection: ProfileFirebaseConnection
+) {
+  val uid = profileFirebaseConnection.getCurrentUserUid()!!
   val isPastEvent = event.eventStartDate?.isBefore(LocalDate.now()) ?: false
   val isToday = event.eventStartDate?.isEqual(LocalDate.now()) ?: false
   val isOrganizer = event.organizerID == uid

@@ -10,7 +10,8 @@ import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 
-class IdListFirebaseConnection {
+open class IdListFirebaseConnection {
+  private val firestore = Firebase.firestore
   private val logTag = "IdListFirebaseConnection"
   private val COLLECTION = "ID_LIST"
   private val TAG = "IdListFirebaseConnection"
@@ -27,7 +28,7 @@ class IdListFirebaseConnection {
    * @return the IdList NOTE : The IdList will be initially empty, to use it in a view, you need to
    *   update the view using with a lambda function that updates the view
    */
-  suspend fun fetchFromFirebase(
+  open suspend fun fetchFromFirebase(
       id: String,
       category: FirebaseCollection,
       update: () -> Unit
@@ -61,7 +62,7 @@ class IdListFirebaseConnection {
    *
    * @param idSet The IdList to save.
    */
-  fun saveToFirebase(idSet: IdList) {
+  open fun saveToFirebase(idSet: IdList) {
     val tag = idSet.collection.name
     val id = idSet.id
     // TODO : check if this good way to store data
@@ -83,7 +84,7 @@ class IdListFirebaseConnection {
    * @param elements The elements to add to the list. @onSuccess a lambda function called on success
    * @return MutableLiveData<IdList> that returns the IdList created. Can be directly observed
    */
-  fun add(
+  open fun add(
       id: String,
       tag: FirebaseCollection,
       elements: List<String>,
@@ -114,7 +115,7 @@ class IdListFirebaseConnection {
    * @param element The element to delete from the list.
    * @param onSuccess a lambda function called on success
    */
-  fun deleteElement(
+  open fun deleteElement(
       id: String,
       category: FirebaseCollection,
       element: String,
@@ -133,7 +134,7 @@ class IdListFirebaseConnection {
         .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
   }
 
-  suspend fun fetch(id: String, category: FirebaseCollection, onSuccess: () -> Unit): IdList {
+  open suspend fun fetch(id: String, category: FirebaseCollection, onSuccess: () -> Unit): IdList {
     val tag = category.name
     val data: IdList
     val querySnapshot: QuerySnapshot = fcoll.document(tag).collection(id).get().await()
@@ -149,7 +150,12 @@ class IdListFirebaseConnection {
    * @param element The element to add to the list.
    * @param onSuccess a lambda function called on success
    */
-  fun addElement(id: String, category: FirebaseCollection, element: String, onSuccess: () -> Unit) {
+  open fun addElement(
+      id: String,
+      category: FirebaseCollection,
+      element: String,
+      onSuccess: () -> Unit
+  ) {
     val tag = category.name
     fcoll
         .document(tag)
@@ -176,7 +182,7 @@ class IdListFirebaseConnection {
    *   otherwise. This is useful for example when following someone, this ensures we added the user
    *   to the followers list and the user added us to their following list.
    */
-  fun addTwoInSingleBatch(
+  open fun addTwoInSingleBatch(
       id1: String,
       category1: FirebaseCollection,
       element1: String,
@@ -212,7 +218,7 @@ class IdListFirebaseConnection {
    * @param element2 The element to remove from the second list.
    * @param onSuccess a lambda function called on success
    */
-  fun removeTwoInSingleBatch(
+  open fun removeTwoInSingleBatch(
       id1: String,
       category1: FirebaseCollection,
       element1: String,
@@ -246,7 +252,7 @@ class IdListFirebaseConnection {
    * @return MutableLiveData<Boolean> that returns true if the element exists in the list, false
    *   otherwise, can be directly observed
    */
-  fun exists(
+  open fun exists(
       id: String,
       category: FirebaseCollection,
       element: String,
@@ -275,7 +281,7 @@ class IdListFirebaseConnection {
    * @param category The category of the list.
    * @param onSuccess a lambda function called on success
    */
-  fun delete(id: String, category: FirebaseCollection, onSuccess: () -> Unit) {
+  open fun delete(id: String, category: FirebaseCollection, onSuccess: () -> Unit) {
     val tag = category.name
     fcoll
         .document(tag)
