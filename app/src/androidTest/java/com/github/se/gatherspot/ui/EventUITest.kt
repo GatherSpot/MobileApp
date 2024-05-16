@@ -5,21 +5,23 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
-import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.time.LocalDate
+import java.time.LocalTime
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -28,22 +30,41 @@ import org.junit.Test
 
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
-  private val trivialEvent = DefaultEvents.trivialEvent1
-  private lateinit var ownEvent: Event
 
   @Before
-  fun setUp() = runBlocking {
+  fun setUp() {
     testLogin()
-    ownEvent = DefaultEvents.withAuthor(Firebase.auth.uid!!, "1")
+    profileFirebaseConnection.add(Profile.testOrganizer())
   }
 
-  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
+  @After
+  fun cleanUp() {
+    testLoginCleanUp()
+  }
 
   @Test
   fun testEverythingExists() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = trivialEvent
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description =
+                  "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+              organizerID = Profile.testParticipant().id,
+              attendanceMaxCapacity = 100,
+              attendanceMinCapacity = 10,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.now().plusDays(5),
+              eventStartDate = LocalDate.now().plusDays(4),
+              globalRating = 4,
+              inscriptionLimitDate = LocalDate.now().plusDays(1),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              timeBeginning = LocalTime.of(13, 0),
+              timeEnding = LocalTime.of(16, 0),
+              image = "")
       EventUI(
           event,
           NavigationActions(navController),
@@ -75,7 +96,25 @@ class EventUITest {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = trivialEvent
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description =
+                  "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+              organizerID = Profile.testParticipant().id,
+              attendanceMaxCapacity = 100,
+              attendanceMinCapacity = 10,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.now().plusDays(5),
+              eventStartDate = LocalDate.now().plusDays(4),
+              globalRating = 4,
+              inscriptionLimitDate = LocalDate.now().plusDays(1),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              timeBeginning = LocalTime.of(13, 0),
+              timeEnding = LocalTime.of(16, 0),
+              image = "")
       EventUI(
           event,
           NavigationActions(navController),
@@ -141,9 +180,26 @@ class EventUITest {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = trivialEvent
-      // make sure the profile used in showProfile is there
-      runBlocking { ProfileFirebaseConnection().add(Profile.testOrganizer()) }
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description =
+                  "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+              organizerID = Profile.testParticipant().id,
+              attendanceMaxCapacity = 100,
+              attendanceMinCapacity = 10,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              globalRating = 4,
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf(),
+              timeBeginning = LocalTime.of(13, 0),
+              timeEnding = LocalTime.of(16, 0),
+              image = "")
       EventUI(
           event,
           NavigationActions(navController),
@@ -151,10 +207,14 @@ class EventUITest {
           EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      description { assert(hasText(DefaultEvents.trivialEvent1.description!!)) }
+      description {
+        assert(
+            hasText(
+                "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry."))
+      }
       profileIndicator {
         hasText("Hosted by")
-        hasText("John Doe")
+        hasText("Elias")
       }
       attendeesInfoTitle.assertTextEquals("Number of attendees")
       attendeesInfo {
@@ -189,14 +249,32 @@ class EventUITest {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = trivialEvent
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description =
+                  "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+              organizerID = Profile.testParticipant().id,
+              attendanceMaxCapacity = 100,
+              attendanceMinCapacity = 10,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              globalRating = 4,
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf(),
+              timeBeginning = LocalTime.of(13, 0),
+              timeEnding = LocalTime.of(16, 0),
+              image = "")
       EventUI(
           event,
           NavigationActions(navController),
           EventRegistrationViewModel(listOf()),
           EventsViewModel())
     }
-    runBlocking { EventFirebaseConnection().add(trivialEvent) }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
         performScrollTo()
@@ -220,7 +298,6 @@ class EventUITest {
         assert(hasText("Registered"))
       }
     }
-    runBlocking { EventFirebaseConnection().delete(trivialEvent.id) }
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -229,7 +306,25 @@ class EventUITest {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = DefaultEvents.fullEvent
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 2,
+              attendanceMinCapacity = 1,
+              organizerID = Profile.testParticipant().id,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              globalRating = 4,
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf("1", "2"),
+              timeBeginning = LocalTime.of(13, 0),
+              timeEnding = LocalTime.of(16, 0),
+              image = "")
 
       EventUI(
           event,
@@ -259,13 +354,30 @@ class EventUITest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testAlreadyRegistered(): Unit {
+  fun testAlreadyRegistered(): Unit = runBlocking {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
-          DefaultEvents.withRegistered(FirebaseAuth.getInstance().currentUser!!.uid, eventId = "2")
+          Event(
+              id = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 10,
+              attendanceMinCapacity = 1,
+              organizerID = Profile.testParticipant().id,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              globalRating = 4,
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf(FirebaseAuth.getInstance().currentUser!!.uid),
+              timeBeginning = LocalTime.of(13, 0),
+              timeEnding = LocalTime.of(16, 0),
+              image = "")
       val eventfirebase = EventFirebaseConnection()
-      runBlocking { eventfirebase.add(event) }
+      eventfirebase.add(event)
 
       EventUI(
           event,
@@ -285,9 +397,28 @@ class EventUITest {
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
+    melvinLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = ownEvent
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 10,
+              attendanceMinCapacity = 1,
+              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf("TEST"),
+              timeBeginning = LocalTime.of(13, 0),
+              globalRating = 4,
+              timeEnding = LocalTime.of(16, 0),
+              image = "")
 
       EventUI(
           event,
@@ -304,9 +435,28 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testClickOnDeleteButton() {
+    melvinLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = ownEvent
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 10,
+              attendanceMinCapacity = 1,
+              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf("TEST"),
+              timeBeginning = LocalTime.of(13, 0),
+              globalRating = 4,
+              timeEnding = LocalTime.of(16, 0),
+              image = "")
 
       EventUI(
           event,
@@ -338,8 +488,26 @@ class EventUITest {
   fun testProfileIsCorrectlyFetched() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event = DefaultEvents.withAuthor(Profile.testOrganizer().id, "1")
-      runBlocking { ProfileFirebaseConnection().add(Profile.testOrganizer()) }
+      val event =
+          Event(
+              id = "1",
+              title = "Event Title",
+              description = "Hello: I am a description",
+              attendanceMaxCapacity = 10,
+              attendanceMinCapacity = 1,
+              organizerID = Profile.testOrganizer().id,
+              categories = setOf(Interests.BASKETBALL),
+              eventEndDate = LocalDate.of(2024, 4, 15),
+              eventStartDate = LocalDate.of(2024, 4, 14),
+              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitTime = LocalTime.of(23, 59),
+              location = null,
+              registeredUsers = mutableListOf("TEST"),
+              timeBeginning = LocalTime.of(13, 0),
+              globalRating = 4,
+              timeEnding = LocalTime.of(16, 0),
+              image = "EventUITestImage")
+
       EventUI(
           event,
           NavigationActions(navController),
