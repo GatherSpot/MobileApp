@@ -461,6 +461,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         .addOnFailureListener { exception -> Log.e(TAG, "Error adding new Event", exception) }
   }
 
+  /*
   fun cleanCollection() {
     Firebase.firestore
         .collection(EVENTS)
@@ -481,6 +482,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         }
         .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
   }
+
+
 
   fun retrieveEvents() {
     Firebase.firestore
@@ -513,4 +516,6 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         }
         .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
   }
+
+     */
 }

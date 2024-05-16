@@ -37,6 +37,7 @@ class EventsTest {
     runBlocking {
       testLogin()
       uid = FirebaseAuth.getInstance().currentUser!!.uid
+      FollowList.follow(uid, uid)
       ids = FollowList.following(uid).events
     }
   }
@@ -351,6 +352,16 @@ class EventsTest {
       val l = viewModel.uiState.value.list
 
       assert(l.all { event -> event.organizerID in ids })
+
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      removeFilter {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("removeFilter"))
+        performClick()
+      }
     }
   }
 

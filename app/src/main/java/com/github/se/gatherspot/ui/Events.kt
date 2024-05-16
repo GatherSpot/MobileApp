@@ -130,7 +130,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.Clear, "clear") },
-                        )
+                            modifier = Modifier.testTag("removeFilter"))
 
                         DropdownMenuItem(
                             text = { Text("YOUR EVENTS") },

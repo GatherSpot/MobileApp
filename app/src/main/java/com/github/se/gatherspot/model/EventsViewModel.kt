@@ -24,6 +24,7 @@ class EventsViewModel : ViewModel() {
   private var loadedFilteredEvents: MutableList<Event> = mutableListOf()
   val eventFirebaseConnection = EventFirebaseConnection()
   var previousInterests = mutableListOf<Interests>()
+
   // This is the id of the of the user logged in by default during tests.
 
   init {
