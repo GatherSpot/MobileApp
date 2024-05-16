@@ -27,7 +27,7 @@ class OwnProfileViewModel(private val profileFirebaseConnection: ProfileFirebase
   init {
     viewModelScope.launch {
       _profile.value =
-          profileFirebaseConnection.fetch(profileFirebaseConnection.getCurrentUserUid()!!)
+          profileFirebaseConnection.fetch(profileFirebaseConnection.getCurrentUserUid() ?: "TEST")
       update()
     }
   }

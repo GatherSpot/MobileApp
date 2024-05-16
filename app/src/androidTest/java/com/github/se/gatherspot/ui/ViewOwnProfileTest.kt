@@ -2,6 +2,7 @@ package com.github.se.gatherspot.ui
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ViewOwnProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
@@ -17,7 +18,9 @@ class ViewOwnProfileTest {
   fun testComponentsExist() {
     composeTestRule.setContent {
       val nav = rememberNavController()
-      ProfileView().ViewOwnProfile(NavigationActions(nav), OwnProfileViewModel(), nav)
+      ProfileView()
+          .ViewOwnProfile(
+              NavigationActions(nav), OwnProfileViewModel(ProfileFirebaseConnection()), nav)
     }
     ComposeScreen.onComposeScreen<ViewOwnProfileScreen>(composeTestRule) {
       scaffold.assertExists()

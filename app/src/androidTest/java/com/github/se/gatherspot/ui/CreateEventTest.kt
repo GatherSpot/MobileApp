@@ -15,8 +15,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
@@ -26,6 +24,7 @@ import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.utils.MockEventFirebaseConnection
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -518,7 +517,7 @@ class CreateEventTest {
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventLocation {
         performClick()
-        performTextInput("ecole polytechnique federale")
+        performTextInput("ecole polytechnique federale de lausanne")
       }
       // wait for the location proposition to appear
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
