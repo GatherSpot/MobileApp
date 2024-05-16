@@ -1,6 +1,10 @@
 package com.github.se.gatherspot.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,9 +47,11 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
@@ -134,6 +140,25 @@ fun EventDataForm(
 
   // Coroutine scope for launching coroutines
   val coroutineScope = rememberCoroutineScope()
+
+  // Permission handling
+  val lifecycleOwner = LocalLifecycleOwner.current
+  val locationPermissionGranted = remember {
+    mutableStateOf(
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED)
+  }
+  val requestLocationPermissionLauncher =
+      rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+          isGranted ->
+        locationPermissionGranted.value = isGranted
+      }
+
+  // Check and request permission if not already granted
+  if (!locationPermissionGranted.value) {
+    requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+  }
+
   /*
    if (eventAction == EventAction.EDIT) {
      event!!
