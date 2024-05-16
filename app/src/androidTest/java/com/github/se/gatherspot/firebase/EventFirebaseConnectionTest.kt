@@ -6,6 +6,7 @@ import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.auth.FirebaseAuth
+import kotlin.time.Duration
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -14,7 +15,6 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import kotlin.time.Duration
 
 class EventFirebaseConnectionTest {
 
@@ -40,14 +40,15 @@ class EventFirebaseConnectionTest {
   }
 
   @Test
-  fun testAddAndFetchEvent() = runTest {
-    val event = DefaultEvents.trivialEvent1
-    runBlocking { eventFirebaseConnection.add(event) }
-    var resultEvent: Event?
-    runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
-    assertEquals(resultEvent, event)
-    runBlocking { eventFirebaseConnection.delete(event.id) }
-  }
+  fun testAddAndFetchEvent() =
+      runTest(timeout = Duration.parse("20s")) {
+        val event = DefaultEvents.trivialEvent1
+        runBlocking { eventFirebaseConnection.add(event) }
+        var resultEvent: Event?
+        runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
+        assertEquals(resultEvent, event)
+        runBlocking { eventFirebaseConnection.delete(event.id) }
+      }
 
   @Test
   fun fetchReturnsNull() = runTest {
@@ -162,41 +163,43 @@ class EventFirebaseConnectionTest {
       }
 
   @Test
-  fun fetchRegisteredToWorks() = runTest() {
-    runBlocking { testLogin() }
-    val myID = FirebaseAuth.getInstance().currentUser!!.uid
-    val events =
-        listOf(
-            DefaultEvents.withRegistered(myID, eventId = "1"),
-            DefaultEvents.withRegistered(myID, eventId = "2"),
-            DefaultEvents.withRegistered(myID, "1", "2", eventId = "3"),
-            DefaultEvents.withRegistered("1", "2", eventId = "4"),
-            DefaultEvents.withRegistered(eventId = "5"),
-        )
-    runBlocking { events.forEach { eventFirebaseConnection.add(it) } }
-    lateinit var resultEvents: MutableList<Event>
-    async { resultEvents = eventFirebaseConnection.fetchRegisteredTo() }.await()
+  fun fetchRegisteredToWorks() =
+      runTest() {
+        runBlocking { testLogin() }
+        val myID = FirebaseAuth.getInstance().currentUser!!.uid
+        val events =
+            listOf(
+                DefaultEvents.withRegistered(myID, eventId = "1"),
+                DefaultEvents.withRegistered(myID, eventId = "2"),
+                DefaultEvents.withRegistered(myID, "1", "2", eventId = "3"),
+                DefaultEvents.withRegistered("1", "2", eventId = "4"),
+                DefaultEvents.withRegistered(eventId = "5"),
+            )
+        runBlocking { events.forEach { eventFirebaseConnection.add(it) } }
+        lateinit var resultEvents: MutableList<Event>
+        async { resultEvents = eventFirebaseConnection.fetchRegisteredTo() }.await()
 
-    assert(resultEvents.all { it.registeredUsers.contains(myID) })
+        assert(resultEvents.all { it.registeredUsers.contains(myID) })
 
-    runBlocking {
-      testLoginCleanUp()
-      events.forEach { eventFirebaseConnection.delete(it.id) }
-    }
-  }
+        runBlocking {
+          testLoginCleanUp()
+          events.forEach { eventFirebaseConnection.delete(it.id) }
+        }
+      }
 
   @Test
-  fun deleteEvent() = runTest(timeout = Duration.parse("20s")) {
-    val event = DefaultEvents.trivialEvent1
-    eventFirebaseConnection.add(event)
-    var resultEvent: Event? = null
-    runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
-    assertNotNull(resultEvent)
-    assertEquals(resultEvent!!.id, event.id)
-    eventFirebaseConnection.delete(event.id)
-    runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
-    assertEquals(resultEvent, null)
-  }
+  fun deleteEvent() =
+      runTest(timeout = Duration.parse("20s")) {
+        val event = DefaultEvents.trivialEvent1
+        eventFirebaseConnection.add(event)
+        var resultEvent: Event? = null
+        runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
+        assertNotNull(resultEvent)
+        assertEquals(resultEvent!!.id, event.id)
+        eventFirebaseConnection.delete(event.id)
+        runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
+        assertEquals(resultEvent, null)
+      }
 
   @Test
   fun mapStringToTimeTest() = runTest {
