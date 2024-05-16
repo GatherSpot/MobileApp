@@ -21,7 +21,6 @@ import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.event.EventUI
 import com.github.se.gatherspot.ui.event.EventUIViewModel
-import com.github.se.gatherspot.ui.event.Events
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

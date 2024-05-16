@@ -37,7 +37,7 @@ import com.github.se.gatherspot.ui.Chats
 import com.github.se.gatherspot.ui.event.CreateEvent
 import com.github.se.gatherspot.ui.event.EditEvent
 import com.github.se.gatherspot.ui.event.EventUI
-import com.github.se.gatherspot.ui.event.Events
+import com.github.se.gatherspot.ui.Events
 import com.github.se.gatherspot.ui.LogIn
 import com.github.se.gatherspot.ui.Map
 import com.github.se.gatherspot.ui.Profile
