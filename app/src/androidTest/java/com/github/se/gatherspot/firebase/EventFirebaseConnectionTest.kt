@@ -6,7 +6,6 @@ import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.auth.FirebaseAuth
-import kotlin.time.Duration
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -15,6 +14,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.time.Duration
 
 class EventFirebaseConnectionTest {
 
@@ -41,7 +41,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun testAddAndFetchEvent() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest(timeout = Duration.parse("40s")) {
         val event = DefaultEvents.trivialEvent1
         runBlocking { eventFirebaseConnection.add(event) }
         var resultEvent: Event?
@@ -60,7 +60,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchNextReturnsDistinctEvents() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest {
         val round = 5
         lateinit var listOfEvents1: MutableList<Event>
         runBlocking { listOfEvents1 = eventFirebaseConnection.fetchNextEvents(round.toLong()) }
@@ -78,7 +78,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchNextBasedOnInterestReturnsCorrectEvents() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest {
         val events =
             listOf(
                 DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "1"),
@@ -113,7 +113,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchNextBasedOnInterestReturnsDistinctEvents() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest {
         val events =
             listOf(
                 DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "1"),
@@ -141,7 +141,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchMyEventsWorks() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest {
         runBlocking { testLogin() }
         val myID = FirebaseAuth.getInstance().currentUser!!.uid
         val events =
@@ -189,7 +189,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun deleteEvent() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest {
         val event = DefaultEvents.trivialEvent1
         eventFirebaseConnection.add(event)
         var resultEvent: Event? = null
