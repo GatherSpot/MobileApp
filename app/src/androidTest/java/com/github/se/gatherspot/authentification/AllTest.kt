@@ -16,9 +16,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.LoginScreen
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.screens.SignUpScreen
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.async
@@ -32,7 +30,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 val USERNAME = "AuthEndToEndTest" + java.util.Date().time.toString()
 val EMAIL = "AuthEndToEnd@test.com" + java.util.Date().time.toString()

@@ -6,12 +6,12 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.defaults.DefaultEvents
-import com.github.se.gatherspot.defaults.DefaultProfiles
 import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
+import com.github.se.gatherspot.defaults.DefaultEvents
+import com.github.se.gatherspot.defaults.DefaultProfiles
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.event.EventUIViewModel
@@ -21,7 +21,6 @@ import com.github.se.gatherspot.utils.MockEventFirebaseConnection
 import com.github.se.gatherspot.utils.MockIdListFirebaseConnection
 import com.github.se.gatherspot.utils.MockProfileFirebaseConnection
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.async
@@ -199,6 +198,7 @@ class EventUITest {
       alertBox { assertIsNotDisplayed() }
     }
   }
+
   @Test
   fun textsDisplayedAreCorrect() {
     composeTestRule.setContent {
