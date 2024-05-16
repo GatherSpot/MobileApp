@@ -146,9 +146,14 @@ class OwnProfileViewModel : ViewModel() {
     cancelText()
     cancelImage()
   }
+
+  fun logout(nav: NavController) {
+    Firebase.auth.signOut()
+    nav.navigate("auth")
+  }
 }
 
-class ProfileViewModel(private val _target: String, private val nav: NavigationActions, private val navController: NavController) {
+class ProfileViewModel(private val _target: String, private val nav: NavigationActions) {
   private var _profile: Profile
   private val _username = MutableLiveData<String>()
   private val _bio = MutableLiveData<String>()
@@ -200,9 +205,5 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
     // TODO : need to test this with either end to end test or manually when someone actually uses
     // this class
     nav.goBack()
-  }
-  fun logout(){
-    Firebase.auth.signOut()
-    navController.navigate("auth")
   }
 }

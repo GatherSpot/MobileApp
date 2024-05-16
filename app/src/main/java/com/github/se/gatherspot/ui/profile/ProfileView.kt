@@ -100,13 +100,11 @@ class ProfileView {
   }
 
   @Composable
-  fun TopBarOwnProfile(nav: NavController) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
-        horizontalArrangement = Arrangement.End) {
-          LogOutButton(nav)
-          EditButton(nav)
-        }
+  fun TopBarOwnProfile(nav: NavController, viewModel: OwnProfileViewModel) {
+    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
+      LogOutButton(nav, viewModel)
+      EditButton(nav)
+    }
   }
 
   @Composable
@@ -118,11 +116,11 @@ class ProfileView {
   }
 
   @Composable
-  fun LogOutButton(nav: NavController) {
+  fun LogOutButton(nav: NavController, viewModel: OwnProfileViewModel) {
     Icon(
         Icons.AutoMirrored.Filled.ExitToApp,
         contentDescription = "logout",
-        modifier = Modifier.clickable {}.size(24.dp).testTag("logout"))
+        modifier = Modifier.clickable { viewModel.logout(nav) }.size(24.dp).testTag("logout"))
   }
 
   @Composable
@@ -271,7 +269,7 @@ class ProfileView {
     val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
     Column {
-      TopBarOwnProfile(navController)
+      TopBarOwnProfile(navController, viewModel)
 
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
@@ -337,6 +335,7 @@ class ProfileView {
     val back = viewModel::back
     val follow = viewModel::follow
     val addFriend = viewModel::requestFriend
+
     Column() {
       FollowButtons(back, follow, following, addFriend)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
