@@ -268,7 +268,7 @@ fun EventRow(event: Event, navigation: NavigationActions) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
-              Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Center) {
+              Row(modifier = Modifier.weight(1f).testTag("IconHolder"), horizontalArrangement = Arrangement.Center) {
                   Image(
                     painter = painterResource(id = getEventIcon(event.categories)),
                     contentDescription = "event icon",
