@@ -83,28 +83,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
       val latitude = _currentLocation.value?.latitude ?: 0.0
         val longitude = _currentLocation.value?.longitude ?: 0.0
 
-      val tempEvents = mutableListOf<Event?>()
 
-      val list2 =
-      suspendCancellableCoroutine { continuation ->
-          Firebase.firestore.collection("events")
-              .orderBy("locationLatitude")
-              .whereLessThanOrEqualTo("locationLatitude", latitude + SQUARE_RADIUS)
-              .whereGreaterThan("locationLatitude", latitude - SQUARE_RADIUS)
-              .orderBy("locationLongitude")
-              .whereLessThanOrEqualTo("locationLongitude", longitude + SQUARE_RADIUS)
-              .whereGreaterThan("locationLongitude", longitude - SQUARE_RADIUS)
-              .get().addOnSuccessListener {
-                    tempEvents.addAll(it.toObjects(Event::class.java))
-                  continuation.resume(tempEvents)
-              }
-              .addOnFailureListener {
-                  continuation.resume(null)
-              }
+      val list2 = EventFirebaseConnection().fetchAllInPerimeter(latitude, longitude, SQUARE_RADIUS)
 
-
-      }
-      events = list2?.toMutableList()?: mutableListOf()
+    events = list2.toMutableList()
 
   }
 }

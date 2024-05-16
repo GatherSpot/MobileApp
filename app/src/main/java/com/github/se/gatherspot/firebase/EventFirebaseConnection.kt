@@ -14,10 +14,12 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.firestore
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
 
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
@@ -279,6 +281,29 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
     return eventsFromQuerySnapshot(querySnapshot)
   }
+
+    suspend fun fetchAllInPerimeter(
+        latitude: Double,
+        longitude: Double,
+        radius: Double) : MutableList<Event>
+    {
+
+    val querySnapshot: QuerySnapshot =
+        Firebase.firestore
+            .collection(EVENTS)
+            .orderBy("locationLatitude")
+            .whereLessThanOrEqualTo("locationLatitude", latitude + radius)
+            .whereGreaterThan("locationLatitude", latitude - radius)
+            .orderBy("locationLongitude")
+            .whereLessThanOrEqualTo("locationLongitude", longitude + radius)
+            .whereGreaterThan("locationLongitude", longitude - radius)
+            .get()
+            .await()
+
+
+        return eventsFromQuerySnapshot(querySnapshot)
+    }
+
 
   suspend fun addRegisteredUser(eventID: String, uid: String) {
     Firebase.firestore
