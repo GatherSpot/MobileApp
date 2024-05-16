@@ -11,7 +11,6 @@ import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testDelete
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
@@ -42,7 +41,6 @@ class SignUpTest : TestCase() {
     val currentUser = FirebaseAuth.getInstance().currentUser
     if (currentUser != null) {
       runBlocking {
-        ProfileFirebaseConnection().delete(currentUser.uid)
         testDelete()
       }
     }

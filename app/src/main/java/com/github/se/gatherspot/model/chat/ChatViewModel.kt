@@ -7,14 +7,14 @@ import com.github.se.gatherspot.firebase.ChatMessagesFirebaseConnection
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.firestore.FirebaseFirestore
-import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
 
-class ChatViewModel(val eventId: String) : ViewModel() {
+class ChatViewModel(val eventId: String, val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection(),val firebaseFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()) : ViewModel() {
   val chatMessagesFirebase = ChatMessagesFirebaseConnection()
   private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
   val messages: StateFlow<List<ChatMessage>> = _messages
@@ -35,7 +35,7 @@ class ChatViewModel(val eventId: String) : ViewModel() {
                   100) // Fetch the latest 100 messages since fetching every x messages does not
               // work with listeners
             }
-        val eventValue = withContext(Dispatchers.IO) { EventFirebaseConnection().fetch(eventId) }
+        val eventValue = withContext(Dispatchers.IO) { eventFirebaseConnection.fetch(eventId) }
         _messages.value = fetchedMessages
         event = eventValue
       } catch (e: Exception) {
@@ -46,7 +46,7 @@ class ChatViewModel(val eventId: String) : ViewModel() {
   }
 
   fun listenToMessages() {
-    FirebaseFirestore.getInstance()
+    firebaseFirestore
         .collection(chatMessagesFirebase.CHATS)
         .document(eventId)
         .collection(chatMessagesFirebase.MESSAGES)
