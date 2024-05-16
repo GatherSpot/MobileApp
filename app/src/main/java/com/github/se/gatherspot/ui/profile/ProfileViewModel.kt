@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.github.se.gatherspot.FirebaseImages
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
@@ -147,7 +148,7 @@ class OwnProfileViewModel : ViewModel() {
   }
 }
 
-class ProfileViewModel(private val _target: String, private val nav: NavigationActions) {
+class ProfileViewModel(private val _target: String, private val nav: NavigationActions, private val navController: NavController) {
   private var _profile: Profile
   private val _username = MutableLiveData<String>()
   private val _bio = MutableLiveData<String>()
@@ -199,5 +200,9 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
     // TODO : need to test this with either end to end test or manually when someone actually uses
     // this class
     nav.goBack()
+  }
+  fun logout(){
+    Firebase.auth.signOut()
+    navController.navigate("auth")
   }
 }

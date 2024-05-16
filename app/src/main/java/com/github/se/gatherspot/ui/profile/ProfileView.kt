@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -97,14 +100,29 @@ class ProfileView {
   }
 
   @Composable
+  fun TopBarOwnProfile(nav: NavController) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalArrangement = Arrangement.End) {
+          LogOutButton(nav)
+          EditButton(nav)
+        }
+  }
+
+  @Composable
   fun EditButton(nav: NavController) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
-      // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
-      Icon(
-          painter = painterResource(R.drawable.edit),
-          contentDescription = "edit",
-          modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
-    }
+    Icon(
+        painter = painterResource(R.drawable.edit),
+        contentDescription = "edit",
+        modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
+  }
+
+  @Composable
+  fun LogOutButton(nav: NavController) {
+    Icon(
+        Icons.AutoMirrored.Filled.ExitToApp,
+        contentDescription = "logout",
+        modifier = Modifier.clickable {}.size(24.dp).testTag("logout"))
   }
 
   @Composable
@@ -253,7 +271,7 @@ class ProfileView {
     val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
     Column {
-      EditButton(navController)
+      TopBarOwnProfile(navController)
 
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)

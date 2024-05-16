@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -35,11 +36,12 @@ fun Profile(nav: NavigationActions) {
  * Show the profile of another user
  *
  * @param nav the navigation actions
+ * @param navController the navigation controller (to go on auth screen on logout)
  * @param uid the id of the user to be shown
  */
 @Composable
-fun ViewProfile(nav: NavigationActions, uid: String) {
-  ProfileView().ProfileScreen(ProfileViewModel(uid, nav))
+fun ViewProfile(nav: NavigationActions, navController: NavController uid: String) {
+  ProfileView().ProfileScreen(ProfileViewModel(uid, nav, navController ))
 }
 
 // Those preview should show you all the functions you can call when it comes to profiles
