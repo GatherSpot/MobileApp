@@ -13,6 +13,7 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.TopLevelDestinations.SetUpProfile
 import com.github.se.gatherspot.ui.TopLevelDestinations.SignUp
@@ -22,6 +23,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -33,6 +36,9 @@ class SignUpTest : TestCase() {
   val email = "gatherspot2024@gmail.com"
   val userName = "GatherSpot"
   val password = "GatherSpot,2024;"
+  val profileFirebaseConnection = ProfileFirebaseConnection()
+  val unavailableUsername = "test"
+  val inUseEmail = "test@test.com"
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -52,12 +58,34 @@ class SignUpTest : TestCase() {
 
   @Before
   fun setUp() {
-    Firebase.auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-      if (it.isSuccessful) {
-        ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
-      }
-    }
+    runBlocking {
+      Firebase.auth.createUserWithEmailAndPassword(inUseEmail,"Test,2024;" )
 
+      profileFirebaseConnection.ifUsernameExists(unavailableUsername) {
+        if (!it) {
+          ProfileFirebaseConnection().add(
+            Profile(
+              _userName = unavailableUsername,
+              _bio = "bio",
+              _image = "image",
+              id = profileFirebaseConnection.getNewID(),
+              _interests = setOf()
+            )
+          )
+        }
+
+      }
+      Firebase.auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+        if (it.isSuccessful) {
+          ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
+        }
+      }
+
+
+      delay(2000)
+
+
+    }
   }
 
 
@@ -133,7 +161,7 @@ class SignUpTest : TestCase() {
 
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField {
-        performTextInput("test")
+        performTextInput(unavailableUsername)
         assertExists()
         assertIsDisplayed()
       }
@@ -176,7 +204,7 @@ class SignUpTest : TestCase() {
 
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField { performTextInput("otherTest") }
-      emailField { performTextInput("test@test.com") }
+      emailField { performTextInput(inUseEmail) }
       passwordField { performTextInput("Test,2024;") }
       button { performClick() }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("signUpFailed"), 6000)
