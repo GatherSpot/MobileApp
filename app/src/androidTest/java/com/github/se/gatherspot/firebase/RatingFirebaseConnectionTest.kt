@@ -24,6 +24,7 @@ class RatingFirebaseConnectionTest {
   private val secondRating = Rating.FOUR_STARS
   private val firstRating = Rating.ONE_STAR
   private val firstRater = "testRater1"
+  val organizerID = Profile.testOrganizer().id
 
   private val event1 =
       Event(

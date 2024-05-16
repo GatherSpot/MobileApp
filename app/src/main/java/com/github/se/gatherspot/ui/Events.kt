@@ -1,7 +1,9 @@
 package com.github.se.gatherspot.ui
 
 import android.content.ContentValues.TAG
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -63,6 +65,7 @@ import kotlinx.coroutines.delay
 /** Composable that displays events * */
 
 // listOf("Your interests", "None")
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
