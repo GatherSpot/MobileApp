@@ -102,9 +102,9 @@ class ProfileFirebaseConnectionTest {
   fun testIfUsernameExists() {
     // bogus does not actually test correctly
     runTest {
-      profileFirebaseConnection.add(toAdd)
+      async { profileFirebaseConnection.add(toAdd) }.await()
       var wasSet = false
-      profileFirebaseConnection.ifUsernameExists("melvin") {
+      profileFirebaseConnection.ifUsernameExists("PFCTest") {
         assertTrue(it)
         wasSet = true
       }
