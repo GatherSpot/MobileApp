@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationRequest
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
@@ -18,6 +19,7 @@ import com.github.se.gatherspot.model.event.Event
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
+import com.google.maps.android.compose.CameraPositionState
 import kotlin.math.PI
 import kotlin.math.cos
 
@@ -67,9 +69,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
   private var _registered_events = mutableListOf<Event?>()
   private var _events = mutableListOf<Event?>()
+  private var _cameraPositionState = CameraPositionState()
 
   val currentLocation: LiveData<LatLng>
     get() = _currentLocation
+
+  var cameraPositionState: CameraPositionState
+    get() = _cameraPositionState
+    set(value) {
+      _cameraPositionState = value
+    }
 
   var events: MutableList<Event?>
     get() = _events
@@ -111,15 +120,19 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 FirebaseCollection.REGISTERED_EVENTS) {}!!
             .events
             .toMutableList()
-    registered_events = list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
+    registered_events =
+        registered_events.union(list.map { EventFirebaseConnection().fetch(it) }).toMutableList()
 
-    val latitude = _currentLocation.value?.latitude ?: 0.0
-    val longitude = _currentLocation.value?.longitude ?: 0.0
-
+    Log.d(
+        "MapViewModel",
+        "fetchEvents: ${cameraPositionState.position.target.latitude}, ${cameraPositionState.position.target.longitude}")
     val list2 =
         EventFirebaseConnection()
-            .fetchAllInPerimeter(latitude, longitude, metersToDegree(latitude, 1000.0))
+            .fetchAllInPerimeter(
+                cameraPositionState.position.target.latitude,
+                cameraPositionState.position.target.longitude,
+                metersToDegree(cameraPositionState.position.target.latitude, 1000.0))
 
-    events = list2.toMutableList()
+    events = events.union(list2.toMutableList()).toMutableList()
   }
 }

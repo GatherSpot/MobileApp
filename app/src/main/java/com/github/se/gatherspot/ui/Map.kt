@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.lifecycle.LiveData
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.MapViewModel
@@ -48,9 +49,10 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
     val viewModel = MainActivity.mapViewModel!!
     val currentLocation by viewModel.currentLocation.observeAsState(LatLng(0.0, 0.0))
 
-    val cameraPositionState = rememberCameraPositionState {
+    viewModel.cameraPositionState = rememberCameraPositionState {
       position = CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
     }
+    val cameraPositionState = viewModel.cameraPositionState
 
     LaunchedEffect(nav.controller.currentBackStackEntry) { viewModel.fetchEvents() }
     LaunchedEffect(key1 = Unit) {
@@ -63,11 +65,14 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
       while (currentLocation == LatLng(0.0, 0.0)) {
         delay(500)
       }
-      viewModel.fetchEvents()
-      cameraPositionState.position =
+      viewModel.cameraPositionState.position =
           CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
+      while (true) {
+        if (viewModel.cameraPositionState.position.zoom > 12f) viewModel.fetchEvents()
+        delay(1000)
+      }
     }
-    MapComposable(viewModel, nav, cameraPositionState, currentLocation, null)
+    MapComposable(viewModel, nav, viewModel.cameraPositionState, viewModel.currentLocation, null)
   }
 }
 
@@ -77,7 +82,7 @@ fun MapComposable(
     viewModel: MapViewModel?,
     nav: NavigationActions,
     cameraPositionState: CameraPositionState,
-    currentLocation: LatLng?,
+    currentLocation: LiveData<LatLng>?,
     testPosition: LatLng?
 ) {
   Scaffold(
@@ -100,11 +105,14 @@ fun MapComposable(
             contentPadding = paddingValues,
             cameraPositionState = cameraPositionState,
         ) {
+          Log.d("ZoomLevel", "Current Zoom Level: ${cameraPositionState.position.zoom}")
+
           if (testPosition == null) {
             Marker(
-                state = MarkerState(currentLocation!!),
+                state = MarkerState(currentLocation?.value ?: LatLng(0.0, 0.0)),
                 title = "Your current position",
                 icon = BitmapDescriptorFactory.fromResource(R.drawable.person_pin))
+
             for (event in
                 viewModel!!.events.toSet().subtract(viewModel.registered_events.toList().toSet())) {
               Marker(
@@ -112,9 +120,11 @@ fun MapComposable(
                       MarkerState(
                           LatLng(
                               event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
-                  title = ("inscope " + event?.title),
+                  title = (event?.title),
                   icon = BitmapDescriptorFactory.fromResource(R.drawable.pin),
-                  onInfoWindowClick = { nav.controller.navigate("event/${event?.toJson()}") })
+                  onInfoWindowClick = { nav.controller.navigate("event/${event?.toJson()}") },
+                  snippet = (event?.description ?: ""),
+                  visible = cameraPositionState.position.zoom > 12f)
             }
             for (event in (viewModel.registered_events.toSet())) {
               Marker(
@@ -124,7 +134,9 @@ fun MapComposable(
                               event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
                   title = ("Registered to " + event?.title),
                   icon = BitmapDescriptorFactory.fromResource(R.drawable.target),
-                  onInfoWindowClick = { nav.controller.navigate("event/${event?.toJson()}") })
+                  onInfoWindowClick = { nav.controller.navigate("event/${event?.toJson()}") },
+                  snippet = (event?.description ?: ""),
+                  visible = cameraPositionState.position.zoom > 12f)
             }
           } else {
             Marker(
