@@ -286,18 +286,18 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   suspend fun fetchAllInPerimeter(
       latitude: Double,
       longitude: Double,
-      radius: Double
+      degrees: Double
   ): MutableList<Event> {
 
     val querySnapshot: QuerySnapshot =
         Firebase.firestore
             .collection(EVENTS)
             .orderBy("locationLatitude")
-            .whereLessThanOrEqualTo("locationLatitude", latitude + radius)
-            .whereGreaterThan("locationLatitude", latitude - radius)
+            .whereLessThanOrEqualTo("locationLatitude", latitude + degrees)
+            .whereGreaterThan("locationLatitude", latitude - degrees)
             .orderBy("locationLongitude")
-            .whereLessThanOrEqualTo("locationLongitude", longitude + radius)
-            .whereGreaterThan("locationLongitude", longitude - radius)
+            .whereLessThanOrEqualTo("locationLongitude", longitude + degrees)
+            .whereGreaterThan("locationLongitude", longitude - degrees)
             .get()
             .await()
 

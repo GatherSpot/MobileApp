@@ -4,12 +4,20 @@ import android.Manifest
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.LiveData
 import com.github.se.gatherspot.MainActivity
@@ -52,7 +60,7 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
     viewModel.cameraPositionState = rememberCameraPositionState {
       position = CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
     }
-    val cameraPositionState = viewModel.cameraPositionState
+      viewModel.cameraPositionState
 
     LaunchedEffect(nav.controller.currentBackStackEntry) { viewModel.fetchEvents() }
     LaunchedEffect(key1 = Unit) {
@@ -76,6 +84,7 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MapComposable(
@@ -86,6 +95,9 @@ fun MapComposable(
     testPosition: LatLng?
 ) {
   Scaffold(
+      topBar = { TopAppBar(
+            title = { Text(text = "Map") }
+      ) },
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { tld -> nav.navigateTo(tld) },
