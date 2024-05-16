@@ -37,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -154,9 +155,10 @@ fun EventDataForm(
         locationPermissionGranted.value = isGranted
       }
 
-  // Check and request permission if not already granted
-  if (!locationPermissionGranted.value) {
-    requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+  LaunchedEffect(Unit) {
+    if (!locationPermissionGranted.value) {
+      requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
   }
 
   /*
