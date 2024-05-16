@@ -6,10 +6,10 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.EnvironmentSetter
-import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
@@ -24,8 +24,8 @@ import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -35,20 +35,20 @@ class EventUITest {
 
   @Before
   fun setUp() {
-    testLogin()
-    val myProfile = Profile("myUserName", "BIO", "", EnvironmentSetter.testLoginUID, setOf())
     runBlocking {
-      ProfileFirebaseConnection().add(Profile.testParticipant())
-      ProfileFirebaseConnection().add(Profile.testOrganizer())
-      ProfileFirebaseConnection().add(myProfile)
+      testLogin()
+      profileFirebaseConnection.add(Profile.testOrganizer())
+      profileFirebaseConnection.add(Profile.testParticipant())
+      profileFirebaseConnection.add(Profile("testLogin", "", "image", testLoginUID, setOf()))
+      async { profileFirebaseConnection.fetch(Profile.testOrganizer().id) }.await()
+      async { profileFirebaseConnection.fetch(testLoginUID) }.await()
     }
   }
 
-  @After
   fun cleanUp() {
     testLoginCleanUp()
     runBlocking {
-      ProfileFirebaseConnection().delete(EnvironmentSetter.testLoginUID)
+      ProfileFirebaseConnection().delete(testLoginUID)
       ProfileFirebaseConnection().delete(Profile.testParticipant().id)
       ProfileFirebaseConnection().delete(Profile.testOrganizer().id)
     }
@@ -69,7 +69,7 @@ class EventUITest {
           inscriptionLimitDate = LocalDate.of(2024, 4, 11),
           inscriptionLimitTime = LocalTime.of(23, 59),
           location = null,
-          registeredUsers = mutableListOf(EnvironmentSetter.testLoginUID),
+          registeredUsers = mutableListOf(testLoginUID),
           timeBeginning = LocalTime.of(13, 0),
           timeEnding = LocalTime.of(16, 0),
           image = "")
@@ -84,7 +84,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizerID = Profile.testParticipant().id,
+              organizerID = Profile.testOrganizer().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -131,7 +131,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizerID = Profile.testParticipant().id,
+              organizerID = Profile.testOrganizer().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -211,7 +211,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizerID = Profile.testParticipant().id,
+              organizerID = Profile.testOrganizer().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -404,8 +404,7 @@ class EventUITest {
   }
 
   @Test
-  fun testOrganiserDeleteEditCalendarButtonsAreHere() {
-    melvinLogin()
+  fun testOrganiserDeleteEditButtonAreHere() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -415,7 +414,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
+              organizerID = testLoginUID,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -440,7 +439,6 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testClickOnDeleteButton() {
-    melvinLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
