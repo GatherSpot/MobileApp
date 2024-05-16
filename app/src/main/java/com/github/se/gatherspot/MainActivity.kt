@@ -28,12 +28,7 @@ import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.EventUIViewModel
-import com.github.se.gatherspot.model.utils.LocalDateDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.Chats
 import com.github.se.gatherspot.ui.CreateEvent
@@ -102,12 +97,10 @@ class MainActivity : ComponentActivity() {
               }
               composable("event/{eventJson}") { backStackEntry ->
                 val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
-                val viewModel = viewModel<EventRegistrationViewModel>()
                 EventUI(
                     event = eventObject,
                     navActions = NavigationActions(navController),
-                    eventUIViewModel = EventUIViewModel(eventObject),
-                    eventsViewModel = eventsViewModel!!)
+                    eventUIViewModel = EventUIViewModel(eventObject))
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)

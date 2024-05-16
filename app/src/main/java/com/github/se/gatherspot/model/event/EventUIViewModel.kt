@@ -3,8 +3,9 @@ package com.github.se.gatherspot.model.event
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
@@ -15,7 +16,18 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class EventUIViewModel(private val event: Event,private val profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection()) : ViewModel(){
+class EventUIViewModel(
+    private val event: Event,
+    val profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection(),
+    val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection(),
+    idListFirebaseConnection: IdListFirebaseConnection = IdListFirebaseConnection()
+) :
+    EventRegistrationViewModel(
+        event.registeredUsers,
+        profileFirebaseConnection,
+        eventFirebaseConnection,
+        idListFirebaseConnection) {
+
   // Rate !
 
   // registered as Set
@@ -33,8 +45,7 @@ class EventUIViewModel(private val event: Event,private val profileFirebaseConne
       _organizer = profileFirebaseConnection.fetch(event.organizerID)
       _rating.value =
           RatingFirebaseConnection()
-              .fetchRating(
-                  event.id, profileFirebaseConnection.getCurrentUserUid()!!)
+              .fetchRating(event.id, profileFirebaseConnection.getCurrentUserUid()!!)
               ?: Rating.UNRATED
 
       delay(500)

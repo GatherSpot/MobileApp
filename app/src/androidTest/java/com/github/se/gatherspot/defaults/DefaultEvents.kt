@@ -189,5 +189,26 @@ class DefaultEvents {
             timeEnding = LocalTime.of(12, 0),
             image = "",
             organizerID = DefaultProfiles.trivial.id)
+    val pastEventRegistered =
+        Event(
+            id = "pastEventRegistered",
+            title = "Past eventregist",
+            description =
+                "Hello: I am a description of the event just saying that I would love to say" +
+                    "that Messi is not the best player in the world, but I can't. I am sorry.",
+            attendanceMaxCapacity = 5,
+            attendanceMinCapacity = 1,
+            categories = setOf(Interests.BASKETBALL),
+            eventEndDate = LocalDate.of(2022, 4, 15),
+            eventStartDate = LocalDate.of(2022, 4, 14),
+            globalRating = 4,
+            inscriptionLimitDate = LocalDate.of(2022, 4, 11),
+            inscriptionLimitTime = LocalTime.of(23, 59),
+            location = null,
+            registeredUsers = mutableListOf("MC", "3", "4", "5"),
+            timeBeginning = LocalTime.of(10, 0),
+            timeEnding = LocalTime.of(12, 0),
+            image = "",
+            organizerID = DefaultProfiles.trivial.id)
   }
 }

@@ -8,18 +8,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.defaults.DefaultProfiles
-import com.github.se.gatherspot.EnvironmentSetter
-import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.EventsViewModel
-import com.github.se.gatherspot.model.event.EventRegistrationViewModel
-import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.Profile
-import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -45,12 +35,11 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(
-              listOf(),
+          EventUIViewModel(
+              event,
               MockProfileFirebaseConnection(),
               MockEventFirebaseConnection(),
               MockIdListFirebaseConnection()),
-          EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -96,12 +85,11 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(
-              listOf(),
+          EventUIViewModel(
+              event,
               MockProfileFirebaseConnection(),
               MockEventFirebaseConnection(),
               MockIdListFirebaseConnection()),
-          EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -139,14 +127,12 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(
-              listOf(),
+          EventUIViewModel(
+              event,
               MockProfileFirebaseConnection(),
               MockEventFirebaseConnection(),
               MockIdListFirebaseConnection()),
-          EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
-      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -178,12 +164,11 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(
-              listOf("MC"),
+          EventUIViewModel(
+              event,
               MockProfileFirebaseConnection(),
               MockEventFirebaseConnection(),
               MockIdListFirebaseConnection()),
-          EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -204,14 +189,12 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(
-              listOf(),
+          EventUIViewModel(
+              event,
               MockProfileFirebaseConnection(),
               MockEventFirebaseConnection(),
               MockIdListFirebaseConnection()),
-          EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
-      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       calendarButton { assertIsDisplayed() }
@@ -230,14 +213,12 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(
-              listOf(),
+          EventUIViewModel(
+              event,
               MockProfileFirebaseConnection(),
               MockEventFirebaseConnection(),
               MockIdListFirebaseConnection()),
-          EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
-      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }
@@ -262,23 +243,25 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun ratingIsDisplayed() {
-    val eventUIViewModel = EventUIViewModel(pastEventRegisteredTo)
+    val event = DefaultEvents.pastEventRegistered
+    val eventUIViewModel =
+        EventUIViewModel(
+            event,
+            MockProfileFirebaseConnection(),
+            MockEventFirebaseConnection(),
+            MockIdListFirebaseConnection())
     composeTestRule.setContent {
       val navController = rememberNavController()
       EventUI(
-          pastEventRegisteredTo,
+          event,
           NavigationActions(navController),
           eventUIViewModel,
-          EventsViewModel())
+          MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
-      Log.e(
-          "In the list",
-          pastEventRegisteredTo.registeredUsers
-              .contains(FirebaseAuth.getInstance().currentUser!!.uid)
-              .toString())
-      Log.e("isEventOver", EventUtils().isEventOver(pastEventRegisteredTo).toString())
+      Log.e("In the list", event.registeredUsers.contains("MC").toString())
+      Log.e("isEventOver", EventUtils().isEventOver(event).toString())
       assert(eventUIViewModel.canRate())
       starRow {
         performScrollTo()
@@ -291,6 +274,7 @@ class EventUITest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testProfileIsCorrectlyFetched() {
     val event = DefaultEvents.withAuthor(DefaultProfiles.trivial.id, "1")
@@ -300,12 +284,11 @@ class EventUITest {
       EventUI(
           event,
           NavigationActions(navController),
-          EventRegistrationViewModel(
-              listOf(),
+          EventUIViewModel(
+              event,
               MockProfileFirebaseConnection(),
               MockEventFirebaseConnection(),
               MockIdListFirebaseConnection()),
-          EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
