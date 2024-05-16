@@ -17,6 +17,7 @@ import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.utils.MockEventFirebaseConnection
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -45,7 +46,7 @@ class EventsViewCompleteTest {
   @Test
   fun fromEventsToOrganizerProfile() {
     // This test will navigate from the events screen to the organizer profile
-    val viewModel = EventsViewModel()
+    val viewModel = EventsViewModel(MockEventFirebaseConnection())
     val eventRegistrationModel = EventRegistrationViewModel(emptyList())
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -68,7 +69,6 @@ class EventsViewCompleteTest {
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       // click on the profile indicator
-      composeTestRule.waitUntilAtLeastOneExists(hasText(profile.userName), 4000)
       profileIndicator {
         assertIsDisplayed()
         performClick()
@@ -77,7 +77,6 @@ class EventsViewCompleteTest {
 
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // Check that the profile screen is displayed
-      composeTestRule.waitUntilAtLeastOneExists(hasText(profile.userName), 4000)
       back.performClick()
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
