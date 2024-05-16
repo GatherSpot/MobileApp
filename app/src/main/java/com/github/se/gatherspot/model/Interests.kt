@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model
 
-import android.graphics.drawable.Icon
 import com.github.se.gatherspot.R
 
 enum class Interests {
@@ -40,7 +39,7 @@ enum class Interests {
       return R.drawable.tennis_header
     }
   },
-  BOARD_GAMES  {
+  BOARD_GAMES {
     override fun getIconId(): Int {
       return R.drawable.cards_icon
     }
@@ -116,8 +115,9 @@ enum class Interests {
 
     override fun getHeaderImageId(): Int {
       return R.drawable.art_header
-    }},
-  TRAVEL{
+    }
+  },
+  TRAVEL {
     override fun getIconId(): Int {
       return R.drawable.travel_interest_icon
     }
@@ -221,7 +221,7 @@ enum class Interests {
 fun getEventIcon(interests: Set<Interests>?): Int {
   if (interests != null && interests.isNotEmpty()) {
     val mostPreciseCategory =
-      interests.toList().sortedByDescending { Interests.values().indexOf(it) }[0]
+        interests.toList().sortedByDescending { Interests.values().indexOf(it) }[0]
     return mostPreciseCategory.getIconId()
   } else {
     return R.drawable.social_icon
@@ -231,7 +231,7 @@ fun getEventIcon(interests: Set<Interests>?): Int {
 fun getEventImageHeader(interests: Set<Interests>?): Int {
   if (interests != null && interests.isNotEmpty()) {
     val mostPreciseCategory =
-      interests.toList().sortedByDescending { Interests.values().indexOf(it) }[0]
+        interests.toList().sortedByDescending { Interests.values().indexOf(it) }[0]
     return mostPreciseCategory.getHeaderImageId()
   } else {
     return R.drawable.social_header
