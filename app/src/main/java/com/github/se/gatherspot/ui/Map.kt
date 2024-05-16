@@ -62,7 +62,7 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
     viewModel.cameraPositionState = rememberCameraPositionState {
       position = CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
     }
-      viewModel.cameraPositionState
+    viewModel.cameraPositionState
 
     LaunchedEffect(nav.controller.currentBackStackEntry) { viewModel.fetchEvents() }
     LaunchedEffect(key1 = Unit) {
@@ -75,27 +75,26 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
       while (currentLocation == LatLng(0.0, 0.0)) {
         delay(500)
       }
-        if (MainActivity.savedCameraPositionState != null) {
-          viewModel.cameraPositionState = MainActivity.savedCameraPositionState!!
-        } else {
-          viewModel.cameraPositionState.position =
-              CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
-        }
+      if (MainActivity.savedCameraPositionState != null) {
+        viewModel.cameraPositionState = MainActivity.savedCameraPositionState!!
+      } else {
+        viewModel.cameraPositionState.position =
+            CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
+      }
       while (true) {
         if (viewModel.cameraPositionState.position.zoom > 12f) viewModel.fetchEvents()
         delay(1000)
       }
     }
 
-      LaunchedEffect(key1 = buttonClicked) {
-          if (buttonClicked.value) {
-              viewModel.cameraPositionState =
-                  CameraPositionState(
-                      CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build())
-              buttonClicked.value = false
-          }
-
+    LaunchedEffect(key1 = buttonClicked) {
+      if (buttonClicked.value) {
+        viewModel.cameraPositionState =
+            CameraPositionState(
+                CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build())
+        buttonClicked.value = false
       }
+    }
 
     MapComposable(viewModel, nav, viewModel.cameraPositionState, viewModel.currentLocation, null)
   }
@@ -112,9 +111,7 @@ fun MapComposable(
     testPosition: LatLng?
 ) {
   Scaffold(
-      topBar = { TopAppBar(
-            title = { Text(text = "Map") }
-      ) },
+      topBar = { TopAppBar(title = { Text(text = "Map") }) },
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { tld -> nav.navigateTo(tld) },
@@ -122,19 +119,20 @@ fun MapComposable(
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
       },
       floatingActionButton = {
-        IconButton(onClick = {
-
-            buttonClicked.value = true
-            viewModel!!.cameraPositionState =
-            CameraPositionState(
-                CameraPosition.Builder().target(viewModel.currentLocation.value ?: LatLng(0.0, 0.0)).zoom(DEFAULT_ZOOM_LEVEL).build())
-        }) {
-          Icon(Icons.Filled.Home, contentDescription = "Go to current location")
-        }
+        IconButton(
+            onClick = {
+              buttonClicked.value = true
+              viewModel!!.cameraPositionState =
+                  CameraPositionState(
+                      CameraPosition.Builder()
+                          .target(viewModel.currentLocation.value ?: LatLng(0.0, 0.0))
+                          .zoom(DEFAULT_ZOOM_LEVEL)
+                          .build())
+            }) {
+              Icon(Icons.Filled.Home, contentDescription = "Go to current location")
+            }
       },
-        floatingActionButtonPosition = FabPosition.Center
-
-      ) { paddingValues ->
+      floatingActionButtonPosition = FabPosition.Center) { paddingValues ->
         if (testPosition == null) {
           LaunchedEffect(MainActivity.mapAccess) {
             Log.d("MapAccess", MainActivity.mapAccess.toString())
@@ -166,8 +164,9 @@ fun MapComposable(
                   title = (event?.title),
                   icon = BitmapDescriptorFactory.fromResource(R.drawable.pin),
                   onInfoWindowClick = {
-                      MainActivity.savedCameraPositionState = cameraPositionState
-                      nav.controller.navigate("event/${event?.toJson()}") },
+                    MainActivity.savedCameraPositionState = cameraPositionState
+                    nav.controller.navigate("event/${event?.toJson()}")
+                  },
                   snippet = (event?.description ?: ""),
                   visible = cameraPositionState.position.zoom > 12f)
             }

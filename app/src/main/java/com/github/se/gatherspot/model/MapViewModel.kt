@@ -26,43 +26,44 @@ import kotlin.math.cos
 @RequiresApi(Build.VERSION_CODES.S)
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    companion object {
-        fun degreeToMeters(latitudeDegrees: Double): Double {
-            // Radius of the Earth at the equator in meters
-            val earthRadiusAtEquator = 6378137.0 // in meters
+  companion object {
+    fun degreeToMeters(latitudeDegrees: Double): Double {
+      // Radius of the Earth at the equator in meters
+      val earthRadiusAtEquator = 6378137.0 // in meters
 
-            // Convert latitude from degrees to radians
-            val latitudeRadians = Math.toRadians(latitudeDegrees)
+      // Convert latitude from degrees to radians
+      val latitudeRadians = Math.toRadians(latitudeDegrees)
 
-            // Calculate the length of a degree of latitude in meters
-            // This accounts for the Earth's curvature using the WGS-84 ellipsoid
-            // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
-            // Where `latitude` is in radians and `radius` is the radius at that latitude
-            val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
-            val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
+      // Calculate the length of a degree of latitude in meters
+      // This accounts for the Earth's curvature using the WGS-84 ellipsoid
+      // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
+      // Where `latitude` is in radians and `radius` is the radius at that latitude
+      val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
+      val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
 
-            return lengthOfDegree
-        }
-        fun metersToDegree(latitudeDegrees: Double, meters: Double): Double {
-            // Radius of the Earth at the equator in meters
-            val earthRadiusAtEquator = 6378137.0 // in meters
-
-            // Convert latitude from degrees to radians
-            val latitudeRadians = Math.toRadians(latitudeDegrees)
-
-            // Calculate the length of a degree of latitude in meters
-            // This accounts for the Earth's curvature using the WGS-84 ellipsoid
-            // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
-            // Where `latitude` is in radians and `radius` is the radius at that latitude
-            val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
-            val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
-
-            // Calculate the number of degrees corresponding to the given meters
-            val degrees = meters / lengthOfDegree
-
-            return degrees
-        }
+      return lengthOfDegree
     }
+
+    fun metersToDegree(latitudeDegrees: Double, meters: Double): Double {
+      // Radius of the Earth at the equator in meters
+      val earthRadiusAtEquator = 6378137.0 // in meters
+
+      // Convert latitude from degrees to radians
+      val latitudeRadians = Math.toRadians(latitudeDegrees)
+
+      // Calculate the length of a degree of latitude in meters
+      // This accounts for the Earth's curvature using the WGS-84 ellipsoid
+      // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
+      // Where `latitude` is in radians and `radius` is the radius at that latitude
+      val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
+      val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
+
+      // Calculate the number of degrees corresponding to the given meters
+      val degrees = meters / lengthOfDegree
+
+      return degrees
+    }
+  }
 
   private val fusedLocationClient =
       LocationServices.getFusedLocationProviderClient(application.applicationContext)
