@@ -53,17 +53,12 @@ class AllTest : TestCase() {
 
   @Before
   fun Setup() {
-    runBlocking{
-      val toDelete = async { profileFirebaseConnection.fetchFromUserName(USERNAME)}.await()
-      if (toDelete != null)
-        profileFirebaseConnection.delete(toDelete.id)
+    runBlocking {
+      val toDelete = async { profileFirebaseConnection.fetchFromUserName(USERNAME) }.await()
+      if (toDelete != null) profileFirebaseConnection.delete(toDelete.id)
 
       delay(2000)
-
-
-
     }
-
   }
 
   @OptIn(ExperimentalTestApi::class)
