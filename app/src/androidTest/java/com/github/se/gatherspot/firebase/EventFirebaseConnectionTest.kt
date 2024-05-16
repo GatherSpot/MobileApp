@@ -224,8 +224,8 @@ class EventFirebaseConnectionTest {
       runTest(timeout = Duration.parse("20s")) {
         testLogin()
         val idList = FollowList.following(uid = FirebaseAuth.getInstance().currentUser!!.uid)
-        val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(idList.events)
-        assert(events.all { event -> idList.events.contains(event.organizerID) })
+        val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(idList.elements)
+        assert(events.all { event -> idList.elements.contains(event.organizerID) })
         testLoginCleanUp()
       }
 

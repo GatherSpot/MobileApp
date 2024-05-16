@@ -35,7 +35,7 @@ class EventsTest {
       testLogin()
       uid = FirebaseAuth.getInstance().currentUser!!.uid
       FollowList.follow(uid, uid)
-      ids = FollowList.following(uid).events
+      ids = FollowList.following(uid).elements
     }
   }
 
