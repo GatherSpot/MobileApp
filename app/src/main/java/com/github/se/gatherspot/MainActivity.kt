@@ -62,11 +62,11 @@ class MainActivity : ComponentActivity() {
     // val chatViewModel = ChatViewModel()
 
     signInLauncher =
-      registerForActivityResult(
-        FirebaseAuthUIActivityResultContract(),
-      ) { res ->
-        this.onSignInResult(res, navController)
-      }
+        registerForActivityResult(
+            FirebaseAuthUIActivityResultContract(),
+        ) { res ->
+          this.onSignInResult(res, navController)
+        }
 
     setContent {
       GatherSpotTheme {
@@ -90,38 +90,38 @@ class MainActivity : ComponentActivity() {
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
                 val gson: Gson =
-                  GsonBuilder()
-                    .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                    .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                    .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                    .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                    .create()
+                    GsonBuilder()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                        .create()
                 val eventObject =
-                  gson.fromJson(
-                    backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+                    gson.fromJson(
+                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
                 EventUI(
-                  event = eventObject!!,
-                  navActions = NavigationActions(navController),
-                  registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
-                  eventsViewModel = eventsViewModel!!)
+                    event = eventObject!!,
+                    navActions = NavigationActions(navController),
+                    registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
+                    eventsViewModel = eventsViewModel!!)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val gson: Gson =
-                  GsonBuilder()
-                    .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                    .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                    .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                    .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                    .create()
+                    GsonBuilder()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                        .create()
 
                 val eventObject =
-                  gson.fromJson(
-                    backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+                    gson.fromJson(
+                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
                 EditEvent(
-                  event = eventObject!!,
-                  eventUtils = EventUtils(),
-                  nav = NavigationActions(navController),
-                  viewModel = eventsViewModel!!)
+                    event = eventObject!!,
+                    eventUtils = EventUtils(),
+                    nav = NavigationActions(navController),
+                    viewModel = eventsViewModel!!)
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -140,16 +140,16 @@ class MainActivity : ComponentActivity() {
               composable("chat/{chatJson}") { backStackEntry ->
                 backStackEntry.arguments?.getString("chatJson")?.let {
                   ChatUI(
-                    viewModel = ChatViewModel(it),
-                    currentUserId = FirebaseAuth.getInstance().currentUser!!.uid,
-                    navActions = NavigationActions(navController))
+                      viewModel = ChatViewModel(it),
+                      currentUserId = FirebaseAuth.getInstance().currentUser!!.uid,
+                      navActions = NavigationActions(navController))
                 }
               }
               composable("createEvent") {
                 CreateEvent(
-                  nav = NavigationActions(navController),
-                  eventUtils = EventUtils(),
-                  eventsViewModel!!)
+                    nav = NavigationActions(navController),
+                    eventUtils = EventUtils(),
+                    eventsViewModel!!)
               }
               composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }
@@ -158,9 +158,10 @@ class MainActivity : ComponentActivity() {
       }
     }
   }
+
   private fun onSignInResult(
-    result: FirebaseAuthUIAuthenticationResult,
-    navController: NavHostController
+      result: FirebaseAuthUIAuthenticationResult,
+      navController: NavHostController
   ): Int {
     if (result.resultCode == RESULT_OK) {
       if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
