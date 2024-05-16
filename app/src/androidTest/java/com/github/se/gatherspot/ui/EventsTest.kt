@@ -9,7 +9,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.EventsViewModel
@@ -24,9 +23,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var uid: String
@@ -38,7 +35,7 @@ class EventsTest {
       testLogin()
       uid = FirebaseAuth.getInstance().currentUser!!.uid
       FollowList.follow(uid, uid)
-      ids = FollowList.following(uid).events
+      ids = FollowList.following(uid).elements
     }
   }
 

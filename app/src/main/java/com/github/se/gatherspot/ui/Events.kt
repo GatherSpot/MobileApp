@@ -223,7 +223,10 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
           else -> {
             LazyColumn(
                 state = lazyState,
-                modifier = Modifier.padding(paddingValues).testTag("eventsList")) {
+                modifier =
+                    Modifier.padding(vertical = 15.dp)
+                        .padding(paddingValues)
+                        .testTag("eventsList")) {
                   items(events) { event -> EventRow(event, nav) }
                 }
 

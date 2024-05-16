@@ -47,8 +47,8 @@ class EventsViewModel : ViewModel() {
     val ids =
         FollowList.following(
             FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId)
-    Log.d(TAG, "ids from viewModel ${ids.events}")
-    fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.events)
+    Log.d(TAG, "ids from viewModel ${ids.elements}")
+    fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.elements)
   }
 
   fun displayMyEvents() {

@@ -32,6 +32,7 @@ import org.junit.Test
 
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
+  private lateinit var uid: String
 
   @Before
   fun setUp() {
@@ -202,7 +203,6 @@ class EventUITest {
 
   @Test
   fun textsDisplayedAreCorrect() {
-
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -405,6 +405,7 @@ class EventUITest {
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
+
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -525,7 +526,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = Profile.testOrganizer().id,
+              organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
