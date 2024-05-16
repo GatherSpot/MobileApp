@@ -7,6 +7,8 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EnvironmentSetter
+import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -404,6 +406,7 @@ class EventUITest {
 
   @Test
   fun testOrganiserDeleteEditCalendarButtonsAreHere() {
+    melvinLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -438,6 +441,7 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testClickOnDeleteButton() {
+    melvinLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -515,7 +519,6 @@ class EventUITest {
 
   @Test
   fun testProfileIsCorrectlyFetched() {
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -536,7 +539,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               globalRating = 4,
               timeEnding = LocalTime.of(16, 0),
-              image = "")
+              image = "EventUITestImage")
 
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
