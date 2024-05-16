@@ -5,6 +5,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
@@ -37,7 +38,10 @@ class EventUITest {
       runBlocking {
           testLogin()
           profileFirebaseConnection.add(Profile.testOrganizer())
+          profileFirebaseConnection.add(Profile.testParticipant())
+          profileFirebaseConnection.add(Profile("testLogin","","image",EnvironmentSetter.testLoginUID,setOf()))
           async { profileFirebaseConnection.fetch(Profile.testOrganizer().id) }.await()
+          async { profileFirebaseConnection.fetch(EnvironmentSetter.testLoginUID) }.await()
       }
   }
 
@@ -56,7 +60,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizerID = Profile.testParticipant().id,
+              organizerID = Profile.testOrganizer().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -106,7 +110,7 @@ class EventUITest {
               title = "Event Title",
               description =
                   "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizerID = Profile.testParticipant().id,
+              organizerID = Profile.testOrganizer().id,
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
@@ -439,7 +443,6 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testClickOnDeleteButton() {
-    melvinLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
