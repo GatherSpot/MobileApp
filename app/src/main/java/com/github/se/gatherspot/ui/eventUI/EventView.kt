@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -47,8 +48,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,6 +78,8 @@ fun EventUI(
     eventUIViewModel: EventUIViewModel,
     eventsViewModel: EventsViewModel
 ) {
+
+    val context = LocalContext.current
 
   val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by eventUIViewModel.displayAlertDeletion.observeAsState()
@@ -292,6 +297,14 @@ fun EventUI(
                       Text(buttonText, color = Color.White)
                     }
               }
+
+            // Export to calendar
+            ClickableText(
+                AnnotatedString("Export to calendar"), modifier = Modifier.testTag("exportToCalendar"),
+                onClick = {
+                    CalendarReminderGenerator.generateCalendarReminder(context, event)
+                })
+
             }
 
         if (showDialogRegistration!!) {
