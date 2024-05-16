@@ -23,12 +23,16 @@ import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
+  val email = "gatherspot2024@gmail.com"
+  val userName = "GatherSpot"
+  val password = "GatherSpot,2024;"
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -46,11 +50,21 @@ class SignUpTest : TestCase() {
     }
   }
 
+  @Before
+  fun setUp() {
+    Firebase.auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+      if (it.isSuccessful) {
+        ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
+      }
+    }
+
+  }
+
+
+
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUp() {
-    val email = "gatherspot2024@gmail.com"
-    val userName = "GatherSpot"
     // signUpSetUp(userName, email)
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -80,7 +94,7 @@ class SignUpTest : TestCase() {
       passwordField {
         assertExists()
         assertIsDisplayed()
-        performTextInput("GatherSpot,2024;")
+        performTextInput(password)
       }
       Espresso.closeSoftKeyboard()
       button {
