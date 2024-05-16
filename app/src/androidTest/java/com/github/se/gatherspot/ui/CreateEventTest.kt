@@ -13,8 +13,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
@@ -22,9 +20,8 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.utils.MockEventFirebaseConnection
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,28 +29,20 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class CreateEventTest {
 
-  private val EventFirebaseConnection = EventFirebaseConnection()
+  private val eventFirebaseConnection = EventFirebaseConnection()
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @Before
-  fun setUp() {
-    testLogin()
-  }
-
-  @After
-  fun cleanUp() {
-    testLoginCleanUp()
-  }
-
-  // Restructured to use EventDataFormScreen
   @Test
   fun testIsEverythingExist() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventUtils = EventUtils()
+      val eventUtils = EventUtils(MockEventFirebaseConnection())
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
+      CreateEvent(
+          nav = NavigationActions(navController),
+          eventUtils,
+          EventsViewModel(MockEventFirebaseConnection()))
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -68,6 +57,7 @@ class CreateEventTest {
         // Label exists
         assert(hasText("Event Title*"))
         performClick()
+        composeTestRule.waitForIdle()
         // Placeholder exists
         assert(hasText("Give a name to the event"))
       }
@@ -75,24 +65,28 @@ class CreateEventTest {
         assertExists()
         assert(hasText("Description*"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText("Describe the event"))
       }
       eventStartDate {
         assertExists()
         assert(hasText("Start Date of the event*"))
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        composeTestRule.waitForIdle()
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventEndDate {
         assertExists()
         assert(hasText("End date of the event"))
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        composeTestRule.waitForIdle()
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventTimeStart {
         assertExists()
         assert(hasText("Start time*"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventTimeEnd {
@@ -105,12 +99,14 @@ class CreateEventTest {
         assertExists()
         assert(hasText("Min Attendees"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText("Min Attendees"))
       }
       eventMaxAttendees {
         assertExists()
         assert(hasText("Max Attendees"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText("Max Attendees"))
       }
       eventLocation {
@@ -118,6 +114,7 @@ class CreateEventTest {
         performScrollTo()
         assert(hasText("Location"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText("Enter an address"))
       }
       Espresso.closeSoftKeyboard()
@@ -126,7 +123,8 @@ class CreateEventTest {
         performScrollTo()
         assert(hasText("Inscription Limit Date"))
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        composeTestRule.waitForIdle()
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       Espresso.closeSoftKeyboard()
       eventInscriptionLimitTime {
@@ -134,6 +132,7 @@ class CreateEventTest {
         performScrollTo()
         assert(hasText("Inscription Limit Time"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventSaveButton { assertExists() }
@@ -151,7 +150,10 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
+      CreateEvent(
+          nav = NavigationActions(navController),
+          eventUtils,
+          EventsViewModel(MockEventFirebaseConnection()))
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -197,6 +199,7 @@ class CreateEventTest {
       alertBox { assertDoesNotExist() }
     }
   }
+
   // Restructured to use EventDataFormScreen
   @Test
   fun testMinimalData() {
@@ -335,6 +338,7 @@ class CreateEventTest {
       alertBox.assertDoesNotExist()
     }
   }
+
   // Does not work
 
   @OptIn(ExperimentalTestApi::class)
@@ -429,12 +433,12 @@ class CreateEventTest {
       eventStartDate {
         composeTestRule.onNodeWithText("Start Date of the event*").assertIsDisplayed()
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventEndDate {
         composeTestRule.onNodeWithText("End date of the event").assertIsDisplayed()
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventTimeStart {
         composeTestRule.onNodeWithText("Start time*").assertIsDisplayed()
@@ -465,7 +469,7 @@ class CreateEventTest {
         performScrollTo()
         composeTestRule.onNodeWithText("Inscription Limit Date").assertIsDisplayed()
         performClick()
-        assert(hasText(EventFirebaseConnection.DATE_FORMAT))
+        assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventInscriptionLimitTime {
         performScrollTo()

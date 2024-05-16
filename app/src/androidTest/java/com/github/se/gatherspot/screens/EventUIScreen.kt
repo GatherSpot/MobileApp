@@ -12,10 +12,12 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val topBar: KNode = onNode { hasTestTag("topBar") }
   val deleteButton: KNode = onNode { hasTestTag("deleteEventButton") }
   val editEventButton: KNode = onNode { hasTestTag("editEventButton") }
+  val calendarButton: KNode = onNode { hasTestTag("exportToCalendarButton") }
   val backButton: KNode = onNode { hasTestTag("goBackButton") }
   val formColumn: KNode = onNode { hasTestTag("eventColumn") }
   val image: KNode = onNode { hasTestTag("eventImage") }
   val profileIndicator: KNode = onNode { hasTestTag("profileIndicator") }
+  val userName: KNode = onNode { hasTestTag("userName") }
   val description: KNode = onNode { hasTestTag("eventDescription") }
   val attendeesInfoTitle = onNode { hasTestTag("attendeesInfoTitle") }
   val attendeesInfo = onNode { hasTestTag("attendeesInfo") }
@@ -28,4 +30,6 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val alertBox = onNode { hasTestTag("alertBox") }
   val okButton = onNode { hasTestTag("okButton") }
   val cancelButton = onNode { hasTestTag("cancelButton") }
+  val starRow = onNode { hasTestTag("starRow") }
+  val star = onNode { hasTestTag("starIcon 1") }
 }

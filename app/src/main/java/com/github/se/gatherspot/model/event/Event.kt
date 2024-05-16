@@ -1,11 +1,18 @@
 package com.github.se.gatherspot.model.event
 
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.model.utils.LocalDateDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -28,7 +35,7 @@ import java.time.LocalTime
  * @param organizerID: Id of the Profile of the organizer
  * @param registeredUsers: The list of users who registered for the event
  * @param finalAttendees: The list of users who attended the event
- * @param images: The images uploaded for the event
+ * @param image: The images uploaded for the event
  * @param globalRating: The rating of the event by the attendees
  */
 data class Event(
@@ -52,7 +59,27 @@ data class Event(
     val registeredUsers: MutableList<String> = mutableListOf(),
     val finalAttendees: List<String>? = emptyList(),
     // Find a way to upload image
-    var images: ImageBitmap? =
-        ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565), // TODO find default image
+    var image: String,
     val globalRating: Int?,
-) : CollectionClass()
+) : CollectionClass() {
+
+  fun toJson(): String {
+    val eventJson = gson.toJson(this)
+    return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
+  }
+
+  companion object {
+    private val gson: Gson =
+        GsonBuilder()
+            .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+            .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+            .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+            .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+            .create()
+
+    fun fromJson(json: String): Event {
+      val decodedJson = URLDecoder.decode(json, StandardCharsets.US_ASCII.toString())
+      return gson.fromJson(decodedJson, Event::class.java)
+    }
+  }
+}
