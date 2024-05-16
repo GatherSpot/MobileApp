@@ -442,4 +442,38 @@ class RatingFirebaseConnection {
     runBlocking { async { deleteOrganizedRating() }.await() }
     Firebase.firestore.collection(ORGANIZER_COLLECTION).document(organizerID).delete()
   }
+
+  suspend fun fetchEventGlobalRating(eventID: String): Double? =
+      suspendCancellableCoroutine { continuation ->
+        Firebase.firestore
+            .collection(EVENT_COLLECTION)
+            .document(eventID)
+            .get()
+            .addOnSuccessListener { document ->
+              if (document.data != null && document.data!!.isNotEmpty()) {
+                val rating = document.data!!["average"] as Double
+                continuation.resume(rating)
+              } else {
+                Log.d(TAG, "No such document")
+                continuation.resume(null)
+              }
+            }
+      }
+
+  suspend fun fetchOrganizerGlobalRating(organizerID: String): Double? =
+      suspendCancellableCoroutine { continuation ->
+        Firebase.firestore
+            .collection(ORGANIZER_COLLECTION)
+            .document(organizerID)
+            .get()
+            .addOnSuccessListener { document ->
+              if (document.data != null && document.data!!.isNotEmpty()) {
+                val rating = document.data!!["overallAverage"] as Double
+                continuation.resume(rating)
+              } else {
+                Log.d(TAG, "No such document")
+                continuation.resume(null)
+              }
+            }
+      }
 }

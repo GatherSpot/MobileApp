@@ -351,8 +351,10 @@ class RatingFirebaseConnectionTest {
 
       val event1Data = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
       val event2Data = async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()
+      val event1Average = async { ratingFirebaseConnection.fetchEventGlobalRating(eventID) }.await()
 
       assertEquals(3.33, event1Data?.get("average"))
+      assertEquals(3.33, event1Average)
       assertEquals(3L, event1Data?.get("count"))
       assertEquals(eventID, event1Data?.get("eventID"))
       assertEquals(4.5, event2Data?.get("average"))
@@ -376,6 +378,8 @@ class RatingFirebaseConnectionTest {
 
       val fetchOrganizer =
           async { ratingFirebaseConnection.fetchOrganizer(event1.organizerID) }.await()
+      val organizerGlobal =
+          async { ratingFirebaseConnection.fetchOrganizerGlobalRating(event1.organizerID) }.await()
 
       assertNotNull(fetchOrganizer)
       assertEquals(
@@ -383,6 +387,7 @@ class RatingFirebaseConnectionTest {
           fetchOrganizer?.get("overallAverage")) // Hard coded change value if you change the vals
       assertEquals(2L, fetchOrganizer?.get("nEvents"))
       assertEquals(5L, fetchOrganizer?.get("nRatings"))
+      assertEquals(3.92, organizerGlobal)
 
       ratingFirebaseConnection.deleteOrganizer(event1.organizerID)
       delay(1000)
