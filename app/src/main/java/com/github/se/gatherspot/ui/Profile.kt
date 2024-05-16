@@ -24,7 +24,7 @@ import com.github.se.gatherspot.ui.profile.ProfileViewModel
 fun Profile(
     nav: NavigationActions,
     viewModel: OwnProfileViewModel =
-        viewModel() { OwnProfileViewModel(ProfileFirebaseConnection()) }
+        viewModel() { OwnProfileViewModel() }
 ) {
   // This new navController will navigate between seeing profile and editing profile
   val navController = rememberNavController()

@@ -14,8 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
-class ChatViewModel(val eventId: String, val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection(),val firebaseFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()) : ViewModel() {
-  val chatMessagesFirebase = ChatMessagesFirebaseConnection()
+class ChatViewModel(val eventId: String, private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection(),private val chatMessagesFirebase: ChatMessagesFirebaseConnection = ChatMessagesFirebaseConnection(), private val firebaseFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()) : ViewModel() {
   private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
   val messages: StateFlow<List<ChatMessage>> = _messages
   var event: Event? = null

@@ -16,11 +16,9 @@ import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -38,12 +36,7 @@ class SignUpTest : TestCase() {
 
   @After
   fun cleanUp() {
-    val currentUser = FirebaseAuth.getInstance().currentUser
-    if (currentUser != null) {
-      runBlocking {
-        testDelete()
-      }
-    }
+    testDelete()
   }
 
   @OptIn(ExperimentalTestApi::class)

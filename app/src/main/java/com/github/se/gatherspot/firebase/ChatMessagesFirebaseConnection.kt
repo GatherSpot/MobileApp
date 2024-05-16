@@ -4,11 +4,11 @@ import android.util.Log
 import com.github.se.gatherspot.model.chat.ChatMessage
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.tasks.await
 
-class ChatMessagesFirebaseConnection {
+open class ChatMessagesFirebaseConnection {
 
   private val TAG = "ChatMessagesFirebase"
   val CHATS = "chatMessages"
@@ -16,7 +16,7 @@ class ChatMessagesFirebaseConnection {
   private val DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
   /** Fetches messages for a given event. */
-  suspend fun fetchMessages(eventId: String, number: Long): MutableList<ChatMessage> {
+  open suspend fun fetchMessages(eventId: String, number: Long): MutableList<ChatMessage> {
     val messagesRef =
         FirebaseFirestore.getInstance()
             .collection(CHATS)
@@ -30,7 +30,7 @@ class ChatMessagesFirebaseConnection {
   }
 
   /** Adds a chat message under a specific event. */
-  fun addMessage(eventId: String, message: ChatMessage) {
+  open fun addMessage(eventId: String, message: ChatMessage) {
     val messageMap =
         hashMapOf(
             "senderId" to message.senderId,
@@ -48,7 +48,7 @@ class ChatMessagesFirebaseConnection {
   }
 
   /** Removes a chat message from a specific event. */
-  fun removeMessage(eventId: String, messageId: String) {
+  open fun removeMessage(eventId: String, messageId: String) {
     FirebaseFirestore.getInstance()
         .collection(CHATS)
         .document(eventId)

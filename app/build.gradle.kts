@@ -184,9 +184,13 @@ dependencies {
     // TEST IMPLEMENTATION DEPENDENCIES
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:3.11.2")
-    testImplementation("org.mockito:mockito-inline:2.13.0")
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
+    val mockitoVersion = "5.12.0"
+    testImplementation("org.mockito:mockito-android:$mockitoVersion")
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoVersion")
+
+
+  testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
 
 
     // ANDROID TEST IMPLEMENTATION DEPENDENCIES
