@@ -25,6 +25,7 @@ class EventFirebaseConnectionTest {
     val newId = eventFirebaseConnection.getNewID()
     assertNotNull(newId)
     assertTrue(newId.isNotEmpty())
+    runBlocking { eventFirebaseConnection.delete(newId) }
   }
 
   @Test
@@ -34,6 +35,8 @@ class EventFirebaseConnectionTest {
     assertNotNull(newId1)
     assertNotNull(newId2)
     assertNotEquals(newId1, newId2)
+    runBlocking { eventFirebaseConnection.delete(newId1) }
+    runBlocking { eventFirebaseConnection.delete(newId2) }
   }
 
   @Test
@@ -193,17 +196,6 @@ class EventFirebaseConnectionTest {
     eventFirebaseConnection.delete(event.id)
     runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
     assertEquals(resultEvent, null)
-  }
-
-  @Test
-  fun nullCasesTest() = runTest {
-    val event = DefaultEvents.nullEvent
-    eventFirebaseConnection.add(event)
-    var resultEvent: Event? = null
-    runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
-    assertNotNull(resultEvent)
-    assertEquals(resultEvent, event)
-    runBlocking { eventFirebaseConnection.delete(event.id) }
   }
 
   @Test

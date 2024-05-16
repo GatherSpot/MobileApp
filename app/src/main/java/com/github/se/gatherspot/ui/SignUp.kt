@@ -234,16 +234,16 @@ fun SignUp(nav: NavigationActions) {
                   coroutineContext.launch {
                     ProfileFirebaseConnection.add(
                         Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
-                    nav.controller.navigate("setup")
                   }
+                  nav.controller.navigate("setup")
                 },
             onDismissRequest = {
               verifEmailSent = false
               coroutineContext.launch {
                 ProfileFirebaseConnection.add(
                     Profile(username, "", "", Firebase.auth.currentUser!!.uid, setOf()))
-                nav.controller.navigate("setup")
               }
+              nav.controller.navigate("setup")
             },
             confirmButton = {},
             title = { Text("Verification Email Sent") },

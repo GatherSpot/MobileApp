@@ -7,8 +7,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
-import kotlin.coroutines.resume
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 
 open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
@@ -27,19 +25,11 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   override suspend fun fetch(id: String): Profile {
     val profile = Profile("", "", "", id, Interests.new())
     Log.d(TAG, "id: $id")
-    Firebase.firestore
-        .collection(COLLECTION)
-        .document(id)
-        .get()
-        .addOnSuccessListener { document ->
-          profile.userName = document.get("userName") as String
-          profile.bio = document.get("bio") as String
-          profile.image = document.get("image") as String
-          profile.interests = Interests.fromCompressedString(document.get("interests") as String)
-          Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-        }
-        .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
-        .await()
+    val document = Firebase.firestore.collection(COLLECTION).document(id).get().await()
+    profile.userName = document.get("userName") as String
+    profile.bio = document.get("bio") as String
+    profile.image = document.get("image") as String
+    profile.interests = Interests.fromCompressedString(document.get("interests") as String)
     return profile
   }
 
@@ -73,23 +63,24 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param userName the username of the user
    */
-  open suspend fun fetchFromUserName(userName: String): Profile? =
-      suspendCancellableCoroutine { continuation ->
+  open suspend fun fetchFromUserName(userName: String): Profile? {
+    val document =
         Firebase.firestore
             .collection(COLLECTION)
             .whereEqualTo("userName", userName)
+            .limit(1)
             .get()
-            .addOnSuccessListener { querysnps ->
-              when {
-                querysnps.documents.isEmpty() -> continuation.resume(null)
-                else -> continuation.resume(getFromDocument(querysnps.documents[0]))
-              }
-            }
-            .addOnFailureListener { exception ->
-              Log.d(TAG, exception.toString())
-              continuation.resume(null)
-            }
-      }
+            .await()
+            .documents
+            .firstOrNull() ?: return null
+
+    return Profile(
+        document.getString("userName")!!,
+        document.getString("bio") ?: "",
+        document.getString("image") ?: "",
+        document.id,
+        Interests.fromCompressedString(document.getString("interests") ?: ""))
+  }
 
   /**
    * Adds or overrides a profile to the database
@@ -97,20 +88,13 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @param element the profile to add
    */
   override suspend fun add(element: Profile) {
-    suspendCancellableCoroutine { continuation ->
-      val data =
-          hashMapOf(
-              "userName" to element.userName,
-              "bio" to element.bio,
-              "image" to element.image,
-              "interests" to Interests.toCompressedString(element.interests))
-      Firebase.firestore
-          .collection(COLLECTION)
-          .document(element.id)
-          .set(data)
-          .addOnSuccessListener { continuation.resume(Unit) }
-          .addOnFailureListener { error -> continuation.resume(error) }
-    }
+    val data =
+        hashMapOf(
+            "userName" to element.userName,
+            "bio" to element.bio,
+            "image" to element.image,
+            "interests" to Interests.toCompressedString(element.interests))
+    Firebase.firestore.collection(COLLECTION).document(element.id).set(data).await()
   }
 
   /**

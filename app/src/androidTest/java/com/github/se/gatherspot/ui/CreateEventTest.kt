@@ -37,7 +37,7 @@ class CreateEventTest {
   fun testIsEverythingExist() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val eventUtils = EventUtils()
+      val eventUtils = EventUtils(MockEventFirebaseConnection())
 
       CreateEvent(
           nav = NavigationActions(navController),

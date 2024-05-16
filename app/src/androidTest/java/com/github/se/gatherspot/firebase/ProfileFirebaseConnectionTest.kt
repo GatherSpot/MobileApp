@@ -23,11 +23,7 @@ class ProfileFirebaseConnectionTest {
 
   @Before fun setUp() = runBlocking { profileFirebaseConnection.delete(profile.id) }
 
-  @After
-  fun tearDown() = runBlocking {
-    profileFirebaseConnection.delete(profile.id)
-    Firebase.auth.signOut()
-  }
+  @After fun tearDown() = runBlocking { profileFirebaseConnection.delete(profile.id) }
 
   @Test
   fun testAddAndFetch() {
@@ -79,13 +75,11 @@ class ProfileFirebaseConnectionTest {
 
   @Test
   fun testFetchFromUserName() {
-    runTest {
-      profileFirebaseConnection.add(profile)
-      var fetched: Profile?
-      runBlocking { fetched = profileFirebaseConnection.fetchFromUserName(profile.userName) }
-      assertNotNull(fetched)
-      assert(profile == fetched!!)
-    }
+    runBlocking { profileFirebaseConnection.add(profile) }
+    var fetched: Profile?
+    runBlocking { fetched = profileFirebaseConnection.fetchFromUserName(profile.userName) }
+    assertNotNull(fetched)
+    assertEquals(profile, fetched!!)
   }
 
   @Test

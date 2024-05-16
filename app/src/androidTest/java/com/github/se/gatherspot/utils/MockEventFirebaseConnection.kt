@@ -8,9 +8,30 @@ import com.github.se.gatherspot.model.event.Event
 
 /** Class to handle the connection to the Firebase database for events */
 class MockEventFirebaseConnection : EventFirebaseConnection() {
+  val events =
+      listOf<Event>(
+          DefaultEvents.trivialEvent1,
+          DefaultEvents.withAuthor("MC", eventId = "1"),
+          DefaultEvents.withRegistered("MC", eventId = "2"),
+          DefaultEvents.withInterests(Interests.CHESS, eventId = "3"),
+          DefaultEvents.withInterests(Interests.FOOTBALL, eventId = "4"),
+          DefaultEvents.withInterests(Interests.BOWLING, eventId = "5"),
+      )
+
+  private var registered = 0
+  private var fetchedNextCounter = 0
+
+  fun getRegistered(): Int {
+    return registered
+  }
+
+  fun getFetchedNext(): Int {
+    return fetchedNextCounter
+  }
 
   override suspend fun fetchNextEvents(number: Long): MutableList<Event> {
-    return List(number.toInt()) { DefaultEvents.trivialEvent1 }.toMutableList()
+    fetchedNextCounter++
+    return events.take(number.toInt()).toMutableList()
   }
 
   override suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
@@ -25,7 +46,7 @@ class MockEventFirebaseConnection : EventFirebaseConnection() {
   }
 
   override suspend fun fetchMyEvents(): MutableList<Event> {
-    return List(5) { DefaultEvents.withAuthor("TEST", "1") }.toMutableList()
+    return List(5) { DefaultEvents.withAuthor("MC", "1") }.toMutableList()
   }
 
   override suspend fun fetchRegisteredTo(): MutableList<Event> {
@@ -33,6 +54,7 @@ class MockEventFirebaseConnection : EventFirebaseConnection() {
   }
 
   override suspend fun addRegisteredUser(eventID: String, uid: String) {
+    registered++
     return
   }
 
