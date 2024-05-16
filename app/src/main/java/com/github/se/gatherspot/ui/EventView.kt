@@ -62,9 +62,9 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import kotlinx.coroutines.runBlocking
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -82,7 +82,7 @@ fun EventUI(
 
   val organizerProfile = remember { mutableStateOf<Profile?>(null) }
   LaunchedEffect(Unit) {
-    organizerProfile.value = ProfileFirebaseConnection().fetch(event.organizerID)
+    organizerProfile.value = profileFirebaseConnection.fetch(event.organizerID)
   }
 
   val eventUtils = EventUtils()

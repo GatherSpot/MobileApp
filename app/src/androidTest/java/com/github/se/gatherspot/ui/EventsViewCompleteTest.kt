@@ -8,8 +8,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.github.se.gatherspot.defaults.DefaultEvents
-import com.github.se.gatherspot.model.EventsViewModel
-import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.ProfileScreen
@@ -31,13 +29,6 @@ class EventsViewCompleteTest {
   @Test
   fun fromEventsToOrganizerProfile() {
     // This test will navigate from the events screen to the organizer profile
-    val viewModel = EventsViewModel(MockEventFirebaseConnection())
-    val eventRegistrationModel =
-        EventRegistrationViewModel(
-            emptyList(),
-            MockProfileFirebaseConnection(),
-            MockEventFirebaseConnection(),
-            MockIdListFirebaseConnection())
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "home") {
