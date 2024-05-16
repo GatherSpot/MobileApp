@@ -267,6 +267,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
   suspend fun fetchRegisteredTo(): MutableList<Event> {
+    Log.d(FirebaseAuth.getInstance().currentUser?.uid ?: "forTest", "fetchRegisteredTo: ")
     val querySnapshot: QuerySnapshot =
         Firebase.firestore
             .collection(EVENTS)
@@ -458,5 +459,58 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         .document(element.id)
         .set(eventItem)
         .addOnFailureListener { exception -> Log.e(TAG, "Error adding new Event", exception) }
+  }
+
+  fun cleanCollection() {
+    Firebase.firestore
+        .collection(EVENTS)
+        .whereNotEqualTo("organizerID", "")
+        .get()
+        .addOnSuccessListener { querySnapshot ->
+          Log.d(TAG, "Found ${querySnapshot.documents.size} documents with non empty organizerID")
+          querySnapshot.documents.forEach { document ->
+            Firebase.firestore
+                .collection("clean_events")
+                .document(document.id)
+                .set(document.data!!)
+                .addOnSuccessListener {
+                  Log.d(TAG, "DocumentSnapshot successfully moved to clean_events : ${document.id}")
+                }
+                .addOnFailureListener { e -> Log.w(TAG, "Error moving document", e) }
+          }
+        }
+        .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
+  }
+
+  fun retrieveEvents() {
+    Firebase.firestore
+        .collection("clean_events")
+        .get()
+        .addOnSuccessListener { querySnapshot ->
+          Log.d(TAG, "Found ${querySnapshot.documents.size} documents in clean_events")
+          querySnapshot.documents.forEach { document ->
+            val event = getFromDocument(document)
+            if (event != null) {
+              add(event)
+            }
+          }
+        }
+        .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
+  }
+
+  fun retrieveMissing() {
+    Firebase.firestore
+        .collection("clean_events")
+        .get()
+        .addOnSuccessListener { querySnapshot ->
+          Log.d(TAG, "Found ${querySnapshot.documents.size} documents in clean_events")
+          querySnapshot.documents.forEach { document ->
+            val event = getFromDocument(document)
+            if (event != null) {
+              add(event)
+            }
+          }
+        }
+        .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
   }
 }

@@ -1,108 +1,401 @@
 package com.github.se.gatherspot.firebase
 
-import android.annotation.SuppressLint
 import android.util.Log
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
-import kotlin.coroutines.resume
-import kotlinx.coroutines.suspendCancellableCoroutine
+import com.github.se.gatherspot.model.event.Event
+import java.text.DecimalFormat
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Before
+import org.junit.Test
 
-class RatingFirebaseConnection {
-  private val COLLECTION = FirebaseCollection.EVENT_RATINGS.toString().lowercase()
-  private val TAG = "RatingFirebaseConnection"
+class RatingFirebaseConnectionTest {
+  private val ratingFirebaseConnection = RatingFirebaseConnection()
+  private val rating = Rating.FIVE_STARS
+  private val eventID = "testRating"
+  private val userID = "testRater"
+  private val secondRater = "testRater2"
+  private val secondRating = Rating.FOUR_STARS
+  private val firstRating = Rating.ONE_STAR
+  private val firstRater = "testRater1"
+  val organizerID = Profile.testOrganizer().id
 
-  private fun attendeesRatingsCollection(eventID: String) =
-      Firebase.firestore.collection(COLLECTION).document(eventID).collection("attendees_ratings")
+  private val event1 =
+      Event(
+          id = eventID,
+          title = eventID,
+          description = eventID,
+          location = null,
+          eventStartDate = null,
+          eventEndDate = null,
+          timeBeginning = null,
+          timeEnding = null,
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 0,
+          inscriptionLimitDate = null,
+          inscriptionLimitTime = null,
+          categories = setOf(),
+          organizerID = Profile.testOrganizer().id,
+          registeredUsers = mutableListOf("testRating"),
+          finalAttendees = listOf("testRating"),
+          image = "testRating",
+          globalRating = null)
 
-  /**
-   * Fetches the rating of the user for the event
-   *
-   * @param eventID the id of the event
-   * @param userID the id of the user
-   * @return the rating of the user for the event if the user has not rated the event, returns
-   *   UNRATED if the event doesn't have any ratings, or that get results in failure, returns null
-   */
-  @SuppressLint("SuspiciousIndentation")
-  suspend fun fetchRating(eventID: String, userID: String): Rating? =
-      suspendCancellableCoroutine { continuation ->
-        var rating: Rating?
+  private val eventID2 = "testRating2"
 
-        attendeesRatingsCollection(eventID)
-            .document(userID)
-            .get()
-            .addOnSuccessListener { document ->
-              if (document != null) {
-                if (document.get("rating") != null) {
-                  rating = Rating.fromLong(document.get("rating")!! as Long)
-                  Log.d(TAG, "User $userID rated the event $eventID as $rating")
-                  continuation.resume(rating)
-                } else {
-                  continuation.resume(null)
-                }
-              } else {
-                Log.d(TAG, "No such rating")
-                continuation.resume(null)
-              }
-            }
-            .addOnFailureListener { exception ->
-              Log.d(TAG, "get failed with :", exception)
-              continuation.resume(null)
-            }
-      }
+  private val event2 =
+      Event(
+          id = eventID2,
+          title = eventID2,
+          description = eventID2,
+          location = null,
+          eventStartDate = null,
+          eventEndDate = null,
+          timeBeginning = null,
+          timeEnding = null,
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 0,
+          inscriptionLimitDate = null,
+          inscriptionLimitTime = null,
+          categories = setOf(),
+          organizerID = Profile.testOrganizer().id,
+          registeredUsers = mutableListOf("testRating"),
+          finalAttendees = listOf("testRating"),
+          image = "testRating",
+          globalRating = null)
 
-  /**
-   * Fetches all the ratings given to the event
-   *
-   * @param eventID the id of the event
-   * @return a map of user id to rating
-   */
-  suspend fun fetchRatings(eventID: String): Map<String, Rating>? =
-      suspendCancellableCoroutine { continuation ->
-        attendeesRatingsCollection(eventID)
-            .get()
-            .addOnSuccessListener { documents ->
-              val ratings = mutableMapOf<String, Rating>()
-              for (document in documents) {
-                if (document.get("rating") != null) {
-                  ratings[document.id] = Rating.fromLong(document.get("rating")!! as Long)
-                }
-              }
-              continuation.resume(ratings)
-            }
-            .addOnFailureListener { exception ->
-              Log.d(TAG, "get failed with :", exception)
-              continuation.resume(null)
-            }
-      }
+  @Before
+  fun setup() {
+    runTest {
+      ratingFirebaseConnection.deleteEventRating(eventID)
+      ratingFirebaseConnection.deleteEventRating(eventID2)
+      ratingFirebaseConnection.deleteOrganizer(event1.organizerID)
+      async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
+      async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()
+      async { ratingFirebaseConnection.fetchOrganizer(event1.organizerID) }.await()
+    }
+  }
 
-  /**
-   * Updates the rating given by the user for the event
-   *
-   * @param eventID the id of the event
-   * @param userID the id of the user
-   * @param rating the new value for the rating of the event by the user if the rating is UNRATED,
-   *   the rating is deleted
-   */
-  fun update(eventID: String, userID: String, rating: Rating) {
-    if (rating != Rating.UNRATED) {
-      Firebase.firestore.collection(COLLECTION).document(eventID).set(mapOf("eventID" to eventID))
+  fun tearDown() {
+    runTest {
+      ratingFirebaseConnection.deleteEventRating(eventID)
+      ratingFirebaseConnection.deleteEventRating(eventID2)
+      async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
+      async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()
+    }
+  }
 
-      val data: Map<String, Any> = mapOf("rating" to Rating.toLong(rating))
+  @Test
+  fun testRatingUnRatedEvent() {
+    runTest {
+      ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
+      var fetched: Rating? = null
+      async { fetched = ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
+      assertEquals(rating, fetched)
+    }
+  }
 
-      attendeesRatingsCollection(eventID)
-          .document(userID)
-          .set(data)
-          .addOnSuccessListener {
-            Log.d(TAG, "added Rating of event $eventID, of $rating for user $userID")
-          }
-          .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
-    } else {
-      attendeesRatingsCollection(eventID)
-          .document(userID)
-          .delete()
-          .addOnSuccessListener { Log.d(TAG, "Deleted rating of user $userID for event $eventID") }
-          .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+  @Test
+  fun testRatingsMergeCorrectly() {
+    runTest {
+      ratingFirebaseConnection.update(eventID, firstRater, firstRating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, secondRater, secondRating, event1.organizerID)
+
+      var fetched1: Rating? = null
+      var fetched2: Rating? = null
+      async { fetched1 = ratingFirebaseConnection.fetchRating(eventID, firstRater) }.await()
+      async { fetched2 = ratingFirebaseConnection.fetchRating(eventID, secondRater) }.await()
+
+      assertNotNull(fetched1)
+      assertNotNull(fetched2)
+      // both exist
+
+    }
+  }
+
+  @Test
+  fun testFetchAttendeesRatings() {
+    runTest {
+      ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, secondRater, secondRating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, firstRater, firstRating, event1.organizerID)
+      val fetched = async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
+      Log.d("RatingFirebaseConnectionTest", "Ratings are ${fetched.toString()}")
+      assertNotNull(fetched)
+      assertEquals(rating, fetched?.get(userID))
+      assertEquals(secondRating, fetched?.get(secondRater))
+      assertEquals(firstRating, fetched?.get(firstRater))
+    }
+  }
+
+  @Test
+  fun testDeleteARating() {
+    runTest {
+      ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, secondRater, secondRating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, firstRater, firstRating, event1.organizerID)
+
+      ratingFirebaseConnection.update(eventID, firstRater, Rating.UNRATED, event1.organizerID)
+      val fetched = async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
+      Log.d("RatingFirebaseConnectionTest", "Ratings are ${fetched.toString()}")
+      assertNotNull(fetched)
+      assertEquals(null, fetched?.get(firstRater))
+      assertEquals(rating, fetched?.get(userID))
+      assertEquals(secondRating, fetched?.get(secondRater))
+    }
+  }
+
+  @Test
+  fun testRating() {
+
+    runTest {
+      val rating = Rating.UNRATED
+      val eventID = "testRating"
+      val userID = "testRater2"
+
+      ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
+      async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
+      Log.d("RatingFirebaseConnectionTest", "Rating is $rating")
+    }
+  }
+
+  @Test
+  fun testDeleteRating() {
+    runTest {
+      ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, secondRater, secondRating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, firstRater, firstRating, event1.organizerID)
+
+      ratingFirebaseConnection.deleteRating(eventID, firstRater, event1.organizerID)
+      val fetched = async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
+      Log.d("RatingFirebaseConnectionTest", "Ratings are ${fetched.toString()}")
+      assertNotNull(fetched)
+      assertEquals(null, fetched?.get(firstRater))
+      assertEquals(rating, fetched?.get(userID))
+      assertEquals(secondRating, fetched?.get(secondRater))
+    }
+  }
+
+  @Test
+  fun testFetchEvent() {
+    runBlocking {
+      val rating = Rating.FIVE_STARS
+
+      ratingFirebaseConnection.update(eventID, secondRater, rating, event1.organizerID)
+      delay(2000)
+      val fetched = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
+      Log.d("RatingFirebaseConnectionTest", "Rating is $fetched")
+      assertNotNull(fetched)
+      assertEquals(eventID, fetched?.get("eventID"))
+    }
+  }
+
+  @Test
+  fun testDeleteEvent() {
+    runBlocking {
+      ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, secondRater, secondRating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, firstRater, firstRating, event1.organizerID)
+
+      delay(2000)
+      ratingFirebaseConnection.deleteEventRating(eventID)
+      delay(1000)
+      val fetchedAttendees =
+          async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
+      val fetchedEvent = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
+      Log.d("RatingFirebaseConnectionTest", "Ratings are ${fetchedAttendees.toString()}")
+      assertEquals(null, fetchedAttendees)
+      assertEquals(null, fetchedEvent)
+    }
+  }
+
+  @Test
+  fun testAggregateAttendeeRatings() {
+    runBlocking {
+      ratingFirebaseConnection.update(
+          eventID, userID, rating, event1.organizerID) // testRating testRater 5
+      ratingFirebaseConnection.update(
+          eventID, secondRater, secondRating, event1.organizerID) // testRating testRater2 3
+      ratingFirebaseConnection.update(
+          eventID, firstRater, firstRating, event1.organizerID) // testRating testRater1 1
+
+      delay(400)
+      ratingFirebaseConnection.aggregateAttendeeRatings(eventID, event1.organizerID)
+      delay(1000)
+      val fetched = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
+      Log.d("RatingFirebaseConnectionTest", "fetched Event is ${fetched.toString()}")
+      assertNotNull(fetched)
+      val df = DecimalFormat("#.##")
+      df.roundingMode = java.math.RoundingMode.HALF_UP
+      var expectedAverage: Double =
+          (Rating.toLong(firstRating) + Rating.toLong(rating) + Rating.toLong(secondRating)) / 3.0
+      expectedAverage = df.format(expectedAverage).toDouble()
+
+      assertEquals(expectedAverage, fetched?.get("average"))
+      assertEquals(3L, fetched?.get("count"))
+    }
+  }
+
+  @Test
+  fun testUpdateOrganizerRating() {
+    runBlocking {
+      ratingFirebaseConnection.update(
+          eventID, userID, rating, event1.organizerID) // testRating testRater 5
+      ratingFirebaseConnection.update(
+          eventID, secondRater, secondRating, event1.organizerID) // testRating testRater2 3
+      ratingFirebaseConnection.update(
+          eventID, firstRater, firstRating, event1.organizerID) // testRating testRater1 1
+
+      delay(400)
+      // ratingFirebaseConnection.aggregateAttendeeRatings(eventID)
+      delay(400)
+      val fetchedData = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
+      Log.d("RatingFirebaseConnectionTest", "fetched Event is ${fetchedData.toString()}")
+      assertNotNull(fetchedData)
+      val df = DecimalFormat("#.##")
+      df.roundingMode = java.math.RoundingMode.HALF_UP
+      var expectedAverage: Double =
+          (Rating.toLong(firstRating) + Rating.toLong(rating) + Rating.toLong(secondRating)) / 3.0
+      expectedAverage = df.format(expectedAverage).toDouble()
+
+      assertEquals(expectedAverage, fetchedData?.get("average"))
+      assertEquals(3L, fetchedData?.get("count"))
+
+      ratingFirebaseConnection.updateOrganizerRating(eventID, fetchedData!!, event1.organizerID)
+      val fetched2 =
+          async { ratingFirebaseConnection.fetchOrganizerRatings(event1.organizerID) }.await()
+      delay(400)
+      Log.d("RatingFirebaseConnectionTest", "fetched2  is ${fetched2.toString()}")
+      assertNotNull(fetched2)
+      assertEquals(
+          fetchedData.map { it -> Pair(it.key, it.value) }.sortedBy { it.first },
+          fetched2?.get(eventID)?.sortedBy { it.first })
+    }
+  }
+
+  @Test
+  fun testAggregateOrganizerRatings() {
+    runBlocking {
+      ratingFirebaseConnection.update(
+          eventID, userID, rating, event1.organizerID) // testRating testRater 5
+      ratingFirebaseConnection.update(
+          eventID, secondRater, secondRating, event1.organizerID) // testRating testRater2 3
+      ratingFirebaseConnection.update(
+          eventID, firstRater, firstRating, event1.organizerID) // testRating testRater1 1
+      ratingFirebaseConnection.update(
+          eventID2, userID, rating, event1.organizerID) // testRating2 testRater 5
+      ratingFirebaseConnection.update(
+          eventID2, secondRater, secondRating, event1.organizerID) // testRating2 testRater2 3
+      delay(1000)
+
+      ratingFirebaseConnection.aggregateAttendeeRatings(eventID, event1.organizerID)
+      ratingFirebaseConnection.aggregateAttendeeRatings(eventID2, event1.organizerID)
+      delay(1000)
+
+      val data1 = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
+      val data2 = async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()
+
+      ratingFirebaseConnection.updateOrganizerRating(eventID, data1!!, event1.organizerID)
+      ratingFirebaseConnection.updateOrganizerRating(eventID2, data2!!, event1.organizerID)
+
+      delay(1000)
+
+      ratingFirebaseConnection.aggregateOrganizerRatings(event1.organizerID)
+      delay(1000)
+
+      Log.d("RatingFirebaseConnectionTest", "fetching Organizer ${event1.organizerID}")
+      val fetched = async { ratingFirebaseConnection.fetchOrganizer(event1.organizerID) }.await()
+      Log.d("RatingFirebaseConnectionTest", "fetched Organizer is ${fetched.toString()}")
+      assertNotNull(fetched)
+      assertEquals(
+          3.92, fetched?.get("overallAverage")) // Hard coded change value if you change the vals
+      assertEquals(2L, fetched?.get("nEvents"))
+      assertEquals(5L, fetched?.get("nRatings"))
+    }
+  }
+
+  @Test
+  fun testEndToEndRating() {
+    runBlocking {
+      ratingFirebaseConnection.update(
+          eventID, userID, rating, event1.organizerID) // testRating testRater 5
+      ratingFirebaseConnection.update(
+          eventID, secondRater, secondRating, event1.organizerID) // testRating testRater2 3
+      ratingFirebaseConnection.update(
+          eventID, firstRater, firstRating, event1.organizerID) // testRating testRater1 1
+      ratingFirebaseConnection.update(
+          eventID2, userID, rating, event1.organizerID) // testRating2 testRater 5
+      ratingFirebaseConnection.update(
+          eventID2, secondRater, secondRating, event1.organizerID) // testRating2 testRater2 3
+      delay(1000)
+
+      val event1Attendees =
+          async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
+      val event2Attendees =
+          async { ratingFirebaseConnection.fetchAttendeesRatings(eventID2) }.await()
+
+      assertEquals(3, event1Attendees?.size)
+      assertEquals(rating, event1Attendees?.get(userID))
+      assertEquals(firstRating, event1Attendees?.get(firstRater))
+      assertEquals(secondRating, event1Attendees?.get(secondRater))
+      assertEquals(2, event2Attendees?.size)
+      assertEquals(rating, event2Attendees?.get(userID))
+      assertEquals(secondRating, event2Attendees?.get(secondRater))
+
+      // Ratings are correctly updated and fetched
+
+      val event1Data = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
+      val event2Data = async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()
+      val event1Average = async { ratingFirebaseConnection.fetchEventGlobalRating(eventID) }.await()
+
+      assertEquals(3.33, event1Data?.get("average"))
+      assertEquals(3.33, event1Average)
+      assertEquals(3L, event1Data?.get("count"))
+      assertEquals(eventID, event1Data?.get("eventID"))
+      assertEquals(4.5, event2Data?.get("average"))
+      assertEquals(2L, event2Data?.get("count"))
+      assertEquals(eventID2, event2Data?.get("eventID"))
+
+      // aggregateAttendeeRatings works and fetchEvent works
+
+      val fetchOrganizerRatings =
+          async { ratingFirebaseConnection.fetchOrganizerRatings(event1.organizerID) }.await()
+
+      assertEquals(2, fetchOrganizerRatings?.size)
+      assertEquals(
+          setOf(event1Data?.map { Pair(it.key, it.value) }),
+          setOf(fetchOrganizerRatings?.get(eventID)))
+      assertEquals(
+          setOf(event2Data?.map { Pair(it.key, it.value) }),
+          setOf(fetchOrganizerRatings?.get(eventID2)))
+
+      // updateOrganizerRating works and fetchOrganizerRatings works
+
+      val fetchOrganizer =
+          async { ratingFirebaseConnection.fetchOrganizer(event1.organizerID) }.await()
+      val organizerGlobal =
+          async { ratingFirebaseConnection.fetchOrganizerGlobalRating(event1.organizerID) }.await()
+
+      assertNotNull(fetchOrganizer)
+      assertEquals(
+          3.92,
+          fetchOrganizer?.get("overallAverage")) // Hard coded change value if you change the vals
+      assertEquals(2L, fetchOrganizer?.get("nEvents"))
+      assertEquals(5L, fetchOrganizer?.get("nRatings"))
+      assertEquals(3.92, organizerGlobal)
+
+      ratingFirebaseConnection.deleteOrganizer(event1.organizerID)
+      delay(1000)
+
+      val fetchOrganizerAfterDelete =
+          async { ratingFirebaseConnection.fetchOrganizer(event1.organizerID) }.await()
+      assertNull(fetchOrganizerAfterDelete)
     }
   }
 }
