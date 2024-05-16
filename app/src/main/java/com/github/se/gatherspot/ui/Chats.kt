@@ -44,7 +44,6 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
-import kotlinx.coroutines.delay
 
 @Composable
 fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
@@ -53,11 +52,10 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
   var previousScrollPosition by remember { mutableIntStateOf(0) }
   var loading by remember { mutableStateOf(false) }
   var fetched by remember { mutableStateOf(false) }
-  var fetch by remember { mutableStateOf(false) }
+  var fetch by remember { mutableStateOf(true) }
 
   LaunchedEffect(fetch) {
     if (fetch) {
-      delay(300)
       viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid)
       fetch = false
     }
@@ -85,7 +83,7 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
                 modifier = Modifier.fillMaxWidth().padding(paddingValues),
                 contentAlignment = Alignment.TopStart) {
                   Text(
-                      text = "Loading...",
+                      text = "No chats available.",
                       color = Color.Black,
                       modifier = Modifier.testTag("emptyText"))
                 }
@@ -112,14 +110,6 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
                 fetched = true
               }
             }
-            //              LaunchedEffect(key1 = FirebaseAuth.getInstance().currentUser?.uid) {
-            //                  try {
-            //                      viewModel.fetchNext()
-            //                  }
-            //                  catch (e: Exception) {
-            //                        Log.d("ptdr","Error fetching chats: $e")
-            //                  }
-            //              }
           }
         }
       }
@@ -145,20 +135,6 @@ fun ChatRow(event: Event, navigation: NavigationActions) {
         }
 
         Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
-          //          if (chatWithIndicator.chat.peopleIDs.size > 2) {
-          //
-          //            Text(
-          //                text = "Chat between ${chatWithIndicator.chat.peopleIDs.size} people",
-          //                fontWeight = FontWeight.Bold,
-          //                fontSize = 10.sp)
-          //          } else {
-          //            Text(
-          //                text =
-          //                    "Chat between ${chatWithIndicator.chat.peopleIDs[0]} and
-          // ${chatWithIndicator.chat.peopleIDs[1]}", // TODO: change with usernames
-          //                fontWeight = FontWeight.Bold,
-          //                fontSize = 10.sp)
-          //          }
           Text(
               text = event.title, // TODO: change with event name
               fontWeight = FontWeight.Bold,
@@ -167,14 +143,6 @@ fun ChatRow(event: Event, navigation: NavigationActions) {
 
         Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
           Row(verticalAlignment = Alignment.CenterVertically) {
-            //            when (chatWithIndicator.unreadMessages) {
-            //              0 -> Text("", color = Color(0xFF00668A), fontSize = 14.sp)
-            //              else ->
-            //                  Text(
-            //                      "${chatWithIndicator.unreadMessages} new messages",
-            //                      color = Color(255, 165, 0),
-            //                      fontSize = 14.sp)
-            //            }
             Icon(
                 painter = painterResource(R.drawable.arrow_right),
                 contentDescription = null,

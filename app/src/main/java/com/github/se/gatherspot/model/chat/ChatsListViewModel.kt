@@ -18,10 +18,11 @@ class ChatsListViewModel : ViewModel() {
   private var eventsIDS = listOf<String>()
   val eventFirebaseConnection = EventFirebaseConnection()
 
-  // TEMPORARY
-  // val listEvents = listOf("-NwJSmLmQDUlF9booiq7")
-  //
   suspend fun fetchNext(uid: String?) {
+
+    if (loadedEvents.size <= PAGE_SIZE && loadedEvents.size > 0) {
+      return
+    }
 
     if (uid == null) {
       return
