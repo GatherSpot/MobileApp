@@ -317,7 +317,6 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.image, "")
     eventFirebaseConnection.delete(eventID)
-    
   }
 
   @Test

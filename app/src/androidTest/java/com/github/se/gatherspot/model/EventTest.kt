@@ -39,7 +39,6 @@ class EventTest {
             timeEnding = LocalTime.of(16, 0),
             image = "testToJSon")
 
-
     val json = event.toJson()
 
     val gson: Gson =
