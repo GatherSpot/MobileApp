@@ -6,7 +6,6 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EnvironmentSetter
-import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
@@ -21,9 +20,9 @@ import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.async
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -35,14 +34,15 @@ class EventUITest {
 
   @Before
   fun setUp() {
-      runBlocking {
-          testLogin()
-          profileFirebaseConnection.add(Profile.testOrganizer())
-          profileFirebaseConnection.add(Profile.testParticipant())
-          profileFirebaseConnection.add(Profile("testLogin","","image",EnvironmentSetter.testLoginUID,setOf()))
-          async { profileFirebaseConnection.fetch(Profile.testOrganizer().id) }.await()
-          async { profileFirebaseConnection.fetch(EnvironmentSetter.testLoginUID) }.await()
-      }
+    runBlocking {
+      testLogin()
+      profileFirebaseConnection.add(Profile.testOrganizer())
+      profileFirebaseConnection.add(Profile.testParticipant())
+      profileFirebaseConnection.add(
+          Profile("testLogin", "", "image", EnvironmentSetter.testLoginUID, setOf()))
+      async { profileFirebaseConnection.fetch(Profile.testOrganizer().id) }.await()
+      async { profileFirebaseConnection.fetch(EnvironmentSetter.testLoginUID) }.await()
+    }
   }
 
   @After
