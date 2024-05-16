@@ -1,6 +1,5 @@
 package com.github.se.gatherspot
 
-// import com.github.se.gatherspot.ui.Chats
 import android.app.Application
 import android.content.Intent
 import android.os.Build
@@ -44,6 +43,7 @@ import com.github.se.gatherspot.ui.ViewProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
+import com.google.maps.android.compose.CameraPositionState
 
 class MainActivity : ComponentActivity() {
   companion object {
@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
     var mapAccess = false
     var mapViewModel: MapViewModel? = null
     lateinit var app: Application
+    var savedCameraPositionState: CameraPositionState? = null
   }
 
   private lateinit var navController: NavHostController

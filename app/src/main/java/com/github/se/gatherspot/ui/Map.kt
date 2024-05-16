@@ -7,8 +7,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -16,8 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.LiveData
 import com.github.se.gatherspot.MainActivity
@@ -39,6 +40,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
 
 private const val DEFAULT_ZOOM_LEVEL = 15f
+val buttonClicked = mutableStateOf(false)
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -73,13 +75,28 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
       while (currentLocation == LatLng(0.0, 0.0)) {
         delay(500)
       }
-      viewModel.cameraPositionState.position =
-          CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
+        if (MainActivity.savedCameraPositionState != null) {
+          viewModel.cameraPositionState = MainActivity.savedCameraPositionState!!
+        } else {
+          viewModel.cameraPositionState.position =
+              CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
+        }
       while (true) {
         if (viewModel.cameraPositionState.position.zoom > 12f) viewModel.fetchEvents()
         delay(1000)
       }
     }
+
+      LaunchedEffect(key1 = buttonClicked) {
+          if (buttonClicked.value) {
+              viewModel.cameraPositionState =
+                  CameraPositionState(
+                      CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build())
+              buttonClicked.value = false
+          }
+
+      }
+
     MapComposable(viewModel, nav, viewModel.cameraPositionState, viewModel.currentLocation, null)
   }
 }
@@ -103,7 +120,21 @@ fun MapComposable(
             onTabSelect = { tld -> nav.navigateTo(tld) },
             tabList = TOP_LEVEL_DESTINATIONS,
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
-      }) { paddingValues ->
+      },
+      floatingActionButton = {
+        IconButton(onClick = {
+
+            buttonClicked.value = true
+            viewModel!!.cameraPositionState =
+            CameraPositionState(
+                CameraPosition.Builder().target(viewModel.currentLocation.value ?: LatLng(0.0, 0.0)).zoom(DEFAULT_ZOOM_LEVEL).build())
+        }) {
+          Icon(Icons.Filled.Home, contentDescription = "Go to current location")
+        }
+      },
+        floatingActionButtonPosition = FabPosition.Center
+
+      ) { paddingValues ->
         if (testPosition == null) {
           LaunchedEffect(MainActivity.mapAccess) {
             Log.d("MapAccess", MainActivity.mapAccess.toString())
@@ -134,7 +165,9 @@ fun MapComposable(
                               event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
                   title = (event?.title),
                   icon = BitmapDescriptorFactory.fromResource(R.drawable.pin),
-                  onInfoWindowClick = { nav.controller.navigate("event/${event?.toJson()}") },
+                  onInfoWindowClick = {
+                      MainActivity.savedCameraPositionState = cameraPositionState
+                      nav.controller.navigate("event/${event?.toJson()}") },
                   snippet = (event?.description ?: ""),
                   visible = cameraPositionState.position.zoom > 12f)
             }

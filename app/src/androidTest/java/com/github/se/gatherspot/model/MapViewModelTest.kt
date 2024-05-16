@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model
 
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class MapViewModelTest {
