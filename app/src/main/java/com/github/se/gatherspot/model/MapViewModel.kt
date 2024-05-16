@@ -18,21 +18,55 @@ import com.github.se.gatherspot.model.event.Event
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
+import kotlin.math.PI
+import kotlin.math.cos
 
 @RequiresApi(Build.VERSION_CODES.S)
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val SQUARE_RADIUS = 0.02
+  fun degreeToMeters(latitudeDegrees: Double): Double {
+    // Radius of the Earth at the equator in meters
+    val earthRadiusAtEquator = 6378137.0 // in meters
+
+    // Convert latitude from degrees to radians
+    val latitudeRadians = Math.toRadians(latitudeDegrees)
+
+    // Calculate the length of a degree of latitude in meters
+    // This accounts for the Earth's curvature using the WGS-84 ellipsoid
+    // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
+    // Where `latitude` is in radians and `radius` is the radius at that latitude
+    val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
+    val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
+
+    return lengthOfDegree
+  }
+
+  fun metersToDegree(latitudeDegrees: Double, meters: Double): Double {
+    // Radius of the Earth at the equator in meters
+    val earthRadiusAtEquator = 6378137.0 // in meters
+
+    // Convert latitude from degrees to radians
+    val latitudeRadians = Math.toRadians(latitudeDegrees)
+
+    // Calculate the length of a degree of latitude in meters
+    // This accounts for the Earth's curvature using the WGS-84 ellipsoid
+    // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
+    // Where `latitude` is in radians and `radius` is the radius at that latitude
+    val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
+    val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
+
+    // Calculate the number of degrees corresponding to the given meters
+    val degrees = meters / lengthOfDegree
+
+    return degrees
+  }
+
   private val fusedLocationClient =
       LocationServices.getFusedLocationProviderClient(application.applicationContext)
   private val _currentLocation = MutableLiveData<LatLng>()
 
   private var _registered_events = mutableListOf<Event?>()
-    private var _events = mutableListOf<Event?>()
+  private var _events = mutableListOf<Event?>()
 
   val currentLocation: LiveData<LatLng>
     get() = _currentLocation
@@ -43,8 +77,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
       _events = value
     }
 
-
-    var registered_events: MutableList<Event?>
+  var registered_events: MutableList<Event?>
     get() = _registered_events
     set(value) {
       _registered_events = value
@@ -80,13 +113,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             .toMutableList()
     registered_events = list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
 
-      val latitude = _currentLocation.value?.latitude ?: 0.0
-        val longitude = _currentLocation.value?.longitude ?: 0.0
+    val latitude = _currentLocation.value?.latitude ?: 0.0
+    val longitude = _currentLocation.value?.longitude ?: 0.0
 
-
-      val list2 = EventFirebaseConnection().fetchAllInPerimeter(latitude, longitude, SQUARE_RADIUS)
+    val list2 =
+        EventFirebaseConnection()
+            .fetchAllInPerimeter(latitude, longitude, metersToDegree(latitude, 1000.0))
 
     events = list2.toMutableList()
-
   }
 }

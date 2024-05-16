@@ -101,7 +101,8 @@ fun EventUI(
             backgroundColor = Color.White,
             navigationIcon = {
               IconButton(
-                  onClick = { navActions.goBack() }, modifier = Modifier.testTag("goBackButton")) {
+                  onClick = { navActions.controller.popBackStack() },
+                  modifier = Modifier.testTag("goBackButton")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go back to overview")

@@ -105,25 +105,27 @@ fun MapComposable(
                 state = MarkerState(currentLocation!!),
                 title = "Your current position",
                 icon = BitmapDescriptorFactory.fromResource(R.drawable.person_pin))
-            for (event in viewModel!!.events) {
+            for (event in
+                viewModel!!.events.toSet().subtract(viewModel.registered_events.toList().toSet())) {
               Marker(
                   state =
                       MarkerState(
                           LatLng(
                               event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
-                  title = ("inscope " + event?.title) ?: "Event",
-                  icon = BitmapDescriptorFactory.fromResource(R.drawable.pin))
+                  title = ("inscope " + event?.title),
+                  icon = BitmapDescriptorFactory.fromResource(R.drawable.pin),
+                  onInfoWindowClick = { nav.controller.navigate("event/${event?.toJson()}") })
             }
-              for (event in (viewModel.registered_events.toSet().subtract(viewModel.events.toList().toSet()))) {
-                Marker(
-                    state =
-                        MarkerState(
-                            LatLng(
-                                event?.location?.latitude ?: 0.0,
-                                event?.location?.longitude ?: 0.0)),
-                    title = ("Registered to " +event?.title) ?: "Event",
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.pin))
-              }
+            for (event in (viewModel.registered_events.toSet())) {
+              Marker(
+                  state =
+                      MarkerState(
+                          LatLng(
+                              event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
+                  title = ("Registered to " + event?.title),
+                  icon = BitmapDescriptorFactory.fromResource(R.drawable.target),
+                  onInfoWindowClick = { nav.controller.navigate("event/${event?.toJson()}") })
+            }
           } else {
             Marker(
                 state = MarkerState(testPosition),

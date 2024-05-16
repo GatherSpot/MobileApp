@@ -19,7 +19,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resume
 
 /** Class to handle the connection to the Firebase database for events */
 class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
@@ -282,11 +281,11 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     return eventsFromQuerySnapshot(querySnapshot)
   }
 
-    suspend fun fetchAllInPerimeter(
-        latitude: Double,
-        longitude: Double,
-        radius: Double) : MutableList<Event>
-    {
+  suspend fun fetchAllInPerimeter(
+      latitude: Double,
+      longitude: Double,
+      radius: Double
+  ): MutableList<Event> {
 
     val querySnapshot: QuerySnapshot =
         Firebase.firestore
@@ -300,10 +299,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             .get()
             .await()
 
-
-        return eventsFromQuerySnapshot(querySnapshot)
-    }
-
+    return eventsFromQuerySnapshot(querySnapshot)
+  }
 
   suspend fun addRegisteredUser(eventID: String, uid: String) {
     Firebase.firestore
