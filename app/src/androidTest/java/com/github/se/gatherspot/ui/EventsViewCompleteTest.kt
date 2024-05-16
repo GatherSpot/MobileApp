@@ -16,6 +16,7 @@ import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
+import com.github.se.gatherspot.screens.EditProfileScreen
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.screens.ProfileScreen
@@ -128,7 +129,7 @@ class EventsViewCompleteTest {
       }
     }
 
-    ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
+    ComposeScreen.onComposeScreen<EditProfileScreen>(composeTestRule) {
       // Check that the profile screen is displayed
       usernameInput.assertIsDisplayed()
       bioInput.assertIsDisplayed()

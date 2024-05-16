@@ -14,16 +14,18 @@ import com.github.se.gatherspot.firebase.IdListFirebaseConnection
  */
 class IdList(
     override val id: String,
-    var events: List<String>,
+    var elements: List<String>,
     val collection: FirebaseCollection
 ) : CollectionClass() {
-  fun add(eventId: String) {
-    IdListFirebaseConnection().addElement(id, collection, eventId) { events = events.plus(eventId) }
+  fun add(elementId: String) {
+    IdListFirebaseConnection().addElement(id, collection, elementId) {
+      elements = elements.plus(elementId)
+    }
   }
 
-  fun remove(eventId: String) {
-    IdListFirebaseConnection().deleteElement(id, collection, eventId) {
-      events = events.minus(eventId)
+  fun remove(elementId: String) {
+    IdListFirebaseConnection().deleteElement(id, collection, elementId) {
+      elements = elements.minus(elementId)
     }
   }
 

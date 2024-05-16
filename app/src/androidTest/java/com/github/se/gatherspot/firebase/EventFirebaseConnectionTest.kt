@@ -2,6 +2,7 @@ package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -120,7 +121,6 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
     assertEquals(resultEvent!!.image, "")
-
     eventFirebaseConnection.delete(eventID)
   }
 
@@ -216,6 +216,16 @@ class EventFirebaseConnectionTest {
             events.all { event ->
               event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
             })
+        testLoginCleanUp()
+      }
+
+  @Test
+  fun fetchEventsFromFollowedWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        testLogin()
+        val idList = FollowList.following(uid = FirebaseAuth.getInstance().currentUser!!.uid)
+        val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(idList.elements)
+        assert(events.all { event -> idList.elements.contains(event.organizerID) })
         testLoginCleanUp()
       }
 

@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.ui
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -7,9 +9,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.ui.TopLevelDestinations.Events
@@ -17,21 +19,25 @@ import com.github.se.gatherspot.ui.TopLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var uid: String
+  private lateinit var ids: List<String>
 
   @Before
   fun setUp() {
-    testLogin()
-    uid = FirebaseAuth.getInstance().currentUser!!.uid
+    runBlocking {
+      testLogin()
+      uid = FirebaseAuth.getInstance().currentUser!!.uid
+      FollowList.follow(uid, uid)
+      ids = FollowList.following(uid).elements
+    }
   }
 
   @After
@@ -189,7 +195,6 @@ class EventsTest {
       filterMenu { performClick() }
 
       composeTestRule.waitForIdle()
-      Thread.sleep(5000)
       assert(
           viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.SPORT) ?: true })
     }
@@ -243,8 +248,6 @@ class EventsTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 10000)
       composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
 
-      Thread.sleep(6000)
-
       assert(
           viewModel.uiState.value.list.all { e ->
             if (e.categories == null) {
@@ -279,7 +282,8 @@ class EventsTest {
         performClick()
       }
 
-      Thread.sleep(3000)
+      composeTestRule.waitForIdle()
+
       val listOfEvents = viewModel.uiState.value.list
       if (listOfEvents.isNotEmpty()) {
         assert(listOfEvents.all { event -> event.organizerID == uid })
@@ -308,10 +312,53 @@ class EventsTest {
         composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("registeredTo"))
         performClick()
       }
-      Thread.sleep(3000)
+
+      composeTestRule.waitForIdle()
+
       val listOfEvents = viewModel.uiState.value.list
       if (listOfEvents.isNotEmpty()) {
         assert(listOfEvents.all { event -> event.registeredUsers.contains(uid) })
+      }
+    }
+  }
+
+  @Test
+  fun testFromFollowedWorks() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
+
+    composeTestRule.setContent {
+      val nav = NavigationActions(rememberNavController())
+      Events(viewModel = viewModel, nav = nav)
+    }
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      dropdown { assertIsDisplayed() }
+
+      fromFollowed {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("fromFollowed"))
+        performClick()
+      }
+
+      composeTestRule.waitForIdle()
+      Log.d(TAG, "IDS followed $ids")
+      val l = viewModel.uiState.value.list
+
+      assert(l.all { event -> event.organizerID in ids })
+
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      removeFilter {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("removeFilter"))
+        performClick()
       }
     }
   }

@@ -47,7 +47,7 @@ class IdListFirebaseConnectionTest {
     while (!idList1.isInitialized) {
       {}
     }
-    assertEquals(idList1.value!!.events.toSet(), idList2.events.toSet())
+    assertEquals(idList1.value!!.elements.toSet(), idList2.elements.toSet())
   }
 
   @Test
@@ -58,7 +58,7 @@ class IdListFirebaseConnectionTest {
       {}
     }
     assert(
-        idList1.value!!.events.toSet().intersect(idList2.events.toSet()) ==
-            idList1.value!!.events.toSet())
+        idList1.value!!.elements.toSet().intersect(idList2.elements.toSet()) ==
+            idList1.value!!.elements.toSet())
   }
 }
