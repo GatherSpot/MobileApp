@@ -6,10 +6,10 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
-import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
@@ -41,9 +41,9 @@ class EventUITest {
       profileFirebaseConnection.add(Profile.testOrganizer())
       profileFirebaseConnection.add(Profile.testParticipant())
       profileFirebaseConnection.add(
-          Profile("testLogin", "", "image", EnvironmentSetter.testLoginUID, setOf()))
+          Profile("testLogin", "", "image", testLoginUID, setOf()))
       async { profileFirebaseConnection.fetch(Profile.testOrganizer().id) }.await()
-      async { profileFirebaseConnection.fetch(EnvironmentSetter.testLoginUID) }.await()
+      async { profileFirebaseConnection.fetch(testLoginUID) }.await()
     }
   }
 
@@ -51,7 +51,7 @@ class EventUITest {
   fun cleanUp() {
     testLoginCleanUp()
     runBlocking {
-      ProfileFirebaseConnection().delete(EnvironmentSetter.testLoginUID)
+      ProfileFirebaseConnection().delete(testLoginUID)
       ProfileFirebaseConnection().delete(Profile.testParticipant().id)
       ProfileFirebaseConnection().delete(Profile.testOrganizer().id)
     }
@@ -72,7 +72,7 @@ class EventUITest {
           inscriptionLimitDate = LocalDate.of(2024, 4, 11),
           inscriptionLimitTime = LocalTime.of(23, 59),
           location = null,
-          registeredUsers = mutableListOf(EnvironmentSetter.testLoginUID),
+          registeredUsers = mutableListOf(testLoginUID),
           timeBeginning = LocalTime.of(13, 0),
           timeEnding = LocalTime.of(16, 0),
           image = "")
@@ -408,7 +408,6 @@ class EventUITest {
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -418,7 +417,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
+              organizerID = testLoginUID,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
