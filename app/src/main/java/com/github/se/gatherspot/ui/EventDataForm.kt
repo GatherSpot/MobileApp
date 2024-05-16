@@ -348,7 +348,7 @@ fun EventDataForm(
                               // Debounce logic: wait for 300 milliseconds after the last text
                               // change
                               delay(300)
-                              suggestions = eventUtils.fetchLocationSuggestions(newValue)
+                              suggestions = eventUtils.fetchLocationSuggestions(context, newValue)
                             }
                       },
                       label = { Text("Location") },
