@@ -58,6 +58,7 @@ class EventUITest {
         hasText("0")
       }
       categories { hasText("Basketball") }
+
       eventDatesTimes {
         hasText("Event Start:")
         hasText("Event End:")

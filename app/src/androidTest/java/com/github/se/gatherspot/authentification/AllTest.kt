@@ -145,8 +145,8 @@ class AllTest : TestCase() {
             val profile =
                 ProfileFirebaseConnection().fetch(FirebaseAuth.getInstance().currentUser!!.uid)
             assertNotNull(profile)
-            assertEquals(profile.id, FirebaseAuth.getInstance().currentUser!!.uid)
-            assertEquals(USERNAME, profile.userName)
+            assertEquals(profile?.id, FirebaseAuth.getInstance().currentUser!!.uid)
+            assertEquals(USERNAME, profile?.userName)
             assertEquals(EMAIL.lowercase(), FirebaseAuth.getInstance().currentUser?.email)
           }
           .await()

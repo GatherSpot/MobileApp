@@ -91,7 +91,7 @@ fun SignUp(nav: NavigationActions) {
   }
 
   LaunchedEffect(key1 = username) {
-    ProfileFirebaseConnection.ifUsernameExists(username) { result -> isUsernameValid = !result }
+    isUsernameValid = ProfileFirebaseConnection.ifUsernameExists(username)
   }
 
   Box(modifier = Modifier.fillMaxSize().background(Color.White).testTag("signUpScreen")) {

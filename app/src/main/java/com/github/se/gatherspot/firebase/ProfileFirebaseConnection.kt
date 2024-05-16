@@ -22,16 +22,11 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @return the profile NOTE : The profile will be initially empty, to use it in a view, you need
    *   to update the view using with a lambda function that updates the view
    */
-  override suspend fun fetch(id: String): Profile {
-    val profile = Profile("", "", "", id, Interests.new())
-    Log.d(TAG, "id: $id")
+  override suspend fun fetch(id: String): Profile? {
     val document = Firebase.firestore.collection(COLLECTION).document(id).get().await()
-    profile.userName = document.get("userName") as String
-    profile.bio = document.get("bio") as String
-    profile.image = document.get("image") as String
-    profile.interests = Interests.fromCompressedString(document.get("interests") as String)
-    return profile
+    return getFromDocument(document)
   }
+
 
   /**
    * @return the UID of the user logged in the current instance, or null if the user is not logged
@@ -47,14 +42,13 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param userName the username to check
    */
-  open fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
+  open suspend fun ifUsernameExists(userName: String) : Boolean {
 
-    Firebase.firestore
+    val document = Firebase.firestore
         .collection(COLLECTION)
         .whereEqualTo("userName", userName)
-        .get()
-        .addOnSuccessListener { result -> onComplete(result.documents.isNotEmpty()) }
-        .addOnFailureListener { onComplete(true) }
+        .get().await()
+    return !document.isEmpty
   }
 
   /**
@@ -72,14 +66,8 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
             .get()
             .await()
             .documents
-            .firstOrNull() ?: return null
-
-    return Profile(
-        document.getString("userName")!!,
-        document.getString("bio") ?: "",
-        document.getString("image") ?: "",
-        document.id,
-        Interests.fromCompressedString(document.getString("interests") ?: ""))
+          .firstOrNull()?: return null
+    return getFromDocument(document)
   }
 
   /**
@@ -124,22 +112,14 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         }
       }
       "userName" -> {
-        ifUsernameExists(value as String) { exists ->
-          if (exists) {
-            Log.d(TAG, "Username already exists")
-            return@ifUsernameExists
-          }
+        if (ifUsernameExists(value as String)) {
+          return
         }
       }
-    /*
-    "registeredEvents" -> {
-      updateRegisteredEvents(id, value as Set<String>)
-      return
-    }*/
     }
 
-    super.update(id, field, value)
-  }
+      super.update(id, field, value)
+    }
 
   /** Calls the add function to update the profile in the database */
   open suspend fun update(profile: Profile) {
@@ -152,26 +132,13 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @param id the id of the profile
    * @param interests the new interests of the profile
    */
-  fun updateInterests(id: String, interests: Set<Interests>) {
+  suspend fun updateInterests(id: String, interests: Set<Interests>) {
     Firebase.firestore
         .collection(COLLECTION)
         .document(id)
         .update("interests", Interests.toCompressedString(interests))
-        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
-        .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+        .await()
   }
-
-  /* fun updateRegisteredEvents(id: String, eventIDs: Set<String>) {
-
-    Firebase.firestore
-        .collection(COLLECTION)
-        .document(id)
-        .update("registeredEvents", FieldValue.arrayUnion(*eventIDs.toTypedArray()))
-        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
-        .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
-  }
-
-  */
 
   /** Deletes a profile from the database */
   override suspend fun delete(id: String) {

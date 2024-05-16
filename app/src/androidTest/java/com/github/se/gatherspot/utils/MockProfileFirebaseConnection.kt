@@ -20,8 +20,8 @@ class MockProfileFirebaseConnection : ProfileFirebaseConnection() {
     return "MC"
   }
 
-  override fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
-    onComplete(userName == "alreadyUsed")
+  override suspend fun ifUsernameExists(userName: String): Boolean {
+    return userName == "alreadyUsed"
   }
 
   /**

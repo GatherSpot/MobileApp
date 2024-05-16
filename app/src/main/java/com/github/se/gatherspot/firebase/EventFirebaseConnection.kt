@@ -13,18 +13,17 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 
 /** Class to handle the connection to the Firebase database for events */
 open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
   override val COLLECTION = FirebaseCollection.EVENTS.toString().lowercase()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
-  val EVENTS = "events" // Collection name for events
 
   companion object {
     val DATE_FORMAT_DISPLAYED = "dd/MM/yyyy"
@@ -159,7 +158,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val querySnapshot: QuerySnapshot =
         if (offset == null) {
           Firebase.firestore
-              .collection(EVENTS)
+              .collection(COLLECTION)
               .orderBy("eventStartDate")
               .orderBy("eventID")
               .whereGreaterThanOrEqualTo(
@@ -170,7 +169,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
               .await()
         } else {
           Firebase.firestore
-              .collection(EVENTS)
+              .collection(COLLECTION)
               .orderBy("eventStartDate")
               .orderBy("eventID")
               .whereGreaterThanOrEqualTo(
@@ -197,7 +196,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val querySnapshot: QuerySnapshot =
         if (offset == null) {
           Firebase.firestore
-              .collection(EVENTS)
+              .collection(COLLECTION)
               .orderBy("eventID")
               .whereIn("eventID", idlist.events)
               .limit(number)
@@ -205,7 +204,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
               .await()
         } else {
           Firebase.firestore
-              .collection(EVENTS)
+              .collection(COLLECTION)
               .orderBy("eventID")
               .whereIn("eventID", idlist?.events ?: listOf())
               .startAfter(offset!!.get("eventID"))
@@ -226,7 +225,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val querySnapshot: QuerySnapshot =
         if (offset == null) {
           Firebase.firestore
-              .collection(EVENTS)
+              .collection(COLLECTION)
               .orderBy("eventStartDate")
               .orderBy("eventID")
               .whereGreaterThanOrEqualTo(
@@ -238,7 +237,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
               .await()
         } else {
           Firebase.firestore
-              .collection(EVENTS)
+              .collection(COLLECTION)
               .orderBy("eventStartDate")
               .orderBy("eventID")
               .whereArrayContainsAny("categories", l.map { it.name })
@@ -259,7 +258,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   open suspend fun fetchMyEvents(): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
         Firebase.firestore
-            .collection(EVENTS)
+            .collection(COLLECTION)
             .orderBy("eventID")
             .whereEqualTo(
                 "organizerID", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
@@ -272,7 +271,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   open suspend fun fetchRegisteredTo(): MutableList<Event> {
     val querySnapshot: QuerySnapshot =
         Firebase.firestore
-            .collection(EVENTS)
+            .collection(COLLECTION)
             .orderBy("eventID")
             .whereArrayContains(
                 "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
@@ -284,7 +283,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
   open suspend fun addRegisteredUser(eventID: String, uid: String) {
     Firebase.firestore
-        .collection(EVENTS)
+        .collection(COLLECTION)
         .document(eventID)
         .update("registeredUsers", FieldValue.arrayUnion(uid))
         .await()
@@ -440,7 +439,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             "eventStatus" to element.eventStatus) // TODO remove ?
 
     Firebase.firestore
-        .collection(EVENTS)
+        .collection(COLLECTION)
         .document(element.id)
         .set(eventItem)
         .addOnFailureListener { exception -> Log.e(TAG, "Error adding new Event", exception) }
@@ -449,7 +448,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
   fun cleanCollection() {
     Firebase.firestore
-        .collection(EVENTS)
+        .collection(COLLECTION)
         .whereNotEqualTo("organizerID", "")
         .get()
         .addOnSuccessListener { querySnapshot ->
