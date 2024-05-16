@@ -299,14 +299,18 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.title, "Test Event")
     assertEquals(resultEvent!!.description, "This is a test event")
     assertEquals(resultEvent!!.location, null)
-    assertEquals(resultEvent!!.eventStartDate, null)
-    assertEquals(resultEvent!!.eventEndDate, null)
-    assertEquals(resultEvent!!.timeBeginning, null)
-    assertEquals(resultEvent!!.timeEnding, null)
+    assertEquals(
+        resultEvent!!.eventStartDate, eventFirebaseConnection.EVENT_START_DATE_DEFAULT_VALUE)
+    assertEquals(resultEvent!!.eventEndDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+    assertEquals(
+        resultEvent!!.timeBeginning, eventFirebaseConnection.EVENT_START_TIME_DEFAULT_VALUE)
+    assertEquals(resultEvent!!.timeEnding, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
     assertEquals(resultEvent!!.attendanceMaxCapacity, null)
     assertEquals(resultEvent!!.attendanceMinCapacity, 10)
-    assertEquals(resultEvent!!.inscriptionLimitDate, null)
-    assertEquals(resultEvent!!.inscriptionLimitTime, null)
+    assertEquals(
+        resultEvent!!.inscriptionLimitDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+    assertEquals(
+        resultEvent!!.inscriptionLimitTime, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
     assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
     assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)

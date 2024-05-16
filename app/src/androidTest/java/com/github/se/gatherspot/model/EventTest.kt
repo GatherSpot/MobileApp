@@ -37,7 +37,7 @@ class EventTest {
             registeredUsers = mutableListOf(),
             timeBeginning = LocalTime.of(13, 0),
             timeEnding = LocalTime.of(16, 0),
-        )
+            image = "testToJSon")
 
     val json = event.toJson()
 

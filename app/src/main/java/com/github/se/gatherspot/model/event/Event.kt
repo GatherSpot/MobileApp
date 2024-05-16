@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
@@ -77,46 +76,5 @@ data class Event(
             .create()
     val eventJson = gson.toJson(this)
     return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
-  }
-
-  companion object {
-    val testEvent1 =
-        Event(
-            id = "1",
-            title = "Event Title",
-            description = "Hello: I am a description",
-            attendanceMaxCapacity = 10,
-            attendanceMinCapacity = 1,
-            organizerID = Profile.testParticipant().id,
-            categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2024, 4, 15),
-            eventStartDate = LocalDate.of(2024, 4, 14),
-            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = null,
-            registeredUsers = mutableListOf("TEST"),
-            timeBeginning = LocalTime.of(13, 0),
-            globalRating = 4,
-            timeEnding = LocalTime.of(16, 0),
-            image = "")
-    val testEvent2 =
-        Event(
-            id = "2",
-            title = "Event Title2",
-            description = "Hello: I am a description2",
-            attendanceMaxCapacity = 20,
-            attendanceMinCapacity = 4,
-            organizerID = Profile.testParticipant().id,
-            categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2024, 4, 15),
-            eventStartDate = LocalDate.of(2024, 4, 14),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = null,
-            registeredUsers = mutableListOf("TEST"),
-            timeBeginning = LocalTime.of(13, 0),
-            timeEnding = LocalTime.of(16, 0),
-            image = "")
   }
 }
