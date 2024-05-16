@@ -1,5 +1,6 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.run.model
 
+import com.github.se.gatherspot.model.Rating
 import org.junit.Test
 
 class RatingTest {

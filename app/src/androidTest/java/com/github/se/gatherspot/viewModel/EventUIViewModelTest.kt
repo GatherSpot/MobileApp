@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.viewModel
 
 import android.util.Log
 import com.github.se.gatherspot.EnvironmentSetter
@@ -6,6 +6,9 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.firebase.RatingFirebaseConnection
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.ui.eventUI.EventUIViewModel

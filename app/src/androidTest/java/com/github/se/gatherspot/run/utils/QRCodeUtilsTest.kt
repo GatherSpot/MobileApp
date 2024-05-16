@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.utils
+package com.github.se.gatherspot.run.utils
 
 import com.github.se.gatherspot.model.qrcode.QRCodeUtils
 import junit.framework.TestCase.assertEquals

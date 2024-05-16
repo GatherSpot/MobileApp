@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.viewModel
 
 import org.junit.Test
 

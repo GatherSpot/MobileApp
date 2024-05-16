@@ -1,7 +1,8 @@
-package com.github.se.gatherspot.cache
+package com.github.se.gatherspot.run.cache
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.github.se.gatherspot.cache.LocalStorage
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.DraftEvent
 import com.github.se.gatherspot.model.location.Location

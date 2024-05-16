@@ -1,9 +1,10 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.viewModel
 
 import android.util.Log
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.ui.eventUI.EventRegistrationViewModel
 import com.github.se.gatherspot.ui.eventUI.RegistrationState

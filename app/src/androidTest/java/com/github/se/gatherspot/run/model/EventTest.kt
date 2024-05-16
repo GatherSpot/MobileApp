@@ -1,6 +1,8 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.run.model
 
 import androidx.compose.ui.graphics.ImageBitmap
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.utils.ImageBitmapSerializer
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer

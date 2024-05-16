@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.utils
+package com.github.se.gatherspot.run.utils
 
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap

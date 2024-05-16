@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.viewModel
 
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.google.firebase.firestore.FirebaseFirestore

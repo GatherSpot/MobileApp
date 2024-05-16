@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.run.model
 
 class FollowListTest {
   //  @Before

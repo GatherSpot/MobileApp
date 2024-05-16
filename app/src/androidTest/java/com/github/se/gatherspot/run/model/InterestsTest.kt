@@ -1,5 +1,6 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.run.model
 
+import com.github.se.gatherspot.model.Interests
 import org.junit.Test
 
 class InterestsTest {
