@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,14 +38,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Preview
 @Composable
 fun SetUpProfilePreview() {
@@ -51,6 +56,7 @@ fun SetUpProfilePreview() {
   SetUpProfile(NavigationActions(nav), "uid")
 }
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun SetUpProfile(nav: NavigationActions, uid: String) {
 
@@ -68,6 +74,9 @@ fun SetUpProfile(nav: NavigationActions, uid: String) {
         isEmailVerified = auth.currentUser?.isEmailVerified ?: false
         if (isEmailVerified) {
           ProfileFirebaseConnection().updateInterests(uid, interests)
+          if (MainActivity.mapViewModel == null) {
+            MainActivity.mapViewModel = MapViewModel(MainActivity.app)
+          }
           nav.controller.navigate("profile")
         } else {
           emailText = "Please verify your email before continuing"
