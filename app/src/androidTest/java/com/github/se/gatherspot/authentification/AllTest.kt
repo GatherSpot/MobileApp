@@ -8,6 +8,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testDelete
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
@@ -19,16 +20,19 @@ import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-const val USERNAME = "AuthEndToEndTest"
-const val EMAIL = "AuthEndToEnd@test.com"
+val USERNAME = "AuthEndToEndTest" + java.util.Date().time.toString()
+val EMAIL = "AuthEndToEnd@test.com" + java.util.Date().time.toString()
 const val PASSWORD = "AuthEndToEndTest,2024;"
 
 @RunWith(AndroidJUnit4::class)
@@ -44,6 +48,16 @@ class AllTest : TestCase() {
       testDelete()
     } catch (e: Exception) {
       e.printStackTrace()
+    }
+  }
+
+  @Before
+  fun Setup() {
+    runBlocking {
+      val toDelete = async { profileFirebaseConnection.fetchFromUserName(USERNAME) }.await()
+      if (toDelete != null) profileFirebaseConnection.delete(toDelete.id)
+
+      delay(2000)
     }
   }
 

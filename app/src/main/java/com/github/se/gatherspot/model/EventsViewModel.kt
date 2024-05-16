@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.utils.UtilsForTests
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,7 @@ class EventsViewModel : ViewModel() {
   private var loadedFilteredEvents: MutableList<Event> = mutableListOf()
   val eventFirebaseConnection = EventFirebaseConnection()
   var previousInterests = mutableListOf<Interests>()
+  // This is the id of the of the user logged in by default during tests.
 
   init {
     viewModelScope.launch {
@@ -43,7 +45,7 @@ class EventsViewModel : ViewModel() {
   suspend fun fetchEventsFromFollowedUsers() {
     val ids =
         FollowList.following(
-            FirebaseAuth.getInstance().currentUser?.uid ?: "CpsyL2BH9TTQKEfpDC3YwZB6NLE2")
+            FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId)
     Log.d(TAG, "ids from viewModel ${ids.events}")
     fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.events)
   }
