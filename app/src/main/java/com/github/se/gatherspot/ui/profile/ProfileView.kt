@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui.profile
 
-import android.content.ContentValues
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -59,6 +58,7 @@ class ProfileView {
       navController: NavController
   ) {
     Scaffold(
+        modifier = Modifier.testTag("ViewOwnProfileScaffold"),
         bottomBar = {
           BottomNavigationMenu(
               onTabSelect = { tld -> nav.navigateTo(tld) },
@@ -66,8 +66,8 @@ class ProfileView {
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
         content = { paddingValues: PaddingValues ->
+          val padding = paddingValues
           ViewOwnProfileContent(viewModel, navController)
-          Log.d(ContentValues.TAG, paddingValues.toString())
         })
   }
 
@@ -84,6 +84,7 @@ class ProfileView {
       navController: NavController
   ) {
     Scaffold(
+        modifier = Modifier.testTag("EditOwnProfileScaffold"),
         bottomBar = {
           BottomNavigationMenu(
               onTabSelect = { tld -> nav.navigateTo(tld) },
@@ -91,26 +92,28 @@ class ProfileView {
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
         content = { paddingValues: PaddingValues ->
+          val padding = paddingValues
           EditOwnProfileContent(viewModel, navController)
-          Log.d(ContentValues.TAG, paddingValues.toString())
         })
   }
 
   @Composable
   fun EditButton(nav: NavController) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
-      // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
-      Icon(
-          painter = painterResource(R.drawable.edit),
-          contentDescription = "edit",
-          modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
-    }
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("EditButton"),
+        horizontalArrangement = Arrangement.End) {
+          // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
+          Icon(
+              painter = painterResource(R.drawable.edit),
+              contentDescription = "edit",
+              modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
+        }
   }
 
   @Composable
   fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, nav: NavController) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("SaveCancelButtons"),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Text(
               text = "Cancel",
@@ -207,7 +210,7 @@ class ProfileView {
             })
 
     Column(
-        modifier = Modifier.padding(8.dp).fillMaxWidth(),
+        modifier = Modifier.padding(8.dp).fillMaxWidth().testTag("imageColumn"),
         horizontalAlignment = Alignment.CenterHorizontally) {
           Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
             AsyncImage(
@@ -231,7 +234,10 @@ class ProfileView {
                 contentScale = ContentScale.Crop)
           }
 
-          if (edit) Text(text = "Change profile picture")
+          if (edit)
+              Text(
+                  text = "Change profile picture",
+                  modifier = Modifier.testTag("editProfilePictureText"))
 
           if (edit &&
               ((imageUrl.isNotEmpty() &&
@@ -252,16 +258,20 @@ class ProfileView {
     val bio by viewModel.bio.observeAsState("")
     val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
-    Column {
+    Column(modifier = Modifier.testTag("ViewOwnProfileContent")) {
       EditButton(navController)
 
-      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-        ProfileImage(imageUrl, false)
-        UsernameField(username, {}, false)
-        BioField(bio, {}, false)
-        InterestsView().ShowInterests(interests)
-        Spacer(modifier = Modifier.height(56.dp))
-      }
+      Column(
+          modifier =
+              Modifier.verticalScroll(rememberScrollState())
+                  .padding(8.dp)
+                  .testTag("columnViewOwnContent")) {
+            ProfileImage(imageUrl, false)
+            UsernameField(username, {}, false)
+            BioField(bio, {}, false)
+            InterestsView().ShowInterests(interests)
+            Spacer(modifier = Modifier.height(56.dp))
+          }
     }
   }
 
@@ -284,23 +294,28 @@ class ProfileView {
     val localImageUriToUpload by viewModel.localImageUriToUpload.observeAsState(Uri.EMPTY)
     val setLocalImageUriToUpload = { uri: Uri -> viewModel.setLocalImageUriToUpload(uri) }
 
-    Column() {
+    Column(modifier = Modifier.testTag("EditOwnProfileContent")) {
       SaveCancelButtons(save, cancel, navController)
-      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
-        ProfileImage(
-            imageUrl = imageUrl,
-            edit = true,
-            setImageEditAction = setImageEditAction,
-            editAction = imageEditAction.value,
-            localImageUri = localImageUriToUpload,
-            updateLocalImageUri = setLocalImageUriToUpload)
-        UsernameField(username, updateUsername, true)
-        BioField(bio, updateBio, true)
-        InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
-          viewModel.flipInterests(it)
-        }
-        Spacer(modifier = Modifier.height(56.dp))
-      }
+      Column(
+          modifier =
+              Modifier.verticalScroll(rememberScrollState())
+                  .padding(56.dp)
+                  .testTag("columnEditOwnContent")) {
+            ProfileImage(
+                imageUrl = imageUrl,
+                edit = true,
+                setImageEditAction = setImageEditAction,
+                editAction = imageEditAction.value,
+                localImageUri = localImageUriToUpload,
+                updateLocalImageUri = setLocalImageUriToUpload)
+            UsernameField(username, updateUsername, true)
+            BioField(bio, updateBio, true)
+            InterestsView().EditInterests(
+                Interests.toList(), viewModel.interests.observeAsState()) {
+                  viewModel.flipInterests(it)
+                }
+            Spacer(modifier = Modifier.height(56.dp))
+          }
     }
   }
 
