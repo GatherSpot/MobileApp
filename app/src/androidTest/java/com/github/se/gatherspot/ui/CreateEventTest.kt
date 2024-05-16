@@ -39,7 +39,10 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel(MockEventFirebaseConnection()))
+      CreateEvent(
+          nav = NavigationActions(navController),
+          eventUtils,
+          EventsViewModel(MockEventFirebaseConnection()))
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -137,7 +140,10 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel(MockEventFirebaseConnection()))
+      CreateEvent(
+          nav = NavigationActions(navController),
+          eventUtils,
+          EventsViewModel(MockEventFirebaseConnection()))
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {

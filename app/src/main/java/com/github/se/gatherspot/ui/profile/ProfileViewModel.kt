@@ -16,7 +16,8 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import kotlinx.coroutines.launch
 
-class OwnProfileViewModel(private val profileFirebaseConnection: ProfileFirebaseConnection) : ViewModel() {
+class OwnProfileViewModel(private val profileFirebaseConnection: ProfileFirebaseConnection) :
+    ViewModel() {
   private var _profile = MutableLiveData<Profile>()
   private var _username = MutableLiveData<String>()
   private var _bio = MutableLiveData<String>()
@@ -25,7 +26,8 @@ class OwnProfileViewModel(private val profileFirebaseConnection: ProfileFirebase
 
   init {
     viewModelScope.launch {
-      _profile.postValue(profileFirebaseConnection.fetch(profileFirebaseConnection.getCurrentUserUid()!!))
+      _profile.postValue(
+          profileFirebaseConnection.fetch(profileFirebaseConnection.getCurrentUserUid()!!))
     }
   }
 
@@ -144,8 +146,12 @@ class OwnProfileViewModel(private val profileFirebaseConnection: ProfileFirebase
   }
 }
 
-class ProfileViewModel(private val _target: String, private val nav: NavigationActions,private val profileFirebaseConnection: ProfileFirebaseConnection, private val followList: FollowList) :
-    ViewModel() {
+class ProfileViewModel(
+    private val _target: String,
+    private val nav: NavigationActions,
+    private val profileFirebaseConnection: ProfileFirebaseConnection,
+    private val followList: FollowList
+) : ViewModel() {
   private var _profile = MutableLiveData<Profile>()
   private val _id = profileFirebaseConnection.getCurrentUserUid()!!
   private val _isFollowing = followList.isFollowing(_id, _target)

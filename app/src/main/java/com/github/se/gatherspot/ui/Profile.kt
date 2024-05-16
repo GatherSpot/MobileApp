@@ -21,9 +21,11 @@ import com.github.se.gatherspot.ui.profile.ProfileViewModel
  * bottom navigation bar.
  */
 @Composable
-fun Profile(nav: NavigationActions, viewModel: OwnProfileViewModel = viewModel() {
-  OwnProfileViewModel(ProfileFirebaseConnection())
-} ) {
+fun Profile(
+    nav: NavigationActions,
+    viewModel: OwnProfileViewModel =
+        viewModel() { OwnProfileViewModel(ProfileFirebaseConnection()) }
+) {
   // This new navController will navigate between seeing profile and editing profile
   val navController = rememberNavController()
   NavHost(navController, startDestination = "view") {
@@ -39,9 +41,13 @@ fun Profile(nav: NavigationActions, viewModel: OwnProfileViewModel = viewModel()
  * @param uid the id of the user to be shown
  */
 @Composable
-fun ViewProfile(nav: NavigationActions, uid: String, viewModel: ProfileViewModel = viewModel {
-  ProfileViewModel(uid,nav, ProfileFirebaseConnection(), FollowList())
-}) {
+fun ViewProfile(
+    nav: NavigationActions,
+    uid: String,
+    viewModel: ProfileViewModel = viewModel {
+      ProfileViewModel(uid, nav, ProfileFirebaseConnection(), FollowList())
+    }
+) {
   ProfileView().ProfileScreen(viewModel)
 }
 

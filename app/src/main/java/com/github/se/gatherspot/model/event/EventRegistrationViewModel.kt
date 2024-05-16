@@ -14,7 +14,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
-class EventRegistrationViewModel(registered: List<String>, profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection(), private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection(), private val idListFirebaseConnection: IdListFirebaseConnection = IdListFirebaseConnection()) : ViewModel() {
+class EventRegistrationViewModel(
+    registered: List<String>,
+    profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection(),
+    private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection(),
+    private val idListFirebaseConnection: IdListFirebaseConnection = IdListFirebaseConnection()
+) : ViewModel() {
   private val userId = profileFirebaseConnection.getCurrentUserUid()!!
 
   // LiveData for holding registration state
@@ -46,7 +51,6 @@ class EventRegistrationViewModel(registered: List<String>, profileFirebaseConnec
       delay(2000)
     }
   }
-
 
   /** Registers the user for the given event */
   fun registerForEvent(event: Event) {

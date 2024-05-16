@@ -3,9 +3,11 @@ package com.github.se.gatherspot.utils
 import com.github.se.gatherspot.defaults.DefaultProfiles
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
+
 class MockProfileFirebaseConnection : ProfileFirebaseConnection() {
 
   var profile = DefaultProfiles.trivial
+
   override suspend fun fetch(id: String): Profile {
     return profile
   }

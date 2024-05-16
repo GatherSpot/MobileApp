@@ -7,9 +7,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
+import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resume
 
 open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
@@ -26,21 +26,19 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    */
   override suspend fun fetch(id: String): Profile {
     val profile = Profile("", "", "", id, Interests.new())
-      Log.d(TAG, "id: $id")
-      Firebase.firestore
-          .collection(COLLECTION)
-          .document(id)
-          .get()
-          .addOnSuccessListener { document ->
-            profile.userName = document.get("userName") as String
-            profile.bio = document.get("bio") as String
-            profile.image = document.get("image") as String
-            profile.interests = Interests.fromCompressedString(document.get("interests") as String)
-            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-          }
-          .addOnFailureListener { exception ->
-            Log.d(TAG, "get failed with :", exception)
-    }
+    Log.d(TAG, "id: $id")
+    Firebase.firestore
+        .collection(COLLECTION)
+        .document(id)
+        .get()
+        .addOnSuccessListener { document ->
+          profile.userName = document.get("userName") as String
+          profile.bio = document.get("bio") as String
+          profile.image = document.get("image") as String
+          profile.interests = Interests.fromCompressedString(document.get("interests") as String)
+          Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+        }
+        .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
         .await()
     return profile
   }

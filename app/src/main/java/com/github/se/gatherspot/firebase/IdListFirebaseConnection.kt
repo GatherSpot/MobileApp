@@ -6,9 +6,9 @@ import com.github.se.gatherspot.model.IdList
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resume
 
 open class IdListFirebaseConnection {
   private val firestore = Firebase.firestore
@@ -151,7 +151,12 @@ open class IdListFirebaseConnection {
    * @param element The element to add to the list.
    * @param onSuccess a lambda function called on success
    */
-  open fun addElement(id: String, category: FirebaseCollection, element: String, onSuccess: () -> Unit) {
+  open fun addElement(
+      id: String,
+      category: FirebaseCollection,
+      element: String,
+      onSuccess: () -> Unit
+  ) {
     val tag = category.name
     fcoll
         .document(tag)

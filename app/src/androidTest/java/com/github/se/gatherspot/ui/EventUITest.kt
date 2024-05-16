@@ -21,10 +21,9 @@ import org.junit.Rule
 import org.junit.Test
 
 class EventUITest {
-  @get:Rule
-  val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
   private val trivialEvent = DefaultEvents.trivialEvent1
-  private var ownEvent = DefaultEvents.withAuthor("MC","1")
+  private var ownEvent = DefaultEvents.withAuthor("MC", "1")
   private val profile = DefaultProfiles.trivial
 
   @Test
@@ -33,15 +32,15 @@ class EventUITest {
       val navController = rememberNavController()
       val event = trivialEvent
       EventUI(
-        event,
-        NavigationActions(navController),
-        EventRegistrationViewModel(
-          listOf(), MockProfileFirebaseConnection(), MockEventFirebaseConnection(),
-          MockIdListFirebaseConnection()
-        ),
-        EventsViewModel(MockEventFirebaseConnection()),
-        MockProfileFirebaseConnection()
-      )
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(
+              listOf(),
+              MockProfileFirebaseConnection(),
+              MockEventFirebaseConnection(),
+              MockIdListFirebaseConnection()),
+          EventsViewModel(MockEventFirebaseConnection()),
+          MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description { assert(hasText(DefaultEvents.trivialEvent1.description!!)) }
@@ -84,15 +83,15 @@ class EventUITest {
       val navController = rememberNavController()
       val event = trivialEvent
       EventUI(
-        event,
-        NavigationActions(navController),
-        EventRegistrationViewModel(
-          listOf(), MockProfileFirebaseConnection(), MockEventFirebaseConnection(),
-          MockIdListFirebaseConnection()
-        ),
-        EventsViewModel(MockEventFirebaseConnection()),
-        MockProfileFirebaseConnection()
-  )
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(
+              listOf(),
+              MockProfileFirebaseConnection(),
+              MockEventFirebaseConnection(),
+              MockIdListFirebaseConnection()),
+          EventsViewModel(MockEventFirebaseConnection()),
+          MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -127,15 +126,15 @@ class EventUITest {
       val event = DefaultEvents.fullEvent
 
       EventUI(
-        event,
-        NavigationActions(navController),
-        EventRegistrationViewModel(
-          listOf(), MockProfileFirebaseConnection(), MockEventFirebaseConnection(),
-          MockIdListFirebaseConnection()
-        ),
-        EventsViewModel(MockEventFirebaseConnection()),
-        MockProfileFirebaseConnection()
-      )
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(
+              listOf(),
+              MockProfileFirebaseConnection(),
+              MockEventFirebaseConnection(),
+              MockIdListFirebaseConnection()),
+          EventsViewModel(MockEventFirebaseConnection()),
+          MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -159,22 +158,21 @@ class EventUITest {
 
   @Test
   fun testAlreadyRegistered() {
-    val event =
-      DefaultEvents.withRegistered("MC", eventId = "2")
+    val event = DefaultEvents.withRegistered("MC", eventId = "2")
     runBlocking { EventFirebaseConnection().add(event) }
     composeTestRule.setContent {
       val navController = rememberNavController()
 
       EventUI(
-        event,
-        NavigationActions(navController),
-        EventRegistrationViewModel(
-          listOf("MC"), MockProfileFirebaseConnection(), MockEventFirebaseConnection(),
-          MockIdListFirebaseConnection()
-        ),
-        EventsViewModel(MockEventFirebaseConnection()),
-        MockProfileFirebaseConnection()
-      )
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(
+              listOf("MC"),
+              MockProfileFirebaseConnection(),
+              MockEventFirebaseConnection(),
+              MockIdListFirebaseConnection()),
+          EventsViewModel(MockEventFirebaseConnection()),
+          MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -192,15 +190,15 @@ class EventUITest {
       val event = ownEvent
 
       EventUI(
-        event,
-        NavigationActions(navController),
-        EventRegistrationViewModel(
-          listOf(), MockProfileFirebaseConnection(), MockEventFirebaseConnection(),
-          MockIdListFirebaseConnection()
-        ),
-        EventsViewModel(MockEventFirebaseConnection()),
-        MockProfileFirebaseConnection()
-      )
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(
+              listOf(),
+              MockProfileFirebaseConnection(),
+              MockEventFirebaseConnection(),
+              MockIdListFirebaseConnection()),
+          EventsViewModel(MockEventFirebaseConnection()),
+          MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }
@@ -216,15 +214,15 @@ class EventUITest {
       val event = ownEvent
 
       EventUI(
-        event,
-        NavigationActions(navController),
-        EventRegistrationViewModel(
-          listOf(), MockProfileFirebaseConnection(), MockEventFirebaseConnection(),
-          MockIdListFirebaseConnection()
-        ),
-        EventsViewModel(MockEventFirebaseConnection()),
-        MockProfileFirebaseConnection()
-      )
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(
+              listOf(),
+              MockProfileFirebaseConnection(),
+              MockEventFirebaseConnection(),
+              MockIdListFirebaseConnection()),
+          EventsViewModel(MockEventFirebaseConnection()),
+          MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }
@@ -254,15 +252,15 @@ class EventUITest {
       val navController = rememberNavController()
 
       EventUI(
-        event,
-        NavigationActions(navController),
-        EventRegistrationViewModel(
-          listOf(), MockProfileFirebaseConnection(), MockEventFirebaseConnection(),
-          MockIdListFirebaseConnection()
-        ),
-        EventsViewModel(MockEventFirebaseConnection()),
-        MockProfileFirebaseConnection()
-      )
+          event,
+          NavigationActions(navController),
+          EventRegistrationViewModel(
+              listOf(),
+              MockProfileFirebaseConnection(),
+              MockEventFirebaseConnection(),
+              MockIdListFirebaseConnection()),
+          EventsViewModel(MockEventFirebaseConnection()),
+          MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 6000)

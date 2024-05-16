@@ -24,13 +24,14 @@ class ProfileInstrumentedTest {
   private val profile = DefaultProfiles.trivial
   private val newUsername = "Alex"
   private val newBio = "I am a bot"
+
   @Test
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      Profile(NavigationActions(navController), viewModel {
-        OwnProfileViewModel(MockProfileFirebaseConnection())
-      })
+      Profile(
+          NavigationActions(navController),
+          viewModel { OwnProfileViewModel(MockProfileFirebaseConnection()) })
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update
@@ -66,9 +67,7 @@ class ProfileInstrumentedTest {
     }
   }
 
-
-    // For now on this branch, we will not test the profile screen because it does not pass the CI
-
+  // For now on this branch, we will not test the profile screen because it does not pass the CI
 
   @Test
   fun viewProfileTest() {
@@ -76,7 +75,11 @@ class ProfileInstrumentedTest {
       val navController = rememberNavController()
       val string = ""
       val viewModel = viewModel {
-        ProfileViewModel(string, NavigationActions(navController), MockProfileFirebaseConnection(),MockFollowList())
+        ProfileViewModel(
+            string,
+            NavigationActions(navController),
+            MockProfileFirebaseConnection(),
+            MockFollowList())
       }
       ViewProfile(NavigationActions(navController), "TEST2")
     }
@@ -94,7 +97,4 @@ class ProfileInstrumentedTest {
       follow { hasText("Unfollow") }
     }
   }
-
-
 }
-

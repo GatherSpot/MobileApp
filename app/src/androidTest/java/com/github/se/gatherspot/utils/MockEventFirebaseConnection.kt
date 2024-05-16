@@ -15,18 +15,21 @@ class MockEventFirebaseConnection : EventFirebaseConnection() {
 
   override suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
     TODO()
-}
+  }
 
-  override suspend fun fetchEventsBasedOnInterests(number: Long, l: List<Interests>): MutableList<Event> {
-    return List(number.toInt()) {DefaultEvents.withInterests(l[0], eventId = "1")}.toMutableList()
+  override suspend fun fetchEventsBasedOnInterests(
+      number: Long,
+      l: List<Interests>
+  ): MutableList<Event> {
+    return List(number.toInt()) { DefaultEvents.withInterests(l[0], eventId = "1") }.toMutableList()
   }
 
   override suspend fun fetchMyEvents(): MutableList<Event> {
-    return List(5){DefaultEvents.withAuthor("TEST","1")}.toMutableList()
+    return List(5) { DefaultEvents.withAuthor("TEST", "1") }.toMutableList()
   }
 
   override suspend fun fetchRegisteredTo(): MutableList<Event> {
-    return List(5){DefaultEvents.withRegistered("TEST", eventId = "1")}.toMutableList()
+    return List(5) { DefaultEvents.withRegistered("TEST", eventId = "1") }.toMutableList()
   }
 
   override suspend fun addRegisteredUser(eventID: String, uid: String) {

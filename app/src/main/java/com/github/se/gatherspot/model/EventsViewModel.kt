@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class EventsViewModel(private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection()) : ViewModel() {
+class EventsViewModel(
+    private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection()
+) : ViewModel() {
 
   val PAGESIZE: Long = 9
   private var _uiState = MutableStateFlow(UIState())
