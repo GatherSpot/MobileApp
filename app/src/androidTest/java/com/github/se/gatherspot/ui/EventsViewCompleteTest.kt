@@ -7,47 +7,36 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.defaults.DefaultEvents
-import com.github.se.gatherspot.defaults.DefaultProfiles
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import com.github.se.gatherspot.utils.MockEventFirebaseConnection
+import com.github.se.gatherspot.utils.MockFollowList
+import com.github.se.gatherspot.utils.MockIdListFirebaseConnection
+import com.github.se.gatherspot.utils.MockProfileFirebaseConnection
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.runBlocking
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class EventsViewCompleteTest {
   @get:Rule val composeTestRule = createComposeRule()
   private val event = DefaultEvents.trivialEvent1
-  private val profile = DefaultProfiles.trivial
-
-  @Before
-  fun setUp() = runBlocking {
-    testLogin()
-    ProfileFirebaseConnection().add(profile)
-  }
-
-  @After
-  fun cleanup() = runBlocking {
-    testLoginCleanUp()
-    ProfileFirebaseConnection().delete(profile.id)
-  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun fromEventsToOrganizerProfile() {
     // This test will navigate from the events screen to the organizer profile
     val viewModel = EventsViewModel(MockEventFirebaseConnection())
-    val eventRegistrationModel = EventRegistrationViewModel(emptyList())
+    val eventRegistrationModel =
+        EventRegistrationViewModel(
+            emptyList(),
+            MockProfileFirebaseConnection(),
+            MockEventFirebaseConnection(),
+            MockIdListFirebaseConnection())
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "home") {
@@ -57,11 +46,19 @@ class EventsViewCompleteTest {
                 event = event,
                 navActions = NavigationActions(navController),
                 registrationViewModel = eventRegistrationModel,
-                eventsViewModel = viewModel)
+                eventsViewModel = viewModel,
+                MockProfileFirebaseConnection())
           }
           composable("viewProfile/{uid}") { backstackEntry ->
             backstackEntry.arguments?.getString("uid")?.let {
-              ViewProfile(NavigationActions(navController), it)
+              ViewProfile(
+                  NavigationActions(navController),
+                  it,
+                  ProfileViewModel(
+                      it,
+                      NavigationActions(navController),
+                      MockProfileFirebaseConnection(),
+                      MockFollowList()))
             }
           }
         }
