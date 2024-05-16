@@ -475,4 +475,31 @@ class EventUtilsTest {
     val draftEvent = eventUtils.retrieveFromDraft(context)
     Assert.assertNull(draftEvent)
   }
+
+  @Test
+  fun eventIsOverTestNotOver() {
+    assert(!eventUtils.isEventOver(testEvent))
+  }
+
+  @Test
+  fun eventIsOverReturnTrue() {
+    val event =
+        Event(
+            id = "testID",
+            title = "Test Event",
+            description = "This is a test event",
+            location = null,
+            eventStartDate = LocalDate.of(2020, 4, 12),
+            eventEndDate = LocalDate.of(2020, 4, 12),
+            timeBeginning = LocalTime.of(10, 0),
+            timeEnding = LocalTime.of(12, 0),
+            attendanceMaxCapacity = 100,
+            attendanceMinCapacity = 10,
+            inscriptionLimitDate = LocalDate.of(2020, 4, 11),
+            inscriptionLimitTime = LocalTime.of(23, 59),
+            eventStatus = EventStatus.COMPLETED,
+            globalRating = null,
+            image = "")
+    assert(eventUtils.isEventOver(event))
+  }
 }

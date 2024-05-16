@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -7,9 +8,19 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.defaults.DefaultProfiles
+import com.github.se.gatherspot.EnvironmentSetter
+import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.utils.MockEventFirebaseConnection
@@ -135,6 +146,7 @@ class EventUITest {
               MockIdListFirebaseConnection()),
           EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -199,8 +211,10 @@ class EventUITest {
               MockIdListFirebaseConnection()),
           EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      calendarButton { assertIsDisplayed() }
       editEventButton { assertIsDisplayed() }
       deleteButton { assertIsDisplayed() }
     }
@@ -223,6 +237,7 @@ class EventUITest {
               MockIdListFirebaseConnection()),
           EventsViewModel(MockEventFirebaseConnection()),
           MockProfileFirebaseConnection())
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }
@@ -246,6 +261,37 @@ class EventUITest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
+  fun ratingIsDisplayed() {
+    val eventUIViewModel = EventUIViewModel(pastEventRegisteredTo)
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      EventUI(
+          pastEventRegisteredTo,
+          NavigationActions(navController),
+          eventUIViewModel,
+          EventsViewModel())
+    }
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
+      Log.e(
+          "In the list",
+          pastEventRegisteredTo.registeredUsers
+              .contains(FirebaseAuth.getInstance().currentUser!!.uid)
+              .toString())
+      Log.e("isEventOver", EventUtils().isEventOver(pastEventRegisteredTo).toString())
+      assert(eventUIViewModel.canRate())
+      starRow {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      star {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+    }
+  }
+
+  @Test
   fun testProfileIsCorrectlyFetched() {
     val event = DefaultEvents.withAuthor(DefaultProfiles.trivial.id, "1")
     composeTestRule.setContent {
@@ -268,6 +314,4 @@ class EventUITest {
       // profileIndicator.performClick()
     }
   }
-  // write an integration test that tests the following:
-  // Start from Events screen
 }

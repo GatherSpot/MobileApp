@@ -83,7 +83,7 @@ class RatingFirebaseConnection {
    * @param rating the new value for the rating of the event by the user if the rating is UNRATED,
    *   the rating is deleted
    */
-  fun update(eventID: String, userID: String, rating: Rating) {
+  fun update(eventID: String, userID: String, rating: Rating, organizerID: String) {
     if (rating != Rating.UNRATED) {
       Firebase.firestore.collection(COLLECTION).document(eventID).set(mapOf("eventID" to eventID))
 

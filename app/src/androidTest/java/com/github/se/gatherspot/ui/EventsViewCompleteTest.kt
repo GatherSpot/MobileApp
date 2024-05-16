@@ -10,6 +10,13 @@ import androidx.navigation.navigation
 import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventUIViewModel
+import com.github.se.gatherspot.model.utils.LocalDateDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -48,6 +55,8 @@ class EventsViewCompleteTest {
                 registrationViewModel = eventRegistrationModel,
                 eventsViewModel = viewModel,
                 MockProfileFirebaseConnection())
+                eventUIViewModel = EventUIViewModel(eventObject),
+                eventsViewModel = viewModel)
           }
           composable("viewProfile/{uid}") { backstackEntry ->
             backstackEntry.arguments?.getString("uid")?.let {

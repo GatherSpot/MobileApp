@@ -10,6 +10,7 @@ import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.IdList
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
