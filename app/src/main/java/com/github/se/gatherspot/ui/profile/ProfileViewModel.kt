@@ -26,8 +26,9 @@ class OwnProfileViewModel(private val profileFirebaseConnection: ProfileFirebase
 
   init {
     viewModelScope.launch {
-      _profile.postValue(
-          profileFirebaseConnection.fetch(profileFirebaseConnection.getCurrentUserUid()!!))
+      _profile.value =
+          profileFirebaseConnection.fetch(profileFirebaseConnection.getCurrentUserUid()!!)
+      update()
     }
   }
 
@@ -43,6 +44,12 @@ class OwnProfileViewModel(private val profileFirebaseConnection: ProfileFirebase
   val interests: LiveData<Set<Interests>>
     get() = _interests
 
+  private fun update(){
+    _username.value = _profile.value!!.userName
+    _bio.value = _profile.value!!.bio
+    _interests.value = _profile.value!!.interests
+    _image.value = _profile.value!!.image
+  }
   private fun saveText() {
     if (_profile.isInitialized) {
       _profile.value!!.userName = _username.value!!
