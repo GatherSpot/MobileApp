@@ -89,12 +89,14 @@ class EventUIViewModelTest {
     // Add profile to database
     val profile1 = Profile("organizer", "bio", "image", "T1qNNU05QeeqB2OqIBb7GAtQd093", setOf())
     val profileTestOrganiser = Profile("testOrganiser", "bio", "image", testLoginUID, setOf())
-    ProfileFirebaseConnection().add(profile1)
-    ProfileFirebaseConnection().add(profileTestOrganiser)
+    runBlocking {
+      ProfileFirebaseConnection().add(profile1)
+      ProfileFirebaseConnection().add(profileTestOrganiser)
+    }
   }
 
   @After
-  fun tearDown() {
+  fun tearDown() = runBlocking {
     // Clean up the test environment
     EnvironmentSetter.testLoginCleanUp()
     ProfileFirebaseConnection().delete("T1qNNU05QeeqB2OqIBb7GAtQd093")

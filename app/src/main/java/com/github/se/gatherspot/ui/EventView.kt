@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
@@ -63,10 +62,9 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -74,18 +72,17 @@ fun EventUI(
     event: Event,
     navActions: NavigationActions,
     eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel
+    profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection()
 ) {
 
   val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by eventUIViewModel.displayAlertDeletion.observeAsState()
   val rating by eventUIViewModel.rating.observeAsState()
-  val isOrganizer =
-      event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
+  val isOrganizer = event.organizerID == profileFirebaseConnection.getCurrentUserUid()!!
 
   val organizerProfile = remember { mutableStateOf<Profile?>(null) }
   LaunchedEffect(Unit) {
-    organizerProfile.value = ProfileFirebaseConnection().fetch(event.organizerID) {}
+    organizerProfile.value = profileFirebaseConnection.fetch(event.organizerID)
   }
 
   val eventUtils = EventUtils()
@@ -284,7 +281,6 @@ fun EventUI(
                 Button(
                     onClick = {
                       eventUIViewModel.registerForEvent(event)
-                      eventsViewModel.updateNewRegistered(event)
                       eventUIViewModel.clickRegisterButton()
                     },
                     enabled = isButtonEnabled,
@@ -329,7 +325,7 @@ fun EventUI(
                     modifier = Modifier.testTag("okButton"),
                     onClick = {
                       // Delete the event
-                      eventUtils.deleteEvent(event)
+                      runBlocking { eventUtils.deleteEvent(event) }
                       navActions.goBack()
                       eventUIViewModel.dismissAlert()
                     }) {
@@ -371,11 +367,7 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions) {
               .testTag("profileIndicator")
               .clickable {
                 // Navigate to the profile of the organizer
-                if (profile.id != Firebase.auth.currentUser?.uid) {
-                  navActions.controller.navigate("viewProfile/${profile.id}")
-                } else {
-                  navActions.controller.navigate("profile")
-                }
+                navActions.controller.navigate("viewProfile/${profile.id}")
               }) {
         // TODO implement image here: do it later
         Box(

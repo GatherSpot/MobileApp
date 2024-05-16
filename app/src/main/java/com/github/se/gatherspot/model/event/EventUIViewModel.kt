@@ -4,18 +4,28 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class EventUIViewModel(private val event: Event) :
-    EventRegistrationViewModel(event.registeredUsers) {
+class EventUIViewModel(
+    private val event: Event,
+    val profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection(),
+    val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection(),
+    idListFirebaseConnection: IdListFirebaseConnection = IdListFirebaseConnection()
+) :
+    EventRegistrationViewModel(
+        event.registeredUsers,
+        profileFirebaseConnection,
+        eventFirebaseConnection,
+        idListFirebaseConnection) {
+
   // Rate !
 
   // registered as Set
@@ -23,19 +33,17 @@ class EventUIViewModel(private val event: Event) :
   private lateinit var _organizer: Profile
   private lateinit var _attendees: List<String>
   private var _rating = MutableLiveData<Rating>()
-  private val userID = Firebase.auth.currentUser?.uid ?: "TEST"
+  private val userID = profileFirebaseConnection.getCurrentUserUid()!!
 
   init {
     viewModelScope.launch {
       Log.d(
           "EventUIViewModel",
           "Fetching organizer and registered users organizerID : ${event.organizerID}, eventID : ${event.id}")
-      _organizer =
-          ProfileFirebaseConnection().fetch(event.organizerID) {} ?: Profile.testOrganizer()
+      _organizer = profileFirebaseConnection.fetch(event.organizerID)
       _rating.value =
           RatingFirebaseConnection()
-              .fetchRating(
-                  event.id, (Firebase.auth.currentUser?.uid ?: Profile.testParticipant().id))
+              .fetchRating(event.id, profileFirebaseConnection.getCurrentUserUid()!!)
               ?: Rating.UNRATED
 
       delay(500)

@@ -16,7 +16,9 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.LoginScreen
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.screens.SignUpScreen
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.async
@@ -31,8 +33,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-val USERNAME = "AuthEndToEndTest" + java.util.Date().time.toString()
-val EMAIL = "AuthEndToEnd@test.com" + java.util.Date().time.toString()
+val USERNAME = "AuthEndToEndTest"
+val EMAIL = "AuthEndToEnd@test.com"
 const val PASSWORD = "AuthEndToEndTest,2024;"
 
 @RunWith(AndroidJUnit4::class)
@@ -44,7 +46,9 @@ class AllTest : TestCase() {
   @After
   fun cleanUp() {
     try {
-      ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
+      runBlocking {
+        ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
+      }
       testDelete()
     } catch (e: Exception) {
       e.printStackTrace()
@@ -53,6 +57,13 @@ class AllTest : TestCase() {
 
   @Before
   fun Setup() {
+    // tries to login and delete account just in case
+    try {
+      Firebase.auth.signInWithEmailAndPassword(EMAIL, PASSWORD)
+      Firebase.auth.currentUser?.delete()
+    } catch (_: Exception) {
+      return
+    }
     runBlocking {
       val toDelete = async { profileFirebaseConnection.fetchFromUserName(USERNAME) }.await()
       if (toDelete != null) profileFirebaseConnection.delete(toDelete.id)
@@ -122,17 +133,19 @@ class AllTest : TestCase() {
       }
     }
 
-    ProfileFirebaseConnection()
-        .update(
-            FirebaseAuth.getInstance().currentUser!!.uid,
-            "interests",
-            enumValues<Interests>().toList())
+    runBlocking {
+      ProfileFirebaseConnection()
+          .update(
+              FirebaseAuth.getInstance().currentUser!!.uid,
+              "interests",
+              enumValues<Interests>().toList())
+    }
     runTest {
       async {
             val profile =
                 ProfileFirebaseConnection().fetch(FirebaseAuth.getInstance().currentUser!!.uid)
             assertNotNull(profile)
-            assertEquals(profile!!.id, FirebaseAuth.getInstance().currentUser!!.uid)
+            assertEquals(profile.id, FirebaseAuth.getInstance().currentUser!!.uid)
             assertEquals(USERNAME, profile.userName)
             assertEquals(EMAIL.lowercase(), FirebaseAuth.getInstance().currentUser?.email)
           }

@@ -1,7 +1,7 @@
 package com.github.se.gatherspot.firebase
 
 import android.util.Log
-import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.defaults.DefaultProfiles
 import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
 import java.text.DecimalFormat
@@ -24,7 +24,7 @@ class RatingFirebaseConnectionTest {
   private val secondRating = Rating.FOUR_STARS
   private val firstRating = Rating.ONE_STAR
   private val firstRater = "testRater1"
-  val organizerID = Profile.testOrganizer().id
+  val organizerID = DefaultProfiles.trivial.id
 
   private val event1 =
       Event(
@@ -41,7 +41,7 @@ class RatingFirebaseConnectionTest {
           inscriptionLimitDate = null,
           inscriptionLimitTime = null,
           categories = setOf(),
-          organizerID = Profile.testOrganizer().id,
+          organizerID = organizerID,
           registeredUsers = mutableListOf("testRating"),
           finalAttendees = listOf("testRating"),
           image = "testRating",
@@ -64,7 +64,7 @@ class RatingFirebaseConnectionTest {
           inscriptionLimitDate = null,
           inscriptionLimitTime = null,
           categories = setOf(),
-          organizerID = Profile.testOrganizer().id,
+          organizerID = organizerID,
           registeredUsers = mutableListOf("testRating"),
           finalAttendees = listOf("testRating"),
           image = "testRating",
