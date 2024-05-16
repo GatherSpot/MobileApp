@@ -35,7 +35,9 @@ import org.json.JSONArray
 
 private const val ELEMENTS_TO_DISPLAY = 5
 
-class EventUtils {
+class EventUtils(
+    private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection()
+) {
 
   /**
    * Create an event from verified data
@@ -53,9 +55,7 @@ class EventUtils {
    * @param timeLimitInscription: The last time to register for the event
    * @return The event created
    */
-  private val eventFirebaseConnection = EventFirebaseConnection()
-
-  private fun createEvent(
+  private suspend fun createEvent(
       title: String,
       description: String,
       location: Location?,
@@ -104,7 +104,7 @@ class EventUtils {
    *
    * @param event: The event to delete
    */
-  fun deleteEvent(event: Event) {
+  suspend fun deleteEvent(event: Event) {
     // Remove the event from all the users who registered for it
     val idListFirebase = IdListFirebaseConnection()
     runBlocking {
@@ -139,7 +139,7 @@ class EventUtils {
    * @return true if the data is valid
    * @throws Exception if the data is not valid
    */
-  fun validateAndCreateOrUpdateEvent(
+  suspend fun validateAndCreateOrUpdateEvent(
       title: String,
       description: String,
       location: Location?,
@@ -270,7 +270,7 @@ class EventUtils {
     }
   }
 
-  private fun editEvent(
+  private suspend fun editEvent(
       title: String,
       description: String,
       location: Location?,
@@ -460,5 +460,18 @@ class EventUtils {
     } catch (e: Exception) {
       Log.e("EventUtils", "Error deleting draft event from local storage", e)
     }
+  }
+
+  /**
+   * Check if an event is over
+   *
+   * @param event: The event to check
+   * @return true if the event is over
+   */
+  fun isEventOver(event: Event): Boolean {
+    val now = LocalDate.now()
+    val timeNow = LocalTime.now()
+    return event.eventEndDate?.isBefore(now) == true ||
+        (event.eventEndDate == now && event.timeEnding?.isBefore(timeNow) == true)
   }
 }

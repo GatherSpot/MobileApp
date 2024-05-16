@@ -444,44 +444,46 @@ fun EventDataForm(
             // Button to create the event
             Button(
                 onClick = {
-                  try {
-                    // give the event if update
-                    val newEvent =
-                        eventUtils.validateAndCreateOrUpdateEvent(
-                            title.text,
-                            description.text,
-                            location,
-                            eventStartDate.text,
-                            eventEndDate.text,
-                            eventTimeStart.text,
-                            eventTimeEnd.text,
-                            categories.toList(),
-                            maxAttendees.text,
-                            minAttendees.text,
-                            inscriptionLimitDate.text,
-                            inscriptionLimitTime.text,
-                            eventAction,
-                            event)
+                  coroutineScope.launch {
+                    try {
+                      // give the event if update
+                      val newEvent =
+                          eventUtils.validateAndCreateOrUpdateEvent(
+                              title.text,
+                              description.text,
+                              location,
+                              eventStartDate.text,
+                              eventEndDate.text,
+                              eventTimeStart.text,
+                              eventTimeEnd.text,
+                              categories.toList(),
+                              maxAttendees.text,
+                              minAttendees.text,
+                              inscriptionLimitDate.text,
+                              inscriptionLimitTime.text,
+                              eventAction,
+                              event)
 
-                    if (eventAction == EventAction.CREATE) {
-                      // viewModel.displayMyNewEvent(newEvent)
-                    } else {
-                      viewModel.editMyEvent(newEvent)
+                      if (eventAction == EventAction.CREATE) {
+                        // viewModel.displayMyNewEvent(newEvent)
+                      } else {
+                        viewModel.editMyEvent(newEvent)
+                      }
+                    } catch (e: Exception) {
+                      errorMessage = e.message.toString()
+                      showErrorDialog = true
                     }
-                  } catch (e: Exception) {
-                    errorMessage = e.message.toString()
-                    showErrorDialog = true
-                  }
-                  // Delete the draft
-                  eventUtils.deleteDraft(context)
+                    // Delete the draft
+                    eventUtils.deleteDraft(context)
 
-                  if (!showErrorDialog) {
-                    if (eventAction == EventAction.CREATE) {
-                      // Go back to the list of events
-                      nav.controller.navigate("events")
-                    } else {
-                      // Go back to the event details
-                      nav.goBack()
+                    if (!showErrorDialog) {
+                      if (eventAction == EventAction.CREATE) {
+                        // Go back to the list of events
+                        nav.controller.navigate("events")
+                      } else {
+                        // Go back to the event details
+                        nav.goBack()
+                      }
                     }
                   }
                 },
