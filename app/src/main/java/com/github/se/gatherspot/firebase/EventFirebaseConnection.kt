@@ -280,6 +280,23 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     return eventsFromQuerySnapshot(querySnapshot)
   }
 
+  suspend fun fetchEventsFromFollowedUsers(ids: List<String>): MutableList<Event> {
+    return when {
+      ids.isEmpty() -> mutableListOf()
+      else -> {
+        Log.d(TAG, "goodForCoverage")
+        val querySnapshot: QuerySnapshot =
+            Firebase.firestore
+                .collection(EVENTS)
+                .orderBy("eventID")
+                .whereIn("organizerID", ids)
+                .get()
+                .await()
+        eventsFromQuerySnapshot(querySnapshot)
+      }
+    }
+  }
+
   suspend fun addRegisteredUser(eventID: String, uid: String) {
     Firebase.firestore
         .collection(EVENTS)
@@ -444,6 +461,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         .addOnFailureListener { exception -> Log.e(TAG, "Error adding new Event", exception) }
   }
 
+  /*
   fun cleanCollection() {
     Firebase.firestore
         .collection(EVENTS)
@@ -464,6 +482,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         }
         .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
   }
+
+
 
   fun retrieveEvents() {
     Firebase.firestore
@@ -496,4 +516,6 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         }
         .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
   }
+
+     */
 }

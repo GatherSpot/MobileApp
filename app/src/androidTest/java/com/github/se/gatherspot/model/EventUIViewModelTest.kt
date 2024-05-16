@@ -168,6 +168,7 @@ class EventUIViewModelTest {
       assertEquals(false, viewModel3.canRate())
     }
   }
+
   // Copy pasted from EventRegistrationViewModelTest.kt (cannot have viewModel as attribute because
   // it must be initialized in the test)
   @Test

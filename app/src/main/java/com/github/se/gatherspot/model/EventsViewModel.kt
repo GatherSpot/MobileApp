@@ -1,9 +1,13 @@
 package com.github.se.gatherspot.model
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.utils.UtilsForTests
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,9 +20,12 @@ class EventsViewModel : ViewModel() {
   private var loadedEvents: MutableList<Event> = mutableListOf()
   private var myEvents: MutableList<Event> = mutableListOf()
   private var registeredTo: MutableList<Event> = mutableListOf()
+  private var fromFollowedUsers: MutableList<Event> = mutableListOf()
   private var loadedFilteredEvents: MutableList<Event> = mutableListOf()
   val eventFirebaseConnection = EventFirebaseConnection()
   var previousInterests = mutableListOf<Interests>()
+
+  // This is the id of the of the user logged in by default during tests.
 
   init {
     viewModelScope.launch {
@@ -36,12 +43,24 @@ class EventsViewModel : ViewModel() {
     registeredTo = eventFirebaseConnection.fetchRegisteredTo()
   }
 
+  suspend fun fetchEventsFromFollowedUsers() {
+    val ids =
+        FollowList.following(
+            FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId)
+    Log.d(TAG, "ids from viewModel ${ids.events}")
+    fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.events)
+  }
+
   fun displayMyEvents() {
     _uiState.value = UIState(myEvents)
   }
 
   fun displayRegisteredTo() {
     _uiState.value = UIState(registeredTo)
+  }
+
+  fun displayEventsFromFollowedUsers() {
+    _uiState.value = UIState(fromFollowedUsers)
   }
 
   fun updateNewRegistered(event: Event) {

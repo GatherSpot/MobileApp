@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
@@ -83,6 +84,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
     if (!init) {
       viewModel.fetchMyEvents()
       viewModel.fetchRegisteredTo()
+      viewModel.fetchEventsFromFollowedUsers()
       init = true
     }
   }
@@ -128,7 +130,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.Clear, "clear") },
-                        )
+                            modifier = Modifier.testTag("removeFilter"))
 
                         DropdownMenuItem(
                             text = { Text("YOUR EVENTS") },
@@ -149,6 +151,16 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                             },
                             leadingIcon = { Icon(Icons.Filled.Info, "registeredTo") },
                             modifier = Modifier.testTag("registeredTo"))
+
+                        DropdownMenuItem(
+                            text = { Text("FROM FOLLOWED") },
+                            onClick = {
+                              interestsSelected = mutableListOf()
+                              viewModel.displayEventsFromFollowedUsers()
+                              showDropdownMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Filled.AccountCircle, "fromFollowed") },
+                            modifier = Modifier.testTag("fromFollowed"))
 
                         filters.forEach { s -> StatefulDropdownItem(s, interestsSelected) }
                       }
