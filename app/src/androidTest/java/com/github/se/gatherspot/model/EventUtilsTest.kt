@@ -1,42 +1,43 @@
+package com.github.se.gatherspot.model
+
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
-import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
-import java.time.LocalDate
-import java.time.LocalTime
-import kotlinx.coroutines.runBlocking
+import com.github.se.gatherspot.utils.MockEventFirebaseConnection
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
+import java.time.LocalDate
+import java.time.LocalTime
 
 class EventUtilsTest {
   private val eventFirebaseConnection = EventFirebaseConnection()
   private val testEvent = DefaultEvents.trivialEvent1
-  private val eventUtils = EventUtils()
+  private val eventUtils = EventUtils(MockEventFirebaseConnection())
 
   // Write tests for validateParseEventData
   @Test
   fun validateEventData_withValidData_returnsValidEvent() = runTest {
     // validate data parse strings
     val event =
-        eventUtils.validateAndCreateOrUpdateEvent(
-            "Test Event2",
-            "This is a test event",
-            Location(0.0, 0.0, "Test Location"),
-            "12/04/2026",
-            "12/05/2026",
-            "10:00",
-            "12:00",
-            listOf(Interests.ART, Interests.SPORT),
-            "100",
-            "10",
-            "10/04/2025",
-            "09:00",
-            EventAction.CREATE)
+      eventUtils.validateAndCreateOrUpdateEvent(
+        "Test Event2",
+        "This is a test event",
+        Location(0.0, 0.0, "Test Location"),
+        "12/04/2026",
+        "12/05/2026",
+        "10:00",
+        "12:00",
+        listOf(Interests.ART, Interests.SPORT),
+        "100",
+        "10",
+        "10/04/2025",
+        "09:00",
+        EventAction.CREATE
+      )
 
     Assert.assertEquals("Test Event2", event.title)
     Assert.assertEquals("This is a test event", event.description)
@@ -52,29 +53,27 @@ class EventUtilsTest {
     Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
-    // Keep a clean database: suppress immediately the event
-    runBlocking { eventFirebaseConnection.delete(event.id) }
   }
-
   @Test
   fun validateEventDataForUpdate_withValidData_returnsValidEvent() = runTest {
     // validate data parse strings
     val event =
-        eventUtils.validateAndCreateOrUpdateEvent(
-            "Test Event2",
-            "This is a test event",
-            Location(0.0, 0.0, "Test Location"),
-            "12/04/2026",
-            "12/05/2026",
-            "10:00",
-            "12:00",
-            listOf(Interests.ART, Interests.SPORT),
-            "100",
-            "10",
-            "10/04/2025",
-            "09:00",
-            EventAction.EDIT,
-            testEvent)
+      eventUtils.validateAndCreateOrUpdateEvent(
+        "Test Event2",
+        "This is a test event",
+        Location(0.0, 0.0, "Test Location"),
+        "12/04/2026",
+        "12/05/2026",
+        "10:00",
+        "12:00",
+        listOf(Interests.ART, Interests.SPORT),
+        "100",
+        "10",
+        "10/04/2025",
+        "09:00",
+        EventAction.EDIT,
+        testEvent
+      )
 
     Assert.assertEquals("Test Event2", event.title)
     Assert.assertEquals("This is a test event", event.description)
@@ -90,10 +89,7 @@ class EventUtilsTest {
     Assert.assertEquals(LocalDate.of(2025, 4, 10), event.inscriptionLimitDate)
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
-    // Keep a clean database: suppress immediately the event
-    runBlocking { eventFirebaseConnection.delete(event.id) }
   }
-
   @Test
   fun validateEventData_withEventStartDateAfterEndDate_returnsFalse() = runTest {
     // validate data parse strings

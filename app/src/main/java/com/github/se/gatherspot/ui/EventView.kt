@@ -57,11 +57,9 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventRegistrationViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -69,17 +67,18 @@ fun EventUI(
     event: Event,
     navActions: NavigationActions,
     registrationViewModel: EventRegistrationViewModel,
-    eventsViewModel: EventsViewModel
+    eventsViewModel: EventsViewModel,
+    profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection()
 ) {
 
   val showDialogRegistration by registrationViewModel.displayAlertRegistration.observeAsState()
   val showDialogDelete by registrationViewModel.displayAlertDeletion.observeAsState()
-  val isOrganizer = event.organizerID == (Firebase.auth.currentUser?.uid!!)
+  val isOrganizer = event.organizerID == (profileFirebaseConnection.getCurrentUserUid()!!)
   val coroutineScope = rememberCoroutineScope()
 
   val organizerProfile = remember { mutableStateOf<Profile?>(null) }
   LaunchedEffect(Unit) {
-    organizerProfile.value = ProfileFirebaseConnection().fetch(event.organizerID)
+    organizerProfile.value = profileFirebaseConnection.fetch(event.organizerID)
   }
 
   val eventUtils = EventUtils()

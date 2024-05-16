@@ -12,20 +12,20 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.EventAction
-import java.io.IOException
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
+import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 private const val ELEMENTS_TO_DISPLAY = 5
 
-class EventUtils {
+class EventUtils(private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection()) {
 
   /**
    * Create an event from verified data
@@ -43,8 +43,6 @@ class EventUtils {
    * @param timeLimitInscription: The last time to register for the event
    * @return The event created
    */
-  private val eventFirebaseConnection = EventFirebaseConnection()
-
   private suspend fun createEvent(
       title: String,
       description: String,

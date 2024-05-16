@@ -14,11 +14,9 @@ import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
-class OwnProfileViewModel : ViewModel() {
+class OwnProfileViewModel(private val profileFirebaseConnection: ProfileFirebaseConnection) : ViewModel() {
   private var _profile = MutableLiveData<Profile>()
   private var _username = MutableLiveData<String>()
   private var _bio = MutableLiveData<String>()
@@ -27,7 +25,7 @@ class OwnProfileViewModel : ViewModel() {
 
   init {
     viewModelScope.launch {
-      _profile.postValue(ProfileFirebaseConnection().fetch(Firebase.auth.uid!!))
+      _profile.postValue(profileFirebaseConnection.fetch(profileFirebaseConnection.getCurrentUserUid()!!))
     }
   }
 
@@ -48,7 +46,7 @@ class OwnProfileViewModel : ViewModel() {
       _profile.value!!.userName = _username.value!!
       _profile.value!!.bio = _bio.value!!
       _profile.value!!.interests = _interests.value!!
-      viewModelScope.launch { ProfileFirebaseConnection().add(_profile.value!!) }
+      viewModelScope.launch { profileFirebaseConnection.add(_profile.value!!) }
     }
   }
 
@@ -146,11 +144,11 @@ class OwnProfileViewModel : ViewModel() {
   }
 }
 
-class ProfileViewModel(private val _target: String, private val nav: NavigationActions) :
+class ProfileViewModel(private val _target: String, private val nav: NavigationActions,private val profileFirebaseConnection: ProfileFirebaseConnection, private val followList: FollowList) :
     ViewModel() {
   private var _profile = MutableLiveData<Profile>()
-  private val _id = Firebase.auth.uid!!
-  private val _isFollowing = FollowList.isFollowing(_id, _target)
+  private val _id = profileFirebaseConnection.getCurrentUserUid()!!
+  private val _isFollowing = followList.isFollowing(_id, _target)
   val username: LiveData<String>
     get() = _profile.map { it.userName }
 
@@ -167,14 +165,14 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
     get() = _isFollowing
 
   init {
-    viewModelScope.launch { _profile.value = ProfileFirebaseConnection().fetch(_target) }
+    viewModelScope.launch { _profile.value = profileFirebaseConnection.fetch(_target) }
   }
 
   // TODO : replace ?: with hilt injection
   fun follow() {
     if (_isFollowing.isInitialized) {
-      if (_isFollowing.value!!) FollowList.unfollow(_id, _target)
-      else FollowList.follow(_id, _target)
+      if (_isFollowing.value!!) followList.unfollow(_id, _target)
+      else followList.follow(_id, _target)
       _isFollowing.value = !(_isFollowing.value!!)
     }
   }

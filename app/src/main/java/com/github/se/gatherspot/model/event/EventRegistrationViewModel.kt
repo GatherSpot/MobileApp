@@ -10,18 +10,16 @@ import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.IdList
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
-class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
-  // TODO : use hilt injection instead of hardcoded userId to remove this test handle in production
-  private val userId = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
+class EventRegistrationViewModel(registered: List<String>, profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection(), private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection(), private val idListFirebaseConnection: IdListFirebaseConnection = IdListFirebaseConnection()) : ViewModel() {
+  private val userId = profileFirebaseConnection.getCurrentUserUid()!!
 
   // LiveData for holding registration state
   private val _registrationState: MutableLiveData<RegistrationState> =
-      if (registered.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
+      if (registered.contains(userId)) {
         MutableLiveData(RegistrationState.Success)
       } else {
         MutableLiveData(RegistrationState.NoError)
@@ -44,12 +42,11 @@ class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
   init {
     viewModelScope.launch {
       registeredEventsList =
-          IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS) {}
+          idListFirebaseConnection.fetch(userId, FirebaseCollection.REGISTERED_EVENTS) {}
       delay(2000)
     }
   }
 
-  private val eventFirebaseConnection = EventFirebaseConnection()
 
   /** Registers the user for the given event */
   fun registerForEvent(event: Event) {

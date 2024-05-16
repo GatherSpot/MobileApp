@@ -13,8 +13,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
@@ -22,10 +20,8 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.utils.MockEventFirebaseConnection
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.runBlocking
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,18 +33,13 @@ class CreateEventTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @Before fun setUp() = runBlocking { testLogin() }
-
-  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
-
-  // Restructured to use EventDataFormScreen
   @Test
   fun testIsEverythingExist() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel(MockEventFirebaseConnection()))
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
@@ -146,7 +137,7 @@ class CreateEventTest {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
 
-      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel())
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel(MockEventFirebaseConnection()))
     }
 
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {

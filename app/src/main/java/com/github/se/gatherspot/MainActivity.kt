@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -74,18 +75,16 @@ class MainActivity : ComponentActivity() {
 
             navigation(startDestination = "events", route = "home") {
               composable("events") {
-                if (eventsViewModel == null) {
-                  eventsViewModel = EventsViewModel()
-                }
-                Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
+                val viewModel = viewModel<EventsViewModel>()
+                Events(viewModel = viewModel, nav = NavigationActions(navController))
               }
               composable("event/{eventJson}") { backStackEntry ->
                 val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
-
+                val viewModel = viewModel<EventRegistrationViewModel>()
                 EventUI(
                     event = eventObject,
                     navActions = NavigationActions(navController),
-                    registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
+                    registrationViewModel = viewModel,
                     eventsViewModel = eventsViewModel!!)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->

@@ -8,8 +8,6 @@ class DefaultProfiles {
     val trivial = Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))
     val trivialButDifferent =
         Profile("Jane Doe", "I am a bot", "", "TEST", setOf(Interests.BASKETBALL))
-
-    fun withId(id: String) =
-        Profile("John Doe", "I am not a bot", "", id, setOf(Interests.FOOTBALL))
+    val alternative = Profile("John Doe", "I am not a bot", "", "TEST2", setOf(Interests.FOOTBALL))
   }
 }

@@ -12,13 +12,14 @@ import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.utils.MockEventFirebaseConnection
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @RunWith(AndroidJUnit4::class)
 class EditEventTest {
@@ -66,7 +67,7 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel())
+          EventsViewModel(MockEventFirebaseConnection()))
     }
 
     // Check that every field is displayed
@@ -138,7 +139,7 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel())
+          EventsViewModel(MockEventFirebaseConnection()))
     }
 
     // Check that every field is displayed
@@ -189,7 +190,7 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel())
+          EventsViewModel(MockEventFirebaseConnection()))
     }
 
     // Check that every field is displayed

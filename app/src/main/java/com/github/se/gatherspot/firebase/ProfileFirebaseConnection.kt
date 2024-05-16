@@ -11,7 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resume
 
-class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
+open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   override val COLLECTION = FirebaseCollection.PROFILES.toString().lowercase()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
@@ -49,7 +49,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @return the UID of the user logged in the current instance, or null if the user is not logged
    *   in.
    */
-  fun getCurrentUserUid(): String? {
+  open fun getCurrentUserUid(): String? {
     return FirebaseAuth.getInstance().currentUser?.uid
   }
 
@@ -59,7 +59,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param userName the username to check
    */
-  fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
+  open fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
 
     Firebase.firestore
         .collection(COLLECTION)
@@ -75,7 +75,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param userName the username of the user
    */
-  suspend fun fetchFromUserName(userName: String): Profile? =
+  open suspend fun fetchFromUserName(userName: String): Profile? =
       suspendCancellableCoroutine { continuation ->
         Firebase.firestore
             .collection(COLLECTION)
@@ -160,7 +160,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   /** Calls the add function to update the profile in the database */
-  suspend fun update(profile: Profile) {
+  open suspend fun update(profile: Profile) {
     this.add(profile)
   }
 
