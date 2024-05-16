@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.ui
+package com.github.se.gatherspot.ui.event
 
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
@@ -48,10 +48,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.ui.EventsViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Job

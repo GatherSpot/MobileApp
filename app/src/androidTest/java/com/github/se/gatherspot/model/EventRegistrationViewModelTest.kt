@@ -5,8 +5,8 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventRegistrationViewModel
-import com.github.se.gatherspot.model.event.RegistrationState
+import com.github.se.gatherspot.ui.event.EventRegistrationViewModel
+import com.github.se.gatherspot.ui.event.RegistrationState
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import java.time.LocalDate

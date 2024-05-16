@@ -7,7 +7,7 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
-import com.github.se.gatherspot.ui.EventAction
+import com.github.se.gatherspot.ui.event.EventAction
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

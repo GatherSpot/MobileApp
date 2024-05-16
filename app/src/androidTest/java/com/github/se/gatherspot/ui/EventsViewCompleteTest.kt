@@ -10,10 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
@@ -21,6 +19,9 @@ import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.screens.ProfileScreen
+import com.github.se.gatherspot.ui.event.EventUI
+import com.github.se.gatherspot.ui.event.EventUIViewModel
+import com.github.se.gatherspot.ui.event.Events
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

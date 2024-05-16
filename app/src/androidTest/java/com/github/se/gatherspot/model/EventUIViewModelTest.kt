@@ -8,8 +8,8 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
-import com.github.se.gatherspot.model.event.EventUIViewModel
-import com.github.se.gatherspot.model.event.RegistrationState
+import com.github.se.gatherspot.ui.event.EventUIViewModel
+import com.github.se.gatherspot.ui.event.RegistrationState
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import java.time.LocalDate

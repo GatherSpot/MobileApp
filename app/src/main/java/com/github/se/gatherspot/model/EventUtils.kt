@@ -11,7 +11,7 @@ import com.github.se.gatherspot.model.event.DraftEvent
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
-import com.github.se.gatherspot.ui.EventAction
+import com.github.se.gatherspot.ui.event.EventAction
 import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalTime
@@ -27,25 +27,26 @@ private const val ELEMENTS_TO_DISPLAY = 5
 
 class EventUtils {
 
-  /**
-   * Create an event from verified data
-   *
-   * @param title: The title of the event
-   * @param description: A short description of the event
-   * @param location: The location of the event (GPS coordinates)
-   * @param eventStartDate: The date of the start the event
-   * @param eventEndDate: The date the event ends, if it is a multi-day event.
-   * @param eventTimeStart: The time in the eventStartDate the event starts
-   * @param eventTimeEnd: The time in the eventEndDate the event ends
-   * @param maxAttendees: The maximum number of attendees
-   * @param minAttendees: The minimum number of attendees (default 0)
-   * @param dateLimitInscription: The last date to register for the event
-   * @param timeLimitInscription: The last time to register for the event
-   * @return The event created
-   */
+
   private val eventFirebaseConnection = EventFirebaseConnection()
 
-  private fun createEvent(
+    /**
+     * Create an event from verified data
+     *
+     * @param title: The title of the event
+     * @param description: A short description of the event
+     * @param location: The location of the event (GPS coordinates)
+     * @param eventStartDate: The date of the start the event
+     * @param eventEndDate: The date the event ends, if it is a multi-day event.
+     * @param eventTimeStart: The time in the eventStartDate the event starts
+     * @param eventTimeEnd: The time in the eventEndDate the event ends
+     * @param maxAttendees: The maximum number of attendees
+     * @param minAttendees: The minimum number of attendees (default 0)
+     * @param dateLimitInscription: The last date to register for the event
+     * @param timeLimitInscription: The last time to register for the event
+     * @return The event created
+     */
+    private fun createEvent(
       title: String,
       description: String,
       location: Location?,

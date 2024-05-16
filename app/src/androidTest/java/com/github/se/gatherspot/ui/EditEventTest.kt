@@ -6,11 +6,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
+import com.github.se.gatherspot.ui.event.EditEvent
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
@@ -67,7 +67,8 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel())
+          EventsViewModel()
+      )
     }
 
     // Check that every field is displayed
@@ -139,7 +140,8 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel())
+          EventsViewModel()
+      )
     }
 
     // Check that every field is displayed
@@ -190,7 +192,8 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel())
+          EventsViewModel()
+      )
     }
 
     // Check that every field is displayed

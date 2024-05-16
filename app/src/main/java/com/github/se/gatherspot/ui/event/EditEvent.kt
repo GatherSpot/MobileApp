@@ -1,9 +1,9 @@
-package com.github.se.gatherspot.ui
+package com.github.se.gatherspot.ui.event
 
 import androidx.compose.runtime.Composable
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.ui.EventsViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
 /** Composable function that give the GUI to edit an event */

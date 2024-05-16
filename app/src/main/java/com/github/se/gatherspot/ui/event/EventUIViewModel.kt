@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.model.event
+package com.github.se.gatherspot.ui.event
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -9,6 +9,7 @@ import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
+import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
