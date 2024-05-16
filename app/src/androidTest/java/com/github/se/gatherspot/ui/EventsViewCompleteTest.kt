@@ -23,8 +23,8 @@ import com.github.se.gatherspot.ui.TopLevelDestinations.Events
 import com.github.se.gatherspot.ui.TopLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.TopLevelDestinations.Profile
 import com.github.se.gatherspot.ui.TopLevelDestinations.ViewProfile
-import com.github.se.gatherspot.ui.event.EventUI
-import com.github.se.gatherspot.ui.event.EventUIViewModel
+import com.github.se.gatherspot.ui.eventUI.EventUI
+import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

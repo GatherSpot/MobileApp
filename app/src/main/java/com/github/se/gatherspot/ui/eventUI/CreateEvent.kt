@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.ui.event
+package com.github.se.gatherspot.ui.eventUI
 
 // GUI to create an event
 

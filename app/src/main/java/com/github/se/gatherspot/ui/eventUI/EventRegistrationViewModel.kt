@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.ui.event
+package com.github.se.gatherspot.ui.eventUI
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -71,7 +71,7 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
       if (!(event.registeredUsers.contains(userId))) {
         event.registeredUsers.add(userId)
         eventFirebaseConnection.addRegisteredUser(event.id, userId)
-        registeredEventsList!!.add(event.id)
+        registeredEventsList.add(event.id)
         _registrationState.value = RegistrationState.Success
       }
     }

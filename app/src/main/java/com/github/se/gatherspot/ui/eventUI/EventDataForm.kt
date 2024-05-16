@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.ui.event
+package com.github.se.gatherspot.ui.eventUI
 
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
@@ -71,7 +71,7 @@ private val CREATE_SPECIFIC_MESSAGES: List<String> =
 private val EDIT_SPECIFIC_MESSAGES: List<String> =
     listOf("Edit an event", "Edit event", "Error on the event edition")
 private val MESSAGES = arrayOf(CREATE_SPECIFIC_MESSAGES, EDIT_SPECIFIC_MESSAGES)
-private val EventFirebaseConnection = EventFirebaseConnection()
+private val eventFirebaseConnection = EventFirebaseConnection()
 
 /** Composable routine that creates a scrollable Box with the content passed as a parameter */
 @Composable
