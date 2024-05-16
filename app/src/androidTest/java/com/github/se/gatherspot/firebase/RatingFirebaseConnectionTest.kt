@@ -25,7 +25,7 @@ class RatingFirebaseConnectionTest {
   fun setup() {
     runTest {
       val unrated = Rating.UNRATED
-      ratingFirebaseConnection.update(eventID, userID, unrated, organizerID )
+      ratingFirebaseConnection.update(eventID, userID, unrated, organizerID)
       async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
       ratingFirebaseConnection.update(eventID, firstRater, unrated, organizerID)
       async { ratingFirebaseConnection.fetchRating(eventID, firstRater) }.await()
@@ -78,7 +78,7 @@ class RatingFirebaseConnectionTest {
   fun testFetchRatings() {
     runTest {
       ratingFirebaseConnection.update(eventID, userID, rating, organizerID)
-      ratingFirebaseConnection.update(eventID, secondRater, secondRating,organizerID)
+      ratingFirebaseConnection.update(eventID, secondRater, secondRating, organizerID)
       val fetched = async { ratingFirebaseConnection.fetchRatings(eventID) }.await()
       Log.d("RatingFirebaseConnectionTest", "Ratings are ${fetched.toString()}")
       assertNotNull(fetched)
