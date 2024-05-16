@@ -6,6 +6,7 @@ import com.github.se.gatherspot.defaults.DefaultEvents
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.auth.FirebaseAuth
+import kotlin.time.Duration
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -14,7 +15,6 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import kotlin.time.Duration
 
 class EventFirebaseConnectionTest {
 
@@ -59,108 +59,100 @@ class EventFirebaseConnectionTest {
   }
 
   @Test
-  fun fetchNextReturnsDistinctEvents() =
-      runTest {
-        val round = 5
-        lateinit var listOfEvents1: MutableList<Event>
-        runBlocking { listOfEvents1 = eventFirebaseConnection.fetchNextEvents(round.toLong()) }
-        assert(round >= listOfEvents1.size)
-        lateinit var listOfEvents2: MutableList<Event>
-        runBlocking { listOfEvents2 = eventFirebaseConnection.fetchNextEvents(round.toLong()) }
-        assert(round >= listOfEvents2.size)
-        for (i in 0 until listOfEvents1.size) {
-          for (j in 0 until listOfEvents2.size) {
-            assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
-          }
-        }
-        eventFirebaseConnection.offset = null
+  fun fetchNextReturnsDistinctEvents() = runTest {
+    val round = 5
+    lateinit var listOfEvents1: MutableList<Event>
+    runBlocking { listOfEvents1 = eventFirebaseConnection.fetchNextEvents(round.toLong()) }
+    assert(round >= listOfEvents1.size)
+    lateinit var listOfEvents2: MutableList<Event>
+    runBlocking { listOfEvents2 = eventFirebaseConnection.fetchNextEvents(round.toLong()) }
+    assert(round >= listOfEvents2.size)
+    for (i in 0 until listOfEvents1.size) {
+      for (j in 0 until listOfEvents2.size) {
+        assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
       }
+    }
+    eventFirebaseConnection.offset = null
+  }
 
   @Test
-  fun fetchNextBasedOnInterestReturnsCorrectEvents() =
-      runTest {
-        val events =
-            listOf(
-                DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "1"),
-                DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "2"),
-                DefaultEvents.withInterests(Interests.CHESS, Interests.BASKETBALL, eventId = "3"),
-                DefaultEvents.withInterests(Interests.ART, eventId = "4"),
-                DefaultEvents.withInterests(eventId = "5"),
-                DefaultEvents.withInterests(
-                    Interests.BOARD_GAMES, Interests.ROLE_PLAY, eventId = "6"))
-        runBlocking { events.forEach { eventFirebaseConnection.add(it) } }
-        val round = 2
-        val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
-        lateinit var listOfEvents1: MutableList<Event>
-        runBlocking {
-          listOfEvents1 =
-              eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
-        }
-        lateinit var listOfEvents2: MutableList<Event>
-        runBlocking {
-          listOfEvents2 =
-              eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
-        }
-        // unsafe inside assert is not a problem, since if it is empty the test has indeed failed
-        assert(listOfEvents1.all { (interests.union(it.categories!!).isNotEmpty()) })
-        assert(listOfEvents2.all { interests.union(it.categories!!).isNotEmpty() })
-        eventFirebaseConnection.offset = null
-        runBlocking {
-          testLoginCleanUp()
-          events.forEach { eventFirebaseConnection.delete(it.id) }
-        }
-      }
+  fun fetchNextBasedOnInterestReturnsCorrectEvents() = runTest {
+    val events =
+        listOf(
+            DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "1"),
+            DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "2"),
+            DefaultEvents.withInterests(Interests.CHESS, Interests.BASKETBALL, eventId = "3"),
+            DefaultEvents.withInterests(Interests.ART, eventId = "4"),
+            DefaultEvents.withInterests(eventId = "5"),
+            DefaultEvents.withInterests(Interests.BOARD_GAMES, Interests.ROLE_PLAY, eventId = "6"))
+    runBlocking { events.forEach { eventFirebaseConnection.add(it) } }
+    val round = 2
+    val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
+    lateinit var listOfEvents1: MutableList<Event>
+    runBlocking {
+      listOfEvents1 = eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+    }
+    lateinit var listOfEvents2: MutableList<Event>
+    runBlocking {
+      listOfEvents2 = eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+    }
+    // unsafe inside assert is not a problem, since if it is empty the test has indeed failed
+    assert(listOfEvents1.all { (interests.union(it.categories!!).isNotEmpty()) })
+    assert(listOfEvents2.all { interests.union(it.categories!!).isNotEmpty() })
+    eventFirebaseConnection.offset = null
+    runBlocking {
+      testLoginCleanUp()
+      events.forEach { eventFirebaseConnection.delete(it.id) }
+    }
+  }
 
   @Test
-  fun fetchNextBasedOnInterestReturnsDistinctEvents() =
-      runTest {
-        val events =
-            listOf(
-                DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "1"),
-                DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "2"),
-                DefaultEvents.withInterests(Interests.CHESS, Interests.BASKETBALL, eventId = "3"),
-                DefaultEvents.withInterests(Interests.ART, eventId = "4"),
-                DefaultEvents.withInterests(eventId = "5"),
-                DefaultEvents.withInterests(
-                    Interests.BOARD_GAMES, Interests.ROLE_PLAY, eventId = "6"))
-        runBlocking { events.forEach { eventFirebaseConnection.add(it) } }
-        val round = 2
-        val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
-        val listOfEvents1 =
-            eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
-        val listOfEvents2 =
-            eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
-        for (i in 0 until listOfEvents1.size) {
-          for (j in 0 until listOfEvents2.size) {
-            assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
-          }
-        }
-        eventFirebaseConnection.offset = null
-        runBlocking { events.forEach { eventFirebaseConnection.delete(it.id) } }
+  fun fetchNextBasedOnInterestReturnsDistinctEvents() = runTest {
+    val events =
+        listOf(
+            DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "1"),
+            DefaultEvents.withInterests(Interests.ART, Interests.BASKETBALL, eventId = "2"),
+            DefaultEvents.withInterests(Interests.CHESS, Interests.BASKETBALL, eventId = "3"),
+            DefaultEvents.withInterests(Interests.ART, eventId = "4"),
+            DefaultEvents.withInterests(eventId = "5"),
+            DefaultEvents.withInterests(Interests.BOARD_GAMES, Interests.ROLE_PLAY, eventId = "6"))
+    runBlocking { events.forEach { eventFirebaseConnection.add(it) } }
+    val round = 2
+    val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
+    val listOfEvents1 =
+        eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+    val listOfEvents2 =
+        eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+    for (i in 0 until listOfEvents1.size) {
+      for (j in 0 until listOfEvents2.size) {
+        assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
       }
+    }
+    eventFirebaseConnection.offset = null
+    runBlocking { events.forEach { eventFirebaseConnection.delete(it.id) } }
+  }
 
   @Test
-  fun fetchMyEventsWorks() =
-      runTest {
-        runBlocking { testLogin() }
-        val myID = FirebaseAuth.getInstance().currentUser!!.uid
-        val events =
-            listOf(
-                DefaultEvents.withAuthor(myID, eventId = "1"),
-                DefaultEvents.withAuthor(myID, eventId = "2"),
-                DefaultEvents.withAuthor(myID, eventId = "3"),
-                DefaultEvents.withAuthor("2", eventId = "4"),
-                DefaultEvents.withAuthor("2", eventId = "5"),
-            )
-        runBlocking { events.forEach { eventFirebaseConnection.add(it) } }
-        val resultEvents = eventFirebaseConnection.fetchMyEvents()
-        assert(resultEvents.all { event -> event.organizerID == myID })
+  fun fetchMyEventsWorks() = runTest {
+    runBlocking { testLogin() }
+    val myID = FirebaseAuth.getInstance().currentUser!!.uid
+    val events =
+        listOf(
+            DefaultEvents.withAuthor(myID, eventId = "1"),
+            DefaultEvents.withAuthor(myID, eventId = "2"),
+            DefaultEvents.withAuthor(myID, eventId = "3"),
+            DefaultEvents.withAuthor("2", eventId = "4"),
+            DefaultEvents.withAuthor("2", eventId = "5"),
+        )
+    runBlocking { events.forEach { eventFirebaseConnection.add(it) } }
+    val resultEvents = eventFirebaseConnection.fetchMyEvents()
+    assert(resultEvents.all { event -> event.organizerID == myID })
 
-        runBlocking {
-          testLoginCleanUp()
-          events.forEach { eventFirebaseConnection.delete(it.id) }
-        }
-      }
+    runBlocking {
+      testLoginCleanUp()
+      events.forEach { eventFirebaseConnection.delete(it.id) }
+    }
+  }
 
   @Test
   fun fetchRegisteredToWorks() =
@@ -188,18 +180,17 @@ class EventFirebaseConnectionTest {
       }
 
   @Test
-  fun deleteEvent() =
-      runTest {
-        val event = DefaultEvents.trivialEvent1
-        eventFirebaseConnection.add(event)
-        var resultEvent: Event? = null
-        runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
-        assertNotNull(resultEvent)
-        assertEquals(resultEvent!!.id, event.id)
-        eventFirebaseConnection.delete(event.id)
-        runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
-        assertEquals(resultEvent, null)
-      }
+  fun deleteEvent() = runTest {
+    val event = DefaultEvents.trivialEvent1
+    eventFirebaseConnection.add(event)
+    var resultEvent: Event? = null
+    runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
+    assertNotNull(resultEvent)
+    assertEquals(resultEvent!!.id, event.id)
+    eventFirebaseConnection.delete(event.id)
+    runBlocking { resultEvent = eventFirebaseConnection.fetch(event.id) }
+    assertEquals(resultEvent, null)
+  }
 
   @Test
   fun mapStringToTimeTest() = runTest {
