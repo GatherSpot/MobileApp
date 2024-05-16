@@ -13,14 +13,14 @@ import com.github.se.gatherspot.screens.ChatMessagesScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.firestore.FirebaseFirestore
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.runBlocking
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import kotlinx.coroutines.runBlocking
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ChatUITest {
@@ -29,49 +29,48 @@ class ChatUITest {
 
   @Test
   fun testEverythingExists() {
-    val eventId = UUID.randomUUID().toString()
     val eventFirebaseConnection = EventFirebaseConnection()
+    val eventId = UUID.randomUUID().toString()
     val chatViewModel = ChatViewModel(eventId)
-    composeTestRule.setContent {
-      val event =
+
+    val event =
         Event(
-          id = eventId,
-          title = "Test Event",
-          description = "This is a test event",
-          location = Location(0.0, 0.0, "Test Location"),
-          eventStartDate =
-          LocalDate.parse(
-            "12/04/2026",
-            DateTimeFormatter.ofPattern(
-              com.github.se.gatherspot.firebase.EventFirebaseConnection
-                .DATE_FORMAT_DISPLAYED)),
-          eventEndDate =
-          LocalDate.parse(
-            "12/05/2026",
-            DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
-          timeBeginning =
-          LocalTime.parse(
-            "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          timeEnding =
-          LocalTime.parse(
-            "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          attendanceMaxCapacity = 100,
-          attendanceMinCapacity = 10,
-          inscriptionLimitDate =
-          LocalDate.parse(
-            "10/04/2025",
-            DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
-          inscriptionLimitTime =
-          LocalTime.parse(
-            "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
-          eventStatus = EventStatus.CREATED,
-          categories = setOf(Interests.CHESS),
-          registeredUsers = mutableListOf("my_id"),
-          finalAttendees = emptyList(),
-          image = "",
-          globalRating = null,
-          organizerID = "my_id")
-      runBlocking { eventFirebaseConnection.add(event) }
+            id = eventId,
+            title = "Test Event",
+            description = "This is a test event",
+            location = Location(0.0, 0.0, "Test Location"),
+            eventStartDate =
+                LocalDate.parse(
+                    "12/04/2026",
+                    DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
+            eventEndDate =
+                LocalDate.parse(
+                    "12/05/2026",
+                    DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
+            timeBeginning =
+                LocalTime.parse(
+                    "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
+            timeEnding =
+                LocalTime.parse(
+                    "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
+            attendanceMaxCapacity = 100,
+            attendanceMinCapacity = 10,
+            inscriptionLimitDate =
+                LocalDate.parse(
+                    "10/04/2025",
+                    DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
+            inscriptionLimitTime =
+                LocalTime.parse(
+                    "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
+            eventStatus = EventStatus.CREATED,
+            categories = setOf(Interests.CHESS),
+            registeredUsers = mutableListOf("my_id"),
+            finalAttendees = emptyList(),
+            image = "",
+            globalRating = null,
+            organizerID = "user1")
+    runBlocking { eventFirebaseConnection.add(event) }
+    composeTestRule.setContent {
       chatViewModel.addMessage(UUID.randomUUID().toString(), "user1", "Hello")
       ChatUI(chatViewModel, "user1", NavigationActions(rememberNavController()))
     }
@@ -94,10 +93,10 @@ class ChatUITest {
       sendButton.assertIsDisplayed()
     }
     FirebaseFirestore.getInstance()
-      .collection(chatViewModel.chatMessagesFirebase.CHATS)
-      .document(eventId)
-      .delete()
-      .addOnFailureListener {}
+        .collection(chatViewModel.chatMessagesFirebase.CHATS)
+        .document(eventId)
+        .delete()
+        .addOnFailureListener {}
     runBlocking { eventFirebaseConnection.delete(eventId) }
   }
 }
