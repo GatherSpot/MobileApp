@@ -82,8 +82,8 @@ class EventUIViewModelTest {
     // Set up the test environment
     EnvironmentSetter.testLogin()
     // Unrate events
-    ratingFirebaseConnection.update(event.id, testLoginUID, Rating.UNRATED)
-    ratingFirebaseConnection.update(organizedEvent.id, testLoginUID, Rating.UNRATED)
+    ratingFirebaseConnection.update(event.id, testLoginUID, Rating.UNRATED, "T1qNNU05QeeqB2OqIBb7GAtQd093")
+    ratingFirebaseConnection.update(organizedEvent.id, testLoginUID, Rating.UNRATED, testLoginUID)
 
     // Add profile to database
     val profile1 = Profile("organizer", "bio", "image", "T1qNNU05QeeqB2OqIBb7GAtQd093", setOf())

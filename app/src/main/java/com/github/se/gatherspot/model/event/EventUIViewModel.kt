@@ -61,7 +61,7 @@ class EventUIViewModel(private val event: Event) :
         return@launch
       } else {
         _rating.value = newRating
-        RatingFirebaseConnection().update(event.id, userID, newRating)
+        RatingFirebaseConnection().update(event.id, userID, newRating, event.organizerID)
       }
     }
   }
