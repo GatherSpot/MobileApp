@@ -11,8 +11,6 @@ import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -35,7 +33,7 @@ class EventUIViewModel(
   private lateinit var _organizer: Profile
   private lateinit var _attendees: List<String>
   private var _rating = MutableLiveData<Rating>()
-  private val userID = Firebase.auth.currentUser?.uid ?: "TEST"
+  private val userID = profileFirebaseConnection.getCurrentUserUid()!!
 
   init {
     viewModelScope.launch {

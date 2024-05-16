@@ -480,7 +480,7 @@ class EventUtilsTest {
 
   @Test
   fun eventIsOverTestNotOver() {
-    assert(!eventUtils.isEventOver(testEvent))
+    assert(!EventUtils().isEventOver(testEvent))
   }
 
   @Test
@@ -502,6 +502,6 @@ class EventUtilsTest {
             eventStatus = EventStatus.COMPLETED,
             globalRating = null,
             image = "")
-    assert(eventUtils.isEventOver(event))
+    assert(EventUtils().isEventOver(event))
   }
 }

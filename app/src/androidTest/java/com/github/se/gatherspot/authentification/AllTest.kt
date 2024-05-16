@@ -57,11 +57,13 @@ class AllTest : TestCase() {
 
   @Before
   fun Setup() {
-    //tries to login and delete account just in case
+    // tries to login and delete account just in case
     try {
       Firebase.auth.signInWithEmailAndPassword(EMAIL, PASSWORD)
       Firebase.auth.currentUser?.delete()
-    }catch(_:Exception){return}
+    } catch (_: Exception) {
+      return
+    }
     runBlocking {
       val toDelete = async { profileFirebaseConnection.fetchFromUserName(USERNAME) }.await()
       if (toDelete != null) profileFirebaseConnection.delete(toDelete.id)

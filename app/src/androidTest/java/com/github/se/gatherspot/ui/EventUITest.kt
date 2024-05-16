@@ -259,9 +259,10 @@ class EventUITest {
           MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
-      Log.e("In the list", event.registeredUsers.contains("MC").toString())
-      Log.e("isEventOver", EventUtils().isEventOver(event).toString())
+      val tag = "eventUiTest"
+      Log.e(tag, eventUIViewModel.isOrganizer().toString())
+      Log.e(tag, event.registeredUsers.contains("MC").toString())
+      Log.e(tag, EventUtils().isEventOver(event).toString())
       assert(eventUIViewModel.canRate())
       starRow {
         performScrollTo()
