@@ -47,7 +47,6 @@ class EventUITest {
     }
   }
 
-  @After
   fun cleanUp() {
     testLoginCleanUp()
     runBlocking {
