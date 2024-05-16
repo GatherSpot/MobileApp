@@ -108,18 +108,18 @@ class EventUIViewModelTest {
 
       val viewModel = EventUIViewModel(event)
       delay(1000)
-      assertEquals(Rating.UNRATED, viewModel.rating.value)
+      assertEquals(Rating.UNRATED, viewModel.ownRating.value)
 
       viewModel.rateEvent(Rating.FIVE_STARS) // Rate event he didn't attend
 
       delay(1000)
-      assertEquals(Rating.UNRATED, viewModel.rating.value)
+      assertEquals(Rating.UNRATED, viewModel.ownRating.value)
 
       // register for the event
       event.registeredUsers.add(uid!!)
       viewModel.rateEvent(Rating.FIVE_STARS) // rate event he registered to
       delay(1000)
-      assertEquals(Rating.FIVE_STARS, viewModel.rating.value)
+      assertEquals(Rating.FIVE_STARS, viewModel.ownRating.value)
 
       var fetched: Rating? = Rating.ONE_STAR
       async { fetched = ratingFirebaseConnection.fetchRating(event.id, uid) }.await()
@@ -133,10 +133,10 @@ class EventUIViewModelTest {
       // rate event he organized
       val viewModel2 = EventUIViewModel(organizedEvent)
       delay(1000)
-      assertEquals(Rating.UNRATED, viewModel2.rating.value)
+      assertEquals(Rating.UNRATED, viewModel2.ownRating.value)
       viewModel2.rateEvent(Rating.FIVE_STARS) // rate event he organized
       delay(1000)
-      assertEquals(Rating.UNRATED, viewModel2.rating.value)
+      assertEquals(Rating.UNRATED, viewModel2.ownRating.value)
     }
   }
 

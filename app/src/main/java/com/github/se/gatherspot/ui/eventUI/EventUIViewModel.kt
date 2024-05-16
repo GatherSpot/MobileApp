@@ -23,8 +23,11 @@ class EventUIViewModel(private val event: Event) :
   // On launch (Fetch organizer, Fetch registered)
   private lateinit var _organizer: Profile
   private lateinit var _attendees: List<String>
-  private var _rating = MutableLiveData<Rating>()
+  private var _ownRating = MutableLiveData<Rating>()
+    private var _organizerRating = MutableLiveData<Double>()
+    private var _eventRating = MutableLiveData<Double>()
   private val userID = Firebase.auth.currentUser?.uid ?: "TEST"
+    private val ratingFirebaseConnection = RatingFirebaseConnection()
 
   init {
     viewModelScope.launch {
@@ -33,17 +36,26 @@ class EventUIViewModel(private val event: Event) :
           "Fetching organizer and registered users organizerID : ${event.organizerID}, eventID : ${event.id}")
       _organizer =
           ProfileFirebaseConnection().fetch(event.organizerID) {} ?: Profile.testOrganizer()
-      _rating.value =
-          RatingFirebaseConnection()
+      _ownRating.value =
+          ratingFirebaseConnection
               .fetchRating(
                   event.id, (Firebase.auth.currentUser?.uid ?: Profile.testParticipant().id))
               ?: Rating.UNRATED
+        _organizerRating.value =
+            ratingFirebaseConnection
+                .fetchOrganizerGlobalRating(event.organizerID) ?: 0.0
+        _eventRating.value =
+            ratingFirebaseConnection
+                .fetchEventGlobalRating(event.id) ?: 0.0
+
 
       delay(500)
     }
   }
 
-  val rating: LiveData<Rating> = _rating
+  val ownRating: LiveData<Rating> = _ownRating
+    val organizerRating : LiveData<Double> = _organizerRating
+    val eventRating : LiveData<Double> = _eventRating
 
   fun rateEvent(newRating: Rating) {
     viewModelScope.launch {
@@ -61,8 +73,11 @@ class EventUIViewModel(private val event: Event) :
         Log.e("RateEvent", "User $userID cannot rate the event ${event.id} that he didn't attend")
         return@launch
       } else {
-        _rating.value = newRating
-        RatingFirebaseConnection().update(event.id, userID, newRating, event.organizerID)
+        _ownRating.value = newRating
+        ratingFirebaseConnection.update(event.id, userID, newRating, event.organizerID)
+          delay(1000)
+          _eventRating.value = ratingFirebaseConnection.fetchEventGlobalRating(event.id) ?: 0.0
+          _organizerRating.value = ratingFirebaseConnection.fetchOrganizerGlobalRating(organizerID = event.organizerID) ?: 0.0
       }
     }
   }
