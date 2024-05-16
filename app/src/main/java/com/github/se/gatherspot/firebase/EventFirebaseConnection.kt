@@ -267,6 +267,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
   suspend fun fetchRegisteredTo(): MutableList<Event> {
+    Log.d(FirebaseAuth.getInstance().currentUser?.uid ?: "forTest", "fetchRegisteredTo: ")
     val querySnapshot: QuerySnapshot =
         Firebase.firestore
             .collection(EVENTS)
