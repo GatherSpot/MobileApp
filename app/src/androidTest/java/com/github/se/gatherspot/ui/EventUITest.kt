@@ -26,7 +26,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -40,8 +39,7 @@ class EventUITest {
       testLogin()
       profileFirebaseConnection.add(Profile.testOrganizer())
       profileFirebaseConnection.add(Profile.testParticipant())
-      profileFirebaseConnection.add(
-          Profile("testLogin", "", "image", testLoginUID, setOf()))
+      profileFirebaseConnection.add(Profile("testLogin", "", "image", testLoginUID, setOf()))
       async { profileFirebaseConnection.fetch(Profile.testOrganizer().id) }.await()
       async { profileFirebaseConnection.fetch(testLoginUID) }.await()
     }
