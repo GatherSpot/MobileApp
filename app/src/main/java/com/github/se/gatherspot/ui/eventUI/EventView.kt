@@ -62,9 +62,9 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.GeoMap
-import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import java.time.format.DateTimeFormatter

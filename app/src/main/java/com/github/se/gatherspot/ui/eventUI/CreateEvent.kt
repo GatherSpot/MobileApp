@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 
 /** Composable function that gives the GUI to create an event */
 @OptIn(ExperimentalMaterial3Api::class)

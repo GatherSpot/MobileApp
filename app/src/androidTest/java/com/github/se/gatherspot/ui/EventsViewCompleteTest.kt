@@ -19,13 +19,13 @@ import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.screens.EditProfileScreen
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.EventsScreen
+import com.github.se.gatherspot.ui.eventUI.EventUI
+import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
+import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.Profile
 import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
-import com.github.se.gatherspot.ui.eventUI.EventUI
-import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
-import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.kakaocup.compose.node.element.ComposeScreen

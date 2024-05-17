@@ -30,6 +30,12 @@ import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
+import com.github.se.gatherspot.ui.eventUI.CreateEvent
+import com.github.se.gatherspot.ui.eventUI.EditEvent
+import com.github.se.gatherspot.ui.eventUI.EventUI
+import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
+import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.github.se.gatherspot.ui.topLevelDestinations.ChatUI
 import com.github.se.gatherspot.ui.topLevelDestinations.Chats
 import com.github.se.gatherspot.ui.topLevelDestinations.Events
@@ -40,12 +46,6 @@ import com.github.se.gatherspot.ui.topLevelDestinations.Profile
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.github.se.gatherspot.ui.topLevelDestinations.SignUp
 import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
-import com.github.se.gatherspot.ui.eventUI.CreateEvent
-import com.github.se.gatherspot.ui.eventUI.EditEvent
-import com.github.se.gatherspot.ui.eventUI.EventUI
-import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
-import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
