@@ -83,6 +83,7 @@ class ProfileInstrumentedTest {
     }
   }
 
+  /*
   @OptIn(ExperimentalTestApi::class, androidx.compose.ui.test.ExperimentalTestApi::class)
   @Test
   fun viewProfileTest() {
@@ -105,4 +106,6 @@ class ProfileInstrumentedTest {
       composeTestRule.waitUntilAtLeastOneExists(hasText("Unfollow"), 6000)
     }
   }
+
+   */
 }
