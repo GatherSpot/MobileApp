@@ -62,6 +62,9 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventUIViewModel
+import com.github.se.gatherspot.model.event.RegistrationState
+import com.github.se.gatherspot.model.getEventImageHeader
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.GeoMap
@@ -165,20 +168,7 @@ fun EventUI(
                     .padding(8.dp)
                     .testTag("eventColumn")
                     .verticalScroll(rememberScrollState())) {
-              if (event.image.isNotEmpty()) {
-                // TODO : implement this using coil
-                //                Image(
-                //                    bitmap = img,
-                //                    contentDescription = "Event Image",
-                //                    modifier =
-                // Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                //                    contentScale = ContentScale.FillBounds)
-              } else
-                  Image(
-                      painter = painterResource(id = R.drawable.default_event_image),
-                      contentDescription = "Default Event Image",
-                      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                      contentScale = ContentScale.FillBounds)
+              EventTypeIcon(event.categories)
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -424,6 +414,16 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
         }
       }
 }
+
+@Composable
+fun EventTypeIcon(eventCategories: Set<Interests>?) {
+  Image(
+      painter = painterResource(id = getEventImageHeader(eventCategories)),
+      contentDescription = "Default Event Image",
+      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
+      contentScale = ContentScale.Crop)
+}
+
 
 /**
  * StarRating displays 5 stars, where the user can click on a star to rate the event from 1 to 5
