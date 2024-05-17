@@ -1,10 +1,11 @@
-package com.github.se.gatherspot.ui.TopLevelDestinations
+package com.github.se.gatherspot.ui.topLevelDestinations
 
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.utils.UtilsForTests

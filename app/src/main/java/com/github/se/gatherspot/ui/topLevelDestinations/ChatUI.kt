@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.ui.TopLevelDestinations
+package com.github.se.gatherspot.ui.topLevelDestinations
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues

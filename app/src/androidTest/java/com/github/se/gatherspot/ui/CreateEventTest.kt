@@ -20,7 +20,7 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
-import com.github.se.gatherspot.ui.TopLevelDestinations.EventsViewModel
+import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.eventUI.CreateEvent
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen

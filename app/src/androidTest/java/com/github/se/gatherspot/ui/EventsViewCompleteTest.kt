@@ -19,11 +19,10 @@ import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.screens.EditProfileScreen
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.EventsScreen
-import com.github.se.gatherspot.screens.ProfileScreen
-import com.github.se.gatherspot.ui.TopLevelDestinations.Events
-import com.github.se.gatherspot.ui.TopLevelDestinations.EventsViewModel
-import com.github.se.gatherspot.ui.TopLevelDestinations.Profile
-import com.github.se.gatherspot.ui.TopLevelDestinations.ViewProfile
+import com.github.se.gatherspot.ui.topLevelDestinations.Events
+import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
+import com.github.se.gatherspot.ui.topLevelDestinations.Profile
+import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
 import com.github.se.gatherspot.ui.eventUI.EventUI
 import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions

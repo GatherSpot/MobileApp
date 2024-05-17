@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.github.se.gatherspot.ui.TopLevelDestinations
+package com.github.se.gatherspot.ui.topLevelDestinations
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.model.FollowList
+import com.github.se.gatherspot.ui.FollowListUI
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.profile.ProfileView
@@ -31,12 +32,12 @@ fun Profile(nav: NavigationActions) {
     composable("view") { ProfileView().ViewOwnProfile(nav, viewModel, navController) }
     composable("edit") { ProfileView().EditOwnProfile(nav, viewModel, navController) }
     composable("followers") {
-      FollowList(nav, navController, title = "Followers") {
+      FollowListUI(nav, navController, title = "Followers") {
         FollowList.followers(FirebaseAuth.getInstance().currentUser?.uid ?: "TEST")
       }
     }
     composable("following") {
-      FollowList(nav, navController, title = "Following") {
+      FollowListUI(nav, navController, title = "Following") {
         FollowList.following(FirebaseAuth.getInstance().currentUser?.uid ?: "TEST")
       }
     }

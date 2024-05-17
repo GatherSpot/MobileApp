@@ -51,7 +51,7 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
-import com.github.se.gatherspot.ui.TopLevelDestinations.EventsViewModel
+import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Job

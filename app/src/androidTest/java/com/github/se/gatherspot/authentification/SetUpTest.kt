@@ -13,7 +13,7 @@ import androidx.navigation.navigation
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.SetUpScreen
-import com.github.se.gatherspot.ui.TopLevelDestinations.SetUpProfile
+import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen

@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.ui.TopLevelDestinations
+package com.github.se.gatherspot.ui.topLevelDestinations
 
 import android.Manifest
 import android.os.Build

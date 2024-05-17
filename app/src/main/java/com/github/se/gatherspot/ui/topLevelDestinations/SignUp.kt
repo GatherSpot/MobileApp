@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.ui.TopLevelDestinations
+package com.github.se.gatherspot.ui.topLevelDestinations
 
 import android.content.ContentValues.TAG
 import android.util.Log

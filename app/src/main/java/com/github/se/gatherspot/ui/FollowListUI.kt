@@ -41,7 +41,7 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
 @Composable
-fun FollowList(
+fun FollowListUI(
     navActions: NavigationActions,
     nav: NavController,
     title: String,
