@@ -13,7 +13,6 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
@@ -23,22 +22,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
-  val email = "gatherspot2024@gmail.com"
-  val userName = "GatherSpot"
-  val password = "GatherSpot,2024;"
-  val profileFirebaseConnection = ProfileFirebaseConnection()
-  val unavailableUsername = "test"
-  val inUseEmail = "test@test.com"
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -56,36 +46,11 @@ class SignUpTest : TestCase() {
     }
   }
 
-  @Before
-  fun setUp() {
-    runBlocking {
-      Firebase.auth.createUserWithEmailAndPassword(inUseEmail, "Test,2024;")
-
-      profileFirebaseConnection.ifUsernameExists(unavailableUsername) {
-        if (!it) {
-          ProfileFirebaseConnection()
-              .add(
-                  Profile(
-                      _userName = unavailableUsername,
-                      _bio = "bio",
-                      _image = "image",
-                      id = profileFirebaseConnection.getNewID(),
-                      _interests = setOf()))
-        }
-      }
-      Firebase.auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-        if (it.isSuccessful) {
-          ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
-        }
-      }
-
-      delay(2000)
-    }
-  }
-
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUp() {
+    val email = "gatherspot2024@gmail.com"
+    val userName = "GatherSpot"
     // signUpSetUp(userName, email)
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -115,7 +80,7 @@ class SignUpTest : TestCase() {
       passwordField {
         assertExists()
         assertIsDisplayed()
-        performTextInput(password)
+        performTextInput("GatherSpot,2024;")
       }
       Espresso.closeSoftKeyboard()
       button {
@@ -154,7 +119,7 @@ class SignUpTest : TestCase() {
 
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField {
-        performTextInput(unavailableUsername)
+        performTextInput("test")
         assertExists()
         assertIsDisplayed()
       }
@@ -197,7 +162,7 @@ class SignUpTest : TestCase() {
 
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField { performTextInput("otherTest") }
-      emailField { performTextInput(inUseEmail) }
+      emailField { performTextInput("test@test.com") }
       passwordField { performTextInput("Test,2024;") }
       button { performClick() }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("signUpFailed"), 6000)
