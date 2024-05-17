@@ -11,7 +11,6 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
-import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.Before
 import org.junit.Rule
