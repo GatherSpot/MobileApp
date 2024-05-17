@@ -26,15 +26,6 @@ class SignUpViewModel() : ViewModel() {
   var waitingEmailConfirmation = MutableLiveData(false)
   var isFinished = MutableLiveData(false)
   private var isUsernameUnique = false
-  // FLOW FOR CONTEXT :
-  // let user fill fields with some basic check (including duplicate names)
-  // check if email is already in database when clicking sign in (can't do same as with username
-  // from what I can tell)
-  // tell confirmation email has been sent
-  // wait for email confirmation and then add user to database and move to signup
-  // TODO : check cases where it crashes, before moving to next screen (does profile exist, is it a
-  // problem ? are we still moved to setup ?), or cases where we stop at email confirmation and then
-  // sign in.
   private fun updateEverythingOk() {
     isEverythingOk.value =
         (userNameError.value == "" &&

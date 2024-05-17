@@ -31,7 +31,7 @@ class DefaultEvents {
             categories = setOf(),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null)
 
     // if you need nothing specific
@@ -54,7 +54,7 @@ class DefaultEvents {
             registeredUsers = mutableListOf(),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
-            images = null,
+            image = "",
             organizerID = Profile.testOrganizer().id)
 
     // if you need nothing specific
@@ -77,7 +77,7 @@ class DefaultEvents {
             registeredUsers = mutableListOf(),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
-            images = null)
+            image = "")
 
     fun withInterests(vararg interests: Interests, eventId: String) =
         Event(
@@ -112,7 +112,7 @@ class DefaultEvents {
             categories = interests.toSet(),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null)
 
     fun withRegistered(vararg registered: String, eventId: String) =
@@ -148,7 +148,7 @@ class DefaultEvents {
             categories = setOf(Interests.CHESS),
             registeredUsers = registered.toMutableList(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null,
             organizerID = Profile.testParticipant().id)
 
@@ -185,7 +185,7 @@ class DefaultEvents {
             categories = setOf(Interests.BASKETBALL),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null,
             organizerID = authorId)
 
@@ -208,7 +208,7 @@ class DefaultEvents {
             registeredUsers = mutableListOf("1", "2", "3", "4", "5"),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
-            images = null,
+            image = "",
             organizerID = Profile.testOrganizer().id)
   }
 }

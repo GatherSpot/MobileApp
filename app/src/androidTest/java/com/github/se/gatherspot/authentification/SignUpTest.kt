@@ -31,11 +31,6 @@ class SignUpTest : TestCase() {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  // The IntentsTestRule simply calls Intents.init() before the @Test block
-  // and Intents.release() after the @Test block is completed. IntentsTestRule
-  // is deprecated, but it was MUCH faster than using IntentsRule in our tests
-  //  @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
-
   @After
   fun cleanUp() {
     val currentUser = FirebaseAuth.getInstance().currentUser

@@ -15,6 +15,7 @@ import com.github.se.gatherspot.screens.SignUpScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -33,6 +34,8 @@ class AllTest : TestCase() {
   @After
   fun cleanUp() {
     try {
+      val p = runBlocking { ProfileFirebaseConnection().fetchFromUserName("AuthEndToEndTest") }
+      p?.let { ProfileFirebaseConnection().delete(it.id) }
       ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
       testDelete()
     } catch (e: Exception) {
