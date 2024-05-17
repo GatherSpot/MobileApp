@@ -3,8 +3,12 @@ package com.github.se.gatherspot.sql
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalTime
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import junit.framework.Assert.assertNull
@@ -15,8 +19,44 @@ import org.junit.Test
 class EventSQLiteConnectionTest {
   private lateinit var eventDao: EventDao
   private lateinit var db: AppDatabase
-  private val event1 = Event.testEvent1
-  private val event2 = Event.testEvent2
+  private val event1 =
+      Event(
+          id = "1",
+          title = "Testing toJson()",
+          description = "I have to be converted to Json",
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 1,
+          organizerID = Profile.testParticipant().id,
+          categories = setOf(Interests.BOWLING),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+          image = "")
+  private val event2 =
+      Event(
+          id = "2",
+          title = "Testing toJson()",
+          description = "I have to be converted to Json",
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 1,
+          organizerID = Profile.testParticipant().id,
+          categories = setOf(Interests.BOWLING),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+          image = "")
 
   @Before
   fun createDb() {
@@ -36,25 +76,7 @@ class EventSQLiteConnectionTest {
   fun writeAndRead() {
     eventDao.insert(event1)
     val getVal1 = eventDao.get("1")
-    assertEquals(event1.title, getVal1.title)
-    assertEquals(event1.description, getVal1.description)
-    assertEquals(event1.location, getVal1.location)
-    assertEquals(event1.eventStartDate, getVal1.eventStartDate)
-    assertEquals(event1.eventEndDate, getVal1.eventEndDate)
-    assertEquals(event1.timeBeginning, getVal1.timeBeginning)
-    assertEquals(event1.timeEnding, getVal1.timeEnding)
-    assertEquals(event1.attendanceMaxCapacity, getVal1.attendanceMaxCapacity)
-    assertEquals(event1.attendanceMinCapacity, getVal1.attendanceMinCapacity)
-    assertEquals(event1.inscriptionLimitDate, getVal1.inscriptionLimitDate)
-    assertEquals(event1.inscriptionLimitTime, getVal1.inscriptionLimitTime)
-    assertEquals(event1.eventStatus, getVal1.eventStatus)
-    assertEquals(event1.categories, getVal1.categories)
-    assertEquals(event1.organizerID, getVal1.organizerID)
-    assertEquals(event1.registeredUsers, getVal1.registeredUsers)
-    assertEquals(event1.finalAttendees, getVal1.finalAttendees)
-    assertEquals(event1.globalRating, getVal1.globalRating)
-    assertEquals(event1.image, getVal1.image)
-    assertEquals(event1.id, getVal1.id)
+    assertEquals(event1, getVal1)
   }
 
   @Test

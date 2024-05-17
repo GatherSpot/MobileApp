@@ -114,6 +114,7 @@ dependencies {
 
   // <gson
   implementation("com.google.code.gson:gson:2.10.1")
+  implementation("com.google.code.gson:gson:2.8.6") // DOUBLON
   /// >
 
   // </Android navigation
@@ -160,7 +161,8 @@ dependencies {
   implementation("androidx.compose.ui:ui-graphics")
 
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-  //  implementation(libs.androidx.core.animation)
+  implementation(libs.androidx.core.animation)
+  implementation(libs.play.services.location)
 
   // ---------------------- /IMPLEMENTATION> ------------------
 

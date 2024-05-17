@@ -19,20 +19,28 @@ class IdList(
     var elements: List<String>,
     val collection: FirebaseCollection
 ) : CollectionClass() {
-  fun add(eventId: String) {
-    IdListFirebaseConnection().addElement(id, collection, eventId) {
-      elements = elements.plus(eventId)
+  fun add(elementId: String) {
+    IdListFirebaseConnection().addElement(id, collection, elementId) {
+      elements = elements.plus(elementId)
     }
   }
 
-  fun remove(eventId: String) {
-    IdListFirebaseConnection().deleteElement(id, collection, eventId) {
-      elements = elements.minus(eventId)
+  fun remove(elementId: String) {
+    IdListFirebaseConnection().deleteElement(id, collection, elementId) {
+      elements = elements.minus(elementId)
     }
   }
 
   companion object {
-    fun of(id: String, collection: FirebaseCollection, elements: List<String>) =
+    /**
+     * Create an empty IdList
+     *
+     * @param id the id of the user
+     * @param collection the collection where it will be stored
+     * @return an empty IdList useful for tests, the creation of a new list, and enabling non
+     *   blocking access to the list
+     */
+    fun new(id: String, collection: FirebaseCollection, elements: List<String>) =
         IdListFirebaseConnection().add(id, collection, elements) {}
 
     suspend fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) =

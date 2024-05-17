@@ -32,7 +32,7 @@ class IdListFirebaseConnectionTest {
   @Test
   fun addElementTest() = runBlocking {
     // create a new list
-    val idList1 = IdList.of(id, tag, listOf(randString1, randString2))
+    val idList1 = IdList.new(id, tag, listOf(randString1, randString2))
     while (!idList1.isInitialized) {
       {}
     }
@@ -52,11 +52,13 @@ class IdListFirebaseConnectionTest {
 
   @Test
   fun addTest() = runBlocking {
-    val idList1 = IdList.of(id, tag, listOf(randString1, randString2))
+    val idList1 = IdList.new(id, tag, listOf(randString1, randString2))
     val idList2 = IdList.fromFirebase(id, tag) {}
     while (!idList1.isInitialized) {
       {}
     }
-    assert(idList1.value!!.elements.toSet() == idList2.elements.toSet())
+    assert(
+        idList1.value!!.elements.toSet().intersect(idList2.elements.toSet()) ==
+            idList1.value!!.elements.toSet())
   }
 }

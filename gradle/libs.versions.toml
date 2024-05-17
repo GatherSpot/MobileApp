@@ -12,6 +12,7 @@ firebaseStorageKtx = "20.3.0"
 coreAnimation = "1.0.0-rc01"
 coreKtxVersion = "1.5.0"
 roomCommon = "2.6.1"
+playServicesLocation = "21.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +33,7 @@ firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage
 androidx-core-animation = { group = "androidx.core", name = "core-animation", version.ref = "coreAnimation" }
 core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

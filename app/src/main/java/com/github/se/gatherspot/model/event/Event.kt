@@ -60,7 +60,7 @@ data class Event(
     val organizerID: String = FirebaseAuth.getInstance().currentUser?.uid ?: "",
     // List of the IDs of the users who registered for the event
     val registeredUsers: MutableList<String> = mutableListOf(),
-    val finalAttendees: MutableList<String> = mutableListOf(),
+    val finalAttendees: List<String>? = emptyList(),
     // Find a way to upload image
     var image: String,
     val globalRating: Int?,
