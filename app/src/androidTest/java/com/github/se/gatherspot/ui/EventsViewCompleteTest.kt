@@ -69,7 +69,7 @@ class EventsViewCompleteTest {
 
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // Check that the profile screen is displayed
-      back { performClick()}
+      back { performClick() }
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       // Check that the event screen is displayed

@@ -45,7 +45,7 @@ fun FollowList(
     navActions: NavigationActions,
     nav: NavController,
     title: String,
-    fb : ProfileFirebaseConnection = ProfileFirebaseConnection(),
+    fb: ProfileFirebaseConnection = ProfileFirebaseConnection(),
     ids: suspend () -> IdList
 ) {
   val profiles = remember { mutableListOf<Profile>() }

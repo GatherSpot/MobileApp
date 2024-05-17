@@ -21,6 +21,7 @@ class MockEventFirebaseConnection : EventFirebaseConnection() {
   private var registered = 0
   private var fetchedNextCounter = 0
   private var fetchedFromFollowed = false
+
   fun getFetchedFromFollowed(): Boolean {
     return fetchedFromFollowed
   }

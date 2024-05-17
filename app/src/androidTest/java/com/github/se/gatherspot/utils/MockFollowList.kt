@@ -21,7 +21,7 @@ public class MockFollowList : FollowList() {
   }
 
   override suspend fun followers(uid: String): IdList {
-    return IdList("MC", listOf("1","2","3"),FirebaseCollection.FOLLOWERS)
+    return IdList("MC", listOf("1", "2", "3"), FirebaseCollection.FOLLOWERS)
   }
 
   /**
@@ -30,6 +30,6 @@ public class MockFollowList : FollowList() {
    * @param uid The user id
    */
   override suspend fun following(uid: String): IdList {
-    return IdList("MC", listOf("1","2","3"),FirebaseCollection.FOLLOWING)
+    return IdList("MC", listOf("1", "2", "3"), FirebaseCollection.FOLLOWING)
   }
 }

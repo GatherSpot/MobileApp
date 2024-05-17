@@ -16,8 +16,9 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import kotlinx.coroutines.launch
 
-class OwnProfileViewModel(private val profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection()) :
-    ViewModel() {
+class OwnProfileViewModel(
+    private val profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection()
+) : ViewModel() {
   private var _profile = MutableLiveData<Profile>()
   private var _username = MutableLiveData<String>()
   private var _bio = MutableLiveData<String>()

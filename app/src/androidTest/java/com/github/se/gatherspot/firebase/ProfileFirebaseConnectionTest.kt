@@ -53,8 +53,7 @@ class ProfileFirebaseConnectionTest {
     runTest {
       profileFirebaseConnection.add(toAdd)
       var fetched: Profile? = null
-      fetched =
-          profileFirebaseConnection.fetch(toAdd.id)
+      fetched = profileFirebaseConnection.fetch(toAdd.id)
       assertEquals(toAdd, fetched)
 
       async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
@@ -92,20 +91,20 @@ class ProfileFirebaseConnectionTest {
     }
   }
 
-//  @Test
-//  fun testIfUsernameExists() {
-//   // bogus does not actually test correctly
-//    runBlocking {
-//      profileFirebaseConnection.add(toAdd)
-//      var wasSet = profileFirebaseConnection.ifUsernameExists(toAdd.userName)
-//      sleep(1000)
-//      assertTrue(wasSet)
-//
-//      wasSet = profileFirebaseConnection.ifUsernameExists("nonExistentUsername")
-//      sleep(1000)
-//      assertTrue(wasSet)
-//    }
-//  }
+  //  @Test
+  //  fun testIfUsernameExists() {
+  //   // bogus does not actually test correctly
+  //    runBlocking {
+  //      profileFirebaseConnection.add(toAdd)
+  //      var wasSet = profileFirebaseConnection.ifUsernameExists(toAdd.userName)
+  //      sleep(1000)
+  //      assertTrue(wasSet)
+  //
+  //      wasSet = profileFirebaseConnection.ifUsernameExists("nonExistentUsername")
+  //      sleep(1000)
+  //      assertTrue(wasSet)
+  //    }
+  //  }
 
   @Test
   fun testfetchFromUserName() {

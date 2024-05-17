@@ -13,10 +13,10 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.tasks.await
 
 /** Class to handle the connection to the Firebase database for events */
 open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
@@ -188,7 +188,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
   open suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
-    if (idlist?.elements.isNullOrEmpty()){
+    if (idlist?.elements.isNullOrEmpty()) {
       return mutableListOf()
     }
     val querySnapshot: QuerySnapshot =

@@ -27,7 +27,6 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
     return getFromDocument(document)
   }
 
-
   /**
    * @return the UID of the user logged in the current instance, or null if the user is not logged
    *   in.
@@ -42,12 +41,10 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param userName the username to check
    */
-  open suspend fun ifUsernameExists(userName: String) : Boolean {
+  open suspend fun ifUsernameExists(userName: String): Boolean {
 
-    val document = Firebase.firestore
-        .collection(COLLECTION)
-        .whereEqualTo("userName", userName)
-        .get().await()
+    val document =
+        Firebase.firestore.collection(COLLECTION).whereEqualTo("userName", userName).get().await()
     return !document.isEmpty
   }
 
@@ -66,7 +63,7 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
             .get()
             .await()
             .documents
-          .firstOrNull()?: return null
+            .firstOrNull() ?: return null
     return getFromDocument(document)
   }
 
@@ -118,8 +115,8 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
       }
     }
 
-      super.update(id, field, value)
-    }
+    super.update(id, field, value)
+  }
 
   /** Calls the add function to update the profile in the database */
   open suspend fun update(profile: Profile) {

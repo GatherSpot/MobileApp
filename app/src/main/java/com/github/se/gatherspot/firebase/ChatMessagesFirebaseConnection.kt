@@ -4,9 +4,9 @@ import android.util.Log
 import com.github.se.gatherspot.model.chat.ChatMessage
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.tasks.await
 
 open class ChatMessagesFirebaseConnection {
 

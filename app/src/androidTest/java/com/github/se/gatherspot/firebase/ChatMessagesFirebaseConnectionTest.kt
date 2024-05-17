@@ -1,13 +1,13 @@
 package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.model.chat.ChatMessage
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.UUID
 
 class ChatMessagesFirebaseConnectionTest {
   val chatMessagesFirebase = ChatMessagesFirebaseConnection()

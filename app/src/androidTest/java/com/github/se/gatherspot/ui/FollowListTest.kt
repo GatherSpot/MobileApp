@@ -15,13 +15,14 @@ import org.junit.Test
 
 class FollowListTest {
   @get:Rule val composeTestRule = createComposeRule()
+
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testFollower() {
 
     composeTestRule.setContent {
       val nav = rememberNavController()
-      Profile(nav = NavigationActions(nav),MockFollowList(), MockProfileFirebaseConnection())
+      Profile(nav = NavigationActions(nav), MockFollowList(), MockProfileFirebaseConnection())
     }
 
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {

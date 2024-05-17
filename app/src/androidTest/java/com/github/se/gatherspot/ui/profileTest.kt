@@ -28,11 +28,7 @@ class ProfileInstrumentedTest {
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      Profile(
-          NavigationActions(navController),
-          MockFollowList(),
-          MockProfileFirebaseConnection()
-        )
+      Profile(NavigationActions(navController), MockFollowList(), MockProfileFirebaseConnection())
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update
