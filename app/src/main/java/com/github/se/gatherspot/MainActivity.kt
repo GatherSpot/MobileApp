@@ -1,11 +1,15 @@
 package com.github.se.gatherspot
 
 // import com.github.se.gatherspot.ui.Chats
+import android.app.Application
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,17 +23,17 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventRegistrationViewModel
+import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateTimeSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.Chats
-import com.github.se.gatherspot.ui.Community
 import com.github.se.gatherspot.ui.CreateEvent
 import com.github.se.gatherspot.ui.EditEvent
 import com.github.se.gatherspot.ui.EventUI
@@ -41,25 +45,32 @@ import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.ViewProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
   companion object {
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
+    lateinit var mapLauncher: ActivityResultLauncher<String>
+    var mapAccess = false
+    var mapViewModel: MapViewModel? = null
+    lateinit var app: Application
   }
 
   private lateinit var navController: NavHostController
+  private var eventsViewModel: EventsViewModel? = null
 
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    val eventsViewModel = EventsViewModel()
     // val chatViewModel = ChatViewModel()
+    app = application
 
     signInLauncher =
         registerForActivityResult(
@@ -67,12 +78,19 @@ class MainActivity : ComponentActivity() {
         ) { res ->
           this.onSignInResult(res, navController)
         }
+    mapLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean
+          ->
+          mapAccess = isGranted
+        }
 
     setContent {
       GatherSpotTheme {
         // A surface container using the 'background' color from the theme
+
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           navController = rememberNavController()
+
           NavHost(navController = navController, startDestination = "auth") {
             navigation(startDestination = "login", route = "auth") {
               composable("login") { LogIn(NavigationActions(navController), signInLauncher) }
@@ -81,15 +99,20 @@ class MainActivity : ComponentActivity() {
             }
 
             navigation(startDestination = "events", route = "home") {
-              composable("events") { Events(eventsViewModel, NavigationActions(navController)) }
+              composable("events") {
+                if (eventsViewModel == null) {
+                  eventsViewModel = EventsViewModel()
+                }
+                Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
+              }
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
                 val gson: Gson =
                     GsonBuilder()
                         .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
                         .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-                        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
                         .create()
                 val eventObject =
                     gson.fromJson(
@@ -97,11 +120,18 @@ class MainActivity : ComponentActivity() {
                 EventUI(
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
-                    registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
-                    eventsViewModel = eventsViewModel)
+                    eventUIViewModel = EventUIViewModel(eventObject),
+                    eventsViewModel = eventsViewModel!!)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
-                val gson = Gson()
+                val gson: Gson =
+                    GsonBuilder()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                        .create()
+
                 val eventObject =
                     gson.fromJson(
                         backStackEntry.arguments?.getString("eventJson"), Event::class.java)
@@ -109,14 +139,10 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
-                    viewModel = eventsViewModel)
+                    viewModel = eventsViewModel!!)
               }
 
               composable("map") { Map(NavigationActions(navController)) }
-
-              composable("community") { Community(NavigationActions(navController)) }
-
-              // composable("chats") { Chats(chatViewModel, NavigationActions(navController)) }
 
               composable("profile") { Profile(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
@@ -124,6 +150,7 @@ class MainActivity : ComponentActivity() {
                   ViewProfile(NavigationActions(navController), it)
                 }
               }
+              composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
               composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
               composable("chat/{chatJson}") { backStackEntry ->
                 backStackEntry.arguments?.getString("chatJson")?.let {
@@ -137,7 +164,7 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(
                     nav = NavigationActions(navController),
                     eventUtils = EventUtils(),
-                    eventsViewModel)
+                    eventsViewModel!!)
               }
 
               composable("setup") {
@@ -151,6 +178,7 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+  @RequiresApi(Build.VERSION_CODES.S)
   private fun onSignInResult(
       result: FirebaseAuthUIAuthenticationResult,
       navController: NavHostController
@@ -161,6 +189,9 @@ class MainActivity : ComponentActivity() {
         navController.navigate("auth")
         return RESULT_CANCELED
       } else {
+        if (mapViewModel == null) {
+          mapViewModel = MapViewModel(app)
+        }
         navController.navigate("home")
       }
     }

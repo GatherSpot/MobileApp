@@ -16,7 +16,7 @@ import org.junit.Assert
 import org.junit.Test
 
 class EventUtilsTest {
-  private val EventFirebaseConnection = EventFirebaseConnection()
+  private val eventFirebaseConnection = EventFirebaseConnection()
   private val testEvent =
       Event(
           id = "testID",
@@ -25,10 +25,12 @@ class EventUtilsTest {
           location = Location(0.0, 0.0, "Test Location"),
           eventStartDate =
               LocalDate.parse(
-                  "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                  "12/04/2026",
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
           eventEndDate =
               LocalDate.parse(
-                  "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                  "12/05/2026",
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
           timeBeginning =
               LocalTime.parse(
                   "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
@@ -39,12 +41,14 @@ class EventUtilsTest {
           attendanceMinCapacity = 10,
           inscriptionLimitDate =
               LocalDate.parse(
-                  "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                  "10/04/2025",
+                  DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
           inscriptionLimitTime =
               LocalTime.parse(
                   "12:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
           eventStatus = EventStatus.CREATED,
-          globalRating = null)
+          globalRating = null,
+          image = "")
   private val eventUtils = EventUtils()
 
   // Write tests for validateParseEventData
@@ -82,7 +86,7 @@ class EventUtilsTest {
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
     // Keep a clean database: suppress immediately the event
-    EventFirebaseConnection.delete(event.id)
+    eventFirebaseConnection.delete(event.id)
   }
 
   @Test
@@ -120,7 +124,7 @@ class EventUtilsTest {
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
     // Keep a clean database: suppress immediately the event
-    EventFirebaseConnection.delete(event.id)
+    eventFirebaseConnection.delete(event.id)
   }
 
   @Test
@@ -479,14 +483,14 @@ class EventUtilsTest {
             registeredUsers = mutableListOf("test"),
             timeBeginning = LocalTime.of(13, 0),
             timeEnding = LocalTime.of(16, 0),
-        )
+            image = "")
     val eventUtils = EventUtils()
-    EventFirebaseConnection.add(event)
-    val eventFromDB = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }
+    eventFirebaseConnection.add(event)
+    val eventFromDB = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertEquals(event.id, eventFromDB?.id)
 
     eventUtils.deleteEvent(event)
-    val eventFromDBAfterDelete = runBlocking { EventFirebaseConnection.fetch("myEventToDelete") }
+    val eventFromDBAfterDelete = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertNull(eventFromDBAfterDelete)
   }
 
@@ -553,5 +557,32 @@ class EventUtilsTest {
     eventUtils.deleteDraft(context)
     val draftEvent = eventUtils.retrieveFromDraft(context)
     Assert.assertNull(draftEvent)
+  }
+
+  @Test
+  fun eventIsOverTestNotOver() {
+    assert(!eventUtils.isEventOver(testEvent))
+  }
+
+  @Test
+  fun eventIsOverReturnTrue() {
+    val event =
+        Event(
+            id = "testID",
+            title = "Test Event",
+            description = "This is a test event",
+            location = null,
+            eventStartDate = LocalDate.of(2020, 4, 12),
+            eventEndDate = LocalDate.of(2020, 4, 12),
+            timeBeginning = LocalTime.of(10, 0),
+            timeEnding = LocalTime.of(12, 0),
+            attendanceMaxCapacity = 100,
+            attendanceMinCapacity = 10,
+            inscriptionLimitDate = LocalDate.of(2020, 4, 11),
+            inscriptionLimitTime = LocalTime.of(23, 59),
+            eventStatus = EventStatus.COMPLETED,
+            globalRating = null,
+            image = "")
+    assert(eventUtils.isEventOver(event))
   }
 }

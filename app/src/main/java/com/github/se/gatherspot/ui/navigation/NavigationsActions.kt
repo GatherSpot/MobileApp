@@ -4,7 +4,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.github.se.gatherspot.R
 
-class NavigationActions(val controller: NavHostController) {
+open class NavigationActions(val controller: NavHostController) {
   fun navigateTo(tld: TopLevelDestination) {
     controller.navigate(tld.route) {
       // Pop up to the start destination of the graph to
@@ -20,13 +20,13 @@ class NavigationActions(val controller: NavHostController) {
   }
 
   fun goBack() {
-    controller.navigate("home")
+    controller.popBackStack()
   }
 }
 
 object Route {
   const val EVENTS = "events"
-  const val COMMUNITY = "community"
+  const val MAP = "map"
   const val CHATS = "chats"
   const val PROFILE = "profile"
 }
@@ -34,6 +34,6 @@ object Route {
 val TOP_LEVEL_DESTINATIONS =
     listOf(
         TopLevelDestination(Route.EVENTS, R.drawable.event, R.string.events),
-        TopLevelDestination(Route.COMMUNITY, R.drawable.community, R.string.community),
+        TopLevelDestination(Route.MAP, R.drawable.map_black, R.string.map),
         TopLevelDestination(Route.CHATS, R.drawable.chat, R.string.chats),
         TopLevelDestination(Route.PROFILE, R.drawable.profile, R.string.profile))

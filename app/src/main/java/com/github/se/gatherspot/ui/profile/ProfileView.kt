@@ -8,18 +8,23 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -43,6 +48,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
+import com.github.se.gatherspot.ui.qrcode.ProfileQRCodeUI
 
 class ProfileView {
   /**
@@ -67,7 +73,7 @@ class ProfileView {
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
         content = { paddingValues: PaddingValues ->
-          ViewOwnProfileContent(viewModel, navController)
+          ViewOwnProfileContent(viewModel, navController, nav)
           Log.d(ContentValues.TAG, paddingValues.toString())
         })
   }
@@ -98,18 +104,60 @@ class ProfileView {
   }
 
   @Composable
-  fun EditButton(nav: NavController) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
-      // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
-      Icon(
-          painter = painterResource(R.drawable.edit),
-          contentDescription = "edit",
-          modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
+  fun TopBarOwnProfile(
+      viewModel: OwnProfileViewModel,
+      navController: NavController,
+      nav: NavigationActions
+  ) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
+      Followers(navController)
+      Following(navController)
+      Spacer(modifier = Modifier.padding(horizontal = 38.dp))
+      LogOutButton(nav, viewModel)
+      Spacer(modifier = Modifier.width(8.dp))
+      EditButton(navController)
     }
   }
 
   @Composable
-  fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, nav: NavController) {
+  fun Followers(navController: NavController) {
+    Column(horizontalAlignment = Alignment.Start) {
+      Text(
+          text = "Followers",
+          modifier =
+              Modifier.testTag("followersButton").clickable { navController.navigate("followers") })
+    }
+  }
+
+  @Composable
+  fun Following(navController: NavController) {
+    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
+      Text(
+          text = "Following",
+          modifier =
+              Modifier.testTag("followingButton").clickable { navController.navigate("following") })
+    }
+  }
+
+  @Composable
+  fun EditButton(navController: NavController) {
+    Icon(
+        painter = painterResource(R.drawable.edit),
+        contentDescription = "edit",
+        modifier =
+            Modifier.clickable { navController.navigate("edit") }.size(24.dp).testTag("edit"))
+  }
+
+  @Composable
+  fun LogOutButton(nav: NavigationActions, viewModel: OwnProfileViewModel) {
+    Icon(
+        Icons.AutoMirrored.Filled.ExitToApp,
+        contentDescription = "logout",
+        modifier = Modifier.clickable { viewModel.logout(nav) }.size(24.dp).testTag("logout"))
+  }
+
+  @Composable
+  fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, navController: NavController) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
@@ -118,12 +166,20 @@ class ProfileView {
               modifier =
                   Modifier.clickable {
                         cancel()
-                        nav.navigate("view")
+                        navController.navigate("view")
                       }
                       .testTag("cancel"))
-          Text(text = "Save", modifier = Modifier.clickable { save() }.testTag("save"))
+          Text(
+              text = "Save",
+              modifier =
+                  Modifier.clickable {
+                        save()
+                        navController.navigate("view")
+                      }
+                      .testTag("save"))
         }
   }
+
   // TODO: add state for the buttons for better ui when we have time, I want to catch up to
   // propagate functionalities first
   @Composable
@@ -249,21 +305,36 @@ class ProfileView {
   }
 
   @Composable
-  private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
+  private fun ViewOwnProfileContent(
+      viewModel: OwnProfileViewModel,
+      navController: NavController,
+      nav: NavigationActions
+  ) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
     val username by viewModel.username.observeAsState("")
     val bio by viewModel.bio.observeAsState("")
     val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
-    Column {
-      EditButton(navController)
 
+    Column(modifier = Modifier.testTag("ProfileScreen")) {
+      TopBarOwnProfile(viewModel, navController, nav)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
         UsernameField(username, null, {}, false)
         BioField(bio, null, {}, false)
         InterestsView().ShowInterests(interests)
+        ProfileQRCodeUI(viewModel._profile)
+        Box(
+            modifier = Modifier.fillMaxSize().testTag("scanQRCodeButtonContainer"),
+            contentAlignment = Alignment.Center) {
+              Button(
+                  onClick = { navController.navigate("qrCodeScanner") },
+                  modifier = Modifier.wrapContentSize().testTag("scanQRCodeButton")) {
+                    Text("Scan QR Code")
+                  }
+            }
+
         Spacer(modifier = Modifier.height(56.dp))
       }
     }
@@ -330,6 +401,7 @@ class ProfileView {
     val back = viewModel::back
     val follow = viewModel::follow
     val addFriend = viewModel::requestFriend
+
     Column() {
       FollowButtons(back, follow, following, addFriend)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
@@ -337,6 +409,7 @@ class ProfileView {
         UsernameField(username, null, {}, false)
         BioField(bio, null, {}, false)
         InterestsView().ShowInterests(interests)
+        ProfileQRCodeUI(viewModel._profile)
         Spacer(modifier = Modifier.height(56.dp))
       }
     }

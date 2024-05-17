@@ -117,7 +117,7 @@ fun CustomTopAppBar(navActions: NavigationActions, title: String) {
       modifier = Modifier.testTag("chatTopBar"),
       title = { Text(text = title, color = Color.Black) },
       navigationIcon = {
-        IconButton(onClick = { navActions.controller.popBackStack() }) {
+        IconButton(onClick = { navActions.controller.navigate("home") }) {
           Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
               contentDescription = "Go Back",

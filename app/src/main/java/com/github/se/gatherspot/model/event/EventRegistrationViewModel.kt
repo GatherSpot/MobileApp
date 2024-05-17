@@ -15,13 +15,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** ViewModel class for handling event registration logic */
-class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
+open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
   // TODO : use hilt injection instead of hardcoded userId to remove this test handle in production
   private val userId = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
 
   // LiveData for holding registration state
   private val _registrationState: MutableLiveData<RegistrationState> =
-      if (registered.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
+      if (FirebaseAuth.getInstance().currentUser == null) {
+        MutableLiveData(RegistrationState.Success)
+      } else if (registered.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
         MutableLiveData(RegistrationState.Success)
       } else {
         MutableLiveData(RegistrationState.NoError)
@@ -38,7 +40,8 @@ class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
   val displayAlertDeletion: LiveData<Boolean> = _displayAlertDeletion
 
   // Profile of the user, is needed to add the event to the user's registered events
-  private var registeredEventsList: IdList? = null
+  private var registeredEventsList: IdList =
+      IdList.empty(userId, FirebaseCollection.REGISTERED_EVENTS)
 
   init {
     viewModelScope.launch {

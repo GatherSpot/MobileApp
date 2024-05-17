@@ -2,6 +2,7 @@ package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -21,19 +22,19 @@ import org.junit.Test
 
 class EventFirebaseConnectionTest {
 
-  val EventFirebaseConnection = EventFirebaseConnection()
+  val eventFirebaseConnection = EventFirebaseConnection()
 
   @Test
   fun testgetID() {
-    val newId = EventFirebaseConnection.getNewID()
+    val newId = eventFirebaseConnection.getNewID()
     assertNotNull(newId)
     assertTrue(newId.isNotEmpty())
   }
 
   @Test
   fun testUniquegetID() {
-    val newId1 = EventFirebaseConnection.getNewID()
-    val newId2 = EventFirebaseConnection.getNewID()
+    val newId1 = eventFirebaseConnection.getNewID()
+    val newId2 = eventFirebaseConnection.getNewID()
     assertNotNull(newId1)
     assertNotNull(newId2)
     assertNotEquals(newId1, newId2)
@@ -41,7 +42,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun testAddAndFetchEvent() = runTest {
-    val eventID = EventFirebaseConnection.getNewID()
+    val eventID = eventFirebaseConnection.getNewID()
     val event =
         Event(
             id = eventID,
@@ -50,10 +51,12 @@ class EventFirebaseConnectionTest {
             location = Location(0.0, 0.0, "Test Location"),
             eventStartDate =
                 LocalDate.parse(
-                    "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                    "12/04/2026",
+                    DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
             eventEndDate =
                 LocalDate.parse(
-                    "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                    "12/05/2026",
+                    DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
             timeBeginning =
                 LocalTime.parse(
                     "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
@@ -64,7 +67,8 @@ class EventFirebaseConnectionTest {
             attendanceMinCapacity = 10,
             inscriptionLimitDate =
                 LocalDate.parse(
-                    "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                    "10/04/2025",
+                    DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
             inscriptionLimitTime =
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
@@ -72,12 +76,12 @@ class EventFirebaseConnectionTest {
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null)
 
-    EventFirebaseConnection.add(event)
+    eventFirebaseConnection.add(event)
     var resultEvent: Event? = null
-    async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
+    async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertNotNull(resultEvent)
     assertEquals(resultEvent!!.id, eventID)
     assertEquals(resultEvent!!.title, "Test Event")
@@ -89,11 +93,13 @@ class EventFirebaseConnectionTest {
     assertEquals(
         resultEvent!!.eventStartDate,
         LocalDate.parse(
-            "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)))
+            "12/04/2026",
+            DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)))
     assertEquals(
         resultEvent!!.eventEndDate,
         LocalDate.parse(
-            "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)))
+            "12/05/2026",
+            DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)))
     assertEquals(
         resultEvent!!.timeBeginning,
         LocalTime.parse("10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)))
@@ -105,7 +111,8 @@ class EventFirebaseConnectionTest {
     assertEquals(
         resultEvent!!.inscriptionLimitDate,
         LocalDate.parse(
-            "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)))
+            "10/04/2025",
+            DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)))
     assertEquals(
         resultEvent!!.inscriptionLimitTime,
         LocalTime.parse("09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)))
@@ -113,14 +120,14 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
-    assertEquals(resultEvent!!.images, null)
-    EventFirebaseConnection.delete(eventID)
+    assertEquals(resultEvent!!.image, "")
+    eventFirebaseConnection.delete(eventID)
   }
 
   @Test
   fun fetchReturnsNull() = runTest {
     // Supposing that id will never equal nonexistent
-    val event = EventFirebaseConnection.fetch("nonexistent")
+    val event = eventFirebaseConnection.fetch("nonexistent")
     assertEquals(event, null)
   }
 
@@ -128,16 +135,16 @@ class EventFirebaseConnectionTest {
   fun fetchNextReturnsDistinctEvents() =
       runTest(timeout = Duration.parse("20s")) {
         val round = 5
-        val listOfEvents1 = EventFirebaseConnection.fetchNextEvents(round.toLong())
+        val listOfEvents1 = eventFirebaseConnection.fetchNextEvents(round.toLong())
         assert(round >= listOfEvents1.size)
-        val listOfEvents2 = EventFirebaseConnection.fetchNextEvents(round.toLong())
+        val listOfEvents2 = eventFirebaseConnection.fetchNextEvents(round.toLong())
         assert(round >= listOfEvents2.size)
         for (i in 0 until listOfEvents1.size) {
           for (j in 0 until listOfEvents2.size) {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
-        EventFirebaseConnection.offset = null
+        eventFirebaseConnection.offset = null
       }
 
   @Test
@@ -147,9 +154,9 @@ class EventFirebaseConnectionTest {
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
-            EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+            eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
         val listOfEvents2 =
-            EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+            eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
         for (i in 0 until listOfEvents1.size) {
           assertNotNull(listOfEvents1[i].categories)
           assertTrue(
@@ -164,7 +171,7 @@ class EventFirebaseConnectionTest {
         }
 
         testLoginCleanUp()
-        EventFirebaseConnection.offset = null
+        eventFirebaseConnection.offset = null
       }
 
   @Test
@@ -174,16 +181,16 @@ class EventFirebaseConnectionTest {
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
-            EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+            eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
         val listOfEvents2 =
-            EventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
+            eventFirebaseConnection.fetchEventsBasedOnInterests(round.toLong(), interests)
         for (i in 0 until listOfEvents1.size) {
           for (j in 0 until listOfEvents2.size) {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
         testLoginCleanUp()
-        EventFirebaseConnection.offset = null
+        eventFirebaseConnection.offset = null
       }
 
   @Test
@@ -191,7 +198,7 @@ class EventFirebaseConnectionTest {
       runTest(timeout = Duration.parse("20s")) {
         testLogin()
         Thread.sleep(10000)
-        val events = EventFirebaseConnection.fetchMyEvents()
+        val events = eventFirebaseConnection.fetchMyEvents()
         assert(
             events.all { event ->
               event.organizerID == FirebaseAuth.getInstance().currentUser!!.uid
@@ -204,7 +211,7 @@ class EventFirebaseConnectionTest {
       runTest(timeout = Duration.parse("20s")) {
         testLogin()
         Thread.sleep(10000)
-        val events = EventFirebaseConnection.fetchRegisteredTo()
+        val events = eventFirebaseConnection.fetchRegisteredTo()
         assert(
             events.all { event ->
               event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
@@ -213,8 +220,18 @@ class EventFirebaseConnectionTest {
       }
 
   @Test
+  fun fetchEventsFromFollowedWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        testLogin()
+        val idList = FollowList.following(uid = FirebaseAuth.getInstance().currentUser!!.uid)
+        val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(idList.elements)
+        assert(events.all { event -> idList.elements.contains(event.organizerID) })
+        testLoginCleanUp()
+      }
+
+  @Test
   fun deleteEvent() = runTest {
-    val eventID = EventFirebaseConnection.getNewID()
+    val eventID = eventFirebaseConnection.getNewID()
     val event =
         Event(
             id = eventID,
@@ -223,10 +240,12 @@ class EventFirebaseConnectionTest {
             location = Location(0.0, 0.0, "Test Location"),
             eventStartDate =
                 LocalDate.parse(
-                    "12/04/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                    "12/04/2026",
+                    DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
             eventEndDate =
                 LocalDate.parse(
-                    "12/05/2026", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                    "12/05/2026",
+                    DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
             timeBeginning =
                 LocalTime.parse(
                     "10:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
@@ -237,7 +256,8 @@ class EventFirebaseConnectionTest {
             attendanceMinCapacity = 10,
             inscriptionLimitDate =
                 LocalDate.parse(
-                    "10/04/2025", DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT)),
+                    "10/04/2025",
+                    DateTimeFormatter.ofPattern(EventFirebaseConnection.DATE_FORMAT_DISPLAYED)),
             inscriptionLimitTime =
                 LocalTime.parse(
                     "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
@@ -245,22 +265,22 @@ class EventFirebaseConnectionTest {
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null)
 
-    EventFirebaseConnection.add(event)
+    eventFirebaseConnection.add(event)
     var resultEvent: Event? = null
-    async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
+    async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertNotNull(resultEvent)
     assertEquals(resultEvent!!.id, eventID)
-    EventFirebaseConnection.delete(eventID)
-    async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
+    eventFirebaseConnection.delete(eventID)
+    async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertEquals(resultEvent, null)
   }
 
   @Test
   fun nullCasesTest() = runTest {
-    val eventID = EventFirebaseConnection.getNewID()
+    val eventID = eventFirebaseConnection.getNewID()
     val event =
         Event(
             id = eventID,
@@ -279,42 +299,46 @@ class EventFirebaseConnectionTest {
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null)
 
-    EventFirebaseConnection.add(event)
+    eventFirebaseConnection.add(event)
     var resultEvent: Event? = null
-    async { resultEvent = EventFirebaseConnection.fetch(eventID) as Event? }.await()
+    async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
     assertNotNull(resultEvent)
     assertEquals(resultEvent!!.id, eventID)
     assertEquals(resultEvent!!.title, "Test Event")
     assertEquals(resultEvent!!.description, "This is a test event")
     assertEquals(resultEvent!!.location, null)
-    assertEquals(resultEvent!!.eventStartDate, null)
-    assertEquals(resultEvent!!.eventEndDate, null)
-    assertEquals(resultEvent!!.timeBeginning, null)
-    assertEquals(resultEvent!!.timeEnding, null)
+    assertEquals(
+        resultEvent!!.eventStartDate, eventFirebaseConnection.EVENT_START_DATE_DEFAULT_VALUE)
+    assertEquals(resultEvent!!.eventEndDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+    assertEquals(
+        resultEvent!!.timeBeginning, eventFirebaseConnection.EVENT_START_TIME_DEFAULT_VALUE)
+    assertEquals(resultEvent!!.timeEnding, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
     assertEquals(resultEvent!!.attendanceMaxCapacity, null)
     assertEquals(resultEvent!!.attendanceMinCapacity, 10)
-    assertEquals(resultEvent!!.inscriptionLimitDate, null)
-    assertEquals(resultEvent!!.inscriptionLimitTime, null)
+    assertEquals(
+        resultEvent!!.inscriptionLimitDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+    assertEquals(
+        resultEvent!!.inscriptionLimitTime, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
     assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
     assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
-    assertEquals(resultEvent!!.images, null)
-    EventFirebaseConnection.delete(eventID)
+    assertEquals(resultEvent!!.image, "")
+    eventFirebaseConnection.delete(eventID)
   }
 
   @Test
   fun mapStringToTimeTest() = runTest {
-    val time = EventFirebaseConnection.mapTimeStringToTime("Not good format")
+    val time = eventFirebaseConnection.mapTimeStringToTime("Not good format")
     assertEquals(time, null)
   }
 
   @Test
   fun mapStringToDateTest() = runTest {
-    val date = EventFirebaseConnection.mapDateStringToDate("Not good format")
+    val date = eventFirebaseConnection.mapDateStringToDate("Not good format")
     assertEquals(date, null)
   }
 }
