@@ -47,6 +47,7 @@ fun Profile(nav: NavigationActions) {
  * Show the profile of another user
  *
  * @param nav the navigation actions
+ * @param navController the navigation controller (to go on auth screen on logout)
  * @param uid the id of the user to be shown
  */
 @Composable

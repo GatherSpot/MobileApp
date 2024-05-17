@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -66,7 +68,7 @@ class ProfileView {
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
         content = { paddingValues: PaddingValues ->
-          ViewOwnProfileContent(viewModel, navController)
+          ViewOwnProfileContent(viewModel, navController, nav)
           Log.d(ContentValues.TAG, paddingValues.toString())
         })
   }
@@ -97,43 +99,60 @@ class ProfileView {
   }
 
   @Composable
-  fun EditButton(nav: NavController) {
-    Icon(
-        painter = painterResource(R.drawable.edit),
-        contentDescription = "edit",
-        modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
-  }
-
-  @Composable
-  fun TopBar(nav: NavController) {
+  fun TopBarOwnProfile(
+      viewModel: OwnProfileViewModel,
+      navController: NavController,
+      nav: NavigationActions
+  ) {
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
-      Followers(nav)
-      Following(nav)
-      Spacer(modifier = Modifier.padding(horizontal = 70.dp))
-      EditButton(nav)
+      Followers(navController)
+      Following(navController)
+      Spacer(modifier = Modifier.padding(horizontal = 38.dp))
+      LogOutButton(nav, viewModel)
+      Spacer(modifier = Modifier.width(8.dp))
+      EditButton(navController)
     }
   }
 
   @Composable
-  fun Followers(nav: NavController) {
+  fun Followers(navController: NavController) {
     Column(horizontalAlignment = Alignment.Start) {
       Text(
           text = "Followers",
-          modifier = Modifier.testTag("followersButton").clickable { nav.navigate("followers") })
+          modifier =
+              Modifier.testTag("followersButton").clickable { navController.navigate("followers") })
     }
   }
 
   @Composable
-  fun Following(nav: NavController) {
+  fun Following(navController: NavController) {
     Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
       Text(
           text = "Following",
-          modifier = Modifier.testTag("followingButton").clickable { nav.navigate("following") })
+          modifier =
+              Modifier.testTag("followingButton").clickable { navController.navigate("following") })
     }
   }
 
   @Composable
-  fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, nav: NavController) {
+  fun EditButton(navController: NavController) {
+    Icon(
+        painter = painterResource(R.drawable.edit),
+        contentDescription = "edit",
+        modifier =
+            Modifier.clickable { navController.navigate("edit") }.size(24.dp).testTag("edit"))
+  }
+
+  @Composable
+  fun LogOutButton(nav: NavigationActions, viewModel: OwnProfileViewModel) {
+    Icon(
+        Icons.AutoMirrored.Filled.ExitToApp,
+        contentDescription = "logout",
+        modifier = Modifier.clickable { viewModel.logout(nav) }.size(24.dp).testTag("logout"))
+  }
+
+  @Composable
+  fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, navController: NavController) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
@@ -142,7 +161,7 @@ class ProfileView {
               modifier =
                   Modifier.clickable {
                         cancel()
-                        nav.navigate("view")
+                        navController.navigate("view")
                       }
                       .testTag("cancel"))
           Text(
@@ -150,7 +169,7 @@ class ProfileView {
               modifier =
                   Modifier.clickable {
                         save()
-                        nav.navigate("view")
+                        navController.navigate("view")
                       }
                       .testTag("save"))
         }
@@ -270,15 +289,20 @@ class ProfileView {
   }
 
   @Composable
-  private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
+  private fun ViewOwnProfileContent(
+      viewModel: OwnProfileViewModel,
+      navController: NavController,
+      nav: NavigationActions
+  ) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
     val username by viewModel.username.observeAsState("")
     val bio by viewModel.bio.observeAsState("")
     val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
+
     Column(modifier = Modifier.testTag("ProfileScreen")) {
-      TopBar(navController)
+      TopBarOwnProfile(viewModel, navController, nav)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)
@@ -343,6 +367,7 @@ class ProfileView {
     val back = viewModel::back
     val follow = viewModel::follow
     val addFriend = viewModel::requestFriend
+
     Column() {
       FollowButtons(back, follow, following, addFriend)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {

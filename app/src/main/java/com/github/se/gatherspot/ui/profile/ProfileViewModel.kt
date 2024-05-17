@@ -145,6 +145,11 @@ class OwnProfileViewModel : ViewModel() {
     cancelText()
     cancelImage()
   }
+
+  fun logout(nav: NavigationActions) {
+    Firebase.auth.signOut()
+    nav.controller.navigate("auth")
+  }
 }
 
 class ProfileViewModel(private val _target: String, private val nav: NavigationActions) {
