@@ -62,6 +62,7 @@ import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.event.RegistrationState
+import com.github.se.gatherspot.model.getEventImageHeader
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -159,20 +160,7 @@ fun EventUI(
                     .padding(8.dp)
                     .testTag("eventColumn")
                     .verticalScroll(rememberScrollState())) {
-              if (event.image.isNotEmpty()) {
-                // TODO : implement this using coil
-                //                Image(
-                //                    bitmap = img,
-                //                    contentDescription = "Event Image",
-                //                    modifier =
-                // Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                //                    contentScale = ContentScale.FillBounds)
-              } else
-                  Image(
-                      painter = painterResource(id = R.drawable.default_event_image),
-                      contentDescription = "Default Event Image",
-                      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-                      contentScale = ContentScale.FillBounds)
+              EventTypeIcon(event.categories)
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -402,6 +390,15 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions) {
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp)
       }
+}
+
+@Composable
+fun EventTypeIcon(eventCategories: Set<Interests>?) {
+  Image(
+      painter = painterResource(id = getEventImageHeader(eventCategories)),
+      contentDescription = "Default Event Image",
+      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
+      contentScale = ContentScale.Crop)
 }
 
 /** StarRating displays 5 stars, where the user can click on a star to rate the event. */
