@@ -70,30 +70,35 @@ class CreateEventTest {
         assertExists()
         assert(hasText("Description*"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText("Describe the event"))
       }
       eventStartDate {
         assertExists()
         assert(hasText("Start Date of the event*"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventEndDate {
         assertExists()
         assert(hasText("End date of the event"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventTimeStart {
         assertExists()
         assert(hasText("Start time*"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventTimeEnd {
         assertExists()
         assert(hasText("End time*"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventMinAttendees {
@@ -121,6 +126,7 @@ class CreateEventTest {
         performScrollTo()
         assert(hasText("Inscription Limit Date"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       Espresso.closeSoftKeyboard()
@@ -129,6 +135,7 @@ class CreateEventTest {
         performScrollTo()
         assert(hasText("Inscription Limit Time"))
         performClick()
+        composeTestRule.waitForIdle()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventSaveButton { assertExists() }

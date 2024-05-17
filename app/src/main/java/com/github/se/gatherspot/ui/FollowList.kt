@@ -43,7 +43,7 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 @Composable
 fun FollowList(
     navActions: NavigationActions,
-    nav: NavController,
+    nestedNav: NavController,
     title: String,
     ids: suspend () -> IdList
 ) {
@@ -71,7 +71,8 @@ fun FollowList(
             backgroundColor = Color.White,
             navigationIcon = {
               IconButton(
-                  onClick = { nav.navigate("view") }, modifier = Modifier.testTag("goBackToView")) {
+                  onClick = { nestedNav.navigate("profile") },
+                  modifier = Modifier.testTag("goBackToView")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go back to profile view")

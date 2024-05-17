@@ -8,7 +8,7 @@ import com.github.se.gatherspot.firebase.IdListFirebaseConnection
  * A list of ids owned by a user that will be stored in a certain firebase collection
  *
  * @param id: the id of the user
- * @param events: the list of ids
+ * @param elements: the list of ids
  * @param collection: the collection where the list will be stored useful for example to store a
  *   friend list, a list of events the user is attending, etc.
  */

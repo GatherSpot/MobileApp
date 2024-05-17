@@ -67,19 +67,19 @@ data class Event(
     return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
   }
 
-    companion object {
+  companion object {
 
-        private val gson: Gson =
-            GsonBuilder()
-                .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                .registerTypeAdapter(ImageBitmap::class.java, ImageBitmapSerializer())
-                .create()
-        fun fromJson(string: String): Event {
-            val eventJson = string.replace("%20", "+")
-            return gson.fromJson(eventJson, Event::class.java)
-        }
+    private val gson: Gson =
+        GsonBuilder()
+            .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+            .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+            .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+            .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+            .create()
+
+    fun fromJson(string: String): Event {
+      val eventJson = string.replace("%20", "+")
+      return gson.fromJson(eventJson, Event::class.java)
     }
+  }
 }

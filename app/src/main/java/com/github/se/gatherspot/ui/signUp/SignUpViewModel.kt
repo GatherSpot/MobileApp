@@ -26,6 +26,7 @@ class SignUpViewModel() : ViewModel() {
   var waitingEmailConfirmation = MutableLiveData(false)
   var isFinished = MutableLiveData(false)
   private var isUsernameUnique = false
+
   private fun updateEverythingOk() {
     isEverythingOk.value =
         (userNameError.value == "" &&

@@ -44,7 +44,11 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 
 @Composable
-fun ProfileScaffold(nav: NavigationActions, viewModel: OwnProfileViewModel) {
+fun ProfileScaffold(
+    nav: NavigationActions,
+    nestedNav: NavigationActions,
+    viewModel: OwnProfileViewModel
+) {
   Scaffold(
       bottomBar = {
         BottomNavigationMenu(
@@ -57,47 +61,49 @@ fun ProfileScaffold(nav: NavigationActions, viewModel: OwnProfileViewModel) {
           if (viewModel.isEditing.observeAsState(false).value) {
             EditOwnProfileContent(viewModel)
           } else {
-            ViewOwnProfileContent(viewModel,nav)
+            ViewOwnProfileContent(viewModel, nestedNav)
           }
         }
       })
 }
 
-  @Composable
-  fun EditButton(nav: NavigationActions) {
-    Icon(
-        painter = painterResource(R.drawable.edit),
-        contentDescription = "edit",
-        modifier = Modifier.clickable { nav.controller.navigate("edit") }.size(24.dp).testTag("edit"))
-  }
+@Composable
+fun EditButton(edit: () -> Unit) {
+  Icon(
+      painter = painterResource(R.drawable.edit),
+      contentDescription = "edit",
+      modifier = Modifier.clickable { edit() }.size(24.dp).testTag("edit"))
+}
 
-  @Composable
-  fun TopBar(nav: NavigationActions) {
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
-      Followers(nav)
-      Following(nav)
-      Spacer(modifier = Modifier.padding(horizontal = 70.dp))
-      EditButton(nav)
-    }
+@Composable
+fun TopBar(nav: NavigationActions, edit: () -> Unit) {
+  Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
+    Followers(nav)
+    Following(nav)
+    Spacer(modifier = Modifier.padding(horizontal = 70.dp))
+    EditButton(edit)
   }
+}
 
-  @Composable
-  fun Followers(nav: NavigationActions) {
-    Column(horizontalAlignment = Alignment.Start) {
-      Text(
-          text = "Followers",
-          modifier = Modifier.testTag("followersButton").clickable { nav.controller.navigate("followers") })
-    }
+@Composable
+fun Followers(nav: NavigationActions) {
+  Column(horizontalAlignment = Alignment.Start) {
+    Text(
+        text = "Followers",
+        modifier =
+            Modifier.testTag("followersButton").clickable { nav.controller.navigate("followers") })
   }
+}
 
-  @Composable
-  fun Following(nav: NavigationActions) {
-    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
-      Text(
-          text = "Following",
-          modifier = Modifier.testTag("followingButton").clickable { nav.controller.navigate("following") })
-    }
+@Composable
+fun Following(nav: NavigationActions) {
+  Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
+    Text(
+        text = "Following",
+        modifier =
+            Modifier.testTag("followingButton").clickable { nav.controller.navigate("following") })
   }
+}
 
 @Composable
 fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit) {
@@ -233,7 +239,10 @@ private fun ProfileImage(
 }
 
 @Composable
-private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel,navController: NavigationActions) {
+private fun ViewOwnProfileContent(
+    viewModel: OwnProfileViewModel,
+    navController: NavigationActions
+) {
   // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
   // nice
   val username by viewModel.username.observeAsState("")
@@ -241,7 +250,7 @@ private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel,navController: 
   val imageUrl by viewModel.image.observeAsState("")
   val interests = viewModel.interests.value ?: mutableSetOf()
   Column(modifier = Modifier.testTag("ProfileScreen")) {
-    TopBar(navController)
+    TopBar(navController, viewModel::edit)
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       ProfileImage(imageUrl, false)
