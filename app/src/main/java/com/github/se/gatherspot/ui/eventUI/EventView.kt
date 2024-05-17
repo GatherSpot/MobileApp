@@ -62,8 +62,6 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventUIViewModel
-import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.model.getEventImageHeader
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
@@ -423,7 +421,6 @@ fun EventTypeIcon(eventCategories: Set<Interests>?) {
       modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
       contentScale = ContentScale.Crop)
 }
-
 
 /**
  * StarRating displays 5 stars, where the user can click on a star to rate the event from 1 to 5
