@@ -191,7 +191,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
   suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
 
-    if (idlist?.events == null || idlist.events.isEmpty()) {
+    if (idlist?.elements == null || idlist.elements.isEmpty()) {
       return mutableListOf()
     }
     val querySnapshot: QuerySnapshot =
@@ -199,7 +199,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
-              .whereIn("eventID", idlist.events)
+              .whereIn("eventID", idlist.elements)
               .limit(number)
               .get()
               .await()
@@ -207,7 +207,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
-              .whereIn("eventID", idlist?.events ?: listOf())
+              .whereIn("eventID", idlist?.elements ?: listOf())
               .startAfter(offset!!.get("eventID"))
               .limit(number)
               .get()
@@ -267,6 +267,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
   suspend fun fetchRegisteredTo(): MutableList<Event> {
+    Log.d(FirebaseAuth.getInstance().currentUser?.uid ?: "forTest", "fetchRegisteredTo: ")
     val querySnapshot: QuerySnapshot =
         Firebase.firestore
             .collection(EVENTS)
@@ -277,6 +278,23 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             .await()
 
     return eventsFromQuerySnapshot(querySnapshot)
+  }
+
+  suspend fun fetchEventsFromFollowedUsers(ids: List<String>): MutableList<Event> {
+    return when {
+      ids.isEmpty() -> mutableListOf()
+      else -> {
+        Log.d(TAG, "goodForCoverage")
+        val querySnapshot: QuerySnapshot =
+            Firebase.firestore
+                .collection(EVENTS)
+                .orderBy("eventID")
+                .whereIn("organizerID", ids)
+                .get()
+                .await()
+        eventsFromQuerySnapshot(querySnapshot)
+      }
+    }
   }
 
   suspend fun addRegisteredUser(eventID: String, uid: String) {
@@ -442,4 +460,62 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         .set(eventItem)
         .addOnFailureListener { exception -> Log.e(TAG, "Error adding new Event", exception) }
   }
+
+  /*
+  fun cleanCollection() {
+    Firebase.firestore
+        .collection(EVENTS)
+        .whereNotEqualTo("organizerID", "")
+        .get()
+        .addOnSuccessListener { querySnapshot ->
+          Log.d(TAG, "Found ${querySnapshot.documents.size} documents with non empty organizerID")
+          querySnapshot.documents.forEach { document ->
+            Firebase.firestore
+                .collection("clean_events")
+                .document(document.id)
+                .set(document.data!!)
+                .addOnSuccessListener {
+                  Log.d(TAG, "DocumentSnapshot successfully moved to clean_events : ${document.id}")
+                }
+                .addOnFailureListener { e -> Log.w(TAG, "Error moving document", e) }
+          }
+        }
+        .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
+  }
+
+
+
+  fun retrieveEvents() {
+    Firebase.firestore
+        .collection("clean_events")
+        .get()
+        .addOnSuccessListener { querySnapshot ->
+          Log.d(TAG, "Found ${querySnapshot.documents.size} documents in clean_events")
+          querySnapshot.documents.forEach { document ->
+            val event = getFromDocument(document)
+            if (event != null) {
+              add(event)
+            }
+          }
+        }
+        .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
+  }
+
+  fun retrieveMissing() {
+    Firebase.firestore
+        .collection("clean_events")
+        .get()
+        .addOnSuccessListener { querySnapshot ->
+          Log.d(TAG, "Found ${querySnapshot.documents.size} documents in clean_events")
+          querySnapshot.documents.forEach { document ->
+            val event = getFromDocument(document)
+            if (event != null) {
+              add(event)
+            }
+          }
+        }
+        .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
+  }
+
+     */
 }
