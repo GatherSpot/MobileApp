@@ -145,7 +145,7 @@ class ProfileView {
         painter = painterResource(R.drawable.edit),
         contentDescription = "edit",
         modifier =
-            Modifier.clickable { navController.navigate("edit") }.size(24.dp).testTag("edit"))
+            Modifier.clickable { navController.navigate("it edit") }.size(24.dp).testTag("edit"))
   }
 
   @Composable
