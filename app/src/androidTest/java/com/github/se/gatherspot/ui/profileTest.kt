@@ -9,6 +9,8 @@ import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
+import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.Before
 import org.junit.Rule
@@ -37,7 +39,7 @@ class ProfileInstrumentedTest {
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      Profile(NavigationActions(navController))
+      ProfileUI(NavigationActions(navController))
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update
@@ -73,8 +75,6 @@ class ProfileInstrumentedTest {
       bioInput { assert(hasText("I am a bot")) }
     }
   }
-
-  // For now on this branch, we will not test the profile screen because it does not pass the CI
 
   @OptIn(ExperimentalTestApi::class, androidx.compose.ui.test.ExperimentalTestApi::class)
   @Test
