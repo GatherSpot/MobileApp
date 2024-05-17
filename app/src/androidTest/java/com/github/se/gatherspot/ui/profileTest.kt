@@ -32,7 +32,7 @@ class ProfileInstrumentedTest {
 
   // For now on this branch, we will not test the profile screen because it does not pass the CI
 
-  @OptIn(ExperimentalTestApi::class, androidx.compose.ui.test.ExperimentalTestApi::class)
+  @OptIn(androidx.compose.ui.test.ExperimentalTestApi::class)
   @Test
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
@@ -76,7 +76,7 @@ class ProfileInstrumentedTest {
 
   // For now on this branch, we will not test the profile screen because it does not pass the CI
 
-  @OptIn(ExperimentalTestApi::class, androidx.compose.ui.test.ExperimentalTestApi::class)
+  @OptIn(androidx.compose.ui.test.ExperimentalTestApi::class)
   @Test
   fun viewProfileTest() {
     composeTestRule.setContent {
