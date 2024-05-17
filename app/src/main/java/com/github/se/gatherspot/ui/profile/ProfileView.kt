@@ -105,8 +105,8 @@ class ProfileView {
       nav: NavigationActions
   ) {
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
-      Followers(nav)
-      Following(nav)
+      Followers(navController)
+      Following(navController)
       Spacer(modifier = Modifier.padding(horizontal = 38.dp))
       LogOutButton(nav, viewModel)
       Spacer(modifier = Modifier.width(8.dp))
@@ -115,20 +115,22 @@ class ProfileView {
   }
 
   @Composable
-  fun Followers(nav: NavController) {
+  fun Followers(navController: NavController) {
     Column(horizontalAlignment = Alignment.Start) {
       Text(
           text = "Followers",
-          modifier = Modifier.testTag("followersButton").clickable { nav.navigate("followers") })
+          modifier =
+              Modifier.testTag("followersButton").clickable { navController.navigate("followers") })
     }
   }
 
   @Composable
-  fun Following(nav: NavController) {
+  fun Following(navController: NavController) {
     Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
       Text(
           text = "Following",
-          modifier = Modifier.testTag("followingButton").clickable { nav.navigate("following") })
+          modifier =
+              Modifier.testTag("followingButton").clickable { navController.navigate("following") })
     }
   }
 
@@ -150,7 +152,7 @@ class ProfileView {
   }
 
   @Composable
-  fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, nav: NavController) {
+  fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, navController: NavController) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
@@ -159,7 +161,7 @@ class ProfileView {
               modifier =
                   Modifier.clickable {
                         cancel()
-                        nav.navigate("view")
+                        navController.navigate("view")
                       }
                       .testTag("cancel"))
           Text(
@@ -167,7 +169,7 @@ class ProfileView {
               modifier =
                   Modifier.clickable {
                         save()
-                        nav.navigate("view")
+                        navController.navigate("view")
                       }
                       .testTag("save"))
         }
