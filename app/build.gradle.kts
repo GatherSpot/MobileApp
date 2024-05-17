@@ -144,6 +144,17 @@ dependencies {
   implementation("com.google.zxing:core:3.5.1")
   // ZXing Android Embedded (for scanning)
   implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+  implementation ("androidx.camera:camera-core:1.0.2")
+  implementation ("androidx.camera:camera-camera2:1.0.2")
+  implementation ("androidx.camera:camera-lifecycle:1.0.2")
+  implementation ("androidx.camera:camera-view:1.0.0-alpha29")
+
+  //Barcode
+  implementation ("com.google.mlkit:barcode-scanning:17.0.0")
+
+  //Camera Permission
+  implementation ("com.google.accompanist:accompanist-permissions:0.19.0")
+
 
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
