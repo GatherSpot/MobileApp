@@ -254,8 +254,8 @@ fun isEmailValid(email: String): Boolean {
 
 fun isPasswordValid(password: String): Boolean {
   if (password.isEmpty()) return false
-  val passwordRegex = """^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$"""
-  return password.matches(passwordRegex.toRegex())
+  val regex = """^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$"""
+  return password.matches(regex.toRegex())
 }
 
 suspend fun checkCredentials(email: String, password: String, t: MutableState<String>): Boolean {
