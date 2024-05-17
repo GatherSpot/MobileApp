@@ -104,10 +104,31 @@ class ProfileView {
       navController: NavController,
       nav: NavigationActions
   ) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
+      Followers(nav)
+      Following(nav)
+      Spacer(modifier = Modifier.padding(horizontal = 38.dp))
       LogOutButton(nav, viewModel)
       Spacer(modifier = Modifier.width(8.dp))
       EditButton(navController)
+    }
+  }
+
+  @Composable
+  fun Followers(nav: NavController) {
+    Column(horizontalAlignment = Alignment.Start) {
+      Text(
+          text = "Followers",
+          modifier = Modifier.testTag("followersButton").clickable { nav.navigate("followers") })
+    }
+  }
+
+  @Composable
+  fun Following(nav: NavController) {
+    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
+      Text(
+          text = "Following",
+          modifier = Modifier.testTag("followingButton").clickable { nav.navigate("following") })
     }
   }
 
@@ -277,9 +298,9 @@ class ProfileView {
     val bio by viewModel.bio.observeAsState("")
     val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
-    Column {
-      TopBarOwnProfile(viewModel, navController, nav)
 
+    Column(modifier = Modifier.testTag("ProfileScreen")) {
+      TopBarOwnProfile(viewModel, navController, nav)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)

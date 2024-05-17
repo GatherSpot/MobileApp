@@ -10,10 +10,12 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.profile.ProfileView
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * This function is the one that should be called when navigating to the profile screen from the
@@ -28,6 +30,16 @@ fun Profile(nav: NavigationActions) {
   NavHost(navController, startDestination = "view") {
     composable("view") { ProfileView().ViewOwnProfile(nav, viewModel, navController) }
     composable("edit") { ProfileView().EditOwnProfile(nav, viewModel, navController) }
+    composable("followers") {
+      FollowList(nav, navController, title = "Followers") {
+        FollowList.followers(FirebaseAuth.getInstance().currentUser?.uid ?: "TEST")
+      }
+    }
+    composable("following") {
+      FollowList(nav, navController, title = "Following") {
+        FollowList.following(FirebaseAuth.getInstance().currentUser?.uid ?: "TEST")
+      }
+    }
   }
 }
 
