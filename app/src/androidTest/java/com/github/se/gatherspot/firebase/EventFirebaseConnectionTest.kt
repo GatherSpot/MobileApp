@@ -2,6 +2,7 @@ package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -75,7 +76,7 @@ class EventFirebaseConnectionTest {
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null)
 
     eventFirebaseConnection.add(event)
@@ -119,7 +120,7 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
-    assertEquals(resultEvent!!.images, null)
+    assertEquals(resultEvent!!.image, "")
     eventFirebaseConnection.delete(eventID)
   }
 
@@ -219,6 +220,16 @@ class EventFirebaseConnectionTest {
       }
 
   @Test
+  fun fetchEventsFromFollowedWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        testLogin()
+        val idList = FollowList.following(uid = FirebaseAuth.getInstance().currentUser!!.uid)
+        val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(idList.elements)
+        assert(events.all { event -> idList.elements.contains(event.organizerID) })
+        testLoginCleanUp()
+      }
+
+  @Test
   fun deleteEvent() = runTest {
     val eventID = eventFirebaseConnection.getNewID()
     val event =
@@ -254,7 +265,7 @@ class EventFirebaseConnectionTest {
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null)
 
     eventFirebaseConnection.add(event)
@@ -288,7 +299,7 @@ class EventFirebaseConnectionTest {
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
-            images = null,
+            image = "",
             globalRating = null)
 
     eventFirebaseConnection.add(event)
@@ -299,19 +310,23 @@ class EventFirebaseConnectionTest {
     assertEquals(resultEvent!!.title, "Test Event")
     assertEquals(resultEvent!!.description, "This is a test event")
     assertEquals(resultEvent!!.location, null)
-    assertEquals(resultEvent!!.eventStartDate, null)
-    assertEquals(resultEvent!!.eventEndDate, null)
-    assertEquals(resultEvent!!.timeBeginning, null)
-    assertEquals(resultEvent!!.timeEnding, null)
+    assertEquals(
+        resultEvent!!.eventStartDate, eventFirebaseConnection.EVENT_START_DATE_DEFAULT_VALUE)
+    assertEquals(resultEvent!!.eventEndDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+    assertEquals(
+        resultEvent!!.timeBeginning, eventFirebaseConnection.EVENT_START_TIME_DEFAULT_VALUE)
+    assertEquals(resultEvent!!.timeEnding, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
     assertEquals(resultEvent!!.attendanceMaxCapacity, null)
     assertEquals(resultEvent!!.attendanceMinCapacity, 10)
-    assertEquals(resultEvent!!.inscriptionLimitDate, null)
-    assertEquals(resultEvent!!.inscriptionLimitTime, null)
+    assertEquals(
+        resultEvent!!.inscriptionLimitDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+    assertEquals(
+        resultEvent!!.inscriptionLimitTime, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
     assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
     assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
     assertEquals(resultEvent!!.registeredUsers!!.size, 0)
     assertEquals(resultEvent!!.finalAttendees!!.size, 0)
-    assertEquals(resultEvent!!.images, null)
+    assertEquals(resultEvent!!.image, "")
     eventFirebaseConnection.delete(eventID)
   }
 

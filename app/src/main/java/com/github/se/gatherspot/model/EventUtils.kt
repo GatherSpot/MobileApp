@@ -79,6 +79,7 @@ class EventUtils {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
+            image = "",
             categories = categories?.toSet(),
             eventStatus = EventStatus.CREATED)
 
@@ -291,7 +292,7 @@ class EventUtils {
             globalRating = oldEvent.globalRating,
             categories = categories?.toSet(),
             registeredUsers = oldEvent.registeredUsers,
-            images = oldEvent.images,
+            image = oldEvent.image,
             eventStatus = EventStatus.CREATED,
         )
     // Add the event to the database
@@ -406,5 +407,18 @@ class EventUtils {
     } catch (e: Exception) {
       Log.e("EventUtils", "Error deleting draft event from local storage", e)
     }
+  }
+
+  /**
+   * Check if an event is over
+   *
+   * @param event: The event to check
+   * @return true if the event is over
+   */
+  fun isEventOver(event: Event): Boolean {
+    val now = LocalDate.now()
+    val timeNow = LocalTime.now()
+    return event.eventEndDate?.isBefore(now) == true ||
+        (event.eventEndDate == now && event.timeEnding?.isBefore(timeNow) == true)
   }
 }

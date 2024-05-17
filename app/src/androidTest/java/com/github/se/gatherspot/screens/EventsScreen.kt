@@ -14,6 +14,7 @@ class EventsScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val createMenu: KNode = onNode { hasTestTag("createMenu") }
   val emptyText: KNode = onNode { hasTestTag("empty") }
   val eventsList: KNode = onNode { hasTestTag("eventsList") }
+  val eventRow: KNode = onNode { hasTestTag("Basketball") }
   val dropdown: KNode = onNode { hasTestTag("dropdown") }
   val refresh: KNode = onNode { hasTestTag("refresh") }
   val fetchingText: KNode = onNode { hasTestTag("fetch") }
@@ -21,5 +22,7 @@ class EventsScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
       enumValues<Interests>().toList().map { i -> onNode { hasTestTag(i.toString()) } }
   val myEvents: KNode = onNode { hasTestTag("myEvents") }
   val registeredTo: KNode = onNode { hasTestTag("registeredTo") }
+  val fromFollowed: KNode = onNode { hasTestTag("fromFollowed") }
+  val removeFilter: KNode = onNode { hasTestTag("removeFilter") }
   val eventCreated: KNode = onNode { hasTestTag("Basketball Game") }
 }

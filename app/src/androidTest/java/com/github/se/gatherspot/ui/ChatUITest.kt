@@ -67,7 +67,7 @@ class ChatUITest {
               categories = setOf(Interests.CHESS),
               registeredUsers = mutableListOf("my_id"),
               finalAttendees = emptyList(),
-              images = null,
+              image = "",
               globalRating = null)
       eventFirebaseConnection.add(event)
       chatViewModel.addMessage(UUID.randomUUID().toString(), "user1", "Hello")
