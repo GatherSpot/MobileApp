@@ -1,9 +1,13 @@
 package com.github.se.gatherspot.ui
 
+import android.Manifest
+import android.content.Context
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.EventsViewModel
@@ -16,12 +20,26 @@ import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class EditEventTest {
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
+
+  @Before
+  fun grantLocationPermission() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val packageName = context.packageName
+    val uiAutomation =
+        androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().uiAutomation
+    uiAutomation.executeShellCommand(
+        "pm grant $packageName android.permission.ACCESS_FINE_LOCATION")
+  }
 
   private val eventFirebaseConnection = EventFirebaseConnection()
   private val testEvent =

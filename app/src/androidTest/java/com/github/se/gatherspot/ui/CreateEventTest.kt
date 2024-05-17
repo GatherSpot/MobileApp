@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.Manifest
 import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -13,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -35,6 +37,19 @@ class CreateEventTest {
   private val eventFirebaseConnection = EventFirebaseConnection()
 
   @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
+
+  @Before
+  fun grantLocationPermission() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val packageName = context.packageName
+    val uiAutomation =
+        androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().uiAutomation
+    uiAutomation.executeShellCommand(
+        "pm grant $packageName android.permission.ACCESS_FINE_LOCATION")
+  }
 
   @Before
   fun setUp() {
