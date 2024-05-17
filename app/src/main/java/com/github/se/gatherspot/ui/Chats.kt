@@ -14,10 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -196,6 +193,7 @@ fun ChatsTopAppBar(navActions: NavigationActions, title: String) {
   TopAppBar(
       modifier = Modifier.testTag("chatsTopBar"),
       title = { androidx.compose.material.Text(text = title, color = Color.Black) },
+      /*
       navigationIcon = {
         IconButton(onClick = { navActions.controller.popBackStack() }) {
           androidx.compose.material.Icon(
@@ -203,7 +201,9 @@ fun ChatsTopAppBar(navActions: NavigationActions, title: String) {
               contentDescription = "Go Back",
               tint = Color.Black)
         }
-      },
+      }
+      ,
+       */
       backgroundColor = Color.White,
       contentColor = Color.Black,
       elevation = 4.dp)
