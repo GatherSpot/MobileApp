@@ -45,6 +45,7 @@ import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.ViewProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -154,6 +155,7 @@ class MainActivity : ComponentActivity() {
                   ViewProfile(NavigationActions(navController), it)
                 }
               }
+
               composable("chats") {
                 when {
                   chatsViewModel == null -> {
@@ -163,6 +165,10 @@ class MainActivity : ComponentActivity() {
                   else -> Chats(chatsViewModel!!, NavigationActions(navController))
                 }
               }
+
+              composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
+         
+
               composable("chat/{chatJson}") { backStackEntry ->
                 backStackEntry.arguments?.getString("chatJson")?.let {
                   ChatUI(
