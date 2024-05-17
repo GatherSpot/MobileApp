@@ -167,7 +167,6 @@ class MainActivity : ComponentActivity() {
               }
 
               composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
-         
 
               composable("chat/{chatJson}") { backStackEntry ->
                 backStackEntry.arguments?.getString("chatJson")?.let {
