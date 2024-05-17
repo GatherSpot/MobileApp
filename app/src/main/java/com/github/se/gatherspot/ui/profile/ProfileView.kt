@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -69,7 +68,7 @@ class ProfileView {
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
         content = { paddingValues: PaddingValues ->
-          ViewOwnProfileContent(viewModel, navController)
+          ViewOwnProfileContent(viewModel, navController, nav)
           Log.d(ContentValues.TAG, paddingValues.toString())
         })
   }
@@ -100,50 +99,68 @@ class ProfileView {
   }
 
   @Composable
-  fun TopBarOwnProfile(nav: NavController, viewModel: OwnProfileViewModel) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
+  fun TopBarOwnProfile(
+      viewModel: OwnProfileViewModel,
+      navController: NavController,
+      nav: NavigationActions
+  ) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp), horizontalArrangement = Arrangement.End) {
       LogOutButton(nav, viewModel)
-      EditButton(nav)
+      Spacer(modifier = Modifier.width(8.dp))
+      EditButton(navController)
     }
   }
 
   @Composable
-  fun EditButton(nav: NavController) {
+  fun EditButton(navController: NavController) {
     Icon(
         painter = painterResource(R.drawable.edit),
         contentDescription = "edit",
-        modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
+        modifier =
+        Modifier
+            .clickable { navController.navigate("edit") }
+            .size(24.dp)
+            .testTag("edit"))
   }
 
   @Composable
-  fun LogOutButton(nav: NavController, viewModel: OwnProfileViewModel) {
+  fun LogOutButton(nav: NavigationActions, viewModel: OwnProfileViewModel) {
     Icon(
         Icons.AutoMirrored.Filled.ExitToApp,
         contentDescription = "logout",
-        modifier = Modifier.clickable { viewModel.logout(nav) }.size(24.dp).testTag("logout"))
+        modifier = Modifier
+            .clickable { viewModel.logout(nav) }
+            .size(24.dp)
+            .testTag("logout"))
   }
 
   @Composable
   fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, nav: NavController) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Text(
               text = "Cancel",
               modifier =
-                  Modifier.clickable {
-                        cancel()
-                        nav.navigate("view")
-                      }
-                      .testTag("cancel"))
+              Modifier
+                  .clickable {
+                      cancel()
+                      nav.navigate("view")
+                  }
+                  .testTag("cancel"))
           Text(
               text = "Save",
               modifier =
-                  Modifier.clickable {
-                        save()
-                        nav.navigate("view")
-                      }
-                      .testTag("save"))
+              Modifier
+                  .clickable {
+                      save()
+                      nav.navigate("view")
+                  }
+                  .testTag("save"))
         }
   }
 
@@ -157,13 +174,20 @@ class ProfileView {
       addFriend: () -> Unit
   ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Icon(
               painter = painterResource(R.drawable.backarrow),
               contentDescription = "back",
-              modifier = Modifier.clickable { back() }.testTag("back").size(24.dp))
-          Row(modifier = Modifier.clickable { addFriend() }.testTag("addFriend")) {
+              modifier = Modifier
+                  .clickable { back() }
+                  .testTag("back")
+                  .size(24.dp))
+          Row(modifier = Modifier
+              .clickable { addFriend() }
+              .testTag("addFriend")) {
             Icon(
                 painter = painterResource(R.drawable.add_friend),
                 contentDescription = "add friend",
@@ -176,14 +200,19 @@ class ProfileView {
           // in a fixed size box)
           Text(
               text = if (following) "Unfollow" else "  Follow",
-              modifier = Modifier.clickable { follow() }.testTag("follow"))
+              modifier = Modifier
+                  .clickable { follow() }
+                  .testTag("follow"))
         }
   }
 
   @Composable
   private fun UsernameField(username: String, updateUsername: (String) -> Unit, edit: Boolean) {
     OutlinedTextField(
-        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .testTag("usernameInput"),
         label = { Text("username") },
         value = username,
         readOnly = !edit,
@@ -197,7 +226,11 @@ class ProfileView {
         value = bio,
         onValueChange = { updateBio(it) },
         readOnly = !edit,
-        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
+        modifier = Modifier
+            .height(150.dp)
+            .fillMaxWidth()
+            .padding(8.dp)
+            .testTag("bioInput"))
   }
 
   @Composable
@@ -223,9 +256,13 @@ class ProfileView {
             })
 
     Column(
-        modifier = Modifier.padding(8.dp).fillMaxWidth(),
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally) {
-          Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
+          Card(shape = CircleShape, modifier = Modifier
+              .padding(8.dp)
+              .size(180.dp)) {
             AsyncImage(
                 model =
                     if (editAction == OwnProfileViewModel.ImageEditAction.NO_ACTION) {
@@ -236,14 +273,17 @@ class ProfileView {
                 placeholder = painterResource(R.drawable.user),
                 contentDescription = "profile image",
                 modifier =
-                    Modifier.clickable {
-                          if (edit) {
+                Modifier
+                    .clickable {
+                        if (edit) {
                             photoPickerLauncher.launch(
                                 PickVisualMediaRequest(
-                                    ActivityResultContracts.PickVisualMedia.ImageOnly))
-                          }
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                                )
+                            )
                         }
-                        .testTag("profileImage"),
+                    }
+                    .testTag("profileImage"),
                 contentScale = ContentScale.Crop)
           }
 
@@ -261,7 +301,11 @@ class ProfileView {
   }
 
   @Composable
-  private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
+  private fun ViewOwnProfileContent(
+      viewModel: OwnProfileViewModel,
+      navController: NavController,
+      nav: NavigationActions
+  ) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
     val username by viewModel.username.observeAsState("")
@@ -269,9 +313,11 @@ class ProfileView {
     val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
     Column {
-      TopBarOwnProfile(navController, viewModel)
+      TopBarOwnProfile(viewModel, navController, nav)
 
-      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+      Column(modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(8.dp)) {
         ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
@@ -302,7 +348,9 @@ class ProfileView {
 
     Column() {
       SaveCancelButtons(save, cancel, navController)
-      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
+      Column(modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(56.dp)) {
         ProfileImage(
             imageUrl = imageUrl,
             edit = true,
@@ -338,7 +386,9 @@ class ProfileView {
 
     Column() {
       FollowButtons(back, follow, following, addFriend)
-      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
+      Column(modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(8.dp)) {
         ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)
         BioField(bio, {}, false)

@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.github.se.gatherspot.FirebaseImages
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
@@ -147,9 +146,9 @@ class OwnProfileViewModel : ViewModel() {
     cancelImage()
   }
 
-  fun logout(nav: NavController) {
+  fun logout(nav: NavigationActions) {
     Firebase.auth.signOut()
-    nav.navigate("auth")
+    nav.controller.navigate("auth")
   }
 }
 
