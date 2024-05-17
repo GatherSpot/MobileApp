@@ -20,6 +20,10 @@ class MockEventFirebaseConnection : EventFirebaseConnection() {
 
   private var registered = 0
   private var fetchedNextCounter = 0
+  private var fetchedFromFollowed = false
+  fun getFetchedFromFollowed(): Boolean {
+    return fetchedFromFollowed
+  }
 
   fun getRegistered(): Int {
     return registered
@@ -60,5 +64,10 @@ class MockEventFirebaseConnection : EventFirebaseConnection() {
 
   override suspend fun add(element: Event) {
     return
+  }
+
+  override suspend fun fetchEventsFromFollowedUsers(ids: List<String>): MutableList<Event> {
+    fetchedFromFollowed = true
+    return events.take(4).toMutableList()
   }
 }

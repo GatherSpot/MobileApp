@@ -7,15 +7,18 @@ import io.github.kakaocup.compose.node.element.KNode
 class ProfileScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
     ComposeScreen<ProfileScreen>(
         semanticsProvider = semanticsProvider,
-        viewBuilderAction = { hasTestTag("EditOwnProfileScreen") }) {
-  // Structural elements of the UI
-  val edit: KNode = onNode { hasTestTag("edit") }
+        viewBuilderAction = { hasTestTag("ProfileScreen") }) {
+  val followersButton: KNode = onNode { hasTestTag("followersButton") }
+  val followingButton: KNode = onNode { hasTestTag("followingButton") }
   val back: KNode = onNode { hasTestTag("back") }
-  val cancel: KNode = onNode { hasTestTag("cancel") }
-  val save: KNode = onNode { hasTestTag("save") }
-  val usernameInput: KNode = onNode { hasTestTag("usernameInput") }
-  val bioInput: KNode = onNode { hasTestTag("bioInput") }
-  val profileImage: KNode = onNode { hasTestTag("profileImage") }
-  val addFriend: KNode = onNode { hasTestTag("addFriend") }
+  val edit: KNode = onNode { hasTestTag("edit") }
+    val save: KNode = onNode { hasTestTag("save") }
+    val cancel: KNode = onNode { hasTestTag("cancel") }
+    val usernameInput: KNode = onNode { hasTestTag("usernameInput") }
+    val bioInput: KNode = onNode { hasTestTag("bioInput") }
+    val profileImage: KNode = onNode { hasTestTag("profileImage") }
   val follow: KNode = onNode { hasTestTag("follow") }
+    val unfollow: KNode = onNode { hasTestTag("unfollow") }
+  val addFriend: KNode = onNode { hasTestTag("addFriend") }
+    val removeFriend: KNode = onNode { hasTestTag("removeFriend") }
 }

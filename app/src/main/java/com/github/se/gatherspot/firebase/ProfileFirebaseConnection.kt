@@ -48,7 +48,7 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .collection(COLLECTION)
         .whereEqualTo("userName", userName)
         .get().await()
-    return document.isEmpty
+    return !document.isEmpty
   }
 
   /**

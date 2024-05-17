@@ -16,6 +16,7 @@ import com.github.se.gatherspot.utils.MockEventFirebaseConnection
 import com.github.se.gatherspot.utils.MockProfileFirebaseConnection
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -264,6 +265,44 @@ class EventsTest {
       val listOfEvents = viewModel.uiState.value.list
       if (listOfEvents.isNotEmpty()) {
         assert(listOfEvents.all { event -> event.registeredUsers.contains(uid) })
+      }
+    }
+  }
+
+  @Test
+  fun testFromFollowedWorks() {
+    val fb = MockEventFirebaseConnection()
+    val viewModel = EventsViewModel(fb)
+
+    composeTestRule.setContent {
+      val nav = NavigationActions(rememberNavController())
+      Events(viewModel = viewModel, nav = nav, MockProfileFirebaseConnection())
+    }
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      dropdown { assertIsDisplayed() }
+
+      fromFollowed {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("fromFollowed"))
+        performClick()
+      }
+
+      composeTestRule.waitForIdle()
+      assertTrue(fb.getFetchedFromFollowed())
+
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      removeFilter {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("removeFilter"))
+        performClick()
       }
     }
   }

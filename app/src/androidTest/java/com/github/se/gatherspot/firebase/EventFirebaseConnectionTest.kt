@@ -3,15 +3,18 @@ package com.github.se.gatherspot.firebase
  import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
  import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
  import com.github.se.gatherspot.defaults.DefaultEvents
+ import com.github.se.gatherspot.model.FollowList
  import com.github.se.gatherspot.model.Interests
  import com.github.se.gatherspot.model.event.Event
  import com.google.firebase.auth.FirebaseAuth
  import kotlinx.coroutines.runBlocking
+ import kotlinx.coroutines.test.runTest
  import org.junit.Assert.assertEquals
  import org.junit.Assert.assertNotEquals
  import org.junit.Assert.assertNotNull
  import org.junit.Assert.assertTrue
  import org.junit.Test
+ import kotlin.time.Duration
 
 class EventFirebaseConnectionTest {
 
@@ -157,33 +160,31 @@ class EventFirebaseConnectionTest {
 
       runBlocking {
         testLoginCleanUp()
-        events.forEach { eventFirebaseConnection.delete(it.id) }
       }
     }
 
-    @Test
-    fun fetchRegisteredToWorks(){
-          runBlocking { testLogin() }
-          val myID = FirebaseAuth.getInstance().currentUser!!.uid
-          val events =
-              listOf(
-                  DefaultEvents.withRegistered(myID, eventId = "1"),
-                  DefaultEvents.withRegistered(myID, eventId = "2"),
-                  DefaultEvents.withRegistered(myID, "1", "2", eventId = "3"),
-                  DefaultEvents.withRegistered("1", "2", eventId = "4"),
-                  DefaultEvents.withRegistered(eventId = "5"),
-              )
-          runBlocking { events.forEach { eventFirebaseConnection.add(it) } }
-          lateinit var resultEvents: MutableList<Event>
-          runBlocking { resultEvents = eventFirebaseConnection.fetchRegisteredTo() }
+  @Test
+  fun fetchRegisteredToWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        testLogin()
+        Thread.sleep(10000)
+        val events = eventFirebaseConnection.fetchRegisteredTo()
+        assert(
+            events.all { event ->
+              event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
+            })
+        testLoginCleanUp()
+      }
 
-          assert(resultEvents.all { it.registeredUsers.contains(myID) })
-
-          runBlocking {
-            testLoginCleanUp()
-            events.forEach { eventFirebaseConnection.delete(it.id) }
-          }
-        }
+  @Test
+  fun fetchEventsFromFollowedWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        testLogin()
+        val idList = FollowList().following(uid = FirebaseAuth.getInstance().currentUser!!.uid)
+        val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(idList.elements)
+        assert(events.all { event -> idList.elements.contains(event.organizerID) })
+        testLoginCleanUp()
+      }
 
     @Test
     fun deleteEvent() {
@@ -210,3 +211,4 @@ class EventFirebaseConnectionTest {
       assertEquals(date, null)
     }
  }
+

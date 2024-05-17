@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
@@ -58,9 +59,9 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.delay
 
 /** Composable that displays events * */
 
@@ -87,6 +88,7 @@ fun Events(
     if (!init) {
       viewModel.fetchMyEvents()
       viewModel.fetchRegisteredTo()
+      viewModel.fetchEventsFromFollowedUsers()
       init = true
     }
   }
@@ -132,7 +134,7 @@ fun Events(
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.Clear, "clear") },
-                        )
+                            modifier = Modifier.testTag("removeFilter"))
 
                         DropdownMenuItem(
                             text = { Text("YOUR EVENTS") },
@@ -153,6 +155,16 @@ fun Events(
                             },
                             leadingIcon = { Icon(Icons.Filled.Info, "registeredTo") },
                             modifier = Modifier.testTag("registeredTo"))
+
+                        DropdownMenuItem(
+                            text = { Text("FROM FOLLOWED") },
+                            onClick = {
+                              interestsSelected = mutableListOf()
+                              viewModel.displayEventsFromFollowedUsers()
+                              showDropdownMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Filled.AccountCircle, "fromFollowed") },
+                            modifier = Modifier.testTag("fromFollowed"))
 
                         filters.forEach { s -> StatefulDropdownItem(s, interestsSelected) }
                       }
@@ -215,7 +227,10 @@ fun Events(
           else -> {
             LazyColumn(
                 state = lazyState,
-                modifier = Modifier.padding(paddingValues).testTag("eventsList")) {
+                modifier =
+                    Modifier.padding(vertical = 15.dp)
+                        .padding(paddingValues)
+                        .testTag("eventsList")) {
                   items(events) { event -> EventRow(event, nav, profileFirebaseConnection) }
                 }
 

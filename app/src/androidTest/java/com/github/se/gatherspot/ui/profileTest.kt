@@ -8,7 +8,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.defaults.DefaultProfiles
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import com.github.se.gatherspot.utils.MockFollowList
 import com.github.se.gatherspot.utils.MockProfileFirebaseConnection
@@ -31,7 +30,9 @@ class ProfileInstrumentedTest {
       val navController = rememberNavController()
       Profile(
           NavigationActions(navController),
-          viewModel { OwnProfileViewModel(MockProfileFirebaseConnection()) })
+          MockFollowList(),
+          MockProfileFirebaseConnection()
+        )
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update

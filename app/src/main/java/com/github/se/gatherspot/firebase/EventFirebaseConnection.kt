@@ -13,7 +13,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.LocalTime
@@ -189,8 +188,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
   open suspend fun fetchNextEvents(idlist: IdList?, number: Long): MutableList<Event> {
-
-    if (idlist?.events == null || idlist.events.isEmpty()) {
+    if (idlist?.elements.isNullOrEmpty()){
       return mutableListOf()
     }
     val querySnapshot: QuerySnapshot =
@@ -198,7 +196,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(COLLECTION)
               .orderBy("eventID")
-              .whereIn("eventID", idlist.events)
+              .whereIn("eventID", idlist!!.elements)
               .limit(number)
               .get()
               .await()
@@ -206,7 +204,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(COLLECTION)
               .orderBy("eventID")
-              .whereIn("eventID", idlist?.events ?: listOf())
+              .whereIn("eventID", idlist!!.elements)
               .startAfter(offset!!.get("eventID"))
               .limit(number)
               .get()
@@ -279,6 +277,23 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             .await()
 
     return eventsFromQuerySnapshot(querySnapshot)
+  }
+
+  open suspend fun fetchEventsFromFollowedUsers(ids: List<String>): MutableList<Event> {
+    return when {
+      ids.isEmpty() -> mutableListOf()
+      else -> {
+        Log.d(TAG, "goodForCoverage")
+        val querySnapshot: QuerySnapshot =
+            Firebase.firestore
+                .collection(COLLECTION)
+                .orderBy("eventID")
+                .whereIn("organizerID", ids)
+                .get()
+                .await()
+        eventsFromQuerySnapshot(querySnapshot)
+      }
+    }
   }
 
   open suspend fun addRegisteredUser(eventID: String, uid: String) {
@@ -446,6 +461,7 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         .await()
   }
 
+  /*
   fun cleanCollection() {
     Firebase.firestore
         .collection(COLLECTION)
@@ -466,6 +482,8 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         }
         .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
   }
+
+
 
   fun retrieveEvents() {
     Firebase.firestore
@@ -498,4 +516,6 @@ open class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         }
         .addOnFailureListener { exception -> Log.d(TAG, exception.toString()) }
   }
+
+     */
 }

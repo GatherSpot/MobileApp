@@ -23,14 +23,26 @@ import com.github.se.gatherspot.ui.profile.ProfileViewModel
 @Composable
 fun Profile(
     nav: NavigationActions,
+    followList: FollowList = FollowList(),
+    profileFirebaseConnection: ProfileFirebaseConnection = ProfileFirebaseConnection(),
     viewModel: OwnProfileViewModel =
-        viewModel() { OwnProfileViewModel() }
+        viewModel() { OwnProfileViewModel(profileFirebaseConnection) }
 ) {
   // This new navController will navigate between seeing profile and editing profile
   val navController = rememberNavController()
   NavHost(navController, startDestination = "view") {
     composable("view") { ProfileView().ViewOwnProfile(nav, viewModel, navController) }
     composable("edit") { ProfileView().EditOwnProfile(nav, viewModel, navController) }
+    composable("followers") {
+      FollowList(nav, navController, title = "Followers",profileFirebaseConnection) {
+        followList.followers(profileFirebaseConnection.getCurrentUserUid()!!)
+      }
+    }
+    composable("following") {
+      FollowList(nav, navController, title = "Following",profileFirebaseConnection) {
+        followList.following(profileFirebaseConnection.getCurrentUserUid()!!)
+      }
+    }
   }
 }
 

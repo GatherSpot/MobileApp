@@ -63,7 +63,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             .fetchFromFirebase(
                 FirebaseAuth.getInstance().currentUser?.uid ?: "0",
                 FirebaseCollection.REGISTERED_EVENTS) {}!!
-            .events
+            .elements
             .toMutableList()
     events = list.map { EventFirebaseConnection().fetch(it) }.toMutableList()
     return

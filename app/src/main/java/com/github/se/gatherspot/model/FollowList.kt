@@ -10,7 +10,7 @@ public open class FollowList {
    *
    * @param uid The user id
    */
-  suspend fun followers(uid: String): IdList {
+  open suspend fun followers(uid: String): IdList {
     return IdListFirebaseConnection().fetch(uid, FirebaseCollection.FOLLOWERS) {}
   }
 
@@ -19,7 +19,7 @@ public open class FollowList {
    *
    * @param uid The user id
    */
-  suspend fun following(uid: String): IdList {
+  open suspend fun following(uid: String): IdList {
     return IdListFirebaseConnection().fetch(uid, FirebaseCollection.FOLLOWING) {}
   }
 
