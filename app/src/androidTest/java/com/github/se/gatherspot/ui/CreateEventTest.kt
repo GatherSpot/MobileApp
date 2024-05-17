@@ -513,7 +513,7 @@ class CreateEventTest {
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventLocation {
         performClick()
-        performTextInput("ecole polytechnique federale")
+        performTextInput("ecole polytechnique federale de lausanne")
       }
       // wait for the location proposition to appear
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)

@@ -347,7 +347,7 @@ class EventUtils {
 
         try {
           // Get the user's current location
-          val userLocation = getCurrentLocation(context) ?: return@withContext emptyList()
+          val userLocation = getCurrentLocation(context)
 
           client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("Unexpected code $response")
@@ -364,6 +364,9 @@ class EventUtils {
                     Location(latitude = latitude, longitude = longitude, name = displayName))
               }
             }
+          }
+          if (userLocation == null) {
+            return@withContext suggestions.take(ELEMENTS_TO_DISPLAY)
           }
           // Sort suggestions based on distance to user's current location
           suggestions.sortBy { location ->
