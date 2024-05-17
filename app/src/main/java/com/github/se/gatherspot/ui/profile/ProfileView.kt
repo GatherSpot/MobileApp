@@ -330,8 +330,8 @@ class ProfileView {
                   .padding(8.dp)
                   .testTag("columnViewOwnContent")) {
             ProfileImage(imageUrl, false)
-            UsernameField(username, {}, false)
-            BioField(bio, {}, false)
+            UsernameField(username, null, {}, false)
+            BioField(bio, null, {}, false)
             InterestsView().ShowInterests(interests)
             ProfileQRCodeUI(viewModel._profile)
             Box(
@@ -384,14 +384,14 @@ class ProfileView {
                   .padding(56.dp)
                   .testTag("columnEditOwnContent")) {
             ProfileImage(
-                imageUrl = imageUrl,
+                imageUrl = imageUrl.value,
                 edit = true,
                 setImageEditAction = setImageEditAction,
                 editAction = imageEditAction.value,
                 localImageUri = localImageUriToUpload,
                 updateLocalImageUri = setLocalImageUriToUpload)
-            UsernameField(username, updateUsername, true)
-            BioField(bio, updateBio, true)
+            UsernameField(username.value, usernameValid.value, updateUsername, true)
+            BioField(bio.value, bioValid.value, updateBio, true)
             InterestsView().EditInterests(
                 Interests.toList(), viewModel.interests.observeAsState()) {
                   viewModel.flipInterests(it)
