@@ -64,8 +64,6 @@ import com.github.se.gatherspot.model.event.RegistrationState
 import com.github.se.gatherspot.model.getEventImageHeader
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.qrcode.EventQRCodeUI
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlinx.coroutines.runBlocking
