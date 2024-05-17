@@ -1,10 +1,8 @@
 package com.github.se.gatherspot.model.event
 
-import androidx.compose.ui.graphics.ImageBitmap
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
-import com.github.se.gatherspot.model.utils.ImageBitmapSerializer
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer

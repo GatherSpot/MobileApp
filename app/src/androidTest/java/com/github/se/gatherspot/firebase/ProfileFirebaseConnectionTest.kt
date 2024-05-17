@@ -6,6 +6,8 @@ import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -101,10 +103,10 @@ class ProfileFirebaseConnectionTest {
   @Test
   fun testIfUsernameExists() {
     // bogus does not actually test correctly
-    runTest {
+    runBlocking {
       profileFirebaseConnection.add(toAdd)
       var wasSet = false
-      profileFirebaseConnection.ifUsernameExists("melvin") {
+      profileFirebaseConnection.ifUsernameExists(toAdd.userName) {
         assertTrue(it)
         wasSet = true
       }
@@ -114,7 +116,9 @@ class ProfileFirebaseConnectionTest {
         wasSet = true
       }
 
-      // assert(wasSet)
+      delay(2000)
+
+      assert(wasSet)
     }
   }
 

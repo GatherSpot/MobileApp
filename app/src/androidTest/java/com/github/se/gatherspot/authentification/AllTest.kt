@@ -15,8 +15,11 @@ import com.github.se.gatherspot.screens.SignUpScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,6 +43,16 @@ class AllTest : TestCase() {
       testDelete()
     } catch (e: Exception) {
       e.printStackTrace()
+    }
+  }
+
+  @Before
+  fun setup() {
+    runBlocking {
+      val toDelete = async { ProfileFirebaseConnection().fetchFromUserName(USERNAME) }.await()
+      if (toDelete != null) ProfileFirebaseConnection().delete(toDelete.id)
+
+      delay(2000)
     }
   }
 

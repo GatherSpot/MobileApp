@@ -57,22 +57,47 @@ fun ProfileScaffold(nav: NavigationActions, viewModel: OwnProfileViewModel) {
           if (viewModel.isEditing.observeAsState(false).value) {
             EditOwnProfileContent(viewModel)
           } else {
-            ViewOwnProfileContent(viewModel)
+            ViewOwnProfileContent(viewModel,nav)
           }
         }
       })
 }
 
-@Composable
-fun EditButton(edit: () -> Unit) {
-  Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
-    // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
+  @Composable
+  fun EditButton(nav: NavigationActions) {
     Icon(
         painter = painterResource(R.drawable.edit),
         contentDescription = "edit",
-        modifier = Modifier.clickable { edit() }.size(24.dp).testTag("edit"))
+        modifier = Modifier.clickable { nav.controller.navigate("edit") }.size(24.dp).testTag("edit"))
   }
-}
+
+  @Composable
+  fun TopBar(nav: NavigationActions) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
+      Followers(nav)
+      Following(nav)
+      Spacer(modifier = Modifier.padding(horizontal = 70.dp))
+      EditButton(nav)
+    }
+  }
+
+  @Composable
+  fun Followers(nav: NavigationActions) {
+    Column(horizontalAlignment = Alignment.Start) {
+      Text(
+          text = "Followers",
+          modifier = Modifier.testTag("followersButton").clickable { nav.controller.navigate("followers") })
+    }
+  }
+
+  @Composable
+  fun Following(nav: NavigationActions) {
+    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
+      Text(
+          text = "Following",
+          modifier = Modifier.testTag("followingButton").clickable { nav.controller.navigate("following") })
+    }
+  }
 
 @Composable
 fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit) {
@@ -208,15 +233,15 @@ private fun ProfileImage(
 }
 
 @Composable
-private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel) {
+private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel,navController: NavigationActions) {
   // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
   // nice
   val username by viewModel.username.observeAsState("")
   val bio by viewModel.bio.observeAsState("")
   val imageUrl by viewModel.image.observeAsState("")
   val interests = viewModel.interests.value ?: mutableSetOf()
-  Column {
-    EditButton(viewModel::edit)
+  Column(modifier = Modifier.testTag("ProfileScreen")) {
+    TopBar(navController)
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       ProfileImage(imageUrl, false)

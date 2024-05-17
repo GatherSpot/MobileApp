@@ -1,7 +1,10 @@
 package com.github.se.gatherspot.ui
 
 import android.content.ContentValues.TAG
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,12 +16,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
@@ -52,6 +57,7 @@ import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.getEventIcon
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
@@ -63,6 +69,7 @@ import kotlinx.coroutines.delay
 /** Composable that displays events * */
 
 // listOf("Your interests", "None")
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
@@ -80,6 +87,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
     if (!init) {
       viewModel.fetchMyEvents()
       viewModel.fetchRegisteredTo()
+      viewModel.fetchEventsFromFollowedUsers()
       init = true
     }
   }
@@ -125,7 +133,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.Clear, "clear") },
-                        )
+                            modifier = Modifier.testTag("removeFilter"))
 
                         DropdownMenuItem(
                             text = { Text("YOUR EVENTS") },
@@ -146,6 +154,16 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                             },
                             leadingIcon = { Icon(Icons.Filled.Info, "registeredTo") },
                             modifier = Modifier.testTag("registeredTo"))
+
+                        DropdownMenuItem(
+                            text = { Text("FROM FOLLOWED") },
+                            onClick = {
+                              interestsSelected = mutableListOf()
+                              viewModel.displayEventsFromFollowedUsers()
+                              showDropdownMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Filled.AccountCircle, "fromFollowed") },
+                            modifier = Modifier.testTag("fromFollowed"))
 
                         filters.forEach { s -> StatefulDropdownItem(s, interestsSelected) }
                       }
@@ -208,7 +226,10 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
           else -> {
             LazyColumn(
                 state = lazyState,
-                modifier = Modifier.padding(paddingValues).testTag("eventsList")) {
+                modifier =
+                    Modifier.padding(vertical = 15.dp)
+                        .padding(paddingValues)
+                        .testTag("eventsList")) {
                   items(events) { event -> EventRow(event, nav) }
                 }
 
@@ -265,15 +286,14 @@ fun EventRow(event: Event, navigation: NavigationActions) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
-              Column(modifier = Modifier.weight(1f)) {
-                // TODO : use coil to implement this
-                //                Image(
-                //                    bitmap =
-                //                        event.image ?: ImageBitmap(120, 120, config =
-                // ImageBitmapConfig.Rgb565),
-                //                    contentDescription = null)
-              }
-
+              Row(
+                  modifier = Modifier.weight(1f).testTag("IconHolder"),
+                  horizontalArrangement = Arrangement.Center) {
+                    Image(
+                        painter = painterResource(id = getEventIcon(event.categories)),
+                        contentDescription = "event icon",
+                        modifier = Modifier.size(40.dp).testTag("EventIcon"))
+                  }
               Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
                 Text(
                     text =
