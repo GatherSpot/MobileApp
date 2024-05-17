@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
@@ -26,6 +27,7 @@ class ProfileInstrumentedTest {
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @Before
   fun setUp() {
+    testLogin()
     ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
     ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testParticipant())
     IdListFirebaseConnection().delete(
@@ -41,9 +43,11 @@ class ProfileInstrumentedTest {
       val navController = rememberNavController()
       ProfileUI(NavigationActions(navController))
     }
+    val original_username = "testLogin"
+    val original_bio = "Bio"
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update
-      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 20000)
+      composeTestRule.waitUntilAtLeastOneExists(hasText(original_username), 20000)
       // check if things are here :
       usernameInput { assertExists() }
       bioInput { assertExists() }
@@ -66,13 +70,16 @@ class ProfileInstrumentedTest {
       bioInput { performTextReplacement("I am a bot") }
       cancel { performClick() }
       // check if things are here :
-      usernameInput { assert(hasText("John Doe")) }
-      bioInput { assert(hasText("I am not a bot")) }
+      usernameInput { assert(hasText(original_username)) }
+      bioInput { assert(hasText(original_bio)) }
       // modify text, press save and verify it did change.
       edit { performClick() }
       bioInput { performTextReplacement("I am a bot") }
       save { performClick() }
       bioInput { assert(hasText("I am a bot")) }
+      edit { performClick() }
+      bioInput { performTextReplacement(original_bio) }
+      save { performClick() }
     }
   }
 
