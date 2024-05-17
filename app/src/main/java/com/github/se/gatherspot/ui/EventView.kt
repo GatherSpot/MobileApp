@@ -401,8 +401,6 @@ fun EventTypeIcon(eventCategories: Set<Interests>?) {
       contentScale = ContentScale.Crop)
 }
 
-/*
-
 /** StarRating displays 5 stars, where the user can click on a star to rate the event. */
 @Composable
 fun StarRating(rating: Long, onRatingChanged: (Long) -> Unit) {

@@ -3,8 +3,8 @@ package com.github.se.gatherspot.ui
 import android.content.ContentValues.TAG
 import android.os.Build
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -286,12 +286,14 @@ fun EventRow(event: Event, navigation: NavigationActions) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
-              Row(modifier = Modifier.weight(1f).testTag("IconHolder"), horizontalArrangement = Arrangement.Center) {
-                  Image(
-                    painter = painterResource(id = getEventIcon(event.categories)),
-                    contentDescription = "event icon",
-                    modifier = Modifier.size(40.dp).testTag("EventIcon"))
-              }
+              Row(
+                  modifier = Modifier.weight(1f).testTag("IconHolder"),
+                  horizontalArrangement = Arrangement.Center) {
+                    Image(
+                        painter = painterResource(id = getEventIcon(event.categories)),
+                        contentDescription = "event icon",
+                        modifier = Modifier.size(40.dp).testTag("EventIcon"))
+                  }
               Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
                 Text(
                     text =
