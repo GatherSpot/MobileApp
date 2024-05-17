@@ -148,7 +148,7 @@ fun EventUI(
                           contentDescription = "Delete event")
                     }
               }
-                ExportToCalendarIcon(context, event)
+              ExportToCalendarIcon(context, event)
             })
       }) { innerPadding ->
         Column(
@@ -442,19 +442,18 @@ fun StarRating(ownRating: Long, onRatingChanged: (Long) -> Unit) {
 
 @Composable
 fun ExportToCalendarIcon(context: Context, event: Event) {
-    // Export to calendar button
-    IconButton(
-        onClick = {
-            // Export to calendar
-            CalendarReminderGenerator.generateCalendarReminder(context, event)
-        },
-        modifier = Modifier.testTag("exportToCalendarButton")) {
+  // Export to calendar button
+  IconButton(
+      onClick = {
+        // Export to calendar
+        CalendarReminderGenerator.generateCalendarReminder(context, event)
+      },
+      modifier = Modifier.testTag("exportToCalendarButton")) {
         Icon(
             modifier = Modifier.size(24.dp).testTag("exportToCalendarIcon"),
             painter = rememberVectorPainter(image = Icons.Filled.DateRange),
             contentDescription = "Export to calendar")
-    }
-
+      }
 }
 
 /**
