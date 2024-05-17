@@ -107,8 +107,8 @@ class AllTest : TestCase() {
       for (category in allCategories) {
         category {
           composeTestRule
-            .onNodeWithTag("lazyColumn")
-            .performScrollToNode(hasTestTag(enumValues<Interests>().toList()[c].toString()))
+              .onNodeWithTag("lazyColumn")
+              .performScrollToNode(hasTestTag(enumValues<Interests>().toList()[c].toString()))
           assertExists()
           performClick()
           c++
@@ -123,20 +123,20 @@ class AllTest : TestCase() {
     }
 
     ProfileFirebaseConnection()
-      .update(
-        FirebaseAuth.getInstance().currentUser!!.uid,
-        "interests",
-        enumValues<Interests>().toList())
+        .update(
+            FirebaseAuth.getInstance().currentUser!!.uid,
+            "interests",
+            enumValues<Interests>().toList())
     runTest {
       async {
-        val profile =
-          ProfileFirebaseConnection().fetch(FirebaseAuth.getInstance().currentUser!!.uid)
-        assertNotNull(profile)
-        assertEquals(profile!!.id, FirebaseAuth.getInstance().currentUser!!.uid)
-        assertEquals(USERNAME, profile.userName)
-        assertEquals(EMAIL.lowercase(), FirebaseAuth.getInstance().currentUser?.email)
-      }
-        .await()
+            val profile =
+                ProfileFirebaseConnection().fetch(FirebaseAuth.getInstance().currentUser!!.uid)
+            assertNotNull(profile)
+            assertEquals(profile!!.id, FirebaseAuth.getInstance().currentUser!!.uid)
+            assertEquals(USERNAME, profile.userName)
+            assertEquals(EMAIL.lowercase(), FirebaseAuth.getInstance().currentUser?.email)
+          }
+          .await()
     }
   }
 }
