@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -144,7 +145,7 @@ class ProfileView {
         painter = painterResource(R.drawable.edit),
         contentDescription = "edit",
         modifier =
-            Modifier.clickable { navController.navigate("edit") }.size(24.dp).testTag("edit"))
+            Modifier.clickable { navController.navigate("it edit") }.size(24.dp).testTag("edit"))
   }
 
   @Composable
@@ -213,23 +214,34 @@ class ProfileView {
   }
 
   @Composable
-  private fun UsernameField(username: String, updateUsername: (String) -> Unit, edit: Boolean) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
-        label = { Text("username") },
-        value = username,
-        readOnly = !edit,
-        onValueChange = { updateUsername(it) })
+  private fun UsernameField(
+      username: String,
+      usernameValid: String?,
+      updateUsername: (String) -> Unit,
+      edit: Boolean
+  ) {
+    Column {
+      OutlinedTextField(
+          modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
+          label = { Text("username") },
+          value = username,
+          readOnly = !edit,
+          onValueChange = { updateUsername(it) })
+      Text(usernameValid ?: "", color = Color.Red)
+    }
   }
 
   @Composable
-  private fun BioField(bio: String, updateBio: (String) -> Unit, edit: Boolean) {
-    OutlinedTextField(
-        label = { Text("Bio") },
-        value = bio,
-        onValueChange = { updateBio(it) },
-        readOnly = !edit,
-        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
+  private fun BioField(bio: String, bioValid: String?, updateBio: (String) -> Unit, edit: Boolean) {
+    Column() {
+      OutlinedTextField(
+          label = { Text("Bio") },
+          value = bio,
+          onValueChange = { updateBio(it) },
+          readOnly = !edit,
+          modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
+      Text(text = bioValid ?: "", color = Color.Red)
+    }
   }
 
   @Composable
@@ -309,8 +321,8 @@ class ProfileView {
       TopBarOwnProfile(viewModel, navController, nav)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
-        UsernameField(username, {}, false)
-        BioField(bio, {}, false)
+        UsernameField(username, null, {}, false)
+        BioField(bio, null, {}, false)
         InterestsView().ShowInterests(interests)
         ProfileQRCodeUI(viewModel._profile)
         Box(
@@ -332,13 +344,17 @@ class ProfileView {
   private fun EditOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
-    val username by viewModel.username.observeAsState("")
-    val bio by viewModel.bio.observeAsState("")
-    val imageUrl by viewModel.image.observeAsState("")
+    val username = viewModel.username.observeAsState("")
+    val usernameValid = viewModel.userNameValid.observeAsState()
+    val bio = viewModel.bio.observeAsState("")
+    val bioValid = viewModel.bioValid.observeAsState()
+    val imageUrl = viewModel.image.observeAsState("")
     val updateUsername = viewModel::updateUsername
     val updateBio = viewModel::updateBio
     val save = viewModel::save
     val cancel = viewModel::cancel
+    val saved = viewModel.saved.observeAsState()
+    val resetSaved = viewModel::resetSaved
     val setImageEditAction = { action: OwnProfileViewModel.ImageEditAction ->
       viewModel.setImageEditAction(action)
     }
@@ -346,19 +362,22 @@ class ProfileView {
         viewModel.imageEditAction.observeAsState(OwnProfileViewModel.ImageEditAction.NO_ACTION)
     val localImageUriToUpload by viewModel.localImageUriToUpload.observeAsState(Uri.EMPTY)
     val setLocalImageUriToUpload = { uri: Uri -> viewModel.setLocalImageUriToUpload(uri) }
-
+    if (saved.value == true) {
+      resetSaved()
+      navController.navigate("view")
+    }
     Column() {
       SaveCancelButtons(save, cancel, navController)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
         ProfileImage(
-            imageUrl = imageUrl,
+            imageUrl = imageUrl.value,
             edit = true,
             setImageEditAction = setImageEditAction,
             editAction = imageEditAction.value,
             localImageUri = localImageUriToUpload,
             updateLocalImageUri = setLocalImageUriToUpload)
-        UsernameField(username, updateUsername, true)
-        BioField(bio, updateBio, true)
+        UsernameField(username.value, usernameValid.value, updateUsername, true)
+        BioField(bio.value, bioValid.value, updateBio, true)
         InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
           viewModel.flipInterests(it)
         }
@@ -387,8 +406,8 @@ class ProfileView {
       FollowButtons(back, follow, following, addFriend)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
-        UsernameField(username, {}, false)
-        BioField(bio, {}, false)
+        UsernameField(username, null, {}, false)
+        BioField(bio, null, {}, false)
         InterestsView().ShowInterests(interests)
         ProfileQRCodeUI(viewModel._profile)
         Spacer(modifier = Modifier.height(56.dp))
