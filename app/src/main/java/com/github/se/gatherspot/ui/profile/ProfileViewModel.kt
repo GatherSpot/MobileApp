@@ -23,6 +23,10 @@ class OwnProfileViewModel : ViewModel() {
   private var _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
   private val _interests = MutableLiveData<Set<Interests>>()
+  private var _usernameValid = MutableLiveData("")
+  private var _bioValid = MutableLiveData("")
+  private var _saved = MutableLiveData<Boolean>()
+  private var userNameIsUniqueCheck = MutableLiveData(true)
 
   init {
     // TODO: replace this with hilt injection
@@ -32,8 +36,14 @@ class OwnProfileViewModel : ViewModel() {
   val username: LiveData<String>
     get() = _username
 
+  val userNameValid: LiveData<String>
+    get() = _usernameValid
+
   val bio: LiveData<String>
     get() = _bio
+
+  val bioValid: LiveData<String>
+    get() = _bioValid
 
   val image: LiveData<String>
     get() = _image
@@ -41,11 +51,23 @@ class OwnProfileViewModel : ViewModel() {
   val interests: LiveData<Set<Interests>>
     get() = _interests
 
+  val saved: LiveData<Boolean>
+    get() = _saved
+
+  fun resetSaved() {
+    _saved.value = false
+  }
+
   fun saveText() {
-    _profile.userName = _username.value!!
-    _profile.bio = _bio.value!!
-    _profile.interests = _interests.value!!
-    ProfileFirebaseConnection().add(_profile)
+    if (_usernameValid.value == "" &&
+        _bioValid.value == "" &&
+        userNameIsUniqueCheck.value == true) {
+      _profile.userName = _username.value!!
+      _profile.bio = _bio.value!!
+      _profile.interests = _interests.value!!
+      ProfileFirebaseConnection().add(_profile)
+      _saved.value = true
+    }
   }
 
   fun update() {
@@ -64,9 +86,13 @@ class OwnProfileViewModel : ViewModel() {
   // TODO : add sanitization to these function !!!
   fun updateUsername(userName: String) {
     _username.value = userName
+    userNameIsUniqueCheck.value = false
+    _usernameValid =
+        Profile.checkUsername(userName, _profile.userName) { userNameIsUniqueCheck.value = true }
   }
 
   fun updateBio(bio: String) {
+    _bioValid = Profile.checkBio(bio)
     _bio.value = bio
   }
 
@@ -137,8 +163,8 @@ class OwnProfileViewModel : ViewModel() {
   }
 
   fun save() {
-    saveText()
     saveImage()
+    saveText()
   }
 
   fun cancel() {
