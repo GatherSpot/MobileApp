@@ -31,10 +31,6 @@ class Profile(
       return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
     }
 
-    fun fromFirebase(id: String, onSuccess: () -> Unit) {
-      ProfileFirebaseConnection().fetch(id) { onSuccess() }
-    }
-
     fun empty(id: String) = Profile("", "", "", id, setOf())
 
     /**

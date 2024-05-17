@@ -7,9 +7,10 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
-open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
+class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   override val COLLECTION = FirebaseCollection.PROFILES.toString().lowercase()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
@@ -22,14 +23,27 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @return the profile NOTE : The profile will be initially empty, to use it in a view, you need
    *   to update the view using with a lambda function that updates the view
    */
-  override suspend fun fetch(id: String): Profile {
-    val profile = Profile("", "", "", id, Interests.new())
+  fun fetch(id: String, onSuccess: () -> Unit): Profile {
     Log.d(TAG, "id: $id")
-    val document = Firebase.firestore.collection(COLLECTION).document(id).get().await()
-    profile.userName = document.get("userName") as String
-    profile.bio = document.get("bio") as String
-    profile.image = document.get("image") as String
-    profile.interests = Interests.fromCompressedString(document.get("interests") as String)
+    val profile = Profile("", "", "", id, Interests.new())
+    Firebase.firestore
+        .collection(COLLECTION)
+        .document(id)
+        .get()
+        .addOnSuccessListener { document ->
+          if (document != null) {
+            Log.d(TAG, "Document is empty")
+            profile.userName = document.get("userName") as String
+            profile.bio = document.get("bio") as String
+            profile.image = document.get("image") as String
+            profile.interests = Interests.fromCompressedString(document.get("interests") as String)
+            onSuccess()
+            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+          } else {
+            Log.d(TAG, "No such document")
+          }
+        }
+        .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
     return profile
   }
 
@@ -37,7 +51,7 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @return the UID of the user logged in the current instance, or null if the user is not logged
    *   in.
    */
-  open fun getCurrentUserUid(): String? {
+  fun getCurrentUserUid(): String? {
     return FirebaseAuth.getInstance().currentUser?.uid
   }
 
@@ -47,7 +61,7 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param userName the username to check
    */
-  open fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
+  fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
 
     Firebase.firestore
         .collection(COLLECTION)
@@ -63,38 +77,42 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param userName the username of the user
    */
-  open suspend fun fetchFromUserName(userName: String): Profile? {
-    val document =
+  suspend fun fetchFromUserName(userName: String): Profile? =
+      suspendCancellableCoroutine { continuation ->
         Firebase.firestore
             .collection(COLLECTION)
             .whereEqualTo("userName", userName)
-            .limit(1)
             .get()
-            .await()
-            .documents
-            .firstOrNull() ?: return null
-
-    return Profile(
-        document.getString("userName")!!,
-        document.getString("bio") ?: "",
-        document.getString("image") ?: "",
-        document.id,
-        Interests.fromCompressedString(document.getString("interests") ?: ""))
-  }
+            .addOnSuccessListener { querysnps ->
+              when {
+                querysnps.documents.isEmpty() -> continuation.resume(null)
+                else -> continuation.resume(getFromDocument(querysnps.documents[0]))
+              }
+            }
+            .addOnFailureListener { exception ->
+              Log.d(TAG, exception.toString())
+              continuation.resume(null)
+            }
+      }
 
   /**
    * Adds or overrides a profile to the database
    *
    * @param element the profile to add
    */
-  override suspend fun add(element: Profile) {
+  override fun add(element: Profile) {
     val data =
         hashMapOf(
             "userName" to element.userName,
             "bio" to element.bio,
             "image" to element.image,
             "interests" to Interests.toCompressedString(element.interests))
-    Firebase.firestore.collection(COLLECTION).document(element.id).set(data).await()
+    Firebase.firestore
+        .collection(COLLECTION)
+        .document(element.id)
+        .set(data)
+        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+        .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
   }
 
   /**
@@ -104,7 +122,7 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @param field the field to update : {userName, bio, image, interests}
    * @param value the new value of the field
    */
-  override suspend fun update(id: String, field: String, value: Any) {
+  override fun update(id: String, field: String, value: Any) {
     when (field) {
       "interests" -> {
         when (value) {
@@ -142,7 +160,7 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   /** Calls the add function to update the profile in the database */
-  open suspend fun update(profile: Profile) {
+  fun update(profile: Profile) {
     this.add(profile)
   }
 
@@ -174,7 +192,7 @@ open class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   */
 
   /** Deletes a profile from the database */
-  override suspend fun delete(id: String) {
+  override fun delete(id: String) {
     // delete associated data from other collection TODO
     // delete ratings using registrations to find such events
     // delete registrations
