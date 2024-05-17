@@ -17,7 +17,8 @@ class ViewOwnProfileTest {
   fun testComponentsExist() {
     composeTestRule.setContent {
       val nav = rememberNavController()
-      ProfileView().ViewOwnProfile(NavigationActions(nav), OwnProfileViewModel(), nav)
+      val model = OwnProfileViewModel()
+      ProfileView().ViewOwnProfile(NavigationActions(nav), model, nav)
     }
     ComposeScreen.onComposeScreen<ViewOwnProfileScreen>(composeTestRule) {
       scaffold.assertExists()

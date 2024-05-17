@@ -17,7 +17,8 @@ class EditOwnProfileTest {
   fun testComponentsExist() {
     composeTestRule.setContent {
       val nav = rememberNavController()
-      ProfileView().EditOwnProfile(NavigationActions(nav), OwnProfileViewModel(), nav)
+      val model = OwnProfileViewModel()
+      ProfileView().EditOwnProfile(NavigationActions(nav), model, nav)
     }
 
     ComposeScreen.onComposeScreen<EditOwnProfileScreen>(composeTestRule) {
