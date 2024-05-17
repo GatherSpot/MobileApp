@@ -91,7 +91,6 @@ class RatingFirebaseConnectionTest {
     }
   }
 
-
   fun testRatingUnRatedEvent() {
     runTest {
       ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
@@ -100,7 +99,6 @@ class RatingFirebaseConnectionTest {
       assertEquals(rating, fetched)
     }
   }
-
 
   fun testRatingsMergeCorrectly() {
     runTest {
@@ -119,7 +117,6 @@ class RatingFirebaseConnectionTest {
     }
   }
 
-
   fun testFetchAttendeesRatings() {
     runTest {
       ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
@@ -133,7 +130,6 @@ class RatingFirebaseConnectionTest {
       assertEquals(firstRating, fetched?.get(firstRater))
     }
   }
-
 
   fun testDeleteARating() {
     runTest {
@@ -151,7 +147,6 @@ class RatingFirebaseConnectionTest {
     }
   }
 
-
   fun testRating() {
 
     runTest {
@@ -164,7 +159,6 @@ class RatingFirebaseConnectionTest {
       Log.d("RatingFirebaseConnectionTest", "Rating is $rating")
     }
   }
-
 
   fun testDeleteRating() {
     runTest {
@@ -196,7 +190,6 @@ class RatingFirebaseConnectionTest {
     }
   }
 
-
   fun testDeleteEvent() {
     runBlocking {
       ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
@@ -214,7 +207,6 @@ class RatingFirebaseConnectionTest {
       assertEquals(null, fetchedEvent)
     }
   }
-
 
   fun testAggregateAttendeeRatings() {
     runBlocking {
@@ -241,7 +233,6 @@ class RatingFirebaseConnectionTest {
       assertEquals(3L, fetched?.get("count"))
     }
   }
-
 
   fun testUpdateOrganizerRating() {
     runBlocking {
@@ -278,7 +269,6 @@ class RatingFirebaseConnectionTest {
           fetched2?.get(eventID)?.sortedBy { it.first })
     }
   }
-
 
   fun testAggregateOrganizerRatings() {
     runBlocking {
@@ -334,12 +324,12 @@ class RatingFirebaseConnectionTest {
           eventID2, userID, rating, event1.organizerID) // testRating2 testRater 5
       ratingFirebaseConnection.update(
           eventID2, secondRater, secondRating, event1.organizerID) // testRating2 testRater2 3
-        val fetchedRating = async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
-        assertEquals(rating, fetchedRating)
-        ratingFirebaseConnection.deleteRating(eventID, userID, organizerID)
-        assertEquals(null, async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await())
+      val fetchedRating = async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await()
+      assertEquals(rating, fetchedRating)
+      ratingFirebaseConnection.deleteRating(eventID, userID, organizerID)
+      assertEquals(null, async { ratingFirebaseConnection.fetchRating(eventID, userID) }.await())
 
-        ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
+      ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
 
       delay(1000)
 
@@ -347,7 +337,6 @@ class RatingFirebaseConnectionTest {
           async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
       val event2Attendees =
           async { ratingFirebaseConnection.fetchAttendeesRatings(eventID2) }.await()
-
 
       assertEquals(3, event1Attendees?.size)
       assertEquals(rating, event1Attendees?.get(userID))
@@ -400,16 +389,15 @@ class RatingFirebaseConnectionTest {
       assertEquals(3.92, organizerGlobal)
 
       ratingFirebaseConnection.deleteOrganizer(event1.organizerID)
-        ratingFirebaseConnection.deleteEventRating(eventID)
+      ratingFirebaseConnection.deleteEventRating(eventID)
       delay(1000)
-
 
       val fetchOrganizerAfterDelete =
           async { ratingFirebaseConnection.fetchOrganizerGlobalRating(event1.organizerID) }.await()
-        val fetchEventAfterDelete =
-            async { ratingFirebaseConnection.fetchEventGlobalRating(eventID) }.await()
+      val fetchEventAfterDelete =
+          async { ratingFirebaseConnection.fetchEventGlobalRating(eventID) }.await()
       assertNull(fetchOrganizerAfterDelete)
-        assertNull(fetchEventAfterDelete)
+      assertNull(fetchEventAfterDelete)
     }
   }
 }
