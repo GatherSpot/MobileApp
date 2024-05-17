@@ -22,7 +22,9 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
 
   // LiveData for holding registration state
   private val _registrationState: MutableLiveData<RegistrationState> =
-      if (registered.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
+      if (FirebaseAuth.getInstance().currentUser == null) {
+        MutableLiveData(RegistrationState.Success)
+      } else if (registered.contains(FirebaseAuth.getInstance().currentUser!!.uid)) {
         MutableLiveData(RegistrationState.Success)
       } else {
         MutableLiveData(RegistrationState.NoError)

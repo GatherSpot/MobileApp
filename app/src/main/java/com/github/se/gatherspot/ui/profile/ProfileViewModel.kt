@@ -18,7 +18,7 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 class OwnProfileViewModel : ViewModel() {
-  private lateinit var _profile: Profile
+  lateinit var _profile: Profile
   private var _username = MutableLiveData<String>()
   private var _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()
@@ -153,7 +153,7 @@ class OwnProfileViewModel : ViewModel() {
 }
 
 class ProfileViewModel(private val _target: String, private val nav: NavigationActions) {
-  private var _profile: Profile
+  var _profile: Profile
   private val _username = MutableLiveData<String>()
   private val _bio = MutableLiveData<String>()
   private val _image = MutableLiveData<String>()

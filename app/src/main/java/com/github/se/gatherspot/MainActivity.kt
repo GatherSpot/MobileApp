@@ -36,6 +36,7 @@ import com.github.se.gatherspot.ui.eventUI.EditEvent
 import com.github.se.gatherspot.ui.eventUI.EventUI
 import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.github.se.gatherspot.ui.topLevelDestinations.Chats
 import com.github.se.gatherspot.ui.topLevelDestinations.Events
@@ -149,6 +150,7 @@ class MainActivity : ComponentActivity() {
                   ViewProfile(NavigationActions(navController), it)
                 }
               }
+              composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
               composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
               composable("chat/{chatJson}") { backStackEntry ->
                 backStackEntry.arguments?.getString("chatJson")?.let {

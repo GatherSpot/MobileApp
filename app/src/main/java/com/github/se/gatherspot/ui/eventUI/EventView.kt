@@ -66,6 +66,7 @@ import com.github.se.gatherspot.model.getEventImageHeader
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.GeoMap
+import com.github.se.gatherspot.ui.qrcode.EventQRCodeUI
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import java.time.format.DateTimeFormatter
@@ -264,6 +265,7 @@ fun EventUI(
                   Text(limitTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
                 }
               }
+              EventQRCodeUI(event = event)
 
               // Rating
               if (eventUIViewModel.canRate()) {
