@@ -13,9 +13,9 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.screens.SetUpScreen
-import com.github.se.gatherspot.ui.Profile
-import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
+import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -59,7 +59,7 @@ class SetUpTest : TestCase() {
       val navController = rememberNavController()
       val nav = NavigationActions(navController)
       NavHost(navController, startDestination = "setup") {
-        composable("home") { Profile(nav) }
+        composable("home") { ProfileUI(nav) }
         composable("setup") { SetUpProfile(nav) }
       }
     }
