@@ -552,21 +552,21 @@ class CreateEventTest {
     // Save the draft
     val context = ApplicationProvider.getApplicationContext<Context>()
     EventUtils()
-        .saveDraftEvent(
-            "title",
-            "description",
-            Location(0.0, 0.0, "Malibu"),
-            "12/04/2026",
-            "12/05/2026",
-            "10:00",
-            "12:00",
-            "100",
-            "10",
-            "10/04/2025",
-            "09:00",
-            setOf(Interests.TENNIS, Interests.BASKETBALL),
-            null,
-            context = context)
+      .saveDraftEvent(
+        "title",
+        "description",
+        Location(0.0, 0.0, "Malibu"),
+        "12/04/2026",
+        "12/05/2026",
+        "10:00",
+        "12:00",
+        "100",
+        "10",
+        "10/04/2025",
+        "09:00",
+        setOf(Interests.TENNIS, Interests.BASKETBALL),
+        null,
+        context = context)
     composeTestRule.setContent {
       val navController = rememberNavController()
       val eventUtils = EventUtils()
