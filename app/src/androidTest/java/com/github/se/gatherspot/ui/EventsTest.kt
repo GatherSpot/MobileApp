@@ -1,5 +1,7 @@
 package com.github.se.gatherspot.ui
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -7,30 +9,49 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.utils.MockEventFirebaseConnection
-import com.github.se.gatherspot.utils.MockProfileFirebaseConnection
+import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
-  private val viewModel = EventsViewModel(MockEventFirebaseConnection())
-  val uid = "MC"
+  private lateinit var uid: String
+  private lateinit var ids: List<String>
+
+  @Before
+  fun setUp() {
+    runBlocking {
+      testLogin()
+      uid = FirebaseAuth.getInstance().currentUser!!.uid
+      FollowList.follow(uid, uid)
+      ids = FollowList.following(uid).elements
+    }
+  }
+
+  @After
+  fun cleanUp() {
+    testLoginCleanUp()
+    Thread.sleep(1000)
+  }
 
   @Test
   fun testEverythingExists() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
-      Events(viewModel = viewModel, nav = nav, MockProfileFirebaseConnection())
+      Events(viewModel = viewModel, nav = nav)
     }
 
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
@@ -63,16 +84,23 @@ class EventsTest {
     }
   }
 
-  @OptIn(ExperimentalTestApi::class)
+  @OptIn(ExperimentalTestApi::class, ExperimentalTestApi::class)
   @Test
   fun testEventsAreDisplayedAndScrollable() {
 
     composeTestRule.setContent {
+      val viewModel = EventsViewModel()
       val nav = NavigationActions(rememberNavController())
-      Events(viewModel = viewModel, nav = nav, MockProfileFirebaseConnection())
+      Events(viewModel = viewModel, nav = nav)
     }
 
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      emptyText {
+        assertExists()
+        assertIsDisplayed()
+      }
+
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 20000)
       eventsList {
         assertIsDisplayed()
         performGesture { swipeUp(400F, 0F, 1000) }
@@ -83,11 +111,12 @@ class EventsTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testRefreshButtonFunctional() {
-    val mockEventFirebaseConnection = MockEventFirebaseConnection()
-    val viewModel = EventsViewModel(mockEventFirebaseConnection)
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
+    val prev = viewModel.getLoadedEvents().size.toLong()
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
-      Events(viewModel = viewModel, nav = nav, MockProfileFirebaseConnection())
+      Events(viewModel = viewModel, nav = nav)
     }
 
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
@@ -95,9 +124,9 @@ class EventsTest {
         assertExists()
         performClick()
       }
-      // we just want to check if we called the function the right amount of times, this is to test
-      // ui only, not firebase
-      assertEquals(mockEventFirebaseConnection.getFetchedNext(), 1)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 500)
+      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
+      assert(viewModel.getLoadedEvents().size.toLong() >= prev)
     }
   }
 
@@ -108,7 +137,7 @@ class EventsTest {
     composeTestRule.setContent {
       val viewModel = EventsViewModel()
       val nav = NavigationActions(rememberNavController())
-      Events(viewModel = viewModel, nav = nav, MockProfileFirebaseConnection())
+      Events(viewModel = viewModel, nav = nav)
     }
 
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
@@ -128,6 +157,7 @@ class EventsTest {
               .performScrollToNode(hasTestTag(enumValues<Interests>().toList()[c].toString()))
           assertExists()
           performClick()
+          performClick()
           c++
         }
       }
@@ -137,9 +167,11 @@ class EventsTest {
   @Test
   fun testFilterWorks() {
 
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
-      Events(viewModel = viewModel, nav = nav, MockProfileFirebaseConnection())
+      Events(viewModel = viewModel, nav = nav)
     }
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
       filterMenu {
@@ -149,7 +181,7 @@ class EventsTest {
 
       dropdown { assertIsDisplayed() }
 
-      val index = Interests.CHESS.ordinal
+      val index = Interests.SPORT.ordinal
 
       categories[index] {
         composeTestRule
@@ -163,18 +195,19 @@ class EventsTest {
 
       composeTestRule.waitForIdle()
       assert(
-          viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.CHESS) ?: true })
+          viewModel.uiState.value.list.all { e -> e.categories?.contains(Interests.SPORT) ?: true })
     }
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testRefreshButtonFunctionalWithFilter() {
-    val mockEventFirebaseConnection = MockEventFirebaseConnection()
-    val viewModel = EventsViewModel(mockEventFirebaseConnection)
+    assert(FirebaseAuth.getInstance().currentUser != null)
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
-      Events(viewModel = viewModel, nav = nav, MockProfileFirebaseConnection())
+      Events(viewModel = viewModel, nav = nav)
     }
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
       filterMenu {
@@ -184,17 +217,23 @@ class EventsTest {
 
       dropdown { assertIsDisplayed() }
 
-      val basketball = Interests.BASKETBALL
-      val chess = Interests.CHESS
+      val indexBasketball = Interests.BASKETBALL.ordinal
+      val indexChess = Interests.CHESS.ordinal
 
-      categories[basketball.ordinal] {
-        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag(basketball.name))
+      categories[indexBasketball] {
+        composeTestRule
+            .onNodeWithTag("dropdown")
+            .performScrollToNode(
+                hasTestTag(enumValues<Interests>().toList()[indexBasketball].toString()))
         assertExists()
         performClick()
       }
 
-      categories[chess.ordinal] {
-        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag(chess.name))
+      categories[indexChess] {
+        composeTestRule
+            .onNodeWithTag("dropdown")
+            .performScrollToNode(
+                hasTestTag(enumValues<Interests>().toList()[indexChess].toString()))
         assertExists()
         performClick()
       }
@@ -205,20 +244,28 @@ class EventsTest {
 
       refresh { performClick() }
 
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 10000)
+      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
+
       assert(
           viewModel.uiState.value.list.all { e ->
-            e.categories!!.contains(basketball) || e.categories!!.contains(chess)
+            if (e.categories == null) {
+              false
+            } else {
+              e.categories!!.contains(Interests.BASKETBALL) ||
+                  e.categories!!.contains(Interests.CHESS)
+            }
           })
-      // we only test if the function has been called good amount of times, we only test ui here
-      assertEquals(mockEventFirebaseConnection.getFetchedNext(), 1)
     }
   }
 
   @Test
   fun testMyEventsFilterWorks() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
-      Events(viewModel = viewModel, nav = nav, MockProfileFirebaseConnection())
+      Events(viewModel = viewModel, nav = nav)
     }
 
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
@@ -234,6 +281,8 @@ class EventsTest {
         performClick()
       }
 
+      composeTestRule.waitForIdle()
+
       val listOfEvents = viewModel.uiState.value.list
       if (listOfEvents.isNotEmpty()) {
         assert(listOfEvents.all { event -> event.organizerID == uid })
@@ -244,9 +293,10 @@ class EventsTest {
   @Test
   fun testRegisteredToWorks() {
     val viewModel = EventsViewModel()
+    Thread.sleep(5000)
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
-      Events(viewModel = viewModel, nav = nav, MockProfileFirebaseConnection())
+      Events(viewModel = viewModel, nav = nav)
     }
 
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
@@ -261,9 +311,53 @@ class EventsTest {
         composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("registeredTo"))
         performClick()
       }
+
+      composeTestRule.waitForIdle()
+
       val listOfEvents = viewModel.uiState.value.list
       if (listOfEvents.isNotEmpty()) {
         assert(listOfEvents.all { event -> event.registeredUsers.contains(uid) })
+      }
+    }
+  }
+
+  @Test
+  fun testFromFollowedWorks() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(5000)
+
+    composeTestRule.setContent {
+      val nav = NavigationActions(rememberNavController())
+      Events(viewModel = viewModel, nav = nav)
+    }
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      dropdown { assertIsDisplayed() }
+
+      fromFollowed {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("fromFollowed"))
+        performClick()
+      }
+
+      composeTestRule.waitForIdle()
+      Log.d(TAG, "IDS followed $ids")
+      val l = viewModel.uiState.value.list
+
+      assert(l.all { event -> event.organizerID in ids })
+
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      removeFilter {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("removeFilter"))
+        performClick()
       }
     }
   }

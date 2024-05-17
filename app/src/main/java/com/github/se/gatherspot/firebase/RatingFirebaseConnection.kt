@@ -29,6 +29,7 @@ class RatingFirebaseConnection {
           .collection(ORGANIZER_COLLECTION)
           .document(organizerID)
           .collection("organized_events")
+
   /**
    * Fetches the rating of the user for the event
    *

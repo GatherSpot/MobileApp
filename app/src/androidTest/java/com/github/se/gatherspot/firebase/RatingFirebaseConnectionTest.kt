@@ -70,6 +70,50 @@ class RatingFirebaseConnectionTest {
           image = "testRating",
           globalRating = null)
 
+  private val event1 =
+      Event(
+          id = eventID,
+          title = eventID,
+          description = eventID,
+          location = null,
+          eventStartDate = null,
+          eventEndDate = null,
+          timeBeginning = null,
+          timeEnding = null,
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 0,
+          inscriptionLimitDate = null,
+          inscriptionLimitTime = null,
+          categories = setOf(),
+          organizerID = Profile.testOrganizer().id,
+          registeredUsers = mutableListOf("testRating"),
+          finalAttendees = listOf("testRating"),
+          image = "testRating",
+          globalRating = null)
+
+  private val eventID2 = "testRating2"
+
+  private val event2 =
+      Event(
+          id = eventID2,
+          title = eventID2,
+          description = eventID2,
+          location = null,
+          eventStartDate = null,
+          eventEndDate = null,
+          timeBeginning = null,
+          timeEnding = null,
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 0,
+          inscriptionLimitDate = null,
+          inscriptionLimitTime = null,
+          categories = setOf(),
+          organizerID = Profile.testOrganizer().id,
+          registeredUsers = mutableListOf("testRating"),
+          finalAttendees = listOf("testRating"),
+          image = "testRating",
+          globalRating = null)
+
   @Before
   fun setup() {
     runTest {

@@ -11,7 +11,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 
 open class IdListFirebaseConnection {
-  private val firestore = Firebase.firestore
   private val logTag = "IdListFirebaseConnection"
   private val COLLECTION = "ID_LIST"
   private val TAG = "IdListFirebaseConnection"
@@ -43,7 +42,7 @@ open class IdListFirebaseConnection {
           if (documents != null) {
             val data = documents.documents
             val ids = data.map { it.id }
-            idSet.events = ids
+            idSet.elements = ids
             Log.d(logTag, "DocumentSnapshot data: ${data}")
           } else {
             Log.d(logTag, "No such document")
@@ -66,7 +65,7 @@ open class IdListFirebaseConnection {
     val tag = idSet.collection.name
     val id = idSet.id
     // TODO : check if this good way to store data
-    val data = hashMapOf("ids" to idSet.events.toList())
+    val data = hashMapOf("ids" to idSet.elements.toList())
     fcoll
         .document(tag)
         .collection(idSet.collection.toString())
@@ -134,11 +133,13 @@ open class IdListFirebaseConnection {
         .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
   }
 
-  open suspend fun fetch(id: String, category: FirebaseCollection, onSuccess: () -> Unit): IdList {
+  suspend fun fetch(id: String, category: FirebaseCollection, onSuccess: () -> Unit): IdList {
     val tag = category.name
+    Log.d(TAG, "TAG should be FOLLOWERS: $tag")
     val data: IdList
     val querySnapshot: QuerySnapshot = fcoll.document(tag).collection(id).get().await()
     data = IdList(id, querySnapshot.documents.map { it.id }, category)
+    Log.d(TAG, "???? ${data.elements}")
     return data
   }
 

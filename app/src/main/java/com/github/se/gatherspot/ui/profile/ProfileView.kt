@@ -8,18 +8,23 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -31,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -42,6 +48,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
+import com.github.se.gatherspot.ui.qrcode.ProfileQRCodeUI
 
 class ProfileView {
   /**
@@ -66,7 +73,7 @@ class ProfileView {
               selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
         },
         content = { paddingValues: PaddingValues ->
-          ViewOwnProfileContent(viewModel, navController)
+          ViewOwnProfileContent(viewModel, navController, nav)
           Log.d(ContentValues.TAG, paddingValues.toString())
         })
   }
@@ -97,18 +104,60 @@ class ProfileView {
   }
 
   @Composable
-  fun EditButton(nav: NavController) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
-      // Text(text = "Edit", modifier = Modifier.clickable { edit = true })
-      Icon(
-          painter = painterResource(R.drawable.edit),
-          contentDescription = "edit",
-          modifier = Modifier.clickable { nav.navigate("edit") }.size(24.dp).testTag("edit"))
+  fun TopBarOwnProfile(
+      viewModel: OwnProfileViewModel,
+      navController: NavController,
+      nav: NavigationActions
+  ) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
+      Followers(navController)
+      Following(navController)
+      Spacer(modifier = Modifier.padding(horizontal = 38.dp))
+      LogOutButton(nav, viewModel)
+      Spacer(modifier = Modifier.width(8.dp))
+      EditButton(navController)
     }
   }
 
   @Composable
-  fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, nav: NavController) {
+  fun Followers(navController: NavController) {
+    Column(horizontalAlignment = Alignment.Start) {
+      Text(
+          text = "Followers",
+          modifier =
+              Modifier.testTag("followersButton").clickable { navController.navigate("followers") })
+    }
+  }
+
+  @Composable
+  fun Following(navController: NavController) {
+    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
+      Text(
+          text = "Following",
+          modifier =
+              Modifier.testTag("followingButton").clickable { navController.navigate("following") })
+    }
+  }
+
+  @Composable
+  fun EditButton(navController: NavController) {
+    Icon(
+        painter = painterResource(R.drawable.edit),
+        contentDescription = "edit",
+        modifier =
+            Modifier.clickable { navController.navigate("it edit") }.size(24.dp).testTag("edit"))
+  }
+
+  @Composable
+  fun LogOutButton(nav: NavigationActions, viewModel: OwnProfileViewModel) {
+    Icon(
+        Icons.AutoMirrored.Filled.ExitToApp,
+        contentDescription = "logout",
+        modifier = Modifier.clickable { viewModel.logout(nav) }.size(24.dp).testTag("logout"))
+  }
+
+  @Composable
+  fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, navController: NavController) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
@@ -117,7 +166,7 @@ class ProfileView {
               modifier =
                   Modifier.clickable {
                         cancel()
-                        nav.navigate("view")
+                        navController.navigate("view")
                       }
                       .testTag("cancel"))
           Text(
@@ -125,7 +174,7 @@ class ProfileView {
               modifier =
                   Modifier.clickable {
                         save()
-                        nav.navigate("view")
+                        navController.navigate("view")
                       }
                       .testTag("save"))
         }
@@ -165,23 +214,34 @@ class ProfileView {
   }
 
   @Composable
-  private fun UsernameField(username: String, updateUsername: (String) -> Unit, edit: Boolean) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
-        label = { Text("username") },
-        value = username,
-        readOnly = !edit,
-        onValueChange = { updateUsername(it) })
+  private fun UsernameField(
+      username: String,
+      usernameValid: String?,
+      updateUsername: (String) -> Unit,
+      edit: Boolean
+  ) {
+    Column {
+      OutlinedTextField(
+          modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
+          label = { Text("username") },
+          value = username,
+          readOnly = !edit,
+          onValueChange = { updateUsername(it) })
+      Text(usernameValid ?: "", color = Color.Red)
+    }
   }
 
   @Composable
-  private fun BioField(bio: String, updateBio: (String) -> Unit, edit: Boolean) {
-    OutlinedTextField(
-        label = { Text("Bio") },
-        value = bio,
-        onValueChange = { updateBio(it) },
-        readOnly = !edit,
-        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
+  private fun BioField(bio: String, bioValid: String?, updateBio: (String) -> Unit, edit: Boolean) {
+    Column() {
+      OutlinedTextField(
+          label = { Text("Bio") },
+          value = bio,
+          onValueChange = { updateBio(it) },
+          readOnly = !edit,
+          modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
+      Text(text = bioValid ?: "", color = Color.Red)
+    }
   }
 
   @Composable
@@ -245,21 +305,36 @@ class ProfileView {
   }
 
   @Composable
-  private fun ViewOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
+  private fun ViewOwnProfileContent(
+      viewModel: OwnProfileViewModel,
+      navController: NavController,
+      nav: NavigationActions
+  ) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
     val username by viewModel.username.observeAsState("")
     val bio by viewModel.bio.observeAsState("")
     val imageUrl by viewModel.image.observeAsState("")
     val interests = viewModel.interests.value ?: mutableSetOf()
-    Column {
-      EditButton(navController)
 
+    Column(modifier = Modifier.testTag("ProfileScreen")) {
+      TopBarOwnProfile(viewModel, navController, nav)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
-        UsernameField(username, {}, false)
-        BioField(bio, {}, false)
+        UsernameField(username, null, {}, false)
+        BioField(bio, null, {}, false)
         InterestsView().ShowInterests(interests)
+        ProfileQRCodeUI(viewModel._profile)
+        Box(
+            modifier = Modifier.fillMaxSize().testTag("scanQRCodeButtonContainer"),
+            contentAlignment = Alignment.Center) {
+              Button(
+                  onClick = { navController.navigate("qrCodeScanner") },
+                  modifier = Modifier.wrapContentSize().testTag("scanQRCodeButton")) {
+                    Text("Scan QR Code")
+                  }
+            }
+
         Spacer(modifier = Modifier.height(56.dp))
       }
     }
@@ -269,13 +344,17 @@ class ProfileView {
   private fun EditOwnProfileContent(viewModel: OwnProfileViewModel, navController: NavController) {
     // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
     // nice
-    val username by viewModel.username.observeAsState("")
-    val bio by viewModel.bio.observeAsState("")
-    val imageUrl by viewModel.image.observeAsState("")
+    val username = viewModel.username.observeAsState("")
+    val usernameValid = viewModel.userNameValid.observeAsState()
+    val bio = viewModel.bio.observeAsState("")
+    val bioValid = viewModel.bioValid.observeAsState()
+    val imageUrl = viewModel.image.observeAsState("")
     val updateUsername = viewModel::updateUsername
     val updateBio = viewModel::updateBio
     val save = viewModel::save
     val cancel = viewModel::cancel
+    val saved = viewModel.saved.observeAsState()
+    val resetSaved = viewModel::resetSaved
     val setImageEditAction = { action: OwnProfileViewModel.ImageEditAction ->
       viewModel.setImageEditAction(action)
     }
@@ -283,19 +362,22 @@ class ProfileView {
         viewModel.imageEditAction.observeAsState(OwnProfileViewModel.ImageEditAction.NO_ACTION)
     val localImageUriToUpload by viewModel.localImageUriToUpload.observeAsState(Uri.EMPTY)
     val setLocalImageUriToUpload = { uri: Uri -> viewModel.setLocalImageUriToUpload(uri) }
-
+    if (saved.value == true) {
+      resetSaved()
+      navController.navigate("view")
+    }
     Column() {
       SaveCancelButtons(save, cancel, navController)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
         ProfileImage(
-            imageUrl = imageUrl,
+            imageUrl = imageUrl.value,
             edit = true,
             setImageEditAction = setImageEditAction,
             editAction = imageEditAction.value,
             localImageUri = localImageUriToUpload,
             updateLocalImageUri = setLocalImageUriToUpload)
-        UsernameField(username, updateUsername, true)
-        BioField(bio, updateBio, true)
+        UsernameField(username.value, usernameValid.value, updateUsername, true)
+        BioField(bio.value, bioValid.value, updateBio, true)
         InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
           viewModel.flipInterests(it)
         }
@@ -319,13 +401,15 @@ class ProfileView {
     val back = viewModel::back
     val follow = viewModel::follow
     val addFriend = viewModel::requestFriend
+
     Column() {
       FollowButtons(back, follow, following, addFriend)
       Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
-        UsernameField(username, {}, false)
-        BioField(bio, {}, false)
+        UsernameField(username, null, {}, false)
+        BioField(bio, null, {}, false)
         InterestsView().ShowInterests(interests)
+        ProfileQRCodeUI(viewModel._profile)
         Spacer(modifier = Modifier.height(56.dp))
       }
     }

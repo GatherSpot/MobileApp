@@ -28,11 +28,11 @@ class EventUIViewModelTest {
 
   private val organizer =
       Profile(
-          _userName = "organizer",
-          _bio = "bio",
-          _image = "image",
+          userName = "organizer",
+          bio = "bio",
+          image = "image",
           id = "eventUIViewModelTest",
-          _interests = setOf())
+          interests = setOf())
   private val event =
       Event(
           id = "eventUIViewModelTest",
@@ -170,6 +170,7 @@ class EventUIViewModelTest {
       assertEquals(false, viewModel3.canRate())
     }
   }
+
   // Copy pasted from EventRegistrationViewModelTest.kt (cannot have viewModel as attribute because
   // it must be initialized in the test)
   @Test

@@ -2,17 +2,15 @@ package com.github.se.gatherspot.ui
 
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.defaults.DefaultProfiles
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
-import com.github.se.gatherspot.ui.profile.ProfileViewModel
-import com.github.se.gatherspot.utils.MockFollowList
-import com.github.se.gatherspot.utils.MockProfileFirebaseConnection
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,20 +19,29 @@ import org.junit.runner.RunWith
 class ProfileInstrumentedTest {
 
   @get:Rule val composeTestRule = createComposeRule()
-  private val profile = DefaultProfiles.trivial
-  private val newUsername = "Alex"
-  private val newBio = "I am a bot"
 
+  // for useful documentation on testing compose
+  // https://developer.android.com/develop/ui/compose/testing-cheatsheet
+  @Before
+  fun setUp() {
+    ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
+    ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testParticipant())
+    IdListFirebaseConnection().delete(
+        "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING) {}
+  }
+
+  // For now on this branch, we will not test the profile screen because it does not pass the CI
+
+  @OptIn(ExperimentalTestApi::class, androidx.compose.ui.test.ExperimentalTestApi::class)
   @Test
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      Profile(
-          NavigationActions(navController),
-          viewModel { OwnProfileViewModel(MockProfileFirebaseConnection()) })
+      Profile(NavigationActions(navController))
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update
+      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 20000)
       // check if things are here :
       usernameInput { assertExists() }
       bioInput { assertExists() }
@@ -53,38 +60,32 @@ class ProfileInstrumentedTest {
       cancel { assertExists() }
       edit { assertDoesNotExist() }
       // modify text, press cancel, and verify it didn't change.
-      usernameInput { performTextReplacement(newUsername) }
-      bioInput { performTextReplacement(newBio) }
+      usernameInput { performTextReplacement("Alex") }
+      bioInput { performTextReplacement("I am a bot") }
       cancel { performClick() }
       // check if things are here :
-      usernameInput { assert(hasText(profile.userName)) }
-      bioInput { assert(hasText(profile.bio)) }
+      usernameInput { assert(hasText("John Doe")) }
+      bioInput { assert(hasText("I am not a bot")) }
       // modify text, press save and verify it did change.
       edit { performClick() }
-      bioInput { performTextReplacement(newBio) }
+      bioInput { performTextReplacement("I am a bot") }
       save { performClick() }
-      bioInput { assert(hasText(newBio)) }
+      bioInput { assert(hasText("I am a bot")) }
     }
   }
 
   // For now on this branch, we will not test the profile screen because it does not pass the CI
 
+  @OptIn(ExperimentalTestApi::class, androidx.compose.ui.test.ExperimentalTestApi::class)
   @Test
   fun viewProfileTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val string = ""
-      val viewModel = viewModel {
-        ProfileViewModel(
-            string,
-            NavigationActions(navController),
-            MockProfileFirebaseConnection(),
-            MockFollowList())
-      }
       ViewProfile(NavigationActions(navController), "TEST2")
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update :
+      composeTestRule.waitUntilAtLeastOneExists(hasText("Steeve"), 6000)
       usernameInput { assertExists() }
       bioInput { assertExists() }
       profileImage { assertExists() }
@@ -94,7 +95,7 @@ class ProfileInstrumentedTest {
       follow { hasText("Follow") }
       addFriend { assertExists() }
       follow { performClick() }
-      follow { hasText("Unfollow") }
+      composeTestRule.waitUntilAtLeastOneExists(hasText("Unfollow"), 6000)
     }
   }
 }
