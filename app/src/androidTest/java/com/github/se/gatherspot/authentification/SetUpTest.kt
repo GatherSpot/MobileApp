@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.authentification
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -14,8 +13,8 @@ import androidx.navigation.navigation
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.SetUpScreen
-import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After

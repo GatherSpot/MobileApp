@@ -17,11 +17,12 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
+import com.github.se.gatherspot.ui.eventUI.CreateEvent
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After
 import org.junit.Before
