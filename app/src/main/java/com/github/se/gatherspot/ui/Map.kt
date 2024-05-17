@@ -111,7 +111,7 @@ fun MapComposable(
     testPosition: LatLng?
 ) {
   Scaffold(
-      topBar = { TopAppBar(title = { Text(text = "Map") }) },
+      topBar = { TopAppBar(title = { Text(text = "Map") }, modifier = Modifier.testTag("topBar")) },
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { tld -> nav.navigateTo(tld) },
@@ -128,7 +128,8 @@ fun MapComposable(
                           .target(viewModel.currentLocation.value ?: LatLng(0.0, 0.0))
                           .zoom(DEFAULT_ZOOM_LEVEL)
                           .build())
-            }) {
+            },
+            modifier = Modifier.testTag("positionButton")) {
               Icon(Icons.Filled.Home, contentDescription = "Go to current location")
             }
       },
