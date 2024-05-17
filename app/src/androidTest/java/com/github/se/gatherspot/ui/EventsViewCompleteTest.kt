@@ -24,7 +24,7 @@ import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
-import com.github.se.gatherspot.ui.topLevelDestinations.Profile
+import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
 import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -74,7 +74,7 @@ class EventsViewCompleteTest {
                 eventUIViewModel = EventUIViewModel(eventObject),
                 eventsViewModel = viewModel)
           }
-          composable("profile") { Profile(NavigationActions(navController)) }
+          composable("profile") { ProfileUI(NavigationActions(navController)) }
           composable("viewProfile/{uid}") { backstackEntry ->
             backstackEntry.arguments?.getString("uid")?.let {
               ViewProfile(NavigationActions(navController), it)

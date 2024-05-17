@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
  * bottom navigation bar.
  */
 @Composable
-fun Profile(nav: NavigationActions) {
+fun ProfileUI(nav: NavigationActions) {
   // This new navController will navigate between seeing profile and editing profile
   val navController = rememberNavController()
   val viewModelStoreOwner = LocalViewModelStoreOwner.current!!
@@ -60,7 +60,7 @@ fun ViewProfile(nav: NavigationActions, uid: String) {
 @Composable
 fun ProfilePreview() {
   val navController = rememberNavController()
-  Profile(NavigationActions(navController))
+  ProfileUI(NavigationActions(navController))
 }
 
 @Preview
