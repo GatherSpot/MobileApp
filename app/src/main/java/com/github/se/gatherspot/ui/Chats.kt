@@ -193,17 +193,6 @@ fun ChatsTopAppBar(navActions: NavigationActions, title: String) {
   TopAppBar(
       modifier = Modifier.testTag("chatsTopBar"),
       title = { androidx.compose.material.Text(text = title, color = Color.Black) },
-      /*
-      navigationIcon = {
-        IconButton(onClick = { navActions.controller.popBackStack() }) {
-          androidx.compose.material.Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = "Go Back",
-              tint = Color.Black)
-        }
-      }
-      ,
-       */
       backgroundColor = Color.White,
       contentColor = Color.Black,
       elevation = 4.dp)
