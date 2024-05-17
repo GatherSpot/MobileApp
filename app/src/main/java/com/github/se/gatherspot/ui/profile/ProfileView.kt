@@ -104,9 +104,7 @@ class ProfileView {
       navController: NavController,
       nav: NavigationActions
   ) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp), horizontalArrangement = Arrangement.End) {
+    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
       LogOutButton(nav, viewModel)
       Spacer(modifier = Modifier.width(8.dp))
       EditButton(navController)
@@ -119,10 +117,7 @@ class ProfileView {
         painter = painterResource(R.drawable.edit),
         contentDescription = "edit",
         modifier =
-        Modifier
-            .clickable { navController.navigate("edit") }
-            .size(24.dp)
-            .testTag("edit"))
+            Modifier.clickable { navController.navigate("edit") }.size(24.dp).testTag("edit"))
   }
 
   @Composable
@@ -130,37 +125,30 @@ class ProfileView {
     Icon(
         Icons.AutoMirrored.Filled.ExitToApp,
         contentDescription = "logout",
-        modifier = Modifier
-            .clickable { viewModel.logout(nav) }
-            .size(24.dp)
-            .testTag("logout"))
+        modifier = Modifier.clickable { viewModel.logout(nav) }.size(24.dp).testTag("logout"))
   }
 
   @Composable
   fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, nav: NavController) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Text(
               text = "Cancel",
               modifier =
-              Modifier
-                  .clickable {
-                      cancel()
-                      nav.navigate("view")
-                  }
-                  .testTag("cancel"))
+                  Modifier.clickable {
+                        cancel()
+                        nav.navigate("view")
+                      }
+                      .testTag("cancel"))
           Text(
               text = "Save",
               modifier =
-              Modifier
-                  .clickable {
-                      save()
-                      nav.navigate("view")
-                  }
-                  .testTag("save"))
+                  Modifier.clickable {
+                        save()
+                        nav.navigate("view")
+                      }
+                      .testTag("save"))
         }
   }
 
@@ -174,20 +162,13 @@ class ProfileView {
       addFriend: () -> Unit
   ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Icon(
               painter = painterResource(R.drawable.backarrow),
               contentDescription = "back",
-              modifier = Modifier
-                  .clickable { back() }
-                  .testTag("back")
-                  .size(24.dp))
-          Row(modifier = Modifier
-              .clickable { addFriend() }
-              .testTag("addFriend")) {
+              modifier = Modifier.clickable { back() }.testTag("back").size(24.dp))
+          Row(modifier = Modifier.clickable { addFriend() }.testTag("addFriend")) {
             Icon(
                 painter = painterResource(R.drawable.add_friend),
                 contentDescription = "add friend",
@@ -200,19 +181,14 @@ class ProfileView {
           // in a fixed size box)
           Text(
               text = if (following) "Unfollow" else "  Follow",
-              modifier = Modifier
-                  .clickable { follow() }
-                  .testTag("follow"))
+              modifier = Modifier.clickable { follow() }.testTag("follow"))
         }
   }
 
   @Composable
   private fun UsernameField(username: String, updateUsername: (String) -> Unit, edit: Boolean) {
     OutlinedTextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .testTag("usernameInput"),
+        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
         label = { Text("username") },
         value = username,
         readOnly = !edit,
@@ -226,11 +202,7 @@ class ProfileView {
         value = bio,
         onValueChange = { updateBio(it) },
         readOnly = !edit,
-        modifier = Modifier
-            .height(150.dp)
-            .fillMaxWidth()
-            .padding(8.dp)
-            .testTag("bioInput"))
+        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
   }
 
   @Composable
@@ -256,13 +228,9 @@ class ProfileView {
             })
 
     Column(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
+        modifier = Modifier.padding(8.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally) {
-          Card(shape = CircleShape, modifier = Modifier
-              .padding(8.dp)
-              .size(180.dp)) {
+          Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
             AsyncImage(
                 model =
                     if (editAction == OwnProfileViewModel.ImageEditAction.NO_ACTION) {
@@ -273,17 +241,14 @@ class ProfileView {
                 placeholder = painterResource(R.drawable.user),
                 contentDescription = "profile image",
                 modifier =
-                Modifier
-                    .clickable {
-                        if (edit) {
+                    Modifier.clickable {
+                          if (edit) {
                             photoPickerLauncher.launch(
                                 PickVisualMediaRequest(
-                                    ActivityResultContracts.PickVisualMedia.ImageOnly
-                                )
-                            )
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly))
+                          }
                         }
-                    }
-                    .testTag("profileImage"),
+                        .testTag("profileImage"),
                 contentScale = ContentScale.Crop)
           }
 
@@ -315,9 +280,7 @@ class ProfileView {
     Column {
       TopBarOwnProfile(viewModel, navController, nav)
 
-      Column(modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .padding(8.dp)) {
+      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
@@ -348,9 +311,7 @@ class ProfileView {
 
     Column() {
       SaveCancelButtons(save, cancel, navController)
-      Column(modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .padding(56.dp)) {
+      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
         ProfileImage(
             imageUrl = imageUrl,
             edit = true,
@@ -386,9 +347,7 @@ class ProfileView {
 
     Column() {
       FollowButtons(back, follow, following, addFriend)
-      Column(modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .padding(8.dp)) {
+      Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
         ProfileImage(imageUrl, false)
         UsernameField(username, {}, false)
         BioField(bio, {}, false)
