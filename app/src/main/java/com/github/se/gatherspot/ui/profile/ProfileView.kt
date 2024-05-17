@@ -12,14 +12,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -27,6 +31,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -36,17 +41,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
+import com.github.se.gatherspot.ui.qrcode.ProfileQRCodeUI
 
 @Composable
 fun ProfileScaffold(
     nav: NavigationActions,
-    nestedNav: NavigationActions,
+    nestedNav: NavController,
     viewModel: OwnProfileViewModel
 ) {
   Scaffold(
@@ -61,10 +68,22 @@ fun ProfileScaffold(
           if (viewModel.isEditing.observeAsState(false).value) {
             EditOwnProfileContent(viewModel)
           } else {
-            ViewOwnProfileContent(viewModel, nestedNav)
+            ViewOwnProfileContent(viewModel, nestedNav, nav)
           }
         }
       })
+}
+
+@Composable
+fun TopBarOwnProfile(viewModel: OwnProfileViewModel, nav: NavigationActions, edit: () -> Unit) {
+  Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
+    Followers(nav)
+    Following(nav)
+    Spacer(modifier = Modifier.padding(horizontal = 38.dp))
+    LogOutButton(nav, viewModel)
+    Spacer(modifier = Modifier.width(8.dp))
+    EditButton(edit)
+  }
 }
 
 @Composable
@@ -73,16 +92,6 @@ fun EditButton(edit: () -> Unit) {
       painter = painterResource(R.drawable.edit),
       contentDescription = "edit",
       modifier = Modifier.clickable { edit() }.size(24.dp).testTag("edit"))
-}
-
-@Composable
-fun TopBar(nav: NavigationActions, edit: () -> Unit) {
-  Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
-    Followers(nav)
-    Following(nav)
-    Spacer(modifier = Modifier.padding(horizontal = 70.dp))
-    EditButton(edit)
-  }
 }
 
 @Composable
@@ -113,6 +122,14 @@ fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit) {
         Text(text = "Cancel", modifier = Modifier.clickable { cancel() }.testTag("cancel"))
         Text(text = "Save", modifier = Modifier.clickable { save() }.testTag("save"))
       }
+}
+
+@Composable
+fun LogOutButton(nav: NavigationActions, viewModel: OwnProfileViewModel) {
+  Icon(
+      Icons.AutoMirrored.Filled.ExitToApp,
+      contentDescription = "logout",
+      modifier = Modifier.clickable { viewModel.logout(nav) }.size(24.dp).testTag("logout"))
 }
 
 // TODO: add state for the buttons for better ui when we have time, I want to catch up to
@@ -150,8 +167,8 @@ private fun FollowButtons(
 
 @Composable
 private fun UsernameField(
-    username: String,
-    usernameValid: String?,
+    username: State<String>,
+    usernameValid: State<String>?,
     updateUsername: (String) -> Unit,
     edit: Boolean
 ) {
@@ -159,29 +176,34 @@ private fun UsernameField(
     OutlinedTextField(
         modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
         label = { Text("username") },
-        value = username,
+        value = username.value,
         readOnly = !edit,
-        onValueChange = { updateUsername(it) })
-    Text(usernameValid ?: "", color = Color.Red)
+        onValueChange = { updateUsername(it) },
+        supportingText = { usernameValid?.let { Text(it.value, color = Color.Red) } })
   }
 }
 
 @Composable
-fun BioField(bio: String, bioValid: String?, updateBio: (String) -> Unit, edit: Boolean) {
+fun BioField(
+    bio: State<String>,
+    bioValid: State<String>?,
+    updateBio: (String) -> Unit,
+    edit: Boolean
+) {
   Column() {
     OutlinedTextField(
         label = { Text("Bio") },
-        value = bio,
+        value = bio.value,
         onValueChange = { updateBio(it) },
         readOnly = !edit,
-        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"))
-    Text(text = bioValid ?: "", color = Color.Red)
+        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"),
+        supportingText = { bioValid?.let { Text(it.value, color = Color.Red) } })
   }
 }
 
 @Composable
 private fun ProfileImage(
-    imageUrl: String,
+    imageUrl: State<String>,
     edit: Boolean,
     setImageEditAction: (OwnProfileViewModel.ImageEditAction) -> Unit = {},
     editAction: OwnProfileViewModel.ImageEditAction = OwnProfileViewModel.ImageEditAction.NO_ACTION,
@@ -228,7 +250,7 @@ private fun ProfileImage(
         if (edit) Text(text = "Change profile picture")
 
         if (edit &&
-            ((imageUrl.isNotEmpty() &&
+            ((imageUrl.value.isNotEmpty() &&
                 editAction == OwnProfileViewModel.ImageEditAction.NO_ACTION) ||
                 (localImageUri != Uri.EMPTY))) {
           Button(onClick = { setImageEditAction(OwnProfileViewModel.ImageEditAction.REMOVE) }) {
@@ -241,22 +263,34 @@ private fun ProfileImage(
 @Composable
 private fun ViewOwnProfileContent(
     viewModel: OwnProfileViewModel,
-    navController: NavigationActions
+    navController: NavController,
+    nav: NavigationActions
 ) {
   // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
   // nice
-  val username by viewModel.username.observeAsState("")
-  val bio by viewModel.bio.observeAsState("")
-  val imageUrl by viewModel.image.observeAsState("")
+  val username = viewModel.username.observeAsState("")
+  val bio = viewModel.bio.observeAsState("")
+  val imageUrl = viewModel.image.observeAsState("")
   val interests = viewModel.interests.value ?: mutableSetOf()
-  Column(modifier = Modifier.testTag("ProfileScreen")) {
-    TopBar(navController, viewModel::edit)
+  val profile = viewModel.profile.observeAsState()
 
+  Column(modifier = Modifier.testTag("ProfileScreen")) {
+    TopBarOwnProfile(viewModel, nav, viewModel::edit)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       ProfileImage(imageUrl, false)
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
       InterestsView().ShowInterests(interests)
+      ProfileQRCodeUI(profile)
+      Box(
+          modifier = Modifier.fillMaxSize().testTag("scanQRCodeButtonContainer"),
+          contentAlignment = Alignment.Center) {
+            Button(
+                onClick = { navController.navigate("qrCodeScanner") },
+                modifier = Modifier.wrapContentSize().testTag("scanQRCodeButton")) {
+                  Text("Scan QR Code")
+                }
+          }
     }
   }
 }
@@ -266,9 +300,9 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
   // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
   // nice
   val username = viewModel.username.observeAsState("")
-  val usernameValid = viewModel.userNameValid.observeAsState()
+  val usernameValid = viewModel.userNameValid.observeAsState("")
   val bio = viewModel.bio.observeAsState("")
-  val bioValid = viewModel.bioValid.observeAsState()
+  val bioValid = viewModel.bioValid.observeAsState("")
   val imageUrl = viewModel.image.observeAsState("")
   val updateUsername = viewModel::updateUsername
   val updateBio = viewModel::updateBio
@@ -290,14 +324,14 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
     SaveCancelButtons(save, cancel)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
       ProfileImage(
-          imageUrl = imageUrl.value,
+          imageUrl = imageUrl,
           edit = true,
           setImageEditAction = setImageEditAction,
           editAction = imageEditAction.value,
           localImageUri = localImageUriToUpload,
           updateLocalImageUri = setLocalImageUriToUpload)
-      UsernameField(username.value, usernameValid.value, updateUsername, true)
-      BioField(bio.value, bioValid.value, updateBio, true)
+      UsernameField(username, usernameValid, updateUsername, true)
+      BioField(bio, bioValid, updateBio, true)
       InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
         viewModel.flipInterests(it)
       }
@@ -312,21 +346,24 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
  */
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel) {
-  val username = viewModel.username.observeAsState("").value
-  val bio = viewModel.bio.observeAsState("").value
-  val imageUrl = viewModel.image.observeAsState("").value
-  val interests = viewModel.interests.observeAsState(setOf()).value
-  val following = viewModel.isFollowing.observeAsState(false).value
+  val username = viewModel.username.observeAsState("")
+  val bio = viewModel.bio.observeAsState("")
+  val imageUrl = viewModel.image.observeAsState("")
+  val interests = viewModel.interests.observeAsState(setOf())
+  val following = viewModel.isFollowing.observeAsState(false)
   val back = viewModel::back
   val follow = viewModel::follow
   val addFriend = viewModel::requestFriend
+
   Column() {
-    FollowButtons(back, follow, following, addFriend)
+    FollowButtons(back, follow, following.value, addFriend)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       ProfileImage(imageUrl, false)
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
-      InterestsView().ShowInterests(interests)
+      InterestsView().ShowInterests(interests.value)
+      ProfileQRCodeUI(viewModel._profile.observeAsState())
+      Spacer(modifier = Modifier.height(56.dp))
     }
   }
 }

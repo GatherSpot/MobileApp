@@ -45,6 +45,7 @@ import com.github.se.gatherspot.ui.SetUpProfile
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.ViewProfile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -63,6 +64,7 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var navController: NavHostController
   private var eventsViewModel: EventsViewModel? = null
+  private var chatsViewModel: ChatsListViewModel? = null
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,10 +101,14 @@ class MainActivity : ComponentActivity() {
 
             navigation(startDestination = "events", route = "home") {
               composable("events") {
-                if (eventsViewModel == null) {
-                  eventsViewModel = EventsViewModel()
+                when {
+                  eventsViewModel == null -> {
+                    eventsViewModel = EventsViewModel()
+                    Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
+                  }
+                  else ->
+                      Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
                 }
-                Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
               }
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
@@ -149,7 +155,19 @@ class MainActivity : ComponentActivity() {
                   ViewProfile(NavigationActions(navController), it)
                 }
               }
-              composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
+
+              composable("chats") {
+                when {
+                  chatsViewModel == null -> {
+                    chatsViewModel = ChatsListViewModel()
+                    Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
+                  }
+                  else -> Chats(chatsViewModel!!, NavigationActions(navController))
+                }
+              }
+
+              composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
+
               composable("chat/{chatJson}") { backStackEntry ->
                 backStackEntry.arguments?.getString("chatJson")?.let {
                   ChatUI(

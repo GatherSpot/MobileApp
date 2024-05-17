@@ -81,6 +81,7 @@ class ProfileFirebaseConnectionTest {
       async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
       assertNotNull(fetched)
       profileFirebaseConnection.delete(toAdd.id)
+      delay(2000)
 
       async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
       assertEquals(null, fetched)

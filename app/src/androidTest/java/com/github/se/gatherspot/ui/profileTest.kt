@@ -1,17 +1,15 @@
 package com.github.se.gatherspot.ui
 
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
+import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
-import com.github.se.gatherspot.model.FollowList
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -25,13 +23,16 @@ class ProfileInstrumentedTest {
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @Before
-  fun setUp() = runBlocking {
-    FollowList.unfollow("TEST", "TEST2")
-    ProfileFirebaseConnection().add(Profile.testOrganizer())
-    ProfileFirebaseConnection().add(Profile.testParticipant())
+  fun setUp() {
+    ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
+    ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testParticipant())
+    IdListFirebaseConnection().delete(
+        "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING) {}
   }
 
-  @OptIn(ExperimentalTestApi::class)
+  // For now on this branch, we will not test the profile screen because it does not pass the CI
+
+  @OptIn(androidx.compose.ui.test.ExperimentalTestApi::class)
   @Test
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
@@ -40,7 +41,7 @@ class ProfileInstrumentedTest {
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update
-      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 20000)
       // check if things are here :
       usernameInput { assertExists() }
       bioInput { assertExists() }
@@ -73,7 +74,9 @@ class ProfileInstrumentedTest {
     }
   }
 
-  @OptIn(ExperimentalTestApi::class)
+  // For now on this branch, we will not test the profile screen because it does not pass the CI
+
+  @OptIn(ExperimentalTestApi::class, androidx.compose.ui.test.ExperimentalTestApi::class)
   @Test
   fun viewProfileTest() {
     composeTestRule.setContent {

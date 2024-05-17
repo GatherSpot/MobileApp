@@ -85,7 +85,7 @@ class SetUpTest : TestCase() {
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasText(string), 5000)
-      basketball { assertExists() }
+      usernameInput { assertExists() }
     }
   }
 }

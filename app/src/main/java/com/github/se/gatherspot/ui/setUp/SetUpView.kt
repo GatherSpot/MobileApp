@@ -72,13 +72,13 @@ private fun Interests(vm: SetUpViewModel) {
 
 @Composable
 private fun Bio(vm: SetUpViewModel) {
-  val bio = vm.bio.observeAsState()
-  val bioError = vm.bioError.observeAsState()
+  val bio = vm.bio.observeAsState("")
+  val bioError = vm.bioError.observeAsState("")
   val setBio = vm::setBio
   Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpBioTag")) {
     Text(text = "Tell us a bit about yourself", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
-    BioField(bio.value!!, bioError.value, setBio, edit = true)
+    BioField(bio, bioError, setBio, edit = true)
   }
 }
 

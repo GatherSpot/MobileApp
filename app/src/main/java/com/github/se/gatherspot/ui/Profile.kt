@@ -29,7 +29,7 @@ fun Profile(nav: NavigationActions) {
   val viewModelStoreOwner = LocalViewModelStoreOwner.current!!
   val viewModel = ViewModelProvider(viewModelStoreOwner)[OwnProfileViewModel::class.java]
   NavHost(nestedNav, startDestination = "profile") {
-    composable("profile") { ProfileScaffold(nav, NavigationActions(nestedNav), viewModel) }
+    composable("profile") { ProfileScaffold(nav, nestedNav, viewModel) }
     composable("followers") {
       FollowList(nav, nestedNav, title = "Followers") {
         FollowList.followers(FirebaseAuth.getInstance().currentUser?.uid ?: "TEST")

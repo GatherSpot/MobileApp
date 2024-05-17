@@ -9,15 +9,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.qrcode.QRCodeUtils
-import com.google.gson.Gson
 
 @Composable
-fun ProfileQRCodeUI(profile: Profile) {
+fun ProfileQRCodeUI(profile: State<Profile?>) {
   var qrCodeBitmap: Bitmap? by remember { mutableStateOf(null) }
 
   LaunchedEffect(profile) {
-    val json = "profile/" + Gson().toJson(profile)
-    qrCodeBitmap = QRCodeUtils().generateQRCode(json)
+    profile.value?.let {
+      val json = "profile/" + it.id
+      qrCodeBitmap = QRCodeUtils().generateQRCode(json)
+    }
   }
 
   Column(

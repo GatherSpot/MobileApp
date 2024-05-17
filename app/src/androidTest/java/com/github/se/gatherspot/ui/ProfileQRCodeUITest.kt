@@ -1,6 +1,8 @@
 package com.github.se.gatherspot.ui
 
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.ProfileQRCodeScreen
@@ -17,8 +19,8 @@ class ProfileQRCodeUITest {
   @Test
   fun testEverythingExists() {
     composeTestRule.setContent {
-      val profile = Profile.testParticipant()
-      ProfileQRCodeUI(profile = profile)
+      val profile = MutableLiveData(Profile.testParticipant())
+      ProfileQRCodeUI(profile = profile.observeAsState())
     }
     ComposeScreen.onComposeScreen<ProfileQRCodeScreen>(composeTestRule) {
       column.assertExists()
