@@ -26,6 +26,7 @@ import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -33,7 +34,6 @@ import org.junit.Test
 
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
-  private lateinit var uid: String
 
   @Before
   fun setUp() {
@@ -102,6 +102,9 @@ class EventUITest {
 
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
+      runBlocking {
+          delay(200)
+      }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
       topBar.assertExists()
@@ -149,6 +152,9 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+        runBlocking{
+            delay(200)
+        }
       eventScaffold.assertIsDisplayed()
       topBar.assertIsDisplayed()
       backButton.assertIsDisplayed()
@@ -542,7 +548,10 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      profileIndicator.assertIsDisplayed()
+        runBlocking {
+            delay(200)
+        }
+        profileIndicator.assertIsDisplayed()
       userName { hasText("John Doe") }
       // profileIndicator.performClick()
     }
