@@ -487,6 +487,7 @@ class EventUITest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun ratingIsDisplayed() {
     val eventUIViewModel = EventUIViewModel(pastEventRegisteredTo)
@@ -511,8 +512,12 @@ class EventUITest {
         performScrollTo()
         assertIsDisplayed()
       }
-      star {
-        performScrollTo()
+
+        bottomSpacer{
+            performScrollTo()
+        }
+
+      starIcon_1 {
         assertIsDisplayed()
       }
     }
