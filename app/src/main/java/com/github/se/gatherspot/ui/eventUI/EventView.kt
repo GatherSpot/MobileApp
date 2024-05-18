@@ -124,7 +124,20 @@ fun EventUINonOrganizer(
                   }
             },
             actions = { ExportToCalendarIcon(event) })
-      }) { innerPadding ->
+      },
+      bottomBar = {
+          RegisterButton(
+              event,
+              eventUIViewModel,
+              eventsViewModel,
+              isButtonEnabled,
+              buttonText,
+              showDialogRegistration,
+              registrationState
+          )
+      }
+
+  ) { innerPadding ->
         Column(
             modifier =
                 Modifier.padding(innerPadding)
@@ -141,16 +154,8 @@ fun EventUINonOrganizer(
               EventRating(eventRating)
 
               // Registration Button
-              Spacer(modifier = Modifier.height(16.dp))
+              //Spacer(modifier = Modifier.height(16.dp))
 
-              RegisterButton(
-                  event,
-                  eventUIViewModel,
-                  eventsViewModel,
-                  isButtonEnabled,
-                  buttonText,
-                  showDialogRegistration,
-                  registrationState)
             }
       }
 }
