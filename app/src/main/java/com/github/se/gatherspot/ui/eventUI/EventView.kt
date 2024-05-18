@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -94,7 +95,7 @@ fun EventUI(
 
   val organizerProfile = remember { mutableStateOf<Profile?>(null) }
   LaunchedEffect(Unit) {
-    organizerProfile.value = ProfileFirebaseConnection().fetch(event.organizerID) {}
+    organizerProfile.value = ProfileFirebaseConnection().fetch(event.organizerID)
   }
 
   val eventUtils = EventUtils()
@@ -162,7 +163,7 @@ fun EventUI(
               Spacer(modifier = Modifier.height(16.dp))
 
               // Event Host
-              ProfileIndicator(organizerProfile.value, navActions, organizerRating ?: 0.0)
+              ProfileIndicator(organizerProfile, navActions, organizerRating ?: 0.0)
 
               // Event Description
               event.description?.let { description ->
@@ -356,8 +357,12 @@ fun Chip(interest: Interests) {
 }
 
 @Composable
-fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizerRating: Double) {
-  if (profile == null) return
+fun ProfileIndicator(
+    profile: MutableState<Profile?>,
+    navActions: NavigationActions,
+    organizerRating: Double
+) {
+  if (profile.value == null) return
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
@@ -365,8 +370,8 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
               .testTag("profileIndicator")
               .clickable {
                 // Navigate to the profile of the organizer
-                if (profile.id != Firebase.auth.currentUser?.uid) {
-                  navActions.controller.navigate("viewProfile/${profile.id}")
+                if (profile.value!!.id != Firebase.auth.currentUser?.uid) {
+                  navActions.controller.navigate("viewProfile/${profile.value!!.id}")
                 } else {
                   navActions.controller.navigate("profile")
                 }
@@ -382,7 +387,10 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
             ) {
               Text(
                   text =
-                      profile.userName.take(1).uppercase(), // Take the first character of the name
+                      profile.value!!
+                          .userName
+                          .take(1)
+                          .uppercase(), // Take the first character of the name
                   color = Color.White,
                   fontSize = 20.sp,
                   fontWeight = FontWeight.Bold)
@@ -392,7 +400,7 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             modifier = Modifier.testTag("userName"),
-            text = profile.userName,
+            text = profile.value!!.userName,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp)
         if (organizerRating > 0.0) {

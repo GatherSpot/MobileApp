@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.github.se.gatherspot.firebase.FirebaseImages
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
@@ -16,46 +17,36 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class OwnProfileViewModel : ViewModel() {
-  private var profileCopy: Profile? = null
-  private var _profile = MutableLiveData<Profile>()
-  private var _usernameValid = MutableLiveData("")
-  private var _bioValid = MutableLiveData("")
+  private lateinit var _profile: Profile
+  private var _username = MutableLiveData<String>()
+  private var _bio = MutableLiveData<String>()
+  private val _image = MutableLiveData<String>()
+  private val _interests = MutableLiveData<Set<Interests>>()
+  var userNameError = MutableLiveData("")
+  var bioError = MutableLiveData("")
   private var _saved = MutableLiveData<Boolean>()
-  private var _userNameIsUniqueCheck = MutableLiveData(true)
+  private var userNameIsUniqueCheck = MutableLiveData(true)
   private var _isEditing = MutableLiveData(false)
+  var uid = Firebase.auth.uid ?: "TEST" // TODO: remove elvis when emulator is in
 
   init {
-    viewModelScope.launch {
-      profileCopy = async { ProfileFirebaseConnection().fetch(Firebase.auth.uid!!) }.await()
-      profileCopy?.let { _profile.postValue(profileCopy!!) }
-    }
+    viewModelScope.launch { _profile = ProfileFirebaseConnection().fetch(uid) { update() } }
   }
 
-  val profile: LiveData<Profile>
-    get() = _profile
-
   val username: LiveData<String>
-    get() = _profile.map { it.userName }
-
-  val userNameValid: LiveData<String>
-    get() = _usernameValid
+    get() = _username
 
   val bio: LiveData<String>
-    get() = _profile.map { it.bio }
-
-  val bioValid: LiveData<String>
-    get() = _bioValid
+    get() = _bio
 
   val image: LiveData<String>
-    get() = _profile.map { it.image }
+    get() = _image
 
   val interests: LiveData<Set<Interests>>
-    get() = _profile.map { it.interests }
+    get() = _interests
 
   val saved: LiveData<Boolean>
     get() = _saved
@@ -67,64 +58,74 @@ class OwnProfileViewModel : ViewModel() {
     _saved.value = false
   }
 
-  private fun saveText() {
-    if (_usernameValid.value == "" &&
-        _bioValid.value == "" &&
-        _userNameIsUniqueCheck.value == true) {
-      _profile.value?.let { ProfileFirebaseConnection().add(it) }
+  fun edit() {
+    _isEditing.value = true
+  }
+
+  fun saveText() {
+    if (userNameError.value == "" && bioError.value == "" && userNameIsUniqueCheck.value == true) {
+      _profile.userName = _username.value!!
+      _profile.bio = _bio.value!!
+      _profile.interests = _interests.value!!
+      ProfileFirebaseConnection().add(_profile)
       _saved.value = true
     }
   }
 
-  private fun cancelText() {
-    profileCopy?.let { _profile.value = it }
+  fun update() {
+    _username.value = _profile.userName
+    _bio.value = _profile.bio
+    _interests.value = _profile.interests
+    _image.value = _profile.image
   }
 
-  // TODO : add sanitization to these function !!!
+  fun cancelText() {
+    _username.value = _profile.userName
+    _bio.value = _profile.bio
+    _interests.value = _profile.interests
+  }
+
   fun updateUsername(userName: String) {
-    _profile.value?.userName = userName
-    _userNameIsUniqueCheck.value = false
-    _usernameValid =
-        Profile.checkUsername(userName, _profile.value?.userName) {
-          _userNameIsUniqueCheck.value = true
-        }
+    _username.value = userName
+    userNameIsUniqueCheck.value = false
+    Profile.checkUsername(userName, null, userNameError) { userNameIsUniqueCheck.value = true }
   }
 
   fun updateBio(bio: String) {
-    _bioValid = Profile.checkBio(bio)
-    _profile.value?.bio = bio
+    bioError = Profile.checkBio(bio)
+    _bio.value = bio
   }
 
-  private fun updateProfileImage(newImageUrl: String) {
-    _profile.value?.image = newImageUrl
+  fun updateProfileImage(newImageUrl: String) {
+    _image.value = newImageUrl
   }
 
-  private fun uploadProfileImage(newImageUri: Uri?) {
+  fun uploadProfileImage(newImageUri: Uri?) {
     viewModelScope.launch {
-      if (newImageUri != null && newImageUri != EMPTY && _profile.isInitialized) {
+      if (newImageUri != null || newImageUri != EMPTY) {
         Log.d("New image uri : ", newImageUri.toString())
-        val newUrl = FirebaseImages().pushProfilePicture(newImageUri, _profile.value!!.id)
+        val newUrl = FirebaseImages().pushProfilePicture(newImageUri!!, _profile.id)
         if (newUrl.isNotEmpty()) {
           Log.d("Successfully uploaded: ", newUrl)
           updateProfileImage(newUrl)
-          ProfileFirebaseConnection().update(_profile.value!!.id, "image", newUrl)
+          ProfileFirebaseConnection().update(_profile.id, "image", newUrl)
         }
       }
       imageEditAction.value = ImageEditAction.NO_ACTION
     }
   }
 
-  private fun removeProfilePicture() {
+  fun removeProfilePicture() {
     viewModelScope.launch {
-      if (_profile.isInitialized) FirebaseImages().removeProfilePicture(_profile.value!!.id)
-      ProfileFirebaseConnection().update(_profile.value!!.id, "image", "")
+      FirebaseImages().removeProfilePicture(_profile.id)
+      ProfileFirebaseConnection().update(_profile.id, "image", "")
       updateProfileImage("")
       imageEditAction.value = ImageEditAction.NO_ACTION
     }
   }
 
   fun flipInterests(interest: Interests) {
-    _profile.value?.interests = Interests.flipInterest(interests.value ?: setOf(), interest)
+    _interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
 
   enum class ImageEditAction {
@@ -148,7 +149,7 @@ class OwnProfileViewModel : ViewModel() {
     imageEditAction.value = newImageEditAction
   }
 
-  private fun saveImage() {
+  fun saveImage() {
     when (imageEditAction.value) {
       ImageEditAction.UPLOAD -> uploadProfileImage(localImageUriToUpload.value)
       ImageEditAction.REMOVE -> removeProfilePicture()
@@ -156,7 +157,7 @@ class OwnProfileViewModel : ViewModel() {
     }
   }
 
-  private fun cancelImage() {
+  fun cancelImage() {
     imageEditAction.value = ImageEditAction.NO_ACTION
     localImageUriToUpload.value = Uri.EMPTY
   }
@@ -173,22 +174,20 @@ class OwnProfileViewModel : ViewModel() {
     _isEditing.value = false
   }
 
-  fun edit() {
-    _isEditing.value = true
-  }
-
   fun logout(nav: NavigationActions) {
     Firebase.auth.signOut()
     nav.controller.navigate("auth")
   }
 }
 
-class ProfileViewModel(private val _target: String, private val nav: NavigationActions) :
-    ViewModel() {
-  var _profile = MutableLiveData<Profile>()
+class ProfileViewModel(val target: String, private val nav: NavHostController) : ViewModel() {
+  private var _profile = MutableLiveData<Profile>()
   private var _isFollowing = MutableLiveData(false)
   val username: LiveData<String>
     get() = _profile.map { it.userName }
+
+  val profile: LiveData<Profile>
+    get() = _profile
 
   val bio: LiveData<String>
     get() = _profile.map { it.bio }
@@ -204,16 +203,16 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
 
   init {
     viewModelScope.launch {
-      runBlocking { _profile.postValue(ProfileFirebaseConnection().fetch(_target)) }
-      _isFollowing = FollowList.isFollowing(_profile.value!!.id, _target)
+      _profile.postValue(ProfileFirebaseConnection().fetch(target))
+      _isFollowing = FollowList.isFollowing(Firebase.auth.uid!!, target)
     }
   }
 
   // TODO : replace ?: with hilt injection
   fun follow() {
     if (_profile.isInitialized) {
-      if (_isFollowing.value!!) FollowList.unfollow(_profile.value!!.id, _target)
-      else FollowList.follow(_profile.value!!.id, _target)
+      if (_isFollowing.value!!) FollowList.unfollow(_profile.value!!.id, target)
+      else FollowList.follow(_profile.value!!.id, target)
       _isFollowing.value = !(_isFollowing.value!!)
     }
   }
@@ -226,6 +225,6 @@ class ProfileViewModel(private val _target: String, private val nav: NavigationA
   fun back() {
     // TODO : need to test this with either end to end test or manually when someone actually uses
     // this class
-    nav.goBack()
+    NavigationActions(nav).goBack()
   }
 }

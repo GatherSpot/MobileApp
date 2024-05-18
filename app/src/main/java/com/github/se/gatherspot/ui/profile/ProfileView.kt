@@ -41,7 +41,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.Interests
@@ -51,11 +50,7 @@ import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.github.se.gatherspot.ui.qrcode.ProfileQRCodeUI
 
 @Composable
-fun ProfileScaffold(
-    nav: NavigationActions,
-    nestedNav: NavController,
-    viewModel: OwnProfileViewModel
-) {
+fun ProfileScaffold(nav: NavigationActions, viewModel: OwnProfileViewModel) {
   Scaffold(
       bottomBar = {
         BottomNavigationMenu(
@@ -68,7 +63,7 @@ fun ProfileScaffold(
           if (viewModel.isEditing.observeAsState(false).value) {
             EditOwnProfileContent(viewModel)
           } else {
-            ViewOwnProfileContent(viewModel, nestedNav, nav)
+            ViewOwnProfileContent(viewModel, nav)
           }
         }
       })
@@ -179,7 +174,7 @@ private fun UsernameField(
         value = username.value,
         readOnly = !edit,
         onValueChange = { updateUsername(it) },
-        supportingText = { usernameValid?.let { Text(it.value, color = Color.Red) } })
+        supportingText = { Text(text = usernameValid?.value ?: "", color = Color.Red) })
   }
 }
 
@@ -197,7 +192,7 @@ fun BioField(
         onValueChange = { updateBio(it) },
         readOnly = !edit,
         modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"),
-        supportingText = { bioValid?.let { Text(it.value, color = Color.Red) } })
+        supportingText = { Text(text = bioValid?.value ?: "", color = Color.Red) })
   }
 }
 
@@ -263,30 +258,29 @@ private fun ProfileImage(
 @Composable
 private fun ViewOwnProfileContent(
     viewModel: OwnProfileViewModel,
-    navController: NavController,
-    nav: NavigationActions
+    navController: NavigationActions
 ) {
   // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
   // nice
   val username = viewModel.username.observeAsState("")
   val bio = viewModel.bio.observeAsState("")
   val imageUrl = viewModel.image.observeAsState("")
-  val interests = viewModel.interests.value ?: mutableSetOf()
-  val profile = viewModel.profile.observeAsState()
+  val interests = viewModel.interests.observeAsState()
+  val uid = viewModel.uid
 
   Column(modifier = Modifier.testTag("ProfileScreen")) {
-    TopBarOwnProfile(viewModel, nav, viewModel::edit)
+    TopBarOwnProfile(viewModel, navController, viewModel::edit)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       ProfileImage(imageUrl, false)
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
-      InterestsView().ShowInterests(interests)
-      ProfileQRCodeUI(profile)
+      InterestsView().ShowInterests(interests.value ?: setOf())
+      ProfileQRCodeUI(uid)
       Box(
           modifier = Modifier.fillMaxSize().testTag("scanQRCodeButtonContainer"),
           contentAlignment = Alignment.Center) {
             Button(
-                onClick = { navController.navigate("qrCodeScanner") },
+                onClick = { navController.controller.navigate("qrCodeScanner") },
                 modifier = Modifier.wrapContentSize().testTag("scanQRCodeButton")) {
                   Text("Scan QR Code")
                 }
@@ -300,9 +294,9 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
   // syntactic sugar for the view model values with sane defaults, that way the rest of code looks
   // nice
   val username = viewModel.username.observeAsState("")
-  val usernameValid = viewModel.userNameValid.observeAsState("")
+  val usernameError = viewModel.userNameError.observeAsState("")
   val bio = viewModel.bio.observeAsState("")
-  val bioValid = viewModel.bioValid.observeAsState("")
+  val bioError = viewModel.bioError.observeAsState("")
   val imageUrl = viewModel.image.observeAsState("")
   val updateUsername = viewModel::updateUsername
   val updateBio = viewModel::updateBio
@@ -330,8 +324,8 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
           editAction = imageEditAction.value,
           localImageUri = localImageUriToUpload,
           updateLocalImageUri = setLocalImageUriToUpload)
-      UsernameField(username, usernameValid, updateUsername, true)
-      BioField(bio, bioValid, updateBio, true)
+      UsernameField(username, usernameError, updateUsername, true)
+      BioField(bio, bioError, updateBio, true)
       InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
         viewModel.flipInterests(it)
       }
@@ -362,7 +356,7 @@ fun ProfileScreen(viewModel: ProfileViewModel) {
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
       InterestsView().ShowInterests(interests.value)
-      ProfileQRCodeUI(viewModel._profile.observeAsState())
+      ProfileQRCodeUI(viewModel.target)
       Spacer(modifier = Modifier.height(56.dp))
     }
   }

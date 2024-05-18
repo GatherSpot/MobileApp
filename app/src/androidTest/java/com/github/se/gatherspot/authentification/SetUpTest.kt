@@ -4,6 +4,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -14,7 +15,8 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.screens.SetUpScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
+import com.github.se.gatherspot.ui.profile.ProfileScaffold
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -59,7 +61,9 @@ class SetUpTest : TestCase() {
       val navController = rememberNavController()
       val nav = NavigationActions(navController)
       NavHost(navController, startDestination = "setup") {
-        composable("home") { ProfileUI(nav) }
+        composable("home") {
+          ProfileScaffold(NavigationActions(navController), viewModel<OwnProfileViewModel>())
+        }
         composable("setup") { SetUpProfile(nav) }
       }
     }

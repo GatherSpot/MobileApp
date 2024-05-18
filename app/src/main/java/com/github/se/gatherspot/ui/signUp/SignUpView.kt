@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -41,10 +40,8 @@ import com.github.se.gatherspot.R
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
 class SignUpView {
-  @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   fun SignUp(vm: SignUpViewModel, nav: NavigationActions) {
-    val navBack = vm::navBack
     val userName = vm.userName.observeAsState()
     val userNameError = vm.userNameError.observeAsState()
     val email = vm.email.observeAsState()
@@ -76,7 +73,10 @@ class SignUpView {
               Icon(
                   painter = painterResource(R.drawable.backarrow),
                   contentDescription = "",
-                  modifier = Modifier.clickable { navBack() }.width(30.dp).height(30.dp))
+                  modifier =
+                      Modifier.clickable { nav.controller.navigate("auth") }
+                          .width(30.dp)
+                          .height(30.dp))
 
               Spacer(modifier = Modifier.width(90.dp))
 

@@ -35,14 +35,10 @@ class SignUpViewModel() : ViewModel() {
             isUsernameUnique)
   }
 
-  fun navBack() {
-    isFinished.value = true
-  }
-
   fun updateUsername(string: String) {
     userName.value = string
     isUsernameUnique = false
-    userNameError = Profile.checkUsername(string, null) { isUsernameUnique = true }
+    Profile.checkUsername(string, null, userNameError) { isUsernameUnique = true }
   }
 
   fun updateEmail(string: String) {

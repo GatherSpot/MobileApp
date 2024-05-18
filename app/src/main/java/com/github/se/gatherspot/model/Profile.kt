@@ -48,25 +48,23 @@ class Profile(
     fun checkUsername(
         newName: String,
         oldName: String?,
+        res: MutableLiveData<String>,
         onSuccess: () -> Unit
-    ): MutableLiveData<String> {
-      val res = MutableLiveData<String>()
+    ) {
       val regex = ProfileRegex
-      if (newName == oldName) {
-        res.value = ""
-      } else if (newName.isEmpty()) {
-        res.value = "Username cannot be empty"
+      if (newName.isEmpty()) {
+        res.postValue("Username cannot be empty")
       } else if (!regex.matches(newName)) {
-        res.value = "Username can only contain letters, numbers, spaces, hyphens, and underscores"
+        res.postValue(
+            "Username can only contain letters, numbers, spaces, hyphens, and underscores")
       } else if (newName.length > 20) {
-        res.value = "Username cannot be longer than 20 characters"
-      } else {
+        res.postValue("Username cannot be longer than 20 characters")
+      } else if (newName != oldName) {
         ProfileFirebaseConnection().ifUsernameExists(newName) {
-          res.value = if (it) "Username already taken" else ""
+          res.postValue(if (it) "Username already taken" else "")
           onSuccess()
         }
       }
-      return res
     }
 
     fun add(username: String, id: String) =

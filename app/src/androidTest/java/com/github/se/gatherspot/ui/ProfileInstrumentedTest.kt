@@ -1,16 +1,20 @@
 package com.github.se.gatherspot.ui
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
+import com.github.se.gatherspot.ui.profile.ProfileScaffold
+import com.github.se.gatherspot.ui.profile.ProfileScreen
+import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.Before
 import org.junit.Rule
@@ -40,7 +44,7 @@ class ProfileInstrumentedTest {
   fun editableProfileScreenTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      ProfileUI(NavigationActions(navController))
+      ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel() })
     }
     val original_username = "testLogin"
     val original_bio = "Bio"
@@ -82,17 +86,17 @@ class ProfileInstrumentedTest {
     }
   }
 
-  /*
-  @OptIn(ExperimentalTestApi::class, androidx.compose.ui.test.ExperimentalTestApi::class)
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun viewProfileTest() {
+    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
-      ViewProfile(NavigationActions(navController), "TEST2")
+      ProfileScreen(viewModel<ProfileViewModel> { ProfileViewModel("TEST", navController) })
     }
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update :
-      composeTestRule.waitUntilAtLeastOneExists(hasText("Steeve"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasText("John Doe"), 6000)
       usernameInput { assertExists() }
       bioInput { assertExists() }
       profileImage { assertExists() }
@@ -105,6 +109,4 @@ class ProfileInstrumentedTest {
       composeTestRule.waitUntilAtLeastOneExists(hasText("Unfollow"), 6000)
     }
   }
-
-   */
 }

@@ -7,19 +7,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.qrcode.QRCodeUtils
 
 @Composable
-fun ProfileQRCodeUI(profile: State<Profile?>) {
+fun ProfileQRCodeUI(id: String) {
   var qrCodeBitmap: Bitmap? by remember { mutableStateOf(null) }
 
-  LaunchedEffect(profile) {
-    profile.value?.let {
-      val json = "profile/" + it.id
-      qrCodeBitmap = QRCodeUtils().generateQRCode(json)
-    }
-  }
+  val json = "profile/$id"
+  qrCodeBitmap = QRCodeUtils().generateQRCode(json)
 
   Column(
       modifier = Modifier.fillMaxSize().padding(16.dp).testTag("ProfileQRCode"),
