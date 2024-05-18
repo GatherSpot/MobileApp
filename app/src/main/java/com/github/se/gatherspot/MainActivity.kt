@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,7 +29,6 @@ import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
-import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.eventUI.CreateEvent
 import com.github.se.gatherspot.ui.eventUI.EditEvent
@@ -49,7 +47,11 @@ import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.github.se.gatherspot.ui.topLevelDestinations.SignUp
 import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.maps.android.compose.CameraPositionState
+import java.time.LocalDate
+import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
   companion object {
