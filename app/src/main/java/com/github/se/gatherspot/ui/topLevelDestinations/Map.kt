@@ -121,7 +121,7 @@ fun MapComposable(
         TopAppBar(
             title = {
               Row {
-                Text(text = "Map")
+                Text(text = "Map", modifier = Modifier.testTag("title"))
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = "Registered Events",

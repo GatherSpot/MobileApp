@@ -27,41 +27,27 @@ import kotlin.math.cos
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
   companion object {
-    fun degreeToMeters(latitudeDegrees: Double): Double {
-      // Radius of the Earth at the equator in meters
-      val earthRadiusAtEquator = 6378137.0 // in meters
+    fun degreeToMeters(angle: Double, latitude: Double): Double {
+      val earthRadius = 6371000 // Earth's radius in meters
+      val latitudeRadians = Math.toRadians(latitude)
+      val circumference =
+          2 * PI * earthRadius * cos(latitudeRadians) // Circumference of latitude circle
 
-      // Convert latitude from degrees to radians
-      val latitudeRadians = Math.toRadians(latitudeDegrees)
-
-      // Calculate the length of a degree of latitude in meters
-      // This accounts for the Earth's curvature using the WGS-84 ellipsoid
-      // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
-      // Where `latitude` is in radians and `radius` is the radius at that latitude
-      val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
-      val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
-
-      return lengthOfDegree
+      // Calculate the distance change
+      val distanceChange = (angle / 360) * circumference
+      return distanceChange
     }
 
-    fun metersToDegree(latitudeDegrees: Double, meters: Double): Double {
-      // Radius of the Earth at the equator in meters
-      val earthRadiusAtEquator = 6378137.0 // in meters
+    // Function to calculate angle change for a given distance at a latitude
+    fun metersToDegree(distance: Double, latitude: Double): Double {
+      val earthRadius = 6371000 // Earth's radius in meters
+      val latitudeRadians = Math.toRadians(latitude)
+      val circumference =
+          2 * PI * earthRadius * cos(latitudeRadians) // Circumference of latitude circle
 
-      // Convert latitude from degrees to radians
-      val latitudeRadians = Math.toRadians(latitudeDegrees)
-
-      // Calculate the length of a degree of latitude in meters
-      // This accounts for the Earth's curvature using the WGS-84 ellipsoid
-      // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
-      // Where `latitude` is in radians and `radius` is the radius at that latitude
-      val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
-      val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
-
-      // Calculate the number of degrees corresponding to the given meters
-      val degrees = meters / lengthOfDegree
-
-      return degrees
+      // Calculate the angle change
+      val angleChange = (distance / circumference) * 360
+      return angleChange
     }
   }
 

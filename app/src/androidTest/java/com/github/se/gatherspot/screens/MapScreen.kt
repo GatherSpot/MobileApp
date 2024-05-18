@@ -11,4 +11,6 @@ class MapScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val googleMap = onNode { hasTestTag("GoogleMap") }
   val topBar = onNode { hasTestTag("topBar") }
   val positionButton = onNode { hasTestTag("positionButton") }
+  val registeredEvents = onNode { hasTestTag("registeredEvents") }
+  val title = onNode { hasTestTag("title") }
 }

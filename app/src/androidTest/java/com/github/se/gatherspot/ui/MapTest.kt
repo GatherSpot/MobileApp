@@ -23,7 +23,7 @@ class MapTest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun TestExistence() {
+  fun testExistence() {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -47,6 +47,14 @@ class MapTest {
         assertHasClickAction()
       }
       topBar {
+        assertExists()
+        assertIsDisplayed()
+      }
+      registeredEvents {
+        assertExists()
+        assertIsDisplayed()
+      }
+      title {
         assertExists()
         assertIsDisplayed()
       }
