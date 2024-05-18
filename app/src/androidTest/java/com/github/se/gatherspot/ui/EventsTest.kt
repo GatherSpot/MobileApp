@@ -11,11 +11,12 @@ import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
-import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.topLevelDestinations.Events
+import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.runBlocking

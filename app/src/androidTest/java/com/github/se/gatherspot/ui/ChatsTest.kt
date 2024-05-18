@@ -13,6 +13,7 @@ import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.screens.ChatsScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.topLevelDestinations.Chats
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import io.github.kakaocup.compose.node.element.ComposeScreen

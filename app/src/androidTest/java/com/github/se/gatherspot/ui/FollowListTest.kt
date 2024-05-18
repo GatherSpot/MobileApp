@@ -11,6 +11,7 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.FollowListScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After
 import org.junit.Before
@@ -47,7 +48,7 @@ class FollowListTest {
 
     composeTestRule.setContent {
       val nav = rememberNavController()
-      Profile(nav = NavigationActions(nav))
+      ProfileUI(nav = NavigationActions(nav))
     }
 
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {

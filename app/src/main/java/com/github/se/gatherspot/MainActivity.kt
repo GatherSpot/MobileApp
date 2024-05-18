@@ -22,27 +22,32 @@ import androidx.navigation.navigation
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.utils.LocalDateDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.ui.ChatUI
-import com.github.se.gatherspot.ui.Chats
-import com.github.se.gatherspot.ui.CreateEvent
-import com.github.se.gatherspot.ui.EditEvent
-import com.github.se.gatherspot.ui.EventUI
-import com.github.se.gatherspot.ui.Events
-import com.github.se.gatherspot.ui.LogIn
-import com.github.se.gatherspot.ui.Map
-import com.github.se.gatherspot.ui.Profile
-import com.github.se.gatherspot.ui.SetUpProfile
-import com.github.se.gatherspot.ui.SignUp
-import com.github.se.gatherspot.ui.ViewProfile
+import com.github.se.gatherspot.ui.eventUI.CreateEvent
+import com.github.se.gatherspot.ui.eventUI.EditEvent
+import com.github.se.gatherspot.ui.eventUI.EventUI
+import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
+import com.github.se.gatherspot.ui.topLevelDestinations.Chats
+import com.github.se.gatherspot.ui.topLevelDestinations.Events
+import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
+import com.github.se.gatherspot.ui.topLevelDestinations.LogIn
+import com.github.se.gatherspot.ui.topLevelDestinations.Map
+import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
+import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
+import com.github.se.gatherspot.ui.topLevelDestinations.SignUp
+import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.maps.android.compose.CameraPositionState
 
@@ -105,16 +110,37 @@ class MainActivity : ComponentActivity() {
                 }
               }
               composable("event/{eventJson}") { backStackEntry ->
-                val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
+                // Create a new Gson instance with the custom serializers and deserializers
+                val gson: Gson =
+                    GsonBuilder()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                        .create()
+                val eventObject =
+                    gson.fromJson(
+                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
                 EventUI(
-                    event = eventObject,
+                    event = eventObject!!,
                     navActions = NavigationActions(navController),
-                    eventUIViewModel = EventUIViewModel(eventObject))
+                    eventUIViewModel = EventUIViewModel(eventObject),
+                    eventsViewModel = eventsViewModel!!)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
-                val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
+                val gson: Gson =
+                    GsonBuilder()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                        .create()
+
+                val eventObject =
+                    gson.fromJson(
+                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
                 EditEvent(
-                    event = eventObject,
+                    event = eventObject!!,
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
                     viewModel = eventsViewModel!!)
@@ -122,10 +148,11 @@ class MainActivity : ComponentActivity() {
 
               composable("map") { Map(NavigationActions(navController)) }
 
-              composable("profile") { Profile(NavigationActions(navController)) }
+              composable("profile") { ProfileUI(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
-                ViewProfile(
-                    NavigationActions(navController), backstackEntry.arguments?.getString("uid")!!)
+                backstackEntry.arguments?.getString("uid")?.let {
+                  ViewProfile(NavigationActions(navController), it)
+                }
               }
 
               composable("chats") {
