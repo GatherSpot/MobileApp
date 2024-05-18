@@ -126,18 +126,15 @@ fun EventUINonOrganizer(
             actions = { ExportToCalendarIcon(event) })
       },
       bottomBar = {
-          RegisterButton(
-              event,
-              eventUIViewModel,
-              eventsViewModel,
-              isButtonEnabled,
-              buttonText,
-              showDialogRegistration,
-              registrationState
-          )
-      }
-
-  ) { innerPadding ->
+        RegisterButton(
+            event,
+            eventUIViewModel,
+            eventsViewModel,
+            isButtonEnabled,
+            buttonText,
+            showDialogRegistration,
+            registrationState)
+      }) { innerPadding ->
         Column(
             modifier =
                 Modifier.padding(innerPadding)
@@ -154,7 +151,7 @@ fun EventUINonOrganizer(
               EventRating(eventRating)
 
               // Registration Button
-              //Spacer(modifier = Modifier.height(16.dp))
+              // Spacer(modifier = Modifier.height(16.dp))
 
             }
       }
@@ -330,11 +327,7 @@ fun Chip(interest: Interests) {
 }
 
 @Composable
-fun ProfileIndicator(
-    profile: Profile?,
-    navActions: NavigationActions,
-    organizerRating: Double
-) {
+fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizerRating: Double) {
   if (profile == null) return
   Row(
       verticalAlignment = Alignment.CenterVertically,
@@ -360,10 +353,7 @@ fun ProfileIndicator(
             ) {
               Text(
                   text =
-                      profile
-                          .userName
-                          .take(1)
-                          .uppercase(), // Take the first character of the name
+                      profile.userName.take(1).uppercase(), // Take the first character of the name
                   color = Color.White,
                   fontSize = 20.sp,
                   fontWeight = FontWeight.Bold)
