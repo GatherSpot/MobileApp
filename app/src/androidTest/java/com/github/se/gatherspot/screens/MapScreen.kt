@@ -9,4 +9,6 @@ class MapScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         viewBuilderAction = { hasTestTag("EditOwnProfileScreen") }) {
 
   val googleMap = onNode { hasTestTag("GoogleMap") }
+  val topBar = onNode { hasTestTag("topBar") }
+  val positionButton = onNode { hasTestTag("positionButton") }
 }

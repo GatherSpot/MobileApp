@@ -1,6 +1,5 @@
 package com.github.se.gatherspot
 
-// import com.github.se.gatherspot.ui.Chats
 import android.app.Application
 import android.content.Intent
 import android.os.Build
@@ -55,6 +54,7 @@ import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.maps.android.compose.CameraPositionState
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
     var mapAccess = false
     var mapViewModel: MapViewModel? = null
     lateinit var app: Application
+    var savedCameraPositionState: CameraPositionState? = null
   }
 
   private lateinit var navController: NavHostController

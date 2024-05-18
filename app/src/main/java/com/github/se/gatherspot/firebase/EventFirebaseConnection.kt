@@ -280,6 +280,27 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     return eventsFromQuerySnapshot(querySnapshot)
   }
 
+  suspend fun fetchAllInPerimeter(
+      latitude: Double,
+      longitude: Double,
+      degrees: Double
+  ): MutableList<Event> {
+
+    val querySnapshot: QuerySnapshot =
+        Firebase.firestore
+            .collection(EVENTS)
+            .orderBy("locationLatitude")
+            .whereLessThanOrEqualTo("locationLatitude", latitude + degrees)
+            .whereGreaterThan("locationLatitude", latitude - degrees)
+            .orderBy("locationLongitude")
+            .whereLessThanOrEqualTo("locationLongitude", longitude + degrees)
+            .whereGreaterThan("locationLongitude", longitude - degrees)
+            .get()
+            .await()
+
+    return eventsFromQuerySnapshot(querySnapshot)
+  }
+
   suspend fun fetchEventsFromFollowedUsers(ids: List<String>): MutableList<Event> {
     return when {
       ids.isEmpty() -> mutableListOf()
