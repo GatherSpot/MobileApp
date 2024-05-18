@@ -326,11 +326,11 @@ fun Chip(interest: Interests) {
 
 @Composable
 fun ProfileIndicator(
-    profile: MutableState<Profile?>,
+    profile: Profile?,
     navActions: NavigationActions,
     organizerRating: Double
 ) {
-  if (profile.value == null) return
+  if (profile == null) return
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
@@ -338,8 +338,8 @@ fun ProfileIndicator(
               .testTag("profileIndicator")
               .clickable {
                 // Navigate to the profile of the organizer
-                if (profile.value!!.id != Firebase.auth.currentUser?.uid) {
-                  navActions.controller.navigate("viewProfile/${profile.value!!.id}")
+                if (profile.id != Firebase.auth.currentUser?.uid) {
+                  navActions.controller.navigate("viewProfile/${profile.id}")
                 } else {
                   navActions.controller.navigate("profile")
                 }
@@ -355,7 +355,7 @@ fun ProfileIndicator(
             ) {
               Text(
                   text =
-                      profile.value!!
+                      profile
                           .userName
                           .take(1)
                           .uppercase(), // Take the first character of the name
@@ -368,7 +368,7 @@ fun ProfileIndicator(
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             modifier = Modifier.testTag("userName"),
-            text = profile.value!!.userName,
+            text = profile.userName,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp)
         if (organizerRating > 0.0) {
