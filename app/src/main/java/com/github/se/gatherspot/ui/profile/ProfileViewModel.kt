@@ -30,7 +30,7 @@ class OwnProfileViewModel : ViewModel() {
   private var _saved = MutableLiveData<Boolean>()
   private var userNameIsUniqueCheck = MutableLiveData(true)
   private var _isEditing = MutableLiveData(false)
-  var uid = Firebase.auth.uid ?: "TEST" // TODO: remove elvis when emulator is in
+  var uid = Firebase.auth.uid!!
 
   init {
     viewModelScope.launch { _profile = ProfileFirebaseConnection().fetch(uid) { update() } }
