@@ -10,7 +10,7 @@ import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 
-open class IdListFirebaseConnection {
+class IdListFirebaseConnection {
   private val logTag = "IdListFirebaseConnection"
   private val COLLECTION = "ID_LIST"
   private val TAG = "IdListFirebaseConnection"
@@ -27,7 +27,7 @@ open class IdListFirebaseConnection {
    * @return the IdList NOTE : The IdList will be initially empty, to use it in a view, you need to
    *   update the view using with a lambda function that updates the view
    */
-  open suspend fun fetchFromFirebase(
+  suspend fun fetchFromFirebase(
       id: String,
       category: FirebaseCollection,
       update: () -> Unit
@@ -61,7 +61,7 @@ open class IdListFirebaseConnection {
    *
    * @param idSet The IdList to save.
    */
-  open fun saveToFirebase(idSet: IdList) {
+  fun saveToFirebase(idSet: IdList) {
     val tag = idSet.collection.name
     val id = idSet.id
     // TODO : check if this good way to store data
@@ -83,7 +83,7 @@ open class IdListFirebaseConnection {
    * @param elements The elements to add to the list. @onSuccess a lambda function called on success
    * @return MutableLiveData<IdList> that returns the IdList created. Can be directly observed
    */
-  open fun add(
+  fun add(
       id: String,
       tag: FirebaseCollection,
       elements: List<String>,
@@ -114,7 +114,7 @@ open class IdListFirebaseConnection {
    * @param element The element to delete from the list.
    * @param onSuccess a lambda function called on success
    */
-  open fun deleteElement(
+  fun deleteElement(
       id: String,
       category: FirebaseCollection,
       element: String,
@@ -134,6 +134,7 @@ open class IdListFirebaseConnection {
   }
 
   suspend fun fetch(id: String, category: FirebaseCollection, onSuccess: () -> Unit): IdList {
+    Log.d(TAG, "Current id: $id")
     val tag = category.name
     Log.d(TAG, "TAG should be FOLLOWERS: $tag")
     val data: IdList
@@ -151,12 +152,7 @@ open class IdListFirebaseConnection {
    * @param element The element to add to the list.
    * @param onSuccess a lambda function called on success
    */
-  open fun addElement(
-      id: String,
-      category: FirebaseCollection,
-      element: String,
-      onSuccess: () -> Unit
-  ) {
+  fun addElement(id: String, category: FirebaseCollection, element: String, onSuccess: () -> Unit) {
     val tag = category.name
     fcoll
         .document(tag)
@@ -183,7 +179,7 @@ open class IdListFirebaseConnection {
    *   otherwise. This is useful for example when following someone, this ensures we added the user
    *   to the followers list and the user added us to their following list.
    */
-  open fun addTwoInSingleBatch(
+  fun addTwoInSingleBatch(
       id1: String,
       category1: FirebaseCollection,
       element1: String,
@@ -219,7 +215,7 @@ open class IdListFirebaseConnection {
    * @param element2 The element to remove from the second list.
    * @param onSuccess a lambda function called on success
    */
-  open fun removeTwoInSingleBatch(
+  fun removeTwoInSingleBatch(
       id1: String,
       category1: FirebaseCollection,
       element1: String,
@@ -253,7 +249,7 @@ open class IdListFirebaseConnection {
    * @return MutableLiveData<Boolean> that returns true if the element exists in the list, false
    *   otherwise, can be directly observed
    */
-  open fun exists(
+  fun exists(
       id: String,
       category: FirebaseCollection,
       element: String,
@@ -282,7 +278,7 @@ open class IdListFirebaseConnection {
    * @param category The category of the list.
    * @param onSuccess a lambda function called on success
    */
-  open fun delete(id: String, category: FirebaseCollection, onSuccess: () -> Unit) {
+  fun delete(id: String, category: FirebaseCollection, onSuccess: () -> Unit) {
     val tag = category.name
     fcoll
         .document(tag)

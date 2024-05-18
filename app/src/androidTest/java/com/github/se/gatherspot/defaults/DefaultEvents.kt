@@ -2,6 +2,7 @@ package com.github.se.gatherspot.defaults
 
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
@@ -31,8 +32,7 @@ class DefaultEvents {
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
             image = "",
-            globalRating = null,
-        )
+            globalRating = null)
 
     // if you need nothing specific
     val trivialEvent1 =
@@ -45,17 +45,39 @@ class DefaultEvents {
             attendanceMaxCapacity = 5,
             attendanceMinCapacity = 1,
             categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2025, 4, 15),
-            eventStartDate = LocalDate.of(2025, 4, 14),
+            eventEndDate = LocalDate.of(2024, 4, 15),
+            eventStartDate = LocalDate.of(2024, 4, 14),
             globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2025, 4, 11),
+            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
             inscriptionLimitTime = LocalTime.of(23, 59),
             location = null,
             registeredUsers = mutableListOf(),
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
             image = "",
-            organizerID = DefaultProfiles.trivial.id)
+            organizerID = Profile.testOrganizer().id)
+
+    // if you need nothing specific
+    val trivialEvent2 =
+        Event(
+            id = "trivialEvent2",
+            title = "Event Title",
+            description =
+                "Hello: I am a description of the event just saying that I would love to say" +
+                    "that Messi is not the best player in the world, but I can't. I am sorry.",
+            attendanceMaxCapacity = 5,
+            attendanceMinCapacity = 1,
+            categories = setOf(Interests.BASKETBALL),
+            eventEndDate = LocalDate.of(2024, 4, 15),
+            eventStartDate = LocalDate.of(2024, 4, 14),
+            globalRating = 4,
+            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+            inscriptionLimitTime = LocalTime.of(23, 59),
+            location = null,
+            registeredUsers = mutableListOf(),
+            timeBeginning = LocalTime.of(10, 0),
+            timeEnding = LocalTime.of(12, 0),
+            image = "")
 
     fun withInterests(vararg interests: Interests, eventId: String) =
         Event(
@@ -91,8 +113,7 @@ class DefaultEvents {
             registeredUsers = mutableListOf(),
             finalAttendees = emptyList(),
             image = "",
-            globalRating = null,
-            organizerID = DefaultProfiles.trivial.id)
+            globalRating = null)
 
     fun withRegistered(vararg registered: String, eventId: String) =
         Event(
@@ -129,7 +150,7 @@ class DefaultEvents {
             finalAttendees = emptyList(),
             image = "",
             globalRating = null,
-            organizerID = DefaultProfiles.trivial.id)
+            organizerID = Profile.testParticipant().id)
 
     fun withAuthor(authorId: String, eventId: String) =
         Event(
@@ -188,27 +209,6 @@ class DefaultEvents {
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
             image = "",
-            organizerID = DefaultProfiles.trivial.id)
-    val pastEventRegistered =
-        Event(
-            id = "pastEventRegistered",
-            title = "Past eventregist",
-            description =
-                "Hello: I am a description of the event just saying that I would love to say" +
-                    "that Messi is not the best player in the world, but I can't. I am sorry.",
-            attendanceMaxCapacity = 5,
-            attendanceMinCapacity = 1,
-            categories = setOf(Interests.BASKETBALL),
-            eventEndDate = LocalDate.of(2022, 4, 15),
-            eventStartDate = LocalDate.of(2022, 4, 14),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2022, 4, 11),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = null,
-            registeredUsers = mutableListOf("MC", "3", "4", "5"),
-            timeBeginning = LocalTime.of(10, 0),
-            timeEnding = LocalTime.of(12, 0),
-            image = "",
-            organizerID = DefaultProfiles.trivial.id)
+            organizerID = Profile.testOrganizer().id)
   }
 }

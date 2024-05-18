@@ -8,10 +8,10 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 /**
  * Profile data object
  *
- * @param _userName the name of the user
- * @param _bio the bio of the user
- * @param _image link of the profile picture of the user
- * @param _interests the interests of the user
+ * @param userName the name of the user
+ * @param bio the bio of the user
+ * @param image link of the profile picture of the user
+ * @param interests the interests of the user
  * @param id the id of the user
  */
 class Profile(
@@ -31,6 +31,10 @@ class Profile(
       return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
     }
 
+    fun fromFirebase(id: String, onSuccess: () -> Unit) {
+      ProfileFirebaseConnection().fetch(id) { onSuccess() }
+    }
+
     fun empty(id: String) = Profile("", "", "", id, setOf())
 
     /**
@@ -44,26 +48,27 @@ class Profile(
     fun checkUsername(
         newName: String,
         oldName: String?,
+        res: MutableLiveData<String>,
         onSuccess: () -> Unit
-    ): MutableLiveData<String> {
-      val res = MutableLiveData<String>()
+    ) {
       val regex = ProfileRegex
-      if (newName == oldName) {
-        res.value = ""
-      } else if (newName.isEmpty()) {
-        res.value = "Username cannot be empty"
+      if (newName.isEmpty()) {
+        res.postValue("Username cannot be empty")
       } else if (!regex.matches(newName)) {
-        res.value = "Username can only contain letters, numbers, spaces, hyphens, and underscores"
+        res.postValue(
+            "Username can only contain letters, numbers, spaces, hyphens, and underscores")
       } else if (newName.length > 20) {
-        res.value = "Username cannot be longer than 20 characters"
-      } else {
+        res.postValue("Username cannot be longer than 20 characters")
+      } else if (newName != oldName) {
         ProfileFirebaseConnection().ifUsernameExists(newName) {
-          res.value = if (it) "Username already taken" else ""
+          res.postValue(if (it) "Username already taken" else "")
           onSuccess()
         }
       }
-      return res
     }
+
+    fun add(username: String, id: String) =
+        ProfileFirebaseConnection().add(Profile(username, "", "", id, Interests.new()))
 
     fun checkBio(bio: String): MutableLiveData<String> {
       val res = MutableLiveData<String>()
