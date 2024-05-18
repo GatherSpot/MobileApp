@@ -1,5 +1,8 @@
 package com.github.se.gatherspot.model.event
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
@@ -37,12 +40,13 @@ import java.time.LocalTime
  * @param image: The images uploaded for the event
  * @param globalRating: The rating of the event by the attendees
  */
+@Entity
 data class Event(
     // How to generate a unique ID
-    override val id: String,
+    @PrimaryKey override val id: String,
     val title: String,
     val description: String?,
-    val location: Location?,
+    @Embedded(prefix = "location_") val location: Location?,
     val eventStartDate: LocalDate?,
     val eventEndDate: LocalDate?,
     val timeBeginning: LocalTime?, // Beginning in the eventStartDate
