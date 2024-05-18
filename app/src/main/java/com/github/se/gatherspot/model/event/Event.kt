@@ -46,7 +46,7 @@ data class Event(
     @PrimaryKey override val id: String,
     val title: String,
     val description: String?,
-    @Embedded val location: Location?,
+    @Embedded(prefix = "location_") val location: Location?,
     val eventStartDate: LocalDate?,
     val eventEndDate: LocalDate?,
     val timeBeginning: LocalTime?, // Beginning in the eventStartDate
