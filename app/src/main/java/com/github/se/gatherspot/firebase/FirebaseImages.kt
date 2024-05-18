@@ -25,10 +25,10 @@ class FirebaseImages {
    * A function that pushes the profile picture to the profile image cloud storage on success
    * returns the image url, elses empty
    */
-  private suspend fun pushPicture(imageUri: Uri, subFolder: String, saveAs: String): String {
-    return if (imageUri != Uri.EMPTY && subFolder.isNotEmpty() && saveAs.isNotEmpty()) {
+  suspend fun pushPicture(imageUri: Uri, subFolder: String, id: String): String {
+    return if (imageUri != Uri.EMPTY && subFolder.isNotEmpty() && id.isNotEmpty()) {
       try {
-        val task = PICTURE_BASE_STORAGE.child("${subFolder}/${saveAs}").putFile(imageUri).await()
+        val task = PICTURE_BASE_STORAGE.child("${subFolder}/${id}").putFile(imageUri).await()
         val url = task.metadata!!.reference!!.downloadUrl.await()
         url.toString()
       } catch (e: Exception) {

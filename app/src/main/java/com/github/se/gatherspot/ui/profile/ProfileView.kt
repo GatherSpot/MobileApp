@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -204,7 +205,12 @@ private fun ViewOwnProfileContent(
   Column(modifier = Modifier.testTag("ProfileScreen")) {
     TopBarOwnProfile(viewModel, navController, viewModel::edit)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-      ImageViewer(imageUri = imageUrl, placeHolder = R.drawable.profile, pictureName = "profile")
+      ImageViewer(
+          imageUri = imageUrl,
+          placeHolder = R.drawable.profile,
+          pictureName = "profile",
+          shape = CircleShape,
+          size = 180.dp)
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
       InterestsView().ShowInterests(interests.value ?: setOf())
@@ -246,7 +252,9 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
           placeHolder = R.drawable.profile,
           pictureName = "profile",
           updateImageUri = setImageUri,
-          deleteImage = deleteImage)
+          deleteImage = deleteImage,
+          shape = CircleShape,
+          size = 180.dp)
       UsernameField(username, usernameError, updateUsername, true)
       BioField(bio, bioError, updateBio, true)
       InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
@@ -275,7 +283,12 @@ fun ProfileScreen(viewModel: ProfileViewModel) {
   Column() {
     FollowButtons(back, follow, following.value, addFriend)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-      ImageViewer(imageUri = imageUrl, placeHolder = R.drawable.profile, pictureName = "profile")
+      ImageViewer(
+          imageUri = imageUrl,
+          placeHolder = R.drawable.profile,
+          pictureName = "profile",
+          shape = CircleShape,
+          size = 180.dp)
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
       InterestsView().ShowInterests(interests.value)

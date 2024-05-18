@@ -39,6 +39,7 @@ class SetUpViewModel() : ViewModel() {
     bio.value = string
     bioError = Profile.checkBio(string)
   }
+
   private fun done() {
     profile.bio = bio.value!!
     profile.image = image.value!!

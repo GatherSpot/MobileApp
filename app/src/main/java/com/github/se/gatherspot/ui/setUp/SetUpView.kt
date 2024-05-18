@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -94,7 +95,9 @@ private fun Image(vm: SetUpViewModel) {
         placeHolder = R.drawable.user,
         pictureName = "profile",
         updateImageUri = vm::setImage,
-        deleteImage = vm::deleteImage)
+        deleteImage = vm::deleteImage,
+        shape = CircleShape,
+        size = 180.dp)
   }
 }
 

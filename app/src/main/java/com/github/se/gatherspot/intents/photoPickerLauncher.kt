@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Text
@@ -16,10 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 
 @Composable
@@ -28,7 +30,9 @@ fun ImagePicker(
     placeHolder: Int,
     pictureName: String,
     updateImageUri: (String) -> Unit,
-    deleteImage: () -> Unit
+    deleteImage: () -> Unit,
+    shape: Shape,
+    size: Dp
 ) {
   val photoPickerLauncher =
       rememberLauncherForActivityResult(
@@ -42,9 +46,10 @@ fun ImagePicker(
   Column(
       modifier = Modifier.padding(8.dp).fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally) {
-        Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
+        Text(text = "Change $pictureName picture", modifier = Modifier.padding(8.dp))
+        Card(shape = shape, modifier = Modifier.padding(8.dp).size(size)) {
           AsyncImage(
-              model = imageUri.value.ifEmpty { null },
+              model = if (imageUri.value.isNotEmpty()) imageUri.value.toUri() else null,
               fallback = painterResource(placeHolder),
               placeholder = painterResource(placeHolder),
               contentDescription = "$pictureName image",
@@ -58,8 +63,6 @@ fun ImagePicker(
               contentScale = ContentScale.Crop)
         }
 
-        Text(text = "Change $pictureName picture")
-
         if (imageUri.value.isNotEmpty()) {
           Button(onClick = { deleteImage() }) { Text(text = "Remove $pictureName picture") }
         }
@@ -71,13 +74,15 @@ fun ImageViewer(
     imageUri: State<String>,
     placeHolder: Int,
     pictureName: String,
+    shape: Shape,
+    size: Dp
 ) {
   Column(
       modifier = Modifier.padding(8.dp).fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally) {
-        Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
+        Card(shape = shape, modifier = Modifier.padding(8.dp).size(size)) {
           AsyncImage(
-              model = imageUri.value.ifEmpty { null },
+              model = if (imageUri.value.isNotEmpty()) imageUri.value.toUri() else null,
               fallback = painterResource(placeHolder),
               placeholder = painterResource(placeHolder),
               contentDescription = "$pictureName image",
