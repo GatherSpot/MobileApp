@@ -33,20 +33,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.Profile
-import com.github.se.gatherspot.ui.navigation.NavigationActions
 
 @Composable
-fun FollowListUI(
-    navActions: NavigationActions,
-    nav: NavController,
-    title: String,
-    ids: suspend () -> IdList
-) {
+fun FollowListUI(navActions: NavHostController, title: String, ids: suspend () -> IdList) {
   val fb = ProfileFirebaseConnection()
   val profiles = remember { mutableListOf<Profile>() }
   var fetched by remember { mutableStateOf(false) }
@@ -71,7 +65,8 @@ fun FollowListUI(
             backgroundColor = Color.White,
             navigationIcon = {
               IconButton(
-                  onClick = { nav.navigate("view") }, modifier = Modifier.testTag("goBackToView")) {
+                  onClick = { navActions.navigate("profile") },
+                  modifier = Modifier.testTag("goBackToView")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go back to profile view")
@@ -110,11 +105,11 @@ fun Empty() {
 }
 
 @Composable
-fun UserRow(p: Profile, navActions: NavigationActions) {
+fun UserRow(p: Profile, navActions: NavHostController) {
   Box(
       modifier =
           Modifier.testTag(p.userName).fillMaxSize().clickable {
-            navActions.controller.navigate("viewProfile/${p.id}")
+            navActions.navigate("viewProfile/${p.id}")
           }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

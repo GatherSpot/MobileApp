@@ -105,7 +105,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val categoriesList = d.get("categories") as List<String>
     val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
     val registeredUsers = d.get("registeredUsers") as MutableList<String>
-    val finalAttendee = d.get("finalAttendee") as List<String>
+    val finalAttendee = d.get("finalAttendee") as MutableList<String>
     val image = d.getString("image")
     val globalRating =
         when (val rating = d.getString("globalRating")!!) {
@@ -274,6 +274,27 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             .orderBy("eventID")
             .whereArrayContains(
                 "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
+            .get()
+            .await()
+
+    return eventsFromQuerySnapshot(querySnapshot)
+  }
+
+  suspend fun fetchAllInPerimeter(
+      latitude: Double,
+      longitude: Double,
+      degrees: Double
+  ): MutableList<Event> {
+
+    val querySnapshot: QuerySnapshot =
+        Firebase.firestore
+            .collection(EVENTS)
+            .orderBy("locationLatitude")
+            .whereLessThanOrEqualTo("locationLatitude", latitude + degrees)
+            .whereGreaterThan("locationLatitude", latitude - degrees)
+            .orderBy("locationLongitude")
+            .whereLessThanOrEqualTo("locationLongitude", longitude + degrees)
+            .whereGreaterThan("locationLongitude", longitude - degrees)
             .get()
             .await()
 

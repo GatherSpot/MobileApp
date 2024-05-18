@@ -1,5 +1,8 @@
 package com.github.se.gatherspot.model.event
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
@@ -37,12 +40,13 @@ import java.time.LocalTime
  * @param image: The images uploaded for the event
  * @param globalRating: The rating of the event by the attendees
  */
+@Entity
 data class Event(
     // How to generate a unique ID
-    override val id: String,
+    @PrimaryKey override val id: String,
     val title: String,
     val description: String?,
-    val location: Location?,
+    @Embedded(prefix = "location_") val location: Location?,
     val eventStartDate: LocalDate?,
     val eventEndDate: LocalDate?,
     val timeBeginning: LocalTime?, // Beginning in the eventStartDate
@@ -63,14 +67,23 @@ data class Event(
 ) : CollectionClass() {
 
   fun toJson(): String {
-    val gson: Gson =
+    val eventJson = gson.toJson(this)
+    return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
+  }
+
+  companion object {
+
+    private val gson: Gson =
         GsonBuilder()
             .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
             .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
             .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
             .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
             .create()
-    val eventJson = gson.toJson(this)
-    return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
+
+    fun fromJson(string: String): Event {
+      val eventJson = string.replace("%20", "+")
+      return gson.fromJson(eventJson, Event::class.java)
+    }
   }
 }

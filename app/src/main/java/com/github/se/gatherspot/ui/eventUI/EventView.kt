@@ -325,8 +325,12 @@ fun Chip(interest: Interests) {
 }
 
 @Composable
-fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizerRating: Double) {
-  if (profile == null) return
+fun ProfileIndicator(
+    profile: MutableState<Profile?>,
+    navActions: NavigationActions,
+    organizerRating: Double
+) {
+  if (profile.value == null) return
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
@@ -334,8 +338,8 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
               .testTag("profileIndicator")
               .clickable {
                 // Navigate to the profile of the organizer
-                if (profile.id != Firebase.auth.currentUser?.uid) {
-                  navActions.controller.navigate("viewProfile/${profile.id}")
+                if (profile.value!!.id != Firebase.auth.currentUser?.uid) {
+                  navActions.controller.navigate("viewProfile/${profile.value!!.id}")
                 } else {
                   navActions.controller.navigate("profile")
                 }
@@ -351,7 +355,10 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
             ) {
               Text(
                   text =
-                      profile.userName.take(1).uppercase(), // Take the first character of the name
+                      profile.value!!
+                          .userName
+                          .take(1)
+                          .uppercase(), // Take the first character of the name
                   color = Color.White,
                   fontSize = 20.sp,
                   fontWeight = FontWeight.Bold)
@@ -361,7 +368,7 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             modifier = Modifier.testTag("userName"),
-            text = profile.userName,
+            text = profile.value!!.userName,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp)
         if (organizerRating > 0.0) {

@@ -60,7 +60,7 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
     viewModelScope.launch {
       // Simulate network request delay
       if (event.attendanceMaxCapacity != null) {
-        if (event.registeredUsers.size == event.attendanceMaxCapacity) {
+        if (event.registeredUsers.size >= event.attendanceMaxCapacity) {
           _registrationState.value = RegistrationState.Error("Event is full")
           return@launch
         }
@@ -69,12 +69,14 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
       if (event.registeredUsers.contains(userId)) {
         _registrationState.value = RegistrationState.Error("Already registered for this event")
         Log.e("EventRegistrationViewModel", "${registrationState.value}")
+        return@launch
       }
       if (!(event.registeredUsers.contains(userId))) {
         event.registeredUsers.add(userId)
         eventFirebaseConnection.addRegisteredUser(event.id, userId)
         registeredEventsList.add(event.id)
         _registrationState.value = RegistrationState.Success
+        return@launch
       }
     }
   }

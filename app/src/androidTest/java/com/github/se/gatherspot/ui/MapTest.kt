@@ -41,6 +41,15 @@ class MapTest {
         assertExists()
         assertIsDisplayed()
       }
+      positionButton {
+        assertExists()
+        assertIsDisplayed()
+        assertHasClickAction()
+      }
+      topBar {
+        assertExists()
+        assertIsDisplayed()
+      }
     }
   }
 }
