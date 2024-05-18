@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.model
 
+import androidx.room.Entity
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
@@ -12,6 +13,7 @@ import com.github.se.gatherspot.firebase.IdListFirebaseConnection
  * @param collection: the collection where the list will be stored useful for example to store a
  *   friend list, a list of events the user is attending, etc.
  */
+@Entity(tableName = "id_list", primaryKeys = ["id", "collection"])
 class IdList(
     override val id: String,
     var elements: List<String>,

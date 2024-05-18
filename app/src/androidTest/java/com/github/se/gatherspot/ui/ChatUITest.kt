@@ -66,7 +66,7 @@ class ChatUITest {
               eventStatus = EventStatus.CREATED,
               categories = setOf(Interests.CHESS),
               registeredUsers = mutableListOf("my_id"),
-              finalAttendees = emptyList(),
+              finalAttendees = mutableListOf(),
               image = "",
               globalRating = null)
       eventFirebaseConnection.add(event)
