@@ -198,7 +198,6 @@ class EventUITest {
         assertIsDisplayed()
       }
       registerButton {
-        performScrollTo()
         assertIsDisplayed()
       }
       alertBox { assertIsNotDisplayed() }
@@ -298,7 +297,6 @@ class EventUITest {
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
-        performScrollTo()
         assertIsEnabled()
         performClick()
       }
@@ -314,7 +312,6 @@ class EventUITest {
       }
       Thread.sleep(2000)
       registerButton {
-        performScrollTo()
         assertIsNotEnabled()
         assert(hasText("Registered"))
       }
@@ -351,7 +348,6 @@ class EventUITest {
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
-        performScrollTo()
         performClick()
       }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
@@ -362,7 +358,6 @@ class EventUITest {
 
       okButton.performClick()
       registerButton {
-        performScrollTo()
         assertIsNotEnabled()
         assert(hasText("Full"))
       }
@@ -400,7 +395,6 @@ class EventUITest {
     Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
-        performScrollTo()
         assertIsNotEnabled()
         assert(hasText("Registered"))
       }
