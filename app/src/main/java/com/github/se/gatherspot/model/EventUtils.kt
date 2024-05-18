@@ -11,7 +11,7 @@ import com.github.se.gatherspot.model.event.DraftEvent
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
-import com.github.se.gatherspot.ui.EventAction
+import com.github.se.gatherspot.ui.eventUI.EventAction
 import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalTime
@@ -25,9 +25,9 @@ import org.json.JSONArray
 
 private const val ELEMENTS_TO_DISPLAY = 5
 
-class EventUtils(
-    private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection()
-) {
+class EventUtils {
+
+  private val eventFirebaseConnection = EventFirebaseConnection()
 
   /**
    * Create an event from verified data
@@ -45,7 +45,7 @@ class EventUtils(
    * @param timeLimitInscription: The last time to register for the event
    * @return The event created
    */
-  private suspend fun createEvent(
+  private fun createEvent(
       title: String,
       description: String,
       location: Location?,
@@ -94,7 +94,7 @@ class EventUtils(
    *
    * @param event: The event to delete
    */
-  suspend fun deleteEvent(event: Event) {
+  fun deleteEvent(event: Event) {
     // Remove the event from all the users who registered for it
     val idListFirebase = IdListFirebaseConnection()
     runBlocking {
@@ -129,7 +129,7 @@ class EventUtils(
    * @return true if the data is valid
    * @throws Exception if the data is not valid
    */
-  suspend fun validateAndCreateOrUpdateEvent(
+  fun validateAndCreateOrUpdateEvent(
       title: String,
       description: String,
       location: Location?,
@@ -260,7 +260,7 @@ class EventUtils(
     }
   }
 
-  private suspend fun editEvent(
+  private fun editEvent(
       title: String,
       description: String,
       location: Location?,

@@ -10,6 +10,7 @@ import androidx.navigation.navigation
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.screens.MapScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.topLevelDestinations.Map
 import com.google.android.gms.maps.model.LatLng
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.Rule

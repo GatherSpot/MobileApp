@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,27 +22,36 @@ import androidx.navigation.navigation
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.EventsViewModel
 import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventUIViewModel
+import com.github.se.gatherspot.model.utils.LocalDateDeserializer
+import com.github.se.gatherspot.model.utils.LocalDateSerializer
+import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
+import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.ChatUI
-import com.github.se.gatherspot.ui.Chats
-import com.github.se.gatherspot.ui.CreateEvent
-import com.github.se.gatherspot.ui.EditEvent
-import com.github.se.gatherspot.ui.EventUI
-import com.github.se.gatherspot.ui.Events
-import com.github.se.gatherspot.ui.LogIn
-import com.github.se.gatherspot.ui.Map
-import com.github.se.gatherspot.ui.Profile
-import com.github.se.gatherspot.ui.SetUpProfile
-import com.github.se.gatherspot.ui.SignUp
-import com.github.se.gatherspot.ui.ViewProfile
+import com.github.se.gatherspot.ui.eventUI.CreateEvent
+import com.github.se.gatherspot.ui.eventUI.EditEvent
+import com.github.se.gatherspot.ui.eventUI.EventUI
+import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
+import com.github.se.gatherspot.ui.topLevelDestinations.Chats
+import com.github.se.gatherspot.ui.topLevelDestinations.Events
+import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
+import com.github.se.gatherspot.ui.topLevelDestinations.LogIn
+import com.github.se.gatherspot.ui.topLevelDestinations.Map
+import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
+import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
+import com.github.se.gatherspot.ui.topLevelDestinations.SignUp
+import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.time.LocalDate
+import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
   companion object {
@@ -56,6 +64,7 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var navController: NavHostController
   private var eventsViewModel: EventsViewModel? = null
+  private var chatsViewModel: ChatsListViewModel? = null
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,20 +101,47 @@ class MainActivity : ComponentActivity() {
 
             navigation(startDestination = "events", route = "home") {
               composable("events") {
-                val viewModel = viewModel<EventsViewModel>()
-                Events(viewModel = viewModel, nav = NavigationActions(navController))
+                when {
+                  eventsViewModel == null -> {
+                    eventsViewModel = EventsViewModel()
+                    Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
+                  }
+                  else ->
+                      Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
+                }
               }
               composable("event/{eventJson}") { backStackEntry ->
-                val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
+                // Create a new Gson instance with the custom serializers and deserializers
+                val gson: Gson =
+                    GsonBuilder()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                        .create()
+                val eventObject =
+                    gson.fromJson(
+                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
                 EventUI(
-                    event = eventObject,
+                    event = eventObject!!,
                     navActions = NavigationActions(navController),
-                    eventUIViewModel = EventUIViewModel(eventObject))
+                    eventUIViewModel = EventUIViewModel(eventObject),
+                    eventsViewModel = eventsViewModel!!)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
-                val eventObject = Event.fromJson(backStackEntry.arguments?.getString("eventJson")!!)
+                val gson: Gson =
+                    GsonBuilder()
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                        .create()
+
+                val eventObject =
+                    gson.fromJson(
+                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
                 EditEvent(
-                    event = eventObject,
+                    event = eventObject!!,
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
                     viewModel = eventsViewModel!!)
@@ -113,12 +149,25 @@ class MainActivity : ComponentActivity() {
 
               composable("map") { Map(NavigationActions(navController)) }
 
-              composable("profile") { Profile(NavigationActions(navController)) }
+              composable("profile") { ProfileUI(NavigationActions(navController)) }
               composable("viewProfile/{uid}") { backstackEntry ->
-                ViewProfile(
-                    NavigationActions(navController), backstackEntry.arguments?.getString("uid")!!)
+                backstackEntry.arguments?.getString("uid")?.let {
+                  ViewProfile(NavigationActions(navController), it)
+                }
               }
-              composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
+
+              composable("chats") {
+                when {
+                  chatsViewModel == null -> {
+                    chatsViewModel = ChatsListViewModel()
+                    Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
+                  }
+                  else -> Chats(chatsViewModel!!, NavigationActions(navController))
+                }
+              }
+
+              composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
+
               composable("chat/{chatJson}") { backStackEntry ->
                 backStackEntry.arguments?.getString("chatJson")?.let {
                   ChatUI(

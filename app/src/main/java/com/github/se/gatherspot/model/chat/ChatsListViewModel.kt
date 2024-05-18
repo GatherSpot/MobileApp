@@ -29,7 +29,7 @@ class ChatsListViewModel : ViewModel() {
     }
     val idlist = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS) {}
 
-    eventsIDS = idlist.events
+    eventsIDS = idlist.elements
     Log.e("IDS", eventsIDS.toString())
 
     _uiState.value = ChatUIState(loadedEvents)

@@ -82,156 +82,151 @@ android {
 
 dependencies {
 
+  // ---------------------- </IMPLEMENTATION ------------------
+  // </ Android COMPOSE
+  implementation("androidx.compose.runtime:runtime-livedata")
+  implementation("androidx.activity:activity-compose:1.8.2")
+  implementation("androidx.compose.ui:ui-graphics")
+  implementation("androidx.compose.ui:ui:1.4.0")
+  implementation("androidx.compose.ui:ui-tooling-preview:1.4.0")
+  implementation("androidx.compose.material:material")
+  implementation("androidx.compose.material3:material3")
+  implementation(
+      "androidx.compose.material:material:1.6.2") // necessary for EventUI Automirrored to work
+  implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+  /// >
 
-    // ---------------------- </IMPLEMENTATION ------------------
-    //</ Android COMPOSE
-    implementation("androidx.compose.runtime:runtime-livedata")
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui:1.4.0")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.4.0")
-    implementation("androidx.compose.material:material")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material:1.6.2") //necessary for EventUI Automirrored to work
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    ///>
+  // </firebase
+  implementation(platform("com.google.firebase:firebase-bom:32.8.1")) // changed to newer version
+  implementation("com.google.firebase:firebase-analytics")
+  implementation("com.google.firebase:firebase-database")
+  implementation("com.google.firebase:firebase-firestore")
+  implementation("com.google.firebase:firebase-auth")
+  implementation("com.firebaseui:firebase-ui-auth:7.2.0") // Can't find it anywhere
+  /// >
 
-    //</firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.8.1")) //changed to newer version
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-database")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.firebaseui:firebase-ui-auth:7.2.0") // Can't find it anywhere
-    ///>
+  // </Used for uploading images
+  implementation("com.google.firebase:firebase-storage")
+  implementation("androidx.fragment:fragment:1.5.5")
+  implementation("com.squareup.okhttp3:okhttp:3.10.0")
+  /// >
 
-    //</Used for uploading images
-    implementation ("com.google.firebase:firebase-storage")
-    implementation("androidx.fragment:fragment:1.5.5")
-    implementation("com.squareup.okhttp3:okhttp:3.10.0")
-    ///>
+  // <gson
+  implementation("com.google.code.gson:gson:2.10.1")
+  implementation("com.google.code.gson:gson:2.8.6") // DOUBLON
+  /// >
 
+  // </Android navigation
+  implementation("androidx.navigation:navigation-compose:2.6.0-rc01")
+  implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
+  implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
 
-    //<gson
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.google.code.gson:gson:2.8.6") //DOUBLON
-    ///>
+  /// >
 
-    //</Android navigation
-    implementation("androidx.navigation:navigation-compose:2.6.0-rc01")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
+  // </Google Maps
+  implementation("com.google.maps.android:maps-compose:4.3.0")
+  implementation("com.google.maps.android:maps-compose-utils:4.3.0")
+  /// >
 
-    ///>
+  // </gms play
+  implementation("com.google.android.gms:play-services-auth:20.6.0")
+  implementation("com.google.android.gms:play-services-maps:18.1.0")
+  /// >
 
-    //</Google Maps
-    implementation("com.google.maps.android:maps-compose:4.3.0")
-    implementation("com.google.maps.android:maps-compose-utils:4.3.0")
-    ///>
+  // </coil
+  implementation("io.coil-kt:coil-compose:2.6.0")
+  /// >
 
-    //</gms play
-    implementation("com.google.android.gms:play-services-auth:20.6.0")
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
-    ///>
-
-    //</coil
-    implementation("io.coil-kt:coil-compose:2.6.0")
-    ///>
-
-
-    implementation("androidx.appcompat:appcompat:1.6.1")
+  implementation("androidx.appcompat:appcompat:1.6.1")
 
   // QR Code
   // ZXing Core
   implementation("com.google.zxing:core:3.5.1")
   // ZXing Android Embedded (for scanning)
   implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+  implementation ("androidx.camera:camera-core:1.0.2")
+  implementation ("androidx.camera:camera-camera2:1.0.2")
+  implementation ("androidx.camera:camera-lifecycle:1.0.2")
+  implementation ("androidx.camera:camera-view:1.0.0-alpha29")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+  //Barcode
+  implementation ("com.google.mlkit:barcode-scanning:17.0.0")
 
-
-    implementation("com.squareup.okhttp3:okhttp:3.10.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.0") //For location //DOUBLON
-
-
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("com.google.android.play:core-ktx:1.7.0")
-
+  //Camera Permission
+  implementation ("com.google.accompanist:accompanist-permissions:0.19.0")
 
 
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
-    implementation("com.google.android.material:material:1.10.0") //Different than compose:material ?
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+  implementation("com.squareup.okhttp3:okhttp:3.10.0")
+  implementation("com.squareup.okhttp3:okhttp:4.9.0") // For location //DOUBLON
 
-    implementation("androidx.compose.ui:ui-graphics")
+  implementation("androidx.core:core-ktx:1.7.0")
+  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+  implementation("com.google.android.play:core-ktx:1.7.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-    implementation(libs.androidx.core.animation)
-    implementation(libs.play.services.location)
+  implementation("com.google.android.material:material:1.10.0") // Different than compose:material ?
+  implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
+  implementation("androidx.compose.ui:ui-graphics")
 
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+  implementation(libs.androidx.core.animation)
+  implementation(libs.play.services.location)
 
-    // ---------------------- /IMPLEMENTATION> ------------------
+  // ---------------------- /IMPLEMENTATION> ------------------
 
+  // DEBUG IMPLEMENTATION DEPENDENCIES
 
-    // DEBUG IMPLEMENTATION DEPENDENCIES
+  debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
+  debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
 
-    debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
+  // TEST IMPLEMENTATION DEPENDENCIES
 
+  testImplementation("junit:junit:4.13.2")
+  testImplementation("org.mockito:mockito-core:3.11.2")
+  testImplementation("org.mockito:mockito-inline:2.13.0")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
 
-    // TEST IMPLEMENTATION DEPENDENCIES
+  // ANDROID TEST IMPLEMENTATION DEPENDENCIES
 
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:3.11.2")
-    testImplementation("org.mockito:mockito-inline:2.13.0")
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
+  androidTestImplementation("androidx.test.ext:junit:1.1.5")
+  androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+  androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
+  // Dependency for using Intents in instrumented tests
+  androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+  androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
 
+  androidTestImplementation("com.kaspersky.android-components:kaspresso:1.4.3")
+  // Allure support
+  androidTestImplementation("com.kaspersky.android-components:kaspresso-allure-support:1.4.3")
+  // Jetpack Compose support
+  androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.4.1")
 
-    // ANDROID TEST IMPLEMENTATION DEPENDENCIES
+  // </ Dependencies for using MockK in instrumented tests
+  androidTestImplementation("io.mockk:mockk:1.13.7")
+  androidTestImplementation("io.mockk:mockk-android:1.13.7")
+  androidTestImplementation("io.mockk:mockk-agent:1.13.7")
+  androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
+  /// >
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
-    // Dependency for using Intents in instrumented tests
-    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
+  androidTestImplementation("org.mockito:mockito-core:3.11.2")
+  androidTestImplementation("org.mockito:mockito-inline:2.13.0")
+  androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
+  androidTestImplementation("androidx.test.ext:junit:1.1.5")
+  androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+  androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
+  androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
+  androidTestImplementation("com.kaspersky.android-components:kaspresso:1.4.3")
+  // Allure support
+  androidTestImplementation("com.kaspersky.android-components:kaspresso-allure-support:1.4.3")
+  // Jetpack Compose support
+  androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.4.1")
+  androidTestImplementation("com.google.firebase:firebase-database")
+  androidTestImplementation("com.google.firebase:firebase-firestore")
 
-
-    androidTestImplementation("com.kaspersky.android-components:kaspresso:1.4.3")
-    // Allure support
-    androidTestImplementation("com.kaspersky.android-components:kaspresso-allure-support:1.4.3")
-    // Jetpack Compose support
-    androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.4.1")
-
-
-    //</ Dependencies for using MockK in instrumented tests
-    androidTestImplementation("io.mockk:mockk:1.13.7")
-    androidTestImplementation("io.mockk:mockk-android:1.13.7")
-    androidTestImplementation("io.mockk:mockk-agent:1.13.7")
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
-    ///>
-
-
-
-    androidTestImplementation("org.mockito:mockito-core:3.11.2")
-    androidTestImplementation("org.mockito:mockito-inline:2.13.0")
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    androidTestImplementation("com.kaspersky.android-components:kaspresso:1.4.3")
-    // Allure support
-    androidTestImplementation("com.kaspersky.android-components:kaspresso-allure-support:1.4.3")
-    // Jetpack Compose support
-    androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.4.1")
-    androidTestImplementation("com.google.firebase:firebase-database")
-    androidTestImplementation("com.google.firebase:firebase-firestore")
-
-    // Image fetching library
-    implementation("io.coil-kt:coil-compose:2.6.0")
+  // Image fetching library
+  implementation("io.coil-kt:coil-compose:2.6.0")
 }
 
 tasks.withType<Test> {

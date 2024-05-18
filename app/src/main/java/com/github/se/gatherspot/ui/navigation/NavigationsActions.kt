@@ -4,7 +4,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.github.se.gatherspot.R
 
-class NavigationActions(val controller: NavHostController) {
+open class NavigationActions(val controller: NavHostController) {
   fun navigateTo(tld: TopLevelDestination) {
     controller.navigate(tld.route) {
       // Pop up to the start destination of the graph to
@@ -20,7 +20,7 @@ class NavigationActions(val controller: NavHostController) {
   }
 
   fun goBack() {
-    controller.navigate("home")
+    controller.popBackStack()
   }
 }
 
