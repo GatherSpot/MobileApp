@@ -102,9 +102,7 @@ class EventUITest {
 
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
-      runBlocking {
-          delay(200)
-      }
+    runBlocking { delay(200) }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
       topBar.assertExists()
@@ -152,9 +150,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-        runBlocking{
-            delay(200)
-        }
+      runBlocking { delay(200) }
       eventScaffold.assertIsDisplayed()
       topBar.assertIsDisplayed()
       backButton.assertIsDisplayed()
@@ -548,10 +544,8 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-        runBlocking {
-            delay(200)
-        }
-        profileIndicator.assertIsDisplayed()
+      runBlocking { delay(200) }
+      profileIndicator.assertIsDisplayed()
       userName { hasText("John Doe") }
       // profileIndicator.performClick()
     }
