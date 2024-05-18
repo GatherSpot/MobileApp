@@ -24,7 +24,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class EditEventTest {
 
-  private val eventFirebaseConnection = EventFirebaseConnection()
   private val testEvent =
       Event(
           id = "testID",

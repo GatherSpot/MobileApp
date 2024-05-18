@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +22,7 @@ import androidx.navigation.navigation
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
@@ -30,11 +32,17 @@ import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.ChatUI
+import com.github.se.gatherspot.ui.FollowListUI
+import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.eventUI.CreateEvent
 import com.github.se.gatherspot.ui.eventUI.EditEvent
 import com.github.se.gatherspot.ui.eventUI.EventUI
 import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
+import com.github.se.gatherspot.ui.profile.ProfileScaffold
+import com.github.se.gatherspot.ui.profile.ProfileScreen
+import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.github.se.gatherspot.ui.topLevelDestinations.Chats
@@ -42,10 +50,7 @@ import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.LogIn
 import com.github.se.gatherspot.ui.topLevelDestinations.Map
-import com.github.se.gatherspot.ui.topLevelDestinations.ProfileUI
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
-import com.github.se.gatherspot.ui.topLevelDestinations.SignUp
-import com.github.se.gatherspot.ui.topLevelDestinations.ViewProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -150,10 +155,23 @@ class MainActivity : ComponentActivity() {
 
               composable("map") { Map(NavigationActions(navController)) }
 
-              composable("profile") { ProfileUI(NavigationActions(navController)) }
+              composable("profile") {
+                ProfileScaffold(NavigationActions(navController), viewModel<OwnProfileViewModel>())
+              }
+
+              composable("followers") {
+                FollowListUI(navController, title = "Followers") {
+                  FollowList.followers(FirebaseAuth.getInstance().currentUser?.uid ?: "TEST")
+                }
+              }
+              composable("following") {
+                FollowListUI(navController, title = "Following") {
+                  FollowList.following(FirebaseAuth.getInstance().currentUser?.uid ?: "TEST")
+                }
+              }
               composable("viewProfile/{uid}") { backstackEntry ->
                 backstackEntry.arguments?.getString("uid")?.let {
-                  ViewProfile(NavigationActions(navController), it)
+                  ProfileScreen(viewModel<ProfileViewModel> { ProfileViewModel(it, navController) })
                 }
               }
 
@@ -183,11 +201,7 @@ class MainActivity : ComponentActivity() {
                     eventUtils = EventUtils(),
                     eventsViewModel!!)
               }
-
-              composable("setup") {
-                SetUpProfile(
-                    NavigationActions(navController), FirebaseAuth.getInstance().currentUser!!.uid)
-              }
+              composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }
           }
         }

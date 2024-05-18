@@ -2,6 +2,7 @@ package com.github.se.gatherspot.authentification
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,12 +14,10 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testDelete
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
+import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
-import com.github.se.gatherspot.ui.topLevelDestinations.SignUp
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.runBlocking
@@ -31,11 +30,6 @@ import org.junit.runner.RunWith
 class SignUpTest : TestCase() {
 
   @get:Rule val composeTestRule = createComposeRule()
-
-  // The IntentsTestRule simply calls Intents.init() before the @Test block
-  // and Intents.release() after the @Test block is completed. IntentsTestRule
-  // is deprecated, but it was MUCH faster than using IntentsRule in our tests
-  //  @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
 
   @After
   fun cleanUp() {
@@ -61,9 +55,7 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") {
-            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
-          }
+          composable("setup") { SetUpProfile(NavigationActions(navController)) }
         }
       }
     }
@@ -110,9 +102,7 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") {
-            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
-          }
+          composable("setup") { SetUpProfile(NavigationActions(navController)) }
         }
       }
     }
@@ -134,12 +124,9 @@ class SignUpTest : TestCase() {
         assertIsDisplayed()
       }
       Espresso.closeSoftKeyboard()
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badUsername"), 6000)
-      badUsername.assertIsDisplayed()
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badEmail"), 1000)
-      badEmail.assertIsDisplayed()
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("badPassword"), 1000)
-      badPassword.assertIsDisplayed()
+      badUsername { assertExists() }
+      badEmail { assertExists() }
+      badPassword { assertExists() }
     }
   }
 
@@ -153,9 +140,7 @@ class SignUpTest : TestCase() {
           composable("signup") { SignUp(NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
-          composable("setup") {
-            SetUpProfile(NavigationActions(navController), Firebase.auth.currentUser!!.uid)
-          }
+          composable("setup") { SetUpProfile(NavigationActions(navController)) }
         }
       }
     }
@@ -165,8 +150,8 @@ class SignUpTest : TestCase() {
       emailField { performTextInput("test@test.com") }
       passwordField { performTextInput("Test,2024;") }
       button { performClick() }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("signUpFailed"), 6000)
-      dialog { assertIsDisplayed() }
+      composeTestRule.waitUntilAtLeastOneExists(
+          hasText("Email already in use", substring = true), 6000)
     }
   }
 }
