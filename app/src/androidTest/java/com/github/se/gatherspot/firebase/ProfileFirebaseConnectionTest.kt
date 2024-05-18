@@ -22,18 +22,18 @@ class ProfileFirebaseConnectionTest {
   val profileFirebaseConnection = ProfileFirebaseConnection()
   var toAdd: Profile =
       Profile(
-          _userName = "PFCTest",
-          _bio = "bio",
-          _image = "image",
+          userName = "PFCTest",
+          bio = "bio",
+          image = "image",
           id = "profileFirebaseConnectionTest",
-          _interests = setOf())
+          interests = setOf())
   val usernameTooLong =
       Profile(
-          _userName = "ThisUsernameIsTooLong",
-          _bio = "bio",
-          _image = "image",
+          userName = "ThisUsernameIsTooLong",
+          bio = "bio",
+          image = "image",
           id = "thisUsernameIsTooLong",
-          _interests = setOf())
+          interests = setOf())
 
   @Before
   fun setUp() {
@@ -81,6 +81,7 @@ class ProfileFirebaseConnectionTest {
       async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
       assertNotNull(fetched)
       profileFirebaseConnection.delete(toAdd.id)
+      delay(2000)
 
       async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
       assertEquals(null, fetched)
@@ -154,11 +155,11 @@ class ProfileFirebaseConnectionTest {
 
       val updated =
           Profile(
-              _userName = "updated",
-              _bio = "updated",
-              _image = "updated",
+              userName = "updated",
+              bio = "updated",
+              image = "updated",
               id = toAdd.id,
-              _interests = setOf())
+              interests = setOf())
       profileFirebaseConnection.update(updated)
       async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
       assertNotNull(fetched)

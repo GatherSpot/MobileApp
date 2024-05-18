@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,30 +23,35 @@ import androidx.navigation.navigation
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.model.EventsViewModel
+import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.event.EventUIViewModel
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.ui.ChatUI
-import com.github.se.gatherspot.ui.Chats
-import com.github.se.gatherspot.ui.CreateEvent
-import com.github.se.gatherspot.ui.EditEvent
-import com.github.se.gatherspot.ui.EventUI
-import com.github.se.gatherspot.ui.Events
-import com.github.se.gatherspot.ui.LogIn
-import com.github.se.gatherspot.ui.Map
-import com.github.se.gatherspot.ui.Profile
-import com.github.se.gatherspot.ui.SetUpProfile
+import com.github.se.gatherspot.ui.FollowListUI
 import com.github.se.gatherspot.ui.SignUp
-import com.github.se.gatherspot.ui.ViewProfile
+import com.github.se.gatherspot.ui.eventUI.CreateEvent
+import com.github.se.gatherspot.ui.eventUI.EditEvent
+import com.github.se.gatherspot.ui.eventUI.EventUI
+import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
+import com.github.se.gatherspot.ui.profile.ProfileScaffold
+import com.github.se.gatherspot.ui.profile.ProfileScreen
+import com.github.se.gatherspot.ui.profile.ProfileViewModel
+import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
+import com.github.se.gatherspot.ui.topLevelDestinations.Chats
+import com.github.se.gatherspot.ui.topLevelDestinations.Events
+import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
+import com.github.se.gatherspot.ui.topLevelDestinations.LogIn
+import com.github.se.gatherspot.ui.topLevelDestinations.Map
+import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -63,6 +69,7 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var navController: NavHostController
   private var eventsViewModel: EventsViewModel? = null
+  private var chatsViewModel: ChatsListViewModel? = null
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,10 +106,14 @@ class MainActivity : ComponentActivity() {
 
             navigation(startDestination = "events", route = "home") {
               composable("events") {
-                if (eventsViewModel == null) {
-                  eventsViewModel = EventsViewModel()
+                when {
+                  eventsViewModel == null -> {
+                    eventsViewModel = EventsViewModel()
+                    Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
+                  }
+                  else ->
+                      Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
                 }
-                Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
               }
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
@@ -143,13 +154,38 @@ class MainActivity : ComponentActivity() {
 
               composable("map") { Map(NavigationActions(navController)) }
 
-              composable("profile") { Profile(NavigationActions(navController)) }
-              composable("viewProfile/{uid}") { backstackEntry ->
-                backstackEntry.arguments?.getString("uid")?.let {
-                  ViewProfile(NavigationActions(navController), it)
+              composable("profile") {
+                ProfileScaffold(NavigationActions(navController), viewModel<OwnProfileViewModel>())
+              }
+
+              composable("followers") {
+                FollowListUI(navController, title = "Followers") {
+                  FollowList.followers(FirebaseAuth.getInstance().currentUser?.uid ?: "TEST")
                 }
               }
-              composable("chats") { Chats(ChatsListViewModel(), NavigationActions(navController)) }
+              composable("following") {
+                FollowListUI(navController, title = "Following") {
+                  FollowList.following(FirebaseAuth.getInstance().currentUser?.uid ?: "TEST")
+                }
+              }
+              composable("viewProfile/{uid}") { backstackEntry ->
+                backstackEntry.arguments?.getString("uid")?.let {
+                  ProfileScreen(viewModel<ProfileViewModel> { ProfileViewModel(it, navController) })
+                }
+              }
+
+              composable("chats") {
+                when {
+                  chatsViewModel == null -> {
+                    chatsViewModel = ChatsListViewModel()
+                    Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
+                  }
+                  else -> Chats(chatsViewModel!!, NavigationActions(navController))
+                }
+              }
+
+              composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
+
               composable("chat/{chatJson}") { backStackEntry ->
                 backStackEntry.arguments?.getString("chatJson")?.let {
                   ChatUI(
@@ -164,11 +200,7 @@ class MainActivity : ComponentActivity() {
                     eventUtils = EventUtils(),
                     eventsViewModel!!)
               }
-
-              composable("setup") {
-                SetUpProfile(
-                    NavigationActions(navController), FirebaseAuth.getInstance().currentUser!!.uid)
-              }
+              composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }
           }
         }

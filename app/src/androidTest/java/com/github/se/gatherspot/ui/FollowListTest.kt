@@ -3,7 +3,11 @@ package com.github.se.gatherspot.ui
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
@@ -11,6 +15,8 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.screens.FollowListScreen
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.profile.OwnProfileViewModel
+import com.github.se.gatherspot.ui.profile.ProfileScaffold
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After
 import org.junit.Before
@@ -44,10 +50,20 @@ class FollowListTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testFollower() {
-
+    testLogin()
     composeTestRule.setContent {
-      val nav = rememberNavController()
-      Profile(nav = NavigationActions(nav))
+      val navController = rememberNavController()
+      NavHost(navController = navController, startDestination = "profile") {
+        composable("profile") {
+          ProfileScaffold(NavigationActions(navController), viewModel<OwnProfileViewModel>())
+        }
+        composable("followers") {
+          FollowListUI(navController, title = "Followers") { FollowList.followers("TEST") }
+        }
+        composable("following") {
+          FollowListUI(navController, title = "Following") { FollowList.following("TEST") }
+        }
+      }
     }
 
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {

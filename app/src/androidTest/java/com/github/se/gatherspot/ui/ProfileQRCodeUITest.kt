@@ -18,7 +18,7 @@ class ProfileQRCodeUITest {
   fun testEverythingExists() {
     composeTestRule.setContent {
       val profile = Profile.testParticipant()
-      ProfileQRCodeUI(profile = profile)
+      ProfileQRCodeUI(profile.id)
     }
     ComposeScreen.onComposeScreen<ProfileQRCodeScreen>(composeTestRule) {
       column.assertExists()
