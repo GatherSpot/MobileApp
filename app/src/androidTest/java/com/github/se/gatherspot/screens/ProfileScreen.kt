@@ -14,7 +14,7 @@ class ProfileScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val save: KNode = onNode { hasTestTag("save") }
   val usernameInput: KNode = onNode { hasTestTag("usernameInput") }
   val bioInput: KNode = onNode { hasTestTag("bioInput") }
-  val profileImage: KNode = onNode { hasTestTag("profileImage") }
+  val profileImage: KNode = onNode { hasTestTag("image") }
   val addFriend: KNode = onNode { hasTestTag("addFriend") }
   val follow: KNode = onNode { hasTestTag("follow") }
   val followersButton: KNode = onNode { hasTestTag("followersButton") }

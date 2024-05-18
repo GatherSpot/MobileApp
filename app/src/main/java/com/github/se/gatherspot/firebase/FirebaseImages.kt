@@ -14,10 +14,10 @@ class FirebaseImages {
    * returns the image url, elses empty
    */
   suspend fun pushProfilePicture(imageUri: Uri, userId: String): String {
-    if (imageUri != Uri.EMPTY && userId.isNotEmpty()) {
-      return pushPicture(imageUri, PROFILE_PICTURE_STORAGE, userId)
+    return if (imageUri != Uri.EMPTY && userId.isNotEmpty()) {
+      pushPicture(imageUri, PROFILE_PICTURE_STORAGE, userId)
     } else {
-      return ""
+      ""
     }
   }
 
@@ -25,40 +25,40 @@ class FirebaseImages {
    * A function that pushes the profile picture to the profile image cloud storage on success
    * returns the image url, elses empty
    */
-  suspend fun pushPicture(imageUri: Uri, subFolder: String, saveAs: String): String {
-    if (imageUri != Uri.EMPTY && subFolder.isNotEmpty() && saveAs.isNotEmpty()) {
+  private suspend fun pushPicture(imageUri: Uri, subFolder: String, saveAs: String): String {
+    return if (imageUri != Uri.EMPTY && subFolder.isNotEmpty() && saveAs.isNotEmpty()) {
       try {
         val task = PICTURE_BASE_STORAGE.child("${subFolder}/${saveAs}").putFile(imageUri).await()
         val url = task.metadata!!.reference!!.downloadUrl.await()
-        return url.toString()
+        url.toString()
       } catch (e: Exception) {
-        return ""
+        ""
       }
     } else {
-      return ""
+      ""
     }
   }
 
   /** A function that removes the picture from the cloud storage */
   suspend fun removePicture(subFolder: String, saveAs: String): Boolean {
-    if (subFolder.isNotEmpty() && saveAs.isNotEmpty()) {
+    return if (subFolder.isNotEmpty() && saveAs.isNotEmpty()) {
       try {
         PICTURE_BASE_STORAGE.child("${subFolder}/${saveAs}").delete().await()
-        return true
+        true
       } catch (e: Exception) {
-        return false
+        false
       }
     } else {
-      return false
+      false
     }
   }
 
   /** A function that removes the user profile picture from the cloud storage */
   suspend fun removeProfilePicture(userId: String): Boolean {
-    if (userId.isNotEmpty()) {
-      return removePicture(PROFILE_PICTURE_STORAGE, userId)
+    return if (userId.isNotEmpty()) {
+      removePicture(PROFILE_PICTURE_STORAGE, userId)
     } else {
-      return false
+      false
     }
   }
 }

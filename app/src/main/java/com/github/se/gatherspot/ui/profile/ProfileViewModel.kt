@@ -2,7 +2,7 @@ package com.github.se.gatherspot.ui.profile
 
 import android.net.Uri
 import android.net.Uri.EMPTY
-import android.util.Log
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,16 +21,15 @@ import kotlinx.coroutines.launch
 
 class OwnProfileViewModel : ViewModel() {
   private lateinit var _profile: Profile
-  private var _username = MutableLiveData<String>()
-  private var _bio = MutableLiveData<String>()
-  private val _image = MutableLiveData<String>()
+  private var _username = MutableLiveData("")
+  private var _bio = MutableLiveData("")
+  private val _image = MutableLiveData("")
   private val _interests = MutableLiveData<Set<Interests>>()
-  var userNameError = MutableLiveData("")
-  var bioError = MutableLiveData("")
-  private var _saved = MutableLiveData<Boolean>()
-  private var userNameIsUniqueCheck = MutableLiveData(true)
+  private var _userNameError = MutableLiveData("")
+  private var _bioError = MutableLiveData("")
+  private var _userNameIsUniqueCheck = MutableLiveData(true)
   private var _isEditing = MutableLiveData(false)
-  var uid = Firebase.auth.uid ?: "TEST"
+  val uid = Firebase.auth.uid ?: "TEST"
 
   init {
     viewModelScope.launch { _profile = ProfileFirebaseConnection().fetch(uid) { update() } }
@@ -48,27 +47,27 @@ class OwnProfileViewModel : ViewModel() {
   val interests: LiveData<Set<Interests>>
     get() = _interests
 
-  val saved: LiveData<Boolean>
-    get() = _saved
-
   val isEditing: LiveData<Boolean>
     get() = _isEditing
 
-  fun resetSaved() {
-    _saved.value = false
-  }
+  val userNameError: LiveData<String>
+    get() = _userNameError
+
+  val bioError: LiveData<String>
+    get() = _bioError
 
   fun edit() {
     _isEditing.value = true
   }
 
-  fun saveText() {
-    if (userNameError.value == "" && bioError.value == "" && userNameIsUniqueCheck.value == true) {
+  private fun saveText() {
+    if (_userNameError.value == "" &&
+        _bioError.value == "" &&
+        _userNameIsUniqueCheck.value == true) {
       _profile.userName = _username.value!!
       _profile.bio = _bio.value!!
       _profile.interests = _interests.value!!
       ProfileFirebaseConnection().add(_profile)
-      _saved.value = true
     }
   }
 
@@ -79,7 +78,7 @@ class OwnProfileViewModel : ViewModel() {
     _image.value = _profile.image
   }
 
-  fun cancelText() {
+  private fun cancelText() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _interests.value = _profile.interests
@@ -87,31 +86,28 @@ class OwnProfileViewModel : ViewModel() {
 
   fun updateUsername(userName: String) {
     _username.value = userName
-    userNameIsUniqueCheck.value = false
-    Profile.checkUsername(userName, null, userNameError) { userNameIsUniqueCheck.value = true }
+    _userNameIsUniqueCheck.value = false
+    Profile.checkUsername(userName, null, _userNameError) { _userNameIsUniqueCheck.value = true }
   }
 
   fun updateBio(bio: String) {
-    bioError = Profile.checkBio(bio)
+    _bioError = Profile.checkBio(bio)
     _bio.value = bio
   }
 
-  fun updateProfileImage(newImageUrl: String) {
-    _image.value = newImageUrl
+  fun updateProfileImage(url: String) {
+    _image.value = url
   }
 
-  fun uploadProfileImage(newImageUri: Uri?) {
+  private fun uploadProfileImage(imageUri: Uri?) {
     viewModelScope.launch {
-      if (newImageUri != null || newImageUri != EMPTY) {
-        Log.d("New image uri : ", newImageUri.toString())
-        val newUrl = FirebaseImages().pushProfilePicture(newImageUri!!, _profile.id)
+      if (imageUri != null && imageUri != EMPTY) {
+        val newUrl = FirebaseImages().pushProfilePicture(imageUri, _profile.id)
         if (newUrl.isNotEmpty()) {
-          Log.d("Successfully uploaded: ", newUrl)
           updateProfileImage(newUrl)
           ProfileFirebaseConnection().update(_profile.id, "image", newUrl)
         }
       }
-      imageEditAction.value = ImageEditAction.NO_ACTION
     }
   }
 
@@ -120,7 +116,6 @@ class OwnProfileViewModel : ViewModel() {
       FirebaseImages().removeProfilePicture(_profile.id)
       ProfileFirebaseConnection().update(_profile.id, "image", "")
       updateProfileImage("")
-      imageEditAction.value = ImageEditAction.NO_ACTION
     }
   }
 
@@ -128,38 +123,10 @@ class OwnProfileViewModel : ViewModel() {
     _interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
 
-  enum class ImageEditAction {
-    NO_ACTION,
-    UPLOAD,
-    REMOVE
-  }
-
-  var localImageUriToUpload = MutableLiveData(Uri.EMPTY)
-
-  fun setLocalImageUriToUpload(uri: Uri) {
-    localImageUriToUpload.value = uri
-  }
-
-  var imageEditAction = MutableLiveData(ImageEditAction.NO_ACTION)
-
-  fun setImageEditAction(newImageEditAction: ImageEditAction) {
-    if (newImageEditAction == ImageEditAction.REMOVE) {
-      localImageUriToUpload.value = Uri.EMPTY
+  private fun saveImage() {
+    if (!image.value.isNullOrEmpty()) {
+      uploadProfileImage(image.value!!.toUri())
     }
-    imageEditAction.value = newImageEditAction
-  }
-
-  fun saveImage() {
-    when (imageEditAction.value) {
-      ImageEditAction.UPLOAD -> uploadProfileImage(localImageUriToUpload.value)
-      ImageEditAction.REMOVE -> removeProfilePicture()
-      else -> {}
-    }
-  }
-
-  fun cancelImage() {
-    imageEditAction.value = ImageEditAction.NO_ACTION
-    localImageUriToUpload.value = Uri.EMPTY
   }
 
   fun save() {
@@ -170,7 +137,6 @@ class OwnProfileViewModel : ViewModel() {
 
   fun cancel() {
     cancelText()
-    cancelImage()
     _isEditing.value = false
   }
 
@@ -223,8 +189,6 @@ class ProfileViewModel(val target: String, private val nav: NavHostController) :
   }
 
   fun back() {
-    // TODO : need to test this with either end to end test or manually when someone actually uses
-    // this class
     NavigationActions(nav).goBack()
   }
 }
