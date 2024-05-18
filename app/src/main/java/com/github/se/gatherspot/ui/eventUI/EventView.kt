@@ -141,13 +141,15 @@ fun EventUINonOrganizer(
                     .testTag("eventColumn")
                     .verticalScroll(rememberScrollState())) {
             EventBody(event, organizerProfile, organizerRating ?: 0.0, navActions)
-              // Rating
+              // Rating Action
               if (eventUIViewModel.canRate()) {
                 RatingDisplay(
                     ownRating = ownRating ?: Rating.UNRATED,
-                    eventUIViewModel = eventUIViewModel,
-                    eventRating = eventRating ?: 0.0)
+                    eventUIViewModel = eventUIViewModel
+                )
               }
+
+            EventRating(eventRating)
 
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
@@ -167,6 +169,18 @@ fun EventUINonOrganizer(
         }
 
       }
+}
+
+@Composable
+fun EventRating(eventRating: Double?) {
+    if ((eventRating?: 0.0) > 0.0) {
+        Spacer(modifier = Modifier.height(4.dp))
+        Row {
+            Text(text = "$eventRating", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(text = "/ 5.0", fontWeight = FontWeight.Light, fontSize = 16.sp)
+        }
+    }
+
 }
 
 @Composable
@@ -579,7 +593,7 @@ fun ExportToCalendarIcon( event: Event) {
  * composable.
  */
 @Composable
-fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel, eventRating: Double) {
+fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel) {
   Column(
       modifier =
           Modifier.padding(vertical = 8.dp)
@@ -595,13 +609,6 @@ fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel, eventRa
         StarRating(
             ownRating = Rating.toLong(ownRating),
             onRatingChanged = { eventUIViewModel.rateEvent(Rating.fromLong(it)) })
-        if (eventRating > 0.0) {
-          Spacer(modifier = Modifier.height(4.dp))
-          Row {
-            Text(text = "$eventRating", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(text = "/ 5.0", fontWeight = FontWeight.Light, fontSize = 16.sp)
-          }
-        }
       }
 }
 
