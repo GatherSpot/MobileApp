@@ -9,8 +9,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testDelete
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -21,7 +22,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -41,10 +41,8 @@ class SignUpTest : TestCase() {
   fun cleanUp() {
     val currentUser = FirebaseAuth.getInstance().currentUser
     if (currentUser != null) {
-      runBlocking {
-        ProfileFirebaseConnection().delete(currentUser.uid)
-        testDelete()
-      }
+      ProfileFirebaseConnection().delete(currentUser.uid)
+      testLoginCleanUp()
     }
   }
 
@@ -95,8 +93,10 @@ class SignUpTest : TestCase() {
 
       verifDialog.assertExists()
       verifDialog.assertIsDisplayed()
-      verifDialog.assertHasClickAction()
+      verifDialog.performClick()
     }
+
+    signUpCleanUp(userName)
   }
 
   @OptIn(ExperimentalTestApi::class)

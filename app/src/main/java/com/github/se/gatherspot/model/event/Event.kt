@@ -10,7 +10,6 @@ import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
@@ -64,22 +63,14 @@ data class Event(
 ) : CollectionClass() {
 
   fun toJson(): String {
-    val eventJson = gson.toJson(this)
-    return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
-  }
-
-  companion object {
-    private val gson: Gson =
+    val gson: Gson =
         GsonBuilder()
             .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
             .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
             .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
             .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
             .create()
-
-    fun fromJson(json: String): Event {
-      val decodedJson = URLDecoder.decode(json, StandardCharsets.US_ASCII.toString())
-      return gson.fromJson(decodedJson, Event::class.java)
-    }
+    val eventJson = gson.toJson(this)
+    return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
   }
 }

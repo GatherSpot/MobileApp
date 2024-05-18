@@ -10,7 +10,6 @@ activityCompose = "1.8.2"
 composeBom = "2023.08.00"
 firebaseStorageKtx = "20.3.0"
 coreAnimation = "1.0.0-rc01"
-places = "3.4.0"
 playServicesLocation = "21.2.0"
 
 [libraries]
@@ -31,7 +30,6 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 androidx-core-animation = { group = "androidx.core", name = "core-animation", version.ref = "coreAnimation" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
-places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

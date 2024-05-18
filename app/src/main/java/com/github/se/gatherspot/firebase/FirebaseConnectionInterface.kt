@@ -34,9 +34,9 @@ interface FirebaseConnectionInterface<T : CollectionClass> {
 
   fun getFromDocument(d: DocumentSnapshot): T?
 
-  suspend fun add(element: T)
+  fun add(element: T)
 
-  suspend fun update(id: String, field: String, value: Any) {
+  fun update(id: String, field: String, value: Any) {
     Firebase.firestore
         .collection(COLLECTION.lowercase())
         .document(id)
@@ -46,17 +46,13 @@ interface FirebaseConnectionInterface<T : CollectionClass> {
         }
   }
 
-  suspend fun delete(id: String) {
-    suspendCancellableCoroutine { continuation ->
-      Firebase.firestore
-          .collection(COLLECTION.lowercase())
-          .document(id)
-          .delete()
-          .addOnSuccessListener(continuation::resume)
-          .addOnFailureListener { exception ->
-            Log.e(TAG, "Error deleting ${COLLECTION.lowercase()}", exception)
-            continuation.resume(exception)
-          }
-    }
+  fun delete(id: String) {
+    Firebase.firestore
+        .collection(COLLECTION.lowercase())
+        .document(id)
+        .delete()
+        .addOnFailureListener { exception ->
+          Log.e(TAG, "Error deleting ${COLLECTION.lowercase()}", exception)
+        }
   }
 }
