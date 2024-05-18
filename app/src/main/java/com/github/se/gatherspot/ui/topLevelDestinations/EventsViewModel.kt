@@ -14,9 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class EventsViewModel(
-    private val eventFirebaseConnection: EventFirebaseConnection = EventFirebaseConnection()
-) : ViewModel() {
+class EventsViewModel : ViewModel() {
 
   val PAGESIZE: Long = 9
   private var _uiState = MutableStateFlow(UIState())
@@ -26,6 +24,7 @@ class EventsViewModel(
   private var registeredTo: MutableList<Event> = mutableListOf()
   private var fromFollowedUsers: MutableList<Event> = mutableListOf()
   private var loadedFilteredEvents: MutableList<Event> = mutableListOf()
+  val eventFirebaseConnection = EventFirebaseConnection()
   var previousInterests = mutableListOf<Interests>()
 
   // This is the id of the of the user logged in by default during tests.
