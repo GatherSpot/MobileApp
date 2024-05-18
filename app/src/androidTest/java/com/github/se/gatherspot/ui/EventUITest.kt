@@ -26,7 +26,6 @@ import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -76,6 +75,7 @@ class EventUITest {
           timeEnding = LocalTime.of(16, 0),
           image = "")
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testEverythingExists() {
     composeTestRule.setContent {
@@ -102,7 +102,7 @@ class EventUITest {
 
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
-    runBlocking { delay(200) }
+    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
       topBar.assertExists()
@@ -123,6 +123,7 @@ class EventUITest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testEverythingIsDisplayed() {
 
@@ -150,7 +151,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      runBlocking { delay(200) }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
       eventScaffold.assertIsDisplayed()
       topBar.assertIsDisplayed()
       backButton.assertIsDisplayed()
@@ -517,6 +518,7 @@ class EventUITest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testProfileIsCorrectlyFetched() {
     composeTestRule.setContent {
@@ -544,7 +546,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      runBlocking { delay(200) }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
       profileIndicator.assertIsDisplayed()
       userName { hasText("John Doe") }
       // profileIndicator.performClick()
