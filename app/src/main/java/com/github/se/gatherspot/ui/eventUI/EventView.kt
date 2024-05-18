@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui.eventUI
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -148,7 +147,7 @@ fun EventUI(
                           contentDescription = "Delete event")
                     }
               }
-              ExportToCalendarIcon(context, event)
+              ExportToCalendarIcon(event)
             })
       }) { innerPadding ->
         Column(
@@ -286,7 +285,7 @@ fun EventUI(
               ClickableText(
                   AnnotatedString("Export to calendar"),
                   modifier = Modifier.testTag("exportToCalendar"),
-                  onClick = { CalendarReminderGenerator.generateCalendarReminder(context, event) })
+                  onClick = { context.startActivity(CalendarReminderGenerator.generateCalendarReminder(event)) })
             }
 
         if (showDialogRegistration!!) {
@@ -441,12 +440,12 @@ fun StarRating(ownRating: Long, onRatingChanged: (Long) -> Unit) {
 }
 
 @Composable
-fun ExportToCalendarIcon(context: Context, event: Event) {
+fun ExportToCalendarIcon( event: Event) {
   // Export to calendar button
   IconButton(
       onClick = {
         // Export to calendar
-        CalendarReminderGenerator.generateCalendarReminder(context, event)
+        CalendarReminderGenerator.generateCalendarReminder(event)
       },
       modifier = Modifier.testTag("exportToCalendarButton")) {
         Icon(

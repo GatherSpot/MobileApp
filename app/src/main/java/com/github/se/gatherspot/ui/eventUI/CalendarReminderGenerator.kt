@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui.eventUI
 
-import android.content.Context
 import android.content.Intent
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
@@ -9,7 +8,7 @@ import java.util.Calendar
 
 class CalendarReminderGenerator {
   companion object {
-    fun generateCalendarReminder(context: Context, event: Event) {
+    fun generateCalendarReminder(event: Event) : Intent{
 
       val intent =
           Intent(Intent.ACTION_INSERT, Events.CONTENT_URI).apply {
@@ -38,7 +37,7 @@ class CalendarReminderGenerator {
             putExtra(Events.DESCRIPTION, event.description)
           }
 
-      context.startActivity(intent)
+      return intent
     }
   }
 }
