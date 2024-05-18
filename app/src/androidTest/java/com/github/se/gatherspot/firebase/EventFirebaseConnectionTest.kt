@@ -193,6 +193,14 @@ class EventFirebaseConnectionTest {
         eventFirebaseConnection.offset = null
       }
 
+  //    @Test
+  //    fun fetchInPerimeter() =
+  //
+  //        runTest {
+  //            val events = eventFirebaseConnection.fetchAllInPerimeter(0.0, 0.0, 1.0)
+  //            assert(events.isNotEmpty())
+  //        }
+
   @Test
   fun fetchMyEventsWorks() =
       runTest(timeout = Duration.parse("20s")) {

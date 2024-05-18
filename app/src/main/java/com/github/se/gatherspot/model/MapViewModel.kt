@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationRequest
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
@@ -27,11 +26,13 @@ import kotlin.math.cos
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
   companion object {
+
+    val EARTH_RADIUS = 6371000 // Earth's radius in meters
+
     fun degreeToMeters(angle: Double, latitude: Double): Double {
-      val earthRadius = 6371000 // Earth's radius in meters
       val latitudeRadians = Math.toRadians(latitude)
       val circumference =
-          2 * PI * earthRadius * cos(latitudeRadians) // Circumference of latitude circle
+          2 * PI * EARTH_RADIUS * cos(latitudeRadians) // Circumference of latitude circle
 
       // Calculate the distance change
       val distanceChange = (angle / 360) * circumference
@@ -40,10 +41,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     // Function to calculate angle change for a given distance at a latitude
     fun metersToDegree(distance: Double, latitude: Double): Double {
-      val earthRadius = 6371000 // Earth's radius in meters
       val latitudeRadians = Math.toRadians(latitude)
       val circumference =
-          2 * PI * earthRadius * cos(latitudeRadians) // Circumference of latitude circle
+          2 * PI * EARTH_RADIUS * cos(latitudeRadians) // Circumference of latitude circle
 
       // Calculate the angle change
       val angleChange = (distance / circumference) * 360
@@ -111,15 +111,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     registered_events =
         registered_events.union(list.map { EventFirebaseConnection().fetch(it) }).toMutableList()
 
-    Log.d(
-        "MapViewModel",
-        "fetchEvents: ${cameraPositionState.position.target.latitude}, ${cameraPositionState.position.target.longitude}")
     val list2 =
         EventFirebaseConnection()
             .fetchAllInPerimeter(
                 cameraPositionState.position.target.latitude,
                 cameraPositionState.position.target.longitude,
-                metersToDegree(cameraPositionState.position.target.latitude, 1000.0))
+                metersToDegree(1000.0, cameraPositionState.position.target.latitude))
 
     events = events.union(list2.toMutableList()).toMutableList()
   }
