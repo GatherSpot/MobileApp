@@ -197,9 +197,7 @@ class EventUITest {
         performScrollTo()
         assertIsDisplayed()
       }
-      registerButton {
-        assertIsDisplayed()
-      }
+      registerButton { assertIsDisplayed() }
       alertBox { assertIsNotDisplayed() }
     }
   }
@@ -347,9 +345,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      registerButton {
-        performClick()
-      }
+      registerButton { performClick() }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
       alertBox {
         assertIsDisplayed()
@@ -507,13 +503,9 @@ class EventUITest {
         assertIsDisplayed()
       }
 
-        bottomSpacer{
-            performScrollTo()
-        }
+      bottomSpacer { performScrollTo() }
 
-      starIcon_1 {
-        assertIsDisplayed()
-      }
+      starIcon_1 { assertIsDisplayed() }
     }
   }
 

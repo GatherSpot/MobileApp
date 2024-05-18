@@ -150,8 +150,7 @@ fun EventUINonOrganizer(
 
               EventRating(eventRating)
 
-            Spacer(modifier = Modifier.height(16.dp).testTag("bottomSpacer"))
-
+              Spacer(modifier = Modifier.height(16.dp).testTag("bottomSpacer"))
 
               // Registration Button
               // Spacer(modifier = Modifier.height(16.dp))
@@ -263,7 +262,7 @@ fun EventUIOrganizer(
 @Composable
 fun EventRating(eventRating: Double?) {
   if ((eventRating ?: 0.0) > 0.0) {
-      Modifier.testTag("eventRating")
+    Modifier.testTag("eventRating")
     Spacer(modifier = Modifier.height(4.dp))
     Row {
       Text(text = "$eventRating", fontWeight = FontWeight.Bold, fontSize = 16.sp)
