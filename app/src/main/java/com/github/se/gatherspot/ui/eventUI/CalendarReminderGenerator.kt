@@ -8,7 +8,7 @@ import java.util.Calendar
 
 class CalendarReminderGenerator {
   companion object {
-    fun generateCalendarReminder(event: Event) : Intent{
+    fun generateCalendarReminder(event: Event): Intent {
 
       val intent =
           Intent(Intent.ACTION_INSERT, Events.CONTENT_URI).apply {
