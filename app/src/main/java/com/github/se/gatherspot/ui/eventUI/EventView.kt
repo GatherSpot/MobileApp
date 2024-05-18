@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -67,9 +68,25 @@ import com.google.firebase.auth.auth
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-@OptIn(ExperimentalLayoutApi::class)
+
+
 @Composable
 fun EventUI(
+    event: Event,
+    navActions: NavigationActions,
+    eventUIViewModel: EventUIViewModel,
+    eventsViewModel: EventsViewModel
+) {
+    if (event.organizerID == Firebase.auth.currentUser?.uid) {
+        EventUIOrganizer(event, navActions, eventUIViewModel)
+    } else {
+        EventUINonOrganizer(event, navActions, eventUIViewModel, eventsViewModel)
+    }
+
+}
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun EventUINonOrganizer(
     event: Event,
     navActions: NavigationActions,
     eventUIViewModel: EventUIViewModel,
@@ -83,12 +100,10 @@ fun EventUI(
   val eventRating by eventUIViewModel.eventRating.observeAsState()
   val organizerRating by eventUIViewModel.organizerRating.observeAsState()
     val organizerProfile by eventUIViewModel.organizer.observeAsState()
-  val isOrganizer =
-      event.organizerID == (Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id)
 
 
 
-  val eventUtils = EventUtils()
+
   val registrationState by eventUIViewModel.registrationState.observeAsState()
   val isButtonEnabled = registrationState == RegistrationState.NoError
   val buttonText =
@@ -116,29 +131,6 @@ fun EventUI(
                   }
             },
             actions = {
-              if (isOrganizer) {
-                // Edit button
-                IconButton(
-                    onClick = {
-                      val eventJsonWellFormed = event.toJson()
-                      navActions.controller.navigate("editEvent/$eventJsonWellFormed")
-                    },
-                    modifier = Modifier.testTag("editEventButton")) {
-                      Icon(
-                          modifier = Modifier.size(24.dp).testTag("editEventIcon"),
-                          painter = painterResource(id = R.drawable.edit),
-                          contentDescription = "Edit event")
-                    }
-                // Delete button
-                IconButton(
-                    onClick = { eventUIViewModel.clickDeleteButton() },
-                    modifier = Modifier.testTag("deleteEventButton")) {
-                      Icon(
-                          modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
-                          painter = painterResource(id = R.drawable.delete),
-                          contentDescription = "Delete event")
-                    }
-              }
               ExportToCalendarIcon(event)
             })
       }) { innerPadding ->
@@ -148,106 +140,7 @@ fun EventUI(
                     .padding(8.dp)
                     .testTag("eventColumn")
                     .verticalScroll(rememberScrollState())) {
-              EventTypeIcon(event.categories)
-
-              Spacer(modifier = Modifier.height(16.dp))
-
-              // Event Host
-              ProfileIndicator(organizerProfile, navActions, organizerRating ?: 0.0)
-
-              // Event Description
-              event.description?.let { description ->
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    modifier = Modifier.testTag("eventDescription"),
-                    text = description,
-                    fontWeight = FontWeight(400),
-                    fontSize = 16.sp)
-              }
-
-              Spacer(modifier = Modifier.height(16.dp))
-
-              Text(
-                  text = "Number of attendees",
-                  modifier =
-                      Modifier.align(Alignment.CenterHorizontally).testTag("attendeesInfoTitle"),
-                  fontWeight = FontWeight.Bold)
-
-              // Event Capacity
-              Row(modifier = Modifier.testTag("attendeesInfo")) {
-                Text("Min: ", fontWeight = FontWeight.Bold)
-                Text("${event.attendanceMinCapacity}")
-                Spacer(modifier = Modifier.width(100.dp))
-                Text("Current: ", fontWeight = FontWeight.Bold)
-                Text(text = "${event.registeredUsers.size}")
-                Spacer(modifier = Modifier.width(100.dp))
-                Text("Max: ", fontWeight = FontWeight.Bold)
-                Text(text = "${event.attendanceMaxCapacity}")
-              }
-
-              // Categories
-              Spacer(modifier = Modifier.height(16.dp))
-              FlowRow(modifier = Modifier.testTag("categoriesRow")) {
-                event.categories?.forEach { interest -> Chip(interest = interest) }
-              }
-
-              // Map View Placeholder
-              Spacer(modifier = Modifier.height(16.dp))
-              Box(
-                  modifier =
-                      Modifier.height(200.dp)
-                          .fillMaxWidth()
-                          .background(Color.Gray)
-                          .testTag("mapView")) {
-                    // Here should be the code to integrate the actual map
-                    event.location?.let { location ->
-                      GeoMap(
-                          userCoordinates = location,
-                          interestsCoordinates = emptyList(),
-                          mapViewModifier = Modifier.fillMaxWidth().height(200.dp))
-                    } ?: BasicText(text = "No location provided for this event")
-                  }
-              // Event Dates and Times
-              Spacer(modifier = Modifier.height(16.dp))
-              Row(modifier = Modifier.testTag("eventDatesTimes")) {
-                Column {
-                  Text("Event Start:", fontWeight = FontWeight.Bold)
-                  event.eventStartDate?.let { startDate ->
-                    Text(startDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                  }
-                  event.timeBeginning?.let { startTime ->
-                    Text(startTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
-                  }
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                  Text("Event End:", fontWeight = FontWeight.Bold)
-                  event.eventEndDate?.let { endDate ->
-                    Text(endDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                  }
-                  event.timeEnding?.let { endTime ->
-                    Text(endTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
-                  }
-                }
-              }
-
-              // Inscription Limit Date and Time
-              Spacer(modifier = Modifier.height(8.dp))
-              Text(
-                  "Inscription Limit:",
-                  fontWeight = FontWeight.Bold,
-                  modifier = Modifier.testTag("inscriptionLimitTitle"))
-              Row(modifier = Modifier.testTag("inscriptionLimitDateAndTime")) {
-                event.inscriptionLimitDate?.let { limitDate ->
-                  Text(limitDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                event.inscriptionLimitTime?.let { limitTime ->
-                  Text(limitTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
-                }
-              }
-              EventQRCodeUI(event = event)
-
+            EventBody(event, organizerProfile, organizerRating ?: 0.0, navActions)
               // Rating
               if (eventUIViewModel.canRate()) {
                 RatingDisplay(
@@ -259,72 +152,88 @@ fun EventUI(
               // Registration Button
               Spacer(modifier = Modifier.height(16.dp))
 
-              if (!isOrganizer) {
-                Button(
-                    onClick = {
-                      eventUIViewModel.registerForEvent(event)
-                      eventsViewModel.updateNewRegistered(event)
-                      eventUIViewModel.clickRegisterButton()
-                    },
-                    enabled = isButtonEnabled,
-                    modifier = Modifier.fillMaxWidth().testTag("registerButton"),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-                      Text(buttonText, color = Color.White)
-                    }
-              }
+            RegisterButton(
+                event,
+                eventUIViewModel,
+                eventsViewModel,
+                isButtonEnabled,
+                buttonText,
+                showDialogRegistration,
+                registrationState,
+                showDialogDelete,
+                navActions
+            )
 
         }
 
-        if (showDialogRegistration!!) {
-          AlertDialog(
-              modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { eventUIViewModel.dismissAlert() },
-              title = { Text("Registration Result") },
-              text = {
+      }
+}
+
+@Composable
+fun RegisterButton(event: Event, eventUIViewModel: EventUIViewModel, eventsViewModel: EventsViewModel, isButtonEnabled : Boolean, buttonText : String, showDialogRegistration: Boolean?, registrationState : RegistrationState?, showDialogDelete : Boolean?, navActions: NavigationActions) {
+    val eventUtils = EventUtils()
+    Button(
+        onClick = {
+            eventUIViewModel.registerForEvent(event)
+            eventsViewModel.updateNewRegistered(event)
+            eventUIViewModel.clickRegisterButton()
+        },
+        enabled = isButtonEnabled,
+        modifier = Modifier.fillMaxWidth().testTag("registerButton"),
+        colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
+        Text(buttonText, color = Color.White)
+    }
+
+    if (showDialogRegistration!!) {
+        AlertDialog(
+            modifier = Modifier.testTag("alertBox"),
+            onDismissRequest = { eventUIViewModel.dismissAlert() },
+            title = { Text("Registration Result") },
+            text = {
                 when (val state = registrationState) {
-                  is RegistrationState.Success -> Text("You have been successfully registered!")
-                  is RegistrationState.Error -> Text(state.message)
-                  else -> Text("Unknown state")
+                    is RegistrationState.Success -> Text("You have been successfully registered!")
+                    is RegistrationState.Error -> Text(state.message)
+                    else -> Text("Unknown state")
                 }
-              },
-              confirmButton = {
+            },
+            confirmButton = {
                 Button(
                     modifier = Modifier.testTag("okButton"),
                     onClick = { eventUIViewModel.dismissAlert() }) {
-                      Text("OK")
-                    }
-              })
-        }
+                    Text("OK")
+                }
+            })
+    }
 
-        if (showDialogDelete!!) {
-          AlertDialog(
-              modifier = Modifier.testTag("alertBox"),
-              onDismissRequest = { eventUIViewModel.dismissAlert() },
-              title = { Text("Delete Event") },
-              text = {
+    if (showDialogDelete!!) {
+        AlertDialog(
+            modifier = Modifier.testTag("alertBox"),
+            onDismissRequest = { eventUIViewModel.dismissAlert() },
+            title = { Text("Delete Event") },
+            text = {
                 Text("Are you sure you want to delete this event? This action cannot be undone.")
-              },
-              confirmButton = {
+            },
+            confirmButton = {
                 Button(
                     modifier = Modifier.testTag("okButton"),
                     onClick = {
-                      // Delete the event
-                      eventUtils.deleteEvent(event)
-                      navActions.goBack()
-                      eventUIViewModel.dismissAlert()
+                        // Delete the event
+                        eventUtils.deleteEvent(event)
+                        navActions.goBack()
+                        eventUIViewModel.dismissAlert()
                     }) {
-                      Text("Delete")
-                    }
-              },
-              dismissButton = {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
                 Button(
                     modifier = Modifier.testTag("cancelButton"),
                     onClick = { eventUIViewModel.dismissAlert() }) {
-                      Text("Cancel")
-                    }
-              })
-        }
-      }
+                    Text("Cancel")
+                }
+            })
+    }
+
 }
 
 @Composable
@@ -393,10 +302,9 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun EventOrganizerUI(event: Event,
+fun EventUIOrganizer(event: Event,
                      navActions: NavigationActions,
-                     eventUIViewModel: EventUIViewModel,
-                     eventsViewModel: EventsViewModel) {
+                     eventUIViewModel: EventUIViewModel) {
 
 
     val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
@@ -407,15 +315,6 @@ fun EventOrganizerUI(event: Event,
 
     val eventUtils = EventUtils()
     val registrationState by eventUIViewModel.registrationState.observeAsState()
-    val isButtonEnabled = registrationState == RegistrationState.NoError
-    val buttonText =
-        when (registrationState) {
-            is RegistrationState.Success -> "Registered"
-            is RegistrationState.Error ->
-                if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
-                else "Registered"
-            else -> "Register"
-        }
 
     Scaffold(
         modifier = Modifier.testTag("EventUIScreen"),
@@ -704,6 +603,112 @@ fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel, eventRa
           }
         }
       }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun ColumnScope.EventBody(event : Event, organizerProfile: Profile?, organizerRating: Double?, navActions: NavigationActions){
+
+    EventTypeIcon(event.categories)
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    // Event Host
+    ProfileIndicator(organizerProfile, navActions, organizerRating ?: 0.0)
+
+    // Event Description
+    event.description?.let { description ->
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            modifier = Modifier.testTag("eventDescription"),
+            text = description,
+            fontWeight = FontWeight(400),
+            fontSize = 16.sp)
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Text(
+        text = "Number of attendees",
+        modifier =
+        Modifier.align(Alignment.CenterHorizontally).testTag("attendeesInfoTitle"),
+        fontWeight = FontWeight.Bold)
+
+    // Event Capacity
+    Row(modifier = Modifier.testTag("attendeesInfo")) {
+        Text("Min: ", fontWeight = FontWeight.Bold)
+        Text("${event.attendanceMinCapacity}")
+        Spacer(modifier = Modifier.width(100.dp))
+        Text("Current: ", fontWeight = FontWeight.Bold)
+        Text(text = "${event.registeredUsers.size}")
+        Spacer(modifier = Modifier.width(100.dp))
+        Text("Max: ", fontWeight = FontWeight.Bold)
+        Text(text = "${event.attendanceMaxCapacity}")
+    }
+
+    // Categories
+    Spacer(modifier = Modifier.height(16.dp))
+    FlowRow(modifier = Modifier.testTag("categoriesRow")) {
+        event.categories?.forEach { interest -> Chip(interest = interest) }
+    }
+
+    // Map View Placeholder
+    Spacer(modifier = Modifier.height(16.dp))
+    Box(
+        modifier =
+        Modifier.height(200.dp)
+            .fillMaxWidth()
+            .background(Color.Gray)
+            .testTag("mapView")) {
+        // Here should be the code to integrate the actual map
+        event.location?.let { location ->
+            GeoMap(
+                userCoordinates = location,
+                interestsCoordinates = emptyList(),
+                mapViewModifier = Modifier.fillMaxWidth().height(200.dp))
+        } ?: BasicText(text = "No location provided for this event")
+    }
+    // Event Dates and Times
+    Spacer(modifier = Modifier.height(16.dp))
+    Row(modifier = Modifier.testTag("eventDatesTimes")) {
+        Column {
+            Text("Event Start:", fontWeight = FontWeight.Bold)
+            event.eventStartDate?.let { startDate ->
+                Text(startDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+            }
+            event.timeBeginning?.let { startTime ->
+                Text(startTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
+            }
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text("Event End:", fontWeight = FontWeight.Bold)
+            event.eventEndDate?.let { endDate ->
+                Text(endDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+            }
+            event.timeEnding?.let { endTime ->
+                Text(endTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
+            }
+        }
+    }
+
+    // Inscription Limit Date and Time
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        "Inscription Limit:",
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.testTag("inscriptionLimitTitle"))
+    Row(modifier = Modifier.testTag("inscriptionLimitDateAndTime")) {
+        event.inscriptionLimitDate?.let { limitDate ->
+            Text(limitDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        event.inscriptionLimitTime?.let { limitTime ->
+            Text(limitTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)))
+        }
+    }
+    EventQRCodeUI(event = event)
+
 }
 
 // Preview for the Event UI, for testing purposes
