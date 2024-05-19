@@ -103,7 +103,8 @@ fun ViewImage(imageUri: String, placeHolder: Int, pictureName: String) {
       fallback = painterResource(placeHolder),
       placeholder = painterResource(placeHolder),
       contentDescription = "$pictureName image",
-      contentScale = ContentScale.Crop)
+      contentScale = ContentScale.Crop,
+      modifier = Modifier.testTag("image"))
 }
 
 @Composable
@@ -132,6 +133,6 @@ fun EditImage(
                 photoPickerLauncher.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
               }
-              .testTag("profileImage"),
+              .testTag("image"),
       contentScale = ContentScale.Crop)
 }
