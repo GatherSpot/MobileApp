@@ -23,6 +23,7 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.FollowList
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
@@ -66,6 +67,7 @@ class MainActivity : ComponentActivity() {
     var mapViewModel: MapViewModel? = null
     lateinit var app: Application
     var savedCameraPositionState: CameraPositionState? = null
+    var selectedInterests: MutableList<Interests> = mutableListOf()
   }
 
   private lateinit var navController: NavHostController

@@ -1,8 +1,11 @@
 package com.github.se.gatherspot.ui
 
+import androidx.compose.ui.node.*
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.performGesture
+import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,7 +26,7 @@ class MapTest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun TestExistence() {
+  fun testExistence() {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -41,12 +44,25 @@ class MapTest {
         assertExists()
         assertIsDisplayed()
       }
+      composeTestRule.onNode(hasTestTag("GoogleMap")).performGesture { swipeUp() }
+      composeTestRule.waitForIdle()
       positionButton {
         assertExists()
         assertIsDisplayed()
         assertHasClickAction()
+        performClick()
       }
       topBar {
+        assertExists()
+        assertIsDisplayed()
+      }
+      registeredEvents {
+        assertExists()
+        assertIsDisplayed()
+        performClick()
+        performClick()
+      }
+      title {
         assertExists()
         assertIsDisplayed()
       }

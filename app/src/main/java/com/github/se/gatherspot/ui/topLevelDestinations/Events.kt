@@ -52,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.Interests
@@ -78,7 +79,6 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
   var fetched by remember { mutableStateOf(false) }
   var showDropdownMenu by remember { mutableStateOf(false) }
   val filters = enumValues<Interests>().toList()
-  var interestsSelected = mutableListOf<Interests>()
   var fetch by remember { mutableStateOf(false) }
   var init by remember { mutableStateOf(false) }
 
@@ -110,9 +110,9 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                           Modifier.clickable {
                                 showDropdownMenu = !showDropdownMenu
                                 if (!showDropdownMenu) {
-                                  viewModel.filter(interestsSelected)
+                                  viewModel.filter(MainActivity.selectedInterests)
                                 } else {
-                                  interestsSelected = mutableListOf()
+                                  MainActivity.selectedInterests = mutableListOf()
                                 }
                               }
                               .testTag("filterMenu"))
@@ -122,13 +122,13 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                       expanded = showDropdownMenu,
                       onDismissRequest = {
                         showDropdownMenu = false
-                        viewModel.filter(interestsSelected)
+                        viewModel.filter(MainActivity.selectedInterests)
                       }) {
                         DropdownMenuItem(
                             text = { Text("REMOVE FILTER") },
                             onClick = {
                               viewModel.removeFilter()
-                              interestsSelected = mutableListOf()
+                              MainActivity.selectedInterests = mutableListOf()
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.Clear, "clear") },
@@ -137,7 +137,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                         DropdownMenuItem(
                             text = { Text("YOUR EVENTS") },
                             onClick = {
-                              interestsSelected = mutableListOf()
+                              MainActivity.selectedInterests = mutableListOf()
                               viewModel.displayMyEvents()
                               showDropdownMenu = false
                             },
@@ -147,7 +147,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                         DropdownMenuItem(
                             text = { Text("REGISTERED TO") },
                             onClick = {
-                              interestsSelected = mutableListOf()
+                              MainActivity.selectedInterests = mutableListOf()
                               viewModel.displayRegisteredTo()
                               showDropdownMenu = false
                             },
@@ -157,14 +157,14 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                         DropdownMenuItem(
                             text = { Text("FROM FOLLOWED") },
                             onClick = {
-                              interestsSelected = mutableListOf()
+                              MainActivity.selectedInterests = mutableListOf()
                               viewModel.displayEventsFromFollowedUsers()
                               showDropdownMenu = false
                             },
                             leadingIcon = { Icon(Icons.Filled.AccountCircle, "fromFollowed") },
                             modifier = Modifier.testTag("fromFollowed"))
 
-                        filters.forEach { s -> StatefulDropdownItem(s, interestsSelected) }
+                        filters.forEach { s -> StatefulDropdownItem(s) }
                       }
                 }
 
@@ -176,8 +176,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
                 LaunchedEffect(fetch) {
                   if (fetch) {
-                    Log.d(TAG, "entered with $interestsSelected")
-                    viewModel.fetchNext(interestsSelected)
+                    Log.d(TAG, "entered with $MainActivity.selectedInterests")
+                    viewModel.fetchNext(MainActivity.selectedInterests)
                     fetch = false
                   }
                 }
@@ -213,7 +213,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
         if (fetch) {
           Text(
               modifier = Modifier.testTag("fetch").padding(vertical = 40.dp),
-              text = "Fetching new events matching: ${interestsSelected.joinToString(", ")}",
+              text =
+                  "Fetching new events matching: ${MainActivity.selectedInterests.joinToString(", ")}",
               fontSize = 12.sp)
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -221,7 +222,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
         val lazyState = rememberLazyListState()
         Log.d(TAG, "size = " + events.size.toString())
         when {
-          events.isEmpty() -> Empty(viewModel, interestsSelected) { fetch = true }
+          events.isEmpty() -> Empty(viewModel, MainActivity.selectedInterests) { fetch = true }
           else -> {
             LazyColumn(
                 state = lazyState,
@@ -243,7 +244,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
               if (lazyState.isScrollInProgress && isAtBottom && downwards) {
                 loading = true
                 delay(1000)
-                viewModel.fetchNext(interestsSelected)
+                viewModel.fetchNext(MainActivity.selectedInterests)
                 fetched = true
               }
             }
@@ -361,7 +362,7 @@ fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: 
 }
 
 @Composable
-fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Interests>) {
+fun StatefulDropdownItem(interest: Interests) {
 
   var selected by remember { mutableStateOf(false) }
 
@@ -372,10 +373,10 @@ fun StatefulDropdownItem(interest: Interests, interestsSelected: MutableList<Int
         selected = !selected
         if (selected) {
           Log.d(TAG, "added ${interest.name}")
-          interestsSelected.add(interest)
+          MainActivity.selectedInterests.add(interest)
         } else {
           Log.d(TAG, "removed ${interest.name}")
-          interestsSelected.remove(interest)
+          MainActivity.selectedInterests.remove(interest)
         }
       },
       leadingIcon = {

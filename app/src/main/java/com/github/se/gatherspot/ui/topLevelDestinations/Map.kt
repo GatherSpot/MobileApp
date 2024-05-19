@@ -4,12 +4,16 @@ import android.Manifest
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -20,6 +24,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
@@ -30,6 +35,7 @@ import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -40,7 +46,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
 
 private const val DEFAULT_ZOOM_LEVEL = 15f
-val buttonClicked = mutableStateOf(false)
+val backToPositionButton = mutableStateOf(false)
+var toggleRegisteredEvents = mutableStateOf(true)
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -87,13 +94,13 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
       }
     }
 
-    LaunchedEffect(key1 = buttonClicked) {
-      if (buttonClicked.value) {
-        viewModel.cameraPositionState =
-            CameraPositionState(
-                CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build())
-        buttonClicked.value = false
+    LaunchedEffect(key1 = backToPositionButton.value) {
+      if (backToPositionButton.value) {
+        Log.d("MapAccess", MainActivity.mapAccess.toString())
+        viewModel.cameraPositionState.position =
+            CameraPosition.Builder().target(currentLocation).zoom(DEFAULT_ZOOM_LEVEL).build()
       }
+      backToPositionButton.value = false
     }
 
     MapComposable(viewModel, nav, viewModel.cameraPositionState, viewModel.currentLocation, null)
@@ -111,7 +118,28 @@ fun MapComposable(
     testPosition: LatLng?
 ) {
   Scaffold(
-      topBar = { TopAppBar(title = { Text(text = "Map") }, modifier = Modifier.testTag("topBar")) },
+      topBar = {
+        TopAppBar(
+            title = {
+              Row {
+                Text(text = "Map", modifier = Modifier.testTag("title"))
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "Registered Events",
+                    fontSize = 19.sp,
+                    modifier = Modifier.testTag("registeredEvents").weight(1f))
+              }
+            },
+            modifier = Modifier.testTag("topBar"),
+            actions = {
+              FilledIconToggleButton(
+                  checked = toggleRegisteredEvents.value,
+                  onCheckedChange = {
+                    toggleRegisteredEvents.value = !toggleRegisteredEvents.value
+                  },
+                  content = { Icon(Icons.Filled.Info, contentDescription = "Registered Events") })
+            })
+      },
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { tld -> nav.navigateTo(tld) },
@@ -120,15 +148,7 @@ fun MapComposable(
       },
       floatingActionButton = {
         IconButton(
-            onClick = {
-              buttonClicked.value = true
-              viewModel!!.cameraPositionState =
-                  CameraPositionState(
-                      CameraPosition.Builder()
-                          .target(viewModel.currentLocation.value ?: LatLng(0.0, 0.0))
-                          .zoom(DEFAULT_ZOOM_LEVEL)
-                          .build())
-            },
+            onClick = { backToPositionButton.value = true },
             modifier = Modifier.testTag("positionButton")) {
               Icon(Icons.Filled.Home, contentDescription = "Go to current location")
             }
@@ -157,31 +177,44 @@ fun MapComposable(
 
             for (event in
                 viewModel!!.events.toSet().subtract(viewModel.registered_events.toList().toSet())) {
-              Marker(
-                  state =
-                      MarkerState(
-                          LatLng(
-                              event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
-                  title = (event?.title),
-                  icon = BitmapDescriptorFactory.fromResource(R.drawable.pin),
-                  onInfoWindowClick = {
-                    MainActivity.savedCameraPositionState = cameraPositionState
-                    nav.controller.navigate("event/${event?.toJson()}")
-                  },
-                  snippet = (event?.description ?: ""),
-                  visible = cameraPositionState.position.zoom > 12f)
+              if (MainActivity.selectedInterests.isEmpty() ||
+                  (event?.categories ?: setOf())
+                      .intersect(MainActivity.selectedInterests.toSet())
+                      .isNotEmpty()) {
+                Marker(
+                    state =
+                        MarkerState(
+                            LatLng(
+                                event?.location?.latitude ?: 0.0,
+                                event?.location?.longitude ?: 0.0)),
+                    title = (event?.title),
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.pin),
+                    onInfoWindowClick = {
+                      MainActivity.savedCameraPositionState = cameraPositionState
+                      nav.controller.navigate("event/${event?.toJson()}")
+                    },
+                    snippet = (event?.description ?: ""),
+                    visible = cameraPositionState.position.zoom > 12f)
+              }
             }
             for (event in (viewModel.registered_events.toSet())) {
-              Marker(
-                  state =
-                      MarkerState(
-                          LatLng(
-                              event?.location?.latitude ?: 0.0, event?.location?.longitude ?: 0.0)),
-                  title = ("Registered to " + event?.title),
-                  icon = BitmapDescriptorFactory.fromResource(R.drawable.target),
-                  onInfoWindowClick = { nav.controller.navigate("event/${event?.toJson()}") },
-                  snippet = (event?.description ?: ""),
-                  visible = cameraPositionState.position.zoom > 12f)
+              if (toggleRegisteredEvents.value &&
+                  (MainActivity.selectedInterests.isEmpty() ||
+                      (event?.categories ?: setOf())
+                          .intersect(MainActivity.selectedInterests.toSet())
+                          .isNotEmpty())) {
+                Marker(
+                    state =
+                        MarkerState(
+                            LatLng(
+                                event?.location?.latitude ?: 0.0,
+                                event?.location?.longitude ?: 0.0)),
+                    title = ("Registered to " + event?.title),
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.target),
+                    onInfoWindowClick = { nav.controller.navigate("event/${event?.toJson()}") },
+                    snippet = (event?.description ?: ""),
+                    visible = cameraPositionState.position.zoom > 12f)
+              }
             }
           } else {
             Marker(
