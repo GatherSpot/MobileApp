@@ -90,6 +90,7 @@ class CreateEventTest {
         assert(hasText("Describe the event"))
       }
       eventStartDate {
+        performScrollTo()
         assertExists()
         assert(hasText("Start Date of the event*"))
         performClick()
@@ -97,6 +98,7 @@ class CreateEventTest {
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventEndDate {
+        performScrollTo()
         assertExists()
         assert(hasText("End date of the event"))
         performClick()
