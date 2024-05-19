@@ -567,7 +567,7 @@ class CreateEventTest {
             "10/04/2025",
             "09:00",
             setOf(Interests.TENNIS, Interests.BASKETBALL),
-            null,
+            "",
             context = context)
     composeTestRule.setContent {
       val navController = rememberNavController()

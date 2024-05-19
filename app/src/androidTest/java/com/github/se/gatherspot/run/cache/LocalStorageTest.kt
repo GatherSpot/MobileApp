@@ -29,7 +29,7 @@ class LocalStorageTest {
             "inscriptionLimitDate",
             "inscriptionLimitTime",
             setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
-            null)
+            "")
 
     localStorage.storeDraftEvent(draftEvent)
     val loadedDraftEvent = localStorage.loadDraftEvent()
@@ -55,7 +55,7 @@ class LocalStorageTest {
             "inscriptionLimitDate",
             "inscriptionLimitTime",
             emptySet(),
-            null)
+            "")
 
     localStorage.storeDraftEvent(draftEvent)
     localStorage.deleteDraftEvent()
@@ -81,7 +81,7 @@ class LocalStorageTest {
             "inscriptionLimitDate",
             "inscriptionLimitTime",
             emptySet(),
-            null)
+            "")
     localStorage.storeDraftEvent(draftEvent)
     localStorage.deleteDraftEvent()
     try {

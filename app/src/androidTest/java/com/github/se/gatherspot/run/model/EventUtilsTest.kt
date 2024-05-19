@@ -69,7 +69,9 @@ class EventUtilsTest {
             "10",
             "10/04/2025",
             "09:00",
-            EventAction.CREATE)
+            EventAction.CREATE,
+            image = ""
+          )
 
     Assert.assertEquals("Test Event2", event.title)
     Assert.assertEquals("This is a test event", event.description)
@@ -107,7 +109,9 @@ class EventUtilsTest {
             "10/04/2025",
             "09:00",
             EventAction.EDIT,
-            testEvent)
+            testEvent,
+            image = ""
+        )
 
     Assert.assertEquals("Test Event2", event.title)
     Assert.assertEquals("This is a test event", event.description)
@@ -145,7 +149,9 @@ class EventUtilsTest {
               "10",
               "10/04/2025",
               "09:00",
-              EventAction.CREATE)
+              EventAction.CREATE,
+              image = ""
+            )
     } catch (e: Exception) {
       Assert.assertEquals("Event end date must be after start date", e.message)
     }
@@ -169,7 +175,9 @@ class EventUtilsTest {
               "10",
               "10/04/2025",
               "09:00",
-              EventAction.CREATE)
+              EventAction.CREATE,
+              image = ""
+          )
     } catch (e: Exception) {
       Assert.assertEquals("Invalid date format", e.message)
     }
@@ -193,7 +201,9 @@ class EventUtilsTest {
               "10",
               "10/04/2025",
               "09:00",
-              EventAction.CREATE)
+              EventAction.CREATE,
+              image = ""
+          )
     } catch (e: Exception) {
       Assert.assertEquals("Event end date must be after start date", e.message)
     }
@@ -217,7 +227,9 @@ class EventUtilsTest {
               "",
               "",
               "",
-              EventAction.CREATE)
+              EventAction.CREATE,
+              image = ""
+            )
     } catch (e: Exception) {
       Assert.assertEquals("Event end date must be after start date", e.message)
     }
@@ -241,7 +253,7 @@ class EventUtilsTest {
               "10",
               "10/04/2025",
               "09:00",
-              EventAction.CREATE)
+              EventAction.CREATE, image ="")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid time format for end time", e.message)
     }
@@ -266,7 +278,7 @@ class EventUtilsTest {
               "10/04/2025",
               "09:00",
               EventAction.EDIT,
-              testEvent)
+              testEvent, image = "")
     } catch (e: Exception) {
       Assert.assertEquals("Invalid max attendees format, must be a number", e.message)
     }
@@ -290,7 +302,7 @@ class EventUtilsTest {
               "two",
               "10/04/2025",
               "09:00",
-              EventAction.CREATE)
+              EventAction.CREATE, image = "" )
     } catch (e: Exception) {
       Assert.assertEquals("Invalid min attendees format, must be a number", e.message)
     }
@@ -314,7 +326,7 @@ class EventUtilsTest {
               "10",
               "10/04/2025",
               "09:00",
-              EventAction.CREATE)
+              EventAction.CREATE, image = "")
     } catch (e: Exception) {
       Assert.assertEquals("Event date must be in the future", e.message)
     }
@@ -338,7 +350,7 @@ class EventUtilsTest {
               "200",
               "10/04/2025",
               "09:00",
-              EventAction.CREATE)
+              EventAction.CREATE, image = "")
     } catch (e: Exception) {
       Assert.assertEquals("Minimum attendees must be less than maximum attendees", e.message)
     }
@@ -362,7 +374,7 @@ class EventUtilsTest {
               "10",
               "10/04/2020",
               "09:00",
-              EventAction.CREATE)
+              EventAction.CREATE, image = "")
     } catch (e: Exception) {
       Assert.assertEquals("Inscription limit date must be in the future", e.message)
     }
@@ -386,7 +398,7 @@ class EventUtilsTest {
               "10",
               "10/04/2026",
               "11:00",
-              EventAction.CREATE)
+              EventAction.CREATE, image = "")
     } catch (e: Exception) {
       Assert.assertEquals(
           "Inscription limit time must be before event start time on the same day", e.message)
@@ -411,7 +423,7 @@ class EventUtilsTest {
               "10",
               "10/04/2026",
               "09:00",
-              EventAction.CREATE)
+              EventAction.CREATE, image = "")
     } catch (e: Exception) {
       Assert.assertEquals("Event end time must be after start time", e.message)
     }
@@ -511,7 +523,7 @@ class EventUtilsTest {
         "inscriptionLimitDate",
         "inscriptionLimitTime",
         setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
-        null,
+        "",
         context)
     val draftEvent = eventUtils.retrieveFromDraft(context)
     Assert.assertEquals("title", draftEvent?.title)
@@ -530,7 +542,7 @@ class EventUtilsTest {
     Assert.assertEquals(
         setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
         draftEvent?.categories)
-    Assert.assertNull(draftEvent?.image)
+    Assert.assertEquals(draftEvent?.image,"")
     eventUtils.deleteDraft(context)
   }
 
@@ -551,7 +563,7 @@ class EventUtilsTest {
         "inscriptionLimitDate",
         "inscriptionLimitTime",
         setOf(Interests.SPORT, Interests.FOOTBALL, Interests.BASKETBALL, Interests.TENNIS),
-        null,
+        "",
         context)
     eventUtils.retrieveFromDraft(context)!!
     eventUtils.deleteDraft(context)
