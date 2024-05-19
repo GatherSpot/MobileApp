@@ -1,6 +1,7 @@
 package com.github.se.gatherspot.ui.qrcode
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.Toast
@@ -123,12 +124,14 @@ fun CameraPreview(navigationActions: NavigationActions) {
       })
 }
 
+@SuppressLint("SuspiciousIndentation")
 fun analyseAppQRCode(text: String): String {
   val parts = text.split("/")
+  if (parts[0] == "event") {
+    return text
+  }
   if (parts.size == 2) {
-    if (parts[0] == "event") {
-      return "event/${parts[1]}"
-    } else if (parts[0] == "profile") {
+    if (parts[0] == "profile") {
       return "viewProfile/${parts[1]}"
     } else {
       return ""

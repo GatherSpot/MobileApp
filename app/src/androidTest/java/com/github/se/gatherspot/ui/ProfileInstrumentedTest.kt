@@ -52,7 +52,7 @@ class ProfileInstrumentedTest {
       val navController = rememberNavController()
       ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel() })
     }
-    val original_username = "testLogin"
+    val original_username = "testOrganiser"
     val original_bio = "Bio"
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
       // wait for update
