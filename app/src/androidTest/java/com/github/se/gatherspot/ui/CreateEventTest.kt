@@ -190,8 +190,14 @@ class CreateEventTest {
       clearButton { assertIsDisplayed() }
       eventTitle { assertIsDisplayed() }
       eventDescription { assertIsDisplayed() }
-      eventStartDate { assertIsDisplayed() }
-      eventEndDate { assertIsDisplayed() }
+      eventStartDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventEndDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
       eventTimeStart {
         performScrollTo()
         assertIsDisplayed()
@@ -463,11 +469,13 @@ class CreateEventTest {
         composeTestRule.onNodeWithText("Describe the event").assertIsDisplayed()
       }
       eventStartDate {
+        performScrollTo()
         composeTestRule.onNodeWithText("Start Date of the event*").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventEndDate {
+        performScrollTo()
         composeTestRule.onNodeWithText("End date of the event").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
