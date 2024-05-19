@@ -170,7 +170,7 @@ class ProfileViewModel(val target: String, private val nav: NavHostController) :
   init {
     viewModelScope.launch {
       _profile.postValue(ProfileFirebaseConnection().fetch(target))
-      _isFollowing = FollowList.isFollowing(Firebase.auth.uid!!, target)
+      _isFollowing = FollowList.isFollowing(Firebase.auth.uid ?: "TEST", target)
     }
   }
 
@@ -178,8 +178,8 @@ class ProfileViewModel(val target: String, private val nav: NavHostController) :
   fun follow() {
     if (_profile.isInitialized) {
       if (_isFollowing.value == null) return
-      if (_isFollowing.value!!) FollowList.unfollow(_profile.value!!.id, target)
-      else FollowList.follow(_profile.value!!.id, target)
+      if (_isFollowing.value!!) FollowList.unfollow(Firebase.auth.uid ?: "TEST", target)
+      else FollowList.follow(Firebase.auth.uid ?: "TEST", target)
       _isFollowing.value = !(_isFollowing.value!!)
     }
   }
