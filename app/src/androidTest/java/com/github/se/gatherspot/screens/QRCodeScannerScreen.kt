@@ -11,4 +11,5 @@ class QRCodeScannerScreen(semanticsProvider: SemanticsNodeInteractionsProvider) 
   val scaffold: KNode = onNode { hasTestTag("QRCodeScanner") }
   val cameraPermissionButton: KNode = onNode { hasTestTag("cameraPermissionButton") }
   val cameraPreview = onNode { hasTestTag("CameraPreview") }
+  val goBackButton = onNode { hasTestTag("goBackButton") }
 }

@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.defaults
+package com.github.se.gatherspot.run.defaults
 
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.Interests

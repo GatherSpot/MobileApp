@@ -6,6 +6,7 @@ plugins {
   id("jacoco")
   id("org.sonarqube") version "4.4.1.3373"
   id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+  kotlin("kapt")
 }
 
 secrets {
@@ -227,6 +228,12 @@ dependencies {
 
   // Image fetching library
   implementation("io.coil-kt:coil-compose:2.6.0")
+    //</ Room for local storage
+    val room_version = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    ///>
 }
 
 tasks.withType<Test> {

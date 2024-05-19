@@ -75,7 +75,7 @@ class EventFirebaseConnectionTest {
             eventStatus = EventStatus.CREATED,
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
-            finalAttendees = emptyList(),
+            finalAttendees = mutableListOf(),
             image = "",
             globalRating = null)
 
@@ -272,7 +272,7 @@ class EventFirebaseConnectionTest {
             eventStatus = EventStatus.CREATED,
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
-            finalAttendees = emptyList(),
+            finalAttendees = mutableListOf(),
             image = "",
             globalRating = null)
 
@@ -306,9 +306,9 @@ class EventFirebaseConnectionTest {
             eventStatus = EventStatus.CREATED,
             categories = setOf(Interests.CHESS),
             registeredUsers = mutableListOf(),
-            finalAttendees = emptyList(),
-            image = "",
-            globalRating = null)
+            finalAttendees = mutableListOf(),
+            globalRating = null,
+            image = "")
 
     eventFirebaseConnection.add(event)
     var resultEvent: Event? = null

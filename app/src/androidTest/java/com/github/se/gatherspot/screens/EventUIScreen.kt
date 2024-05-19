@@ -31,5 +31,7 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val okButton = onNode { hasTestTag("okButton") }
   val cancelButton = onNode { hasTestTag("cancelButton") }
   val starRow = onNode { hasTestTag("starRow") }
-  val star = onNode { hasTestTag("starIcon 1") }
+  val starIcon_1 = onNode { hasTestTag("starIcon_1") }
+  val eventRating = onNode { hasTestTag("eventRating") }
+  val bottomSpacer = onNode { hasTestTag("bottomSpacer") }
 }

@@ -38,9 +38,9 @@ class EventsViewCompleteTest {
     // The test need to be logged in
     testLogin()
     // This test will navigate from the events screen to the organizer profile
-    val viewModel = EventsViewModel()
 
     composeTestRule.setContent {
+      val viewModel = EventsViewModel()
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "home") {
         navigation(startDestination = "events", route = "home") {
@@ -91,6 +91,7 @@ class EventsViewCompleteTest {
       eventRow.performClick()
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
       // Test the back button
       backButton {
         assertIsDisplayed()
@@ -102,6 +103,7 @@ class EventsViewCompleteTest {
       eventRow.performClick()
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
       // Test the profile indicator
       profileIndicator {
         assertIsDisplayed()
