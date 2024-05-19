@@ -91,6 +91,7 @@ class EventsViewCompleteTest {
       eventRow.performClick()
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
       // Test the back button
       backButton {
         assertIsDisplayed()
@@ -102,6 +103,7 @@ class EventsViewCompleteTest {
       eventRow.performClick()
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
       // Test the profile indicator
       profileIndicator {
         assertIsDisplayed()

@@ -21,7 +21,7 @@ class EventUIViewModel(private val event: Event) :
 
   // registered as Set
   // On launch (Fetch organizer, Fetch registered)
-  private lateinit var _organizer: Profile
+  private var _organizer = MutableLiveData<Profile>()
   private lateinit var _attendees: List<String>
   private var _ownRating = MutableLiveData<Rating>()
   private var _organizerRating = MutableLiveData<Double>()
@@ -34,8 +34,6 @@ class EventUIViewModel(private val event: Event) :
       Log.d(
           "EventUIViewModel",
           "Fetching organizer and registered users organizerID : ${event.organizerID}, eventID : ${event.id}")
-      _organizer =
-          ProfileFirebaseConnection().fetch(event.organizerID) {} ?: Profile.testOrganizer()
       _ownRating.value =
           ratingFirebaseConnection.fetchRating(
               event.id, (Firebase.auth.currentUser?.uid ?: Profile.testParticipant().id))
@@ -43,6 +41,7 @@ class EventUIViewModel(private val event: Event) :
       _organizerRating.value =
           ratingFirebaseConnection.fetchOrganizerGlobalRating(event.organizerID) ?: 0.0
       _eventRating.value = ratingFirebaseConnection.fetchEventGlobalRating(event.id) ?: 0.0
+      _organizer.value = ProfileFirebaseConnection().fetch(event.organizerID)
 
       delay(500)
     }
@@ -51,6 +50,7 @@ class EventUIViewModel(private val event: Event) :
   val ownRating: LiveData<Rating> = _ownRating
   val organizerRating: LiveData<Double> = _organizerRating
   val eventRating: LiveData<Double> = _eventRating
+  val organizer: LiveData<Profile> = _organizer
 
   fun rateEvent(newRating: Rating) {
     viewModelScope.launch {
@@ -58,10 +58,10 @@ class EventUIViewModel(private val event: Event) :
          Log.e("RateEvent", "event ${event.id} is not over so cannot be rated")
          return@launch
       }*/
-      if (userID == _organizer.id) {
+      if (userID == event.organizerID) {
         Log.e(
             "RateEvent",
-            "organizer cannot rate its own event; eventID: ${event.id}, organizerID : ${_organizer.id}")
+            "organizer cannot rate its own event; eventID: ${event.id}, organizerID : ${event.organizerID}")
         return@launch
       }
       if (!event.registeredUsers.contains(userID)) {
