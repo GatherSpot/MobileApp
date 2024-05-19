@@ -16,6 +16,8 @@ import com.github.se.gatherspot.ui.profile.ProfileScaffold
 import com.github.se.gatherspot.ui.profile.ProfileScreen
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -30,11 +32,15 @@ class ProfileInstrumentedTest {
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
   @Before
   fun setUp() {
-    testLogin()
-    ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
-    ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testParticipant())
-    IdListFirebaseConnection().delete(
-        "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING) {}
+    runBlocking {
+      testLogin()
+      ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
+      ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testParticipant())
+      IdListFirebaseConnection().delete(
+          "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING) {}
+
+      delay(600) // delete needs to be over
+    }
   }
 
   // For now on this branch, we will not test the profile screen because it does not pass the CI
