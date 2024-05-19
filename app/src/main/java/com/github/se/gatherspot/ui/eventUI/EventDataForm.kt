@@ -61,6 +61,7 @@ import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 private val WIDTH = 300.dp
 private val WIDTH_2ELEM = 150.dp
@@ -144,7 +145,7 @@ fun EventDataForm(
   val placeHolder = R.drawable.default_event_image
   val updateImageUri: (String) -> Unit = { imageUri.value = it }
   val deleteImage: () -> Unit = {
-    coroutineScope.launch {
+runBlocking {
       // if we create event it should never be already in the database
       if (eventAction == EventAction.EDIT) {
         event?.id?.let { FirebaseImages().removePicture("eventImage", it) }
@@ -154,8 +155,8 @@ fun EventDataForm(
   }
   val uploadImage: () -> Unit = {
     if (event != null) {
-      coroutineScope.launch {
-        FirebaseImages().pushPicture(imageUri.value.toUri(), "eventImage", event.id)
+      runBlocking {
+        imageUri.value = FirebaseImages().pushPicture(imageUri.value.toUri(), "eventImage", event.id)
       }
     }
   }

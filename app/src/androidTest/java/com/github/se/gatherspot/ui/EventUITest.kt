@@ -33,7 +33,6 @@ import org.junit.Test
 
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
-  private lateinit var uid: String
 
   @Before
   fun setUp() {
@@ -76,6 +75,7 @@ class EventUITest {
           timeEnding = LocalTime.of(16, 0),
           image = "")
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testEverythingExists() {
     composeTestRule.setContent {
@@ -102,6 +102,7 @@ class EventUITest {
 
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
+    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       eventScaffold.assertExists()
       topBar.assertExists()
@@ -122,6 +123,7 @@ class EventUITest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testEverythingIsDisplayed() {
 
@@ -149,6 +151,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
       eventScaffold.assertIsDisplayed()
       topBar.assertIsDisplayed()
       backButton.assertIsDisplayed()
@@ -194,10 +197,7 @@ class EventUITest {
         performScrollTo()
         assertIsDisplayed()
       }
-      registerButton {
-        performScrollTo()
-        assertIsDisplayed()
-      }
+      registerButton { assertIsDisplayed() }
       alertBox { assertIsNotDisplayed() }
     }
   }
@@ -295,7 +295,6 @@ class EventUITest {
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
-        performScrollTo()
         assertIsEnabled()
         performClick()
       }
@@ -311,7 +310,6 @@ class EventUITest {
       }
       Thread.sleep(2000)
       registerButton {
-        performScrollTo()
         assertIsNotEnabled()
         assert(hasText("Registered"))
       }
@@ -347,10 +345,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      registerButton {
-        performScrollTo()
-        performClick()
-      }
+      registerButton { performClick() }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
       alertBox {
         assertIsDisplayed()
@@ -359,7 +354,6 @@ class EventUITest {
 
       okButton.performClick()
       registerButton {
-        performScrollTo()
         assertIsNotEnabled()
         assert(hasText("Full"))
       }
@@ -397,7 +391,6 @@ class EventUITest {
     Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
-        performScrollTo()
         assertIsNotEnabled()
         assert(hasText("Registered"))
       }
@@ -484,6 +477,7 @@ class EventUITest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun ratingIsDisplayed() {
     val eventUIViewModel = EventUIViewModel(pastEventRegisteredTo)
@@ -508,13 +502,14 @@ class EventUITest {
         performScrollTo()
         assertIsDisplayed()
       }
-      star {
-        performScrollTo()
-        assertIsDisplayed()
-      }
+
+      bottomSpacer { performScrollTo() }
+
+      starIcon_1 { assertIsDisplayed() }
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testProfileIsCorrectlyFetched() {
     composeTestRule.setContent {
@@ -542,6 +537,7 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel())
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
       profileIndicator.assertIsDisplayed()
       userName { hasText("John Doe") }
       // profileIndicator.performClick()
