@@ -272,7 +272,9 @@ fun EventDataForm(
               // ERASE FIELDS
               Button(
                   onClick = {
-                    if (imageUri.value.isNotEmpty()) { deleteImage() }
+                    if (imageUri.value.isNotEmpty()) {
+                      deleteImage()
+                    }
                     title = TextFieldValue("")
                     description = TextFieldValue("")
                     location = null
