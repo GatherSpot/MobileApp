@@ -90,6 +90,7 @@ class CreateEventTest {
         assert(hasText("Describe the event"))
       }
       eventStartDate {
+        performScrollTo()
         assertExists()
         assert(hasText("Start Date of the event*"))
         performClick()
@@ -97,6 +98,7 @@ class CreateEventTest {
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventEndDate {
+        performScrollTo()
         assertExists()
         assert(hasText("End date of the event"))
         performClick()
@@ -104,6 +106,7 @@ class CreateEventTest {
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventTimeStart {
+        performScrollTo()
         assertExists()
         assert(hasText("Start time*"))
         performClick()
@@ -111,6 +114,7 @@ class CreateEventTest {
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventTimeEnd {
+        performScrollTo()
         assertExists()
         assert(hasText("End time*"))
         performClick()
@@ -118,18 +122,21 @@ class CreateEventTest {
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventMinAttendees {
+        performScrollTo()
         assertExists()
         assert(hasText("Min Attendees"))
         performClick()
         assert(hasText("Min Attendees"))
       }
       eventMaxAttendees {
+        performScrollTo()
         assertExists()
         assert(hasText("Max Attendees"))
         performClick()
         assert(hasText("Max Attendees"))
       }
       eventLocation {
+        performScrollTo()
         assertExists()
         performScrollTo()
         assert(hasText("Location"))
@@ -154,7 +161,10 @@ class CreateEventTest {
         composeTestRule.waitForIdle()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
-      eventSaveButton { assertExists() }
+      eventSaveButton {
+        performScrollTo()
+        assertExists()
+      }
 
       alertBox { assertDoesNotExist() }
       alertBoxText { assertDoesNotExist() }
@@ -180,10 +190,22 @@ class CreateEventTest {
       clearButton { assertIsDisplayed() }
       eventTitle { assertIsDisplayed() }
       eventDescription { assertIsDisplayed() }
-      eventStartDate { assertIsDisplayed() }
-      eventEndDate { assertIsDisplayed() }
-      eventTimeStart { assertIsDisplayed() }
-      eventTimeEnd { assertIsDisplayed() }
+      eventStartDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventEndDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventTimeStart {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      eventTimeEnd {
+        performScrollTo()
+        assertIsDisplayed()
+      }
       eventLocation {
         performScrollTo()
         assertIsDisplayed()
@@ -447,21 +469,25 @@ class CreateEventTest {
         composeTestRule.onNodeWithText("Describe the event").assertIsDisplayed()
       }
       eventStartDate {
+        performScrollTo()
         composeTestRule.onNodeWithText("Start Date of the event*").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventEndDate {
+        performScrollTo()
         composeTestRule.onNodeWithText("End date of the event").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.DATE_FORMAT_DISPLAYED))
       }
       eventTimeStart {
+        performScrollTo()
         composeTestRule.onNodeWithText("Start time*").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))
       }
       eventTimeEnd {
+        performScrollTo()
         composeTestRule.onNodeWithText("End time*").assertIsDisplayed()
         performClick()
         assert(hasText(EventFirebaseConnection.TIME_FORMAT))

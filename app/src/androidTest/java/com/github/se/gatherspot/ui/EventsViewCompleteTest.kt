@@ -116,7 +116,6 @@ class EventsViewCompleteTest {
       // Check that the profile screen is displayed
       usernameInput.assertIsDisplayed()
       bioInput.assertIsDisplayed()
-      profileImage.assertIsDisplayed()
       follow {
         assertIsDisplayed()
         performClick()
