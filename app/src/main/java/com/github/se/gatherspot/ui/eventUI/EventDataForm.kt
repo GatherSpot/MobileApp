@@ -145,7 +145,7 @@ fun EventDataForm(
   val placeHolder = R.drawable.default_event_image
   val updateImageUri: (String) -> Unit = { imageUri.value = it }
   val deleteImage: () -> Unit = {
-runBlocking {
+    runBlocking {
       // if we create event it should never be already in the database
       if (eventAction == EventAction.EDIT) {
         event?.id?.let { FirebaseImages().removePicture("eventImage", it) }
@@ -156,7 +156,8 @@ runBlocking {
   val uploadImage: () -> Unit = {
     if (event != null) {
       runBlocking {
-        imageUri.value = FirebaseImages().pushPicture(imageUri.value.toUri(), "eventImage", event.id)
+        imageUri.value =
+            FirebaseImages().pushPicture(imageUri.value.toUri(), "eventImage", event.id)
       }
     }
   }
