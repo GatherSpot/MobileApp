@@ -39,7 +39,7 @@ class ProfileInstrumentedTest {
       IdListFirebaseConnection().delete(
           "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING) {}
 
-      delay(600) // delete needs to be over
+      delay(1000) // delete needs to be over
     }
   }
 
