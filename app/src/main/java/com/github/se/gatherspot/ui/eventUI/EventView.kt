@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.intents.BannerImageViewer
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -82,7 +83,7 @@ fun EventUI(
     eventUIViewModel: EventUIViewModel,
     eventsViewModel: EventsViewModel
 ) {
-
+  println("image: ${event.image}")
   val context = LocalContext.current
 
   val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
@@ -158,7 +159,8 @@ fun EventUI(
                     .padding(8.dp)
                     .testTag("eventColumn")
                     .verticalScroll(rememberScrollState())) {
-              EventTypeIcon(event.categories)
+              // EventTypeIcon(event.categories)
+              BannerImageViewer(event.image, getEventImageHeader(event.categories), "event")
 
               Spacer(modifier = Modifier.height(16.dp))
 

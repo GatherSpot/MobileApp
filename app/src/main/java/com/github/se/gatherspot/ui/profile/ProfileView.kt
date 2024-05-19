@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -34,8 +33,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.intents.ImagePicker
-import com.github.se.gatherspot.intents.ImageViewer
+import com.github.se.gatherspot.intents.CircleImagePicker
+import com.github.se.gatherspot.intents.CircleImageViewer
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -205,12 +204,8 @@ private fun ViewOwnProfileContent(
   Column(modifier = Modifier.testTag("ProfileScreen")) {
     TopBarOwnProfile(viewModel, navController, viewModel::edit)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-      ImageViewer(
-          imageUri = imageUrl,
-          placeHolder = R.drawable.profile,
-          pictureName = "profile",
-          shape = CircleShape,
-          size = 180.dp)
+      CircleImageViewer(
+          imageUri = imageUrl.value, placeHolder = R.drawable.profile, pictureName = "profile")
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
       InterestsView().ShowInterests(interests.value ?: setOf())
@@ -247,14 +242,13 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
   Column() {
     SaveCancelButtons(save, cancel)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
-      ImagePicker(
-          imageUri = imageUri,
+      CircleImagePicker(
+          imageUri = imageUri.value,
           placeHolder = R.drawable.profile,
           pictureName = "profile",
           updateImageUri = setImageUri,
           deleteImage = deleteImage,
-          shape = CircleShape,
-          size = 180.dp)
+      )
       UsernameField(username, usernameError, updateUsername, true)
       BioField(bio, bioError, updateBio, true)
       InterestsView().EditInterests(Interests.toList(), viewModel.interests.observeAsState()) {
@@ -273,7 +267,7 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
 fun ProfileScreen(viewModel: ProfileViewModel) {
   val username = viewModel.username.observeAsState("")
   val bio = viewModel.bio.observeAsState("")
-  val imageUrl = viewModel.image.observeAsState("")
+  val imageUri = viewModel.image.observeAsState("")
   val interests = viewModel.interests.observeAsState(setOf())
   val following = viewModel.isFollowing.observeAsState(false)
   val back = viewModel::back
@@ -283,12 +277,8 @@ fun ProfileScreen(viewModel: ProfileViewModel) {
   Column() {
     FollowButtons(back, follow, following.value, addFriend)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
-      ImageViewer(
-          imageUri = imageUrl,
-          placeHolder = R.drawable.profile,
-          pictureName = "profile",
-          shape = CircleShape,
-          size = 180.dp)
+      CircleImageViewer(
+          imageUri = imageUri.value, placeHolder = R.drawable.profile, pictureName = "profile")
       UsernameField(username, null, {}, false)
       BioField(bio, null, {}, false)
       InterestsView().ShowInterests(interests.value)

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,7 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.intents.ImagePicker
+import com.github.se.gatherspot.intents.CircleImagePicker
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.BioField
@@ -90,14 +89,13 @@ private fun Image(vm: SetUpViewModel) {
   Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpImage")) {
     Text(text = "Choose a profile picture", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
-    ImagePicker(
-        imageUri = vm.image.observeAsState(""),
+    CircleImagePicker(
+        imageUri = vm.image.observeAsState("").value,
         placeHolder = R.drawable.user,
         pictureName = "profile",
         updateImageUri = vm::setImage,
         deleteImage = vm::deleteImage,
-        shape = CircleShape,
-        size = 180.dp)
+    )
   }
 }
 

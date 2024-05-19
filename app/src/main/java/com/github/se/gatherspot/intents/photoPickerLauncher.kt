@@ -6,34 +6,114 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 
 @Composable
-fun ImagePicker(
-    imageUri: State<String>,
+fun CircleImagePicker(
+    imageUri: String,
     placeHolder: Int,
     pictureName: String,
     updateImageUri: (String) -> Unit,
-    deleteImage: () -> Unit,
-    shape: Shape,
-    size: Dp
+    deleteImage: () -> Unit
 ) {
+
+  Column(
+      modifier = Modifier.padding(8.dp).fillMaxWidth(),
+      horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = "Change $pictureName picture", modifier = Modifier.padding(8.dp))
+        Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
+          EditImage(imageUri, placeHolder, pictureName, updateImageUri)
+        }
+
+        if (imageUri.isNotEmpty()) {
+          Button(onClick = { deleteImage() }) { Text(text = "Remove $pictureName picture") }
+        }
+      }
+}
+
+@Composable
+fun CircleImageViewer(imageUri: String, placeHolder: Int, pictureName: String) {
+  Column(
+      modifier = Modifier.padding(8.dp).fillMaxWidth(),
+      horizontalAlignment = Alignment.CenterHorizontally) {
+        Card(shape = CircleShape, modifier = Modifier.padding(8.dp).size(180.dp)) {
+          ViewImage(imageUri, placeHolder, pictureName)
+        }
+      }
+}
+
+@Composable
+fun BannerImagePicker(
+    imageUri: String,
+    placeHolder: Int,
+    pictureName: String,
+    updateImageUri: (String) -> Unit,
+    deleteImage: () -> Unit
+) {
+  Column(
+      modifier = Modifier.padding(8.dp).fillMaxWidth(),
+      horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = "Change $pictureName picture", modifier = Modifier.padding(8.dp))
+        Card(
+            shape = RectangleShape,
+            modifier = Modifier.padding(8.dp).fillMaxWidth().height(150.dp)) {
+              EditImage(imageUri, placeHolder, pictureName, updateImageUri)
+            }
+
+        if (imageUri.isNotEmpty()) {
+          Button(onClick = { deleteImage() }) { Text(text = "Remove $pictureName picture") }
+        }
+      }
+}
+
+@Composable
+fun BannerImageViewer(imageUri: String, placeHolder: Int, pictureName: String) {
+  Column(
+      modifier = Modifier.padding(8.dp).fillMaxWidth(),
+      horizontalAlignment = Alignment.CenterHorizontally) {
+        Card(
+            shape = RectangleShape,
+            modifier = Modifier.padding(8.dp).fillMaxWidth().height(150.dp)) {
+              ViewImage(imageUri, placeHolder, pictureName)
+            }
+      }
+}
+
+@Composable
+fun ViewImage(imageUri: String, placeHolder: Int, pictureName: String) {
+
+  AsyncImage(
+      model = if (imageUri.isNotEmpty()) imageUri.toUri() else null,
+      fallback = painterResource(placeHolder),
+      placeholder = painterResource(placeHolder),
+      contentDescription = "$pictureName image",
+      contentScale = ContentScale.Crop)
+}
+
+@Composable
+fun EditImage(
+    imageUri: String,
+    placeHolder: Int,
+    pictureName: String,
+    updateImageUri: (String) -> Unit
+) {
+
   val photoPickerLauncher =
       rememberLauncherForActivityResult(
           contract = ActivityResultContracts.PickVisualMedia(),
@@ -42,51 +122,16 @@ fun ImagePicker(
               updateImageUri(it.toString())
             }
           })
-
-  Column(
-      modifier = Modifier.padding(8.dp).fillMaxWidth(),
-      horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Change $pictureName picture", modifier = Modifier.padding(8.dp))
-        Card(shape = shape, modifier = Modifier.padding(8.dp).size(size)) {
-          AsyncImage(
-              model = if (imageUri.value.isNotEmpty()) imageUri.value.toUri() else null,
-              fallback = painterResource(placeHolder),
-              placeholder = painterResource(placeHolder),
-              contentDescription = "$pictureName image",
-              modifier =
-                  Modifier.clickable {
-                        photoPickerLauncher.launch(
-                            PickVisualMediaRequest(
-                                ActivityResultContracts.PickVisualMedia.ImageOnly))
-                      }
-                      .testTag("profileImage"),
-              contentScale = ContentScale.Crop)
-        }
-
-        if (imageUri.value.isNotEmpty()) {
-          Button(onClick = { deleteImage() }) { Text(text = "Remove $pictureName picture") }
-        }
-      }
-}
-
-@Composable
-fun ImageViewer(
-    imageUri: State<String>,
-    placeHolder: Int,
-    pictureName: String,
-    shape: Shape,
-    size: Dp
-) {
-  Column(
-      modifier = Modifier.padding(8.dp).fillMaxWidth(),
-      horizontalAlignment = Alignment.CenterHorizontally) {
-        Card(shape = shape, modifier = Modifier.padding(8.dp).size(size)) {
-          AsyncImage(
-              model = if (imageUri.value.isNotEmpty()) imageUri.value.toUri() else null,
-              fallback = painterResource(placeHolder),
-              placeholder = painterResource(placeHolder),
-              contentDescription = "$pictureName image",
-              contentScale = ContentScale.Crop)
-        }
-      }
+  AsyncImage(
+      model = if (imageUri.isNotEmpty()) imageUri.toUri() else null,
+      fallback = painterResource(placeHolder),
+      placeholder = painterResource(placeHolder),
+      contentDescription = "$pictureName image",
+      modifier =
+          Modifier.clickable {
+                photoPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+              }
+              .testTag("profileImage"),
+      contentScale = ContentScale.Crop)
 }

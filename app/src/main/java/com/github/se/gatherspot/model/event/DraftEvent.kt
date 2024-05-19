@@ -1,7 +1,5 @@
 package com.github.se.gatherspot.model.event
 
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 
@@ -22,5 +20,5 @@ data class DraftEvent(
     val inscriptionLimitDate: String?,
     val inscriptionLimitTime: String?,
     val categories: Set<Interests>? = emptySet(),
-    val image: ImageBitmap? = ImageBitmap(30, 30, config = ImageBitmapConfig.Rgb565)
+    val image: String
 )
