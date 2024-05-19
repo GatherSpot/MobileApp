@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.core.app.ActivityCompat
 import com.github.se.gatherspot.cache.LocalStorage
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -67,7 +66,8 @@ class EventUtils {
       maxAttendees: Int?,
       minAttendees: Int?,
       dateLimitInscription: LocalDate?,
-      timeLimitInscription: LocalTime?
+      timeLimitInscription: LocalTime?,
+      image: String
   ): Event {
 
     // First fetch an unique ID for the event
@@ -89,7 +89,7 @@ class EventUtils {
             dateLimitInscription,
             timeLimitInscription,
             globalRating = null,
-            image = "",
+            image = image,
             categories = categories?.toSet(),
             eventStatus = EventStatus.CREATED)
 
@@ -153,7 +153,8 @@ class EventUtils {
       dateLimitInscription: String,
       timeLimitInscription: String,
       eventAction: EventAction,
-      event: Event? = null
+      event: Event? = null,
+      image: String
   ): Event {
     // test if the date is valid
     val parsedEventStartDate = validateDate(eventStartDate, "Invalid date format")
@@ -251,7 +252,8 @@ class EventUtils {
           parsedMaxAttendees,
           parsedMinAttendees,
           parsedDateLimitInscription,
-          parsedTimeLimitInscription)
+          parsedTimeLimitInscription,
+          image)
     } else {
       return editEvent(
           title,
@@ -266,7 +268,8 @@ class EventUtils {
           parsedMinAttendees,
           parsedDateLimitInscription,
           parsedTimeLimitInscription,
-          event!!)
+          event!!,
+          image)
     }
   }
 
@@ -283,7 +286,8 @@ class EventUtils {
       minAttendees: Int?,
       dateLimitInscription: LocalDate?,
       timeLimitInscription: LocalTime?,
-      oldEvent: Event
+      oldEvent: Event,
+      image: String
   ): Event {
     val event =
         Event(
@@ -302,7 +306,7 @@ class EventUtils {
             globalRating = oldEvent.globalRating,
             categories = categories?.toSet(),
             registeredUsers = oldEvent.registeredUsers,
-            image = oldEvent.image,
+            image = image,
             eventStatus = EventStatus.CREATED,
         )
     // Add the event to the database
@@ -427,7 +431,7 @@ class EventUtils {
       dateLimitInscription: String?,
       timeLimitInscription: String?,
       categories: Set<Interests>?,
-      image: ImageBitmap?,
+      image: String,
       context: Context
   ) {
     val draftEvent =
