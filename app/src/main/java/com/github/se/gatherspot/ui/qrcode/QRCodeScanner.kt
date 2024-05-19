@@ -11,11 +11,18 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +32,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.model.qrcode.BarCodeAnalyser
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -39,6 +47,16 @@ fun QRCodeScanner(navigationActions: NavigationActions) {
   Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier.testTag("QRCodeScanner")) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+          IconButton(
+              onClick = { navigationActions.goBack() },
+              modifier = Modifier.testTag("goBackButton")) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Go Back")
+              }
+        }
+
         Spacer(modifier = Modifier.height(10.dp))
 
         val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
@@ -94,12 +112,7 @@ fun CameraPreview(navigationActions: NavigationActions) {
                   barcode.rawValue?.let { barcodeValue ->
                     barCodeVal.value = barcodeValue
                     Toast.makeText(context, barcodeValue, Toast.LENGTH_SHORT).show()
-                  }
-                }
-                if (barcodes.isNotEmpty()) {
-                  val code = barcodes[0].rawValue
-                  if (code != null) {
-                    val navString = analyseAppQRCode(code)
+                    val navString = analyseAppQRCode(barcodeValue)
                     if (navString != "") {
                       navigationActions.controller.navigate(navString)
                     }
@@ -139,4 +152,10 @@ fun analyseAppQRCode(text: String): String {
   } else {
     return ""
   }
+}
+
+@androidx.compose.ui.tooling.preview.Preview
+@Composable
+fun QRCodeScannerPreview() {
+  QRCodeScanner(NavigationActions(rememberNavController()))
 }
