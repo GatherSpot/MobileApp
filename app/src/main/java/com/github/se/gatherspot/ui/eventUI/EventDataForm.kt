@@ -1,6 +1,10 @@
 package com.github.se.gatherspot.ui.eventUI
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,9 +48,11 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -125,13 +132,13 @@ fun EventDataForm(
   var inscriptionLimitTime by remember {
     mutableStateOf(TextFieldValue(event?.inscriptionLimitTime?.format(timeFormatter) ?: ""))
   }
+
   var showErrorDialog by remember { mutableStateOf(false) }
   var errorMessage = ""
   var locationName by remember { mutableStateOf(event?.location?.name ?: "") }
   val categories: MutableList<Interests> = remember {
     event?.categories?.toMutableStateList() ?: mutableStateListOf()
   }
-
   // Flow for query text input
   var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
   // Context to use for draft saving
@@ -139,6 +146,25 @@ fun EventDataForm(
 
   // Coroutine scope for launching coroutines
   val coroutineScope = rememberCoroutineScope()
+  // Permission handling
+  val lifecycleOwner = LocalLifecycleOwner.current
+  val locationPermissionGranted = remember {
+    mutableStateOf(
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED)
+  }
+  val requestLocationPermissionLauncher =
+      rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+          isGranted ->
+        locationPermissionGranted.value = isGranted
+      }
+
+  // Check and request permission if not already granted
+  LaunchedEffect(Unit) {
+    if (!locationPermissionGranted.value) {
+      requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+  }
 
   // image logic
   val imageUri = remember { mutableStateOf("") }
@@ -198,7 +224,6 @@ fun EventDataForm(
       inscriptionLimitDate = TextFieldValue(draft.inscriptionLimitDate ?: "")
       inscriptionLimitTime = TextFieldValue(draft.inscriptionLimitTime ?: "")
       categories.addAll(draft.categories ?: emptySet())
-      imageUri.value = draft.image
     }
   }
 
@@ -380,7 +405,7 @@ fun EventDataForm(
                               // Debounce logic: wait for 300 milliseconds after the last text
                               // change
                               delay(300)
-                              suggestions = eventUtils.fetchLocationSuggestions(newValue)
+                              suggestions = eventUtils.fetchLocationSuggestions(context, newValue)
                             }
                       },
                       label = { Text("Location") },

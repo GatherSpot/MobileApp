@@ -1,7 +1,10 @@
 package com.github.se.gatherspot.model
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import com.github.se.gatherspot.cache.LocalStorage
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
@@ -11,12 +14,19 @@ import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.eventUI.EventAction
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -330,7 +340,7 @@ class EventUtils {
   }
 
   /** Fetch location suggestions from the OpenStreetMap API. */
-  suspend fun fetchLocationSuggestions(query: String): List<Location> =
+  suspend fun fetchLocationSuggestions(context: Context, query: String): List<Location> =
       withContext(Dispatchers.IO) {
         if (query.isEmpty()) return@withContext emptyList()
 
@@ -340,14 +350,15 @@ class EventUtils {
         val suggestions = mutableListOf<Location>()
 
         try {
+          // Get the user's current location
+          val userLocation = getCurrentLocation(context)
           client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
             val responseBody = response.body?.string()
             responseBody?.let {
               val jsonArray = JSONArray(it)
-              val elementsToDisplay = minOf(jsonArray.length(), ELEMENTS_TO_DISPLAY)
-              for (i in 0 until elementsToDisplay) {
+              for (i in 0 until jsonArray.length()) {
                 val jsonObject = jsonArray.getJSONObject(i)
                 val displayName = jsonObject.getString("display_name")
                 val latitude = jsonObject.getDouble("lat")
@@ -357,11 +368,55 @@ class EventUtils {
               }
             }
           }
+          if (userLocation == null) {
+            return@withContext suggestions.take(ELEMENTS_TO_DISPLAY)
+          }
+          // Sort suggestions based on distance to user's current location
+          suggestions.sortBy { location ->
+            calculateDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                location.latitude,
+                location.longitude)
+          }
+
+          // Limit the number of elements to display
+          return@withContext suggestions.take(ELEMENTS_TO_DISPLAY)
         } catch (e: Exception) {
           e.printStackTrace()
+          return@withContext emptyList()
         }
-        return@withContext suggestions
       }
+
+  private suspend fun getCurrentLocation(context: Context): Location? {
+    val fusedLocationClient: FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
+
+    return if (ActivityCompat.checkSelfPermission(
+        context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+        ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+            PackageManager.PERMISSION_GRANTED) {
+      // Request permissions if not granted (this should be handled in the UI layer)
+      null
+    } else {
+      val location = fusedLocationClient.lastLocation.await()
+      location?.let { Location(it.latitude, it.longitude, "Current Location") }
+    }
+  }
+
+  fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    val earthRadius = 6371.0 // in kilometers
+
+    val dLat = Math.toRadians(lat2 - lat1)
+    val dLon = Math.toRadians(lon2 - lon1)
+
+    val a =
+        sin(dLat / 2) * sin(dLat / 2) +
+            cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLon / 2) * sin(dLon / 2)
+    val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    return earthRadius * c
+  }
 
   fun saveDraftEvent(
       title: String?,

@@ -177,6 +177,7 @@ class ProfileViewModel(val target: String, private val nav: NavHostController) :
   // TODO : replace ?: with hilt injection
   fun follow() {
     if (_profile.isInitialized) {
+      if (_isFollowing.value == null) return
       if (_isFollowing.value!!) FollowList.unfollow(_profile.value!!.id, target)
       else FollowList.follow(_profile.value!!.id, target)
       _isFollowing.value = !(_isFollowing.value!!)
