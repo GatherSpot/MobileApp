@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.Manifest
 import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -13,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -33,6 +35,19 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class CreateEventTest {
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
+
+  @Before
+  fun grantLocationPermission() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val packageName = context.packageName
+    val uiAutomation =
+        androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().uiAutomation
+    uiAutomation.executeShellCommand(
+        "pm grant $packageName android.permission.ACCESS_FINE_LOCATION")
+  }
 
   private val eventFirebaseConnection = EventFirebaseConnection()
 
@@ -501,7 +516,7 @@ class CreateEventTest {
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventLocation {
         performClick()
-        performTextInput("ecole polytechnique federale")
+        performTextInput("ecole polytechnique federale de lausanne")
       }
       // wait for the location proposition to appear
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
