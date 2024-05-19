@@ -33,8 +33,8 @@ fun EventQRCodeUI(event: Event) {
             .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
             .registerTypeAdapter(ImageBitmap::class.java, ImageBitmapSerializer())
             .create()
-    val json = "event/" + gson.toJson(event)
-    qrCodeBitmap = QRCodeUtils().generateQRCode(json, 256)
+    val json = "event/${gson.toJson(event)}"
+    qrCodeBitmap = QRCodeUtils().generateQRCode(json)
   }
 
   Column(

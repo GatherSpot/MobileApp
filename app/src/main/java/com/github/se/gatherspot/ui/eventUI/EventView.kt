@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui.eventUI
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -52,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
+import com.github.se.gatherspot.intents.BannerImageViewer
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -379,15 +378,6 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
       }
 }
 
-@Composable
-fun EventTypeIcon(eventCategories: Set<Interests>?) {
-  Image(
-      painter = painterResource(id = getEventImageHeader(eventCategories)),
-      contentDescription = "Default Event Image",
-      modifier = Modifier.fillMaxWidth().height(150.dp).testTag("eventImage"),
-      contentScale = ContentScale.Crop)
-}
-
 /**
  * StarRating displays 5 stars, where the user can click on a star to rate the event from 1 to 5
  * stars.
@@ -464,7 +454,7 @@ fun ColumnScope.EventBody(
     navActions: NavigationActions
 ) {
 
-  EventTypeIcon(event.categories)
+  BannerImageViewer(event.image, getEventImageHeader(event.categories), "event")
 
   Spacer(modifier = Modifier.height(16.dp))
 

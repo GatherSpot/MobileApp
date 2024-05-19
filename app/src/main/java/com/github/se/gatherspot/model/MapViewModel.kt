@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationRequest
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
@@ -27,41 +26,28 @@ import kotlin.math.cos
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
   companion object {
-    fun degreeToMeters(latitudeDegrees: Double): Double {
-      // Radius of the Earth at the equator in meters
-      val earthRadiusAtEquator = 6378137.0 // in meters
 
-      // Convert latitude from degrees to radians
-      val latitudeRadians = Math.toRadians(latitudeDegrees)
+    val EARTH_RADIUS = 6371000 // Earth's radius in meters
 
-      // Calculate the length of a degree of latitude in meters
-      // This accounts for the Earth's curvature using the WGS-84 ellipsoid
-      // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
-      // Where `latitude` is in radians and `radius` is the radius at that latitude
-      val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
-      val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
+    fun degreeToMeters(angle: Double, latitude: Double): Double {
+      val latitudeRadians = Math.toRadians(latitude)
+      val circumference =
+          2 * PI * EARTH_RADIUS * cos(latitudeRadians) // Circumference of latitude circle
 
-      return lengthOfDegree
+      // Calculate the distance change
+      val distanceChange = (angle / 360) * circumference
+      return distanceChange
     }
 
-    fun metersToDegree(latitudeDegrees: Double, meters: Double): Double {
-      // Radius of the Earth at the equator in meters
-      val earthRadiusAtEquator = 6378137.0 // in meters
+    // Function to calculate angle change for a given distance at a latitude
+    fun metersToDegree(distance: Double, latitude: Double): Double {
+      val latitudeRadians = Math.toRadians(latitude)
+      val circumference =
+          2 * PI * EARTH_RADIUS * cos(latitudeRadians) // Circumference of latitude circle
 
-      // Convert latitude from degrees to radians
-      val latitudeRadians = Math.toRadians(latitudeDegrees)
-
-      // Calculate the length of a degree of latitude in meters
-      // This accounts for the Earth's curvature using the WGS-84 ellipsoid
-      // Formula: length_of_degree = (2 * PI * radius) * (cos(latitude))
-      // Where `latitude` is in radians and `radius` is the radius at that latitude
-      val radiusAtLatitude = earthRadiusAtEquator * cos(latitudeRadians)
-      val lengthOfDegree = (2 * PI * radiusAtLatitude) / 360.0
-
-      // Calculate the number of degrees corresponding to the given meters
-      val degrees = meters / lengthOfDegree
-
-      return degrees
+      // Calculate the angle change
+      val angleChange = (distance / circumference) * 360
+      return angleChange
     }
   }
 
@@ -125,15 +111,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     registered_events =
         registered_events.union(list.map { EventFirebaseConnection().fetch(it) }).toMutableList()
 
-    Log.d(
-        "MapViewModel",
-        "fetchEvents: ${cameraPositionState.position.target.latitude}, ${cameraPositionState.position.target.longitude}")
     val list2 =
         EventFirebaseConnection()
             .fetchAllInPerimeter(
                 cameraPositionState.position.target.latitude,
                 cameraPositionState.position.target.longitude,
-                metersToDegree(cameraPositionState.position.target.latitude, 1000.0))
+                metersToDegree(1000.0, cameraPositionState.position.target.latitude))
 
     events = events.union(list2.toMutableList()).toMutableList()
   }

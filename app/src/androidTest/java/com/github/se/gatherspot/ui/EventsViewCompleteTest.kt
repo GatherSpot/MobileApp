@@ -38,9 +38,9 @@ class EventsViewCompleteTest {
     // The test need to be logged in
     testLogin()
     // This test will navigate from the events screen to the organizer profile
-    val viewModel = EventsViewModel()
 
     composeTestRule.setContent {
+      val viewModel = EventsViewModel()
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "home") {
         navigation(startDestination = "events", route = "home") {
@@ -116,7 +116,6 @@ class EventsViewCompleteTest {
       // Check that the profile screen is displayed
       usernameInput.assertIsDisplayed()
       bioInput.assertIsDisplayed()
-      profileImage.assertIsDisplayed()
       follow {
         assertIsDisplayed()
         performClick()

@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.gatherspot.R
+import com.github.se.gatherspot.intents.CircleImagePicker
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.BioField
@@ -87,8 +89,13 @@ private fun Image(vm: SetUpViewModel) {
   Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpImage")) {
     Text(text = "Choose a profile picture", fontSize = 30.sp)
     Spacer(modifier = Modifier.height(30.dp))
-    // TODO : add image picker
-    Text(text = "Not implemented yet")
+    CircleImagePicker(
+        imageUri = vm.image.observeAsState("").value,
+        placeHolder = R.drawable.user,
+        pictureName = "profile",
+        updateImageUri = vm::setImage,
+        deleteImage = vm::deleteImage,
+    )
   }
 }
 

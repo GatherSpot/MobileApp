@@ -1,6 +1,10 @@
 package com.github.se.gatherspot.ui.eventUI
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,10 +48,16 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.FirebaseImages
+import com.github.se.gatherspot.intents.BannerImagePicker
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
@@ -57,6 +68,7 @@ import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 private val WIDTH = 300.dp
 private val WIDTH_2ELEM = 150.dp
@@ -134,6 +146,47 @@ fun EventDataForm(
 
   // Coroutine scope for launching coroutines
   val coroutineScope = rememberCoroutineScope()
+  // Permission handling
+  val lifecycleOwner = LocalLifecycleOwner.current
+  val locationPermissionGranted = remember {
+    mutableStateOf(
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED)
+  }
+  val requestLocationPermissionLauncher =
+      rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+          isGranted ->
+        locationPermissionGranted.value = isGranted
+      }
+
+  // Check and request permission if not already granted
+  LaunchedEffect(Unit) {
+    if (!locationPermissionGranted.value) {
+      requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+  }
+
+  // image logic
+  val imageUri = remember { mutableStateOf("") }
+  val placeHolder = R.drawable.default_event_image
+  val updateImageUri: (String) -> Unit = { imageUri.value = it }
+  val deleteImage: () -> Unit = {
+    runBlocking {
+      // if we create event it should never be already in the database
+      if (eventAction == EventAction.EDIT) {
+        event?.id?.let { FirebaseImages().removePicture("eventImage", it) }
+      }
+    }
+    imageUri.value = ""
+  }
+  val uploadImage: () -> Unit = {
+    if (event != null) {
+      runBlocking {
+        imageUri.value =
+            FirebaseImages().pushPicture(imageUri.value.toUri(), "eventImage", event.id)
+      }
+    }
+  }
   /*
    if (eventAction == EventAction.EDIT) {
      event!!
@@ -186,6 +239,7 @@ fun EventDataForm(
                   modifier = Modifier.testTag("createEventTitle"))
             },
             navigationIcon = {
+              // SAVE DRAFT
               IconButton(
                   onClick = {
                     if (eventAction == EventAction.CREATE) {
@@ -202,7 +256,7 @@ fun EventDataForm(
                           inscriptionLimitDate.text,
                           inscriptionLimitTime.text,
                           categories.toSet(),
-                          image = null,
+                          image = imageUri.value,
                           context = context)
                     }
                     nav.goBack()
@@ -215,9 +269,12 @@ fun EventDataForm(
                   }
             },
             actions = {
-              // Add a button to erase all the fields
+              // ERASE FIELDS
               Button(
                   onClick = {
+                    if (imageUri.value.isNotEmpty()) {
+                      deleteImage()
+                    }
                     title = TextFieldValue("")
                     description = TextFieldValue("")
                     location = null
@@ -229,6 +286,7 @@ fun EventDataForm(
                     minAttendees = TextFieldValue("")
                     inscriptionLimitDate = TextFieldValue("")
                     inscriptionLimitTime = TextFieldValue("")
+                    imageUri.value = ""
                     categories.clear()
                     eventUtils.deleteDraft(context)
                   },
@@ -237,7 +295,7 @@ fun EventDataForm(
                     Text(text = "Clear all fields")
                   }
               Spacer(modifier = Modifier.width(10.dp))
-              // Add a button to save the draft
+              // SAVE DRAFT AGAIN (?)
               Button(
                   onClick = {
                     eventUtils.saveDraftEvent(
@@ -253,7 +311,7 @@ fun EventDataForm(
                         inscriptionLimitDate.text,
                         inscriptionLimitTime.text,
                         categories.toSet(),
-                        image = null,
+                        image = imageUri.value,
                         context = context)
                   },
                   modifier = Modifier.testTag("saveDraftButton"),
@@ -264,6 +322,8 @@ fun EventDataForm(
       }) { innerPadding ->
         // Make the content scrollable
         ScrollableContent {
+          // Image picker
+          BannerImagePicker(imageUri.value, placeHolder, "event", updateImageUri, deleteImage)
           // Create event form
           Column(
               modifier =
@@ -348,7 +408,7 @@ fun EventDataForm(
                               // Debounce logic: wait for 300 milliseconds after the last text
                               // change
                               delay(300)
-                              suggestions = eventUtils.fetchLocationSuggestions(newValue)
+                              suggestions = eventUtils.fetchLocationSuggestions(context, newValue)
                             }
                       },
                       label = { Text("Location") },
@@ -412,13 +472,12 @@ fun EventDataForm(
                 label = { Text("Inscription Limit Time") },
                 placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
-            // TODO :Upload images
-
-            // Button to create the event
+            // CREATE EVENT
             Button(
                 onClick = {
                   try {
                     // give the event if update
+                    uploadImage()
                     val newEvent =
                         eventUtils.validateAndCreateOrUpdateEvent(
                             title.text,
@@ -434,7 +493,8 @@ fun EventDataForm(
                             inscriptionLimitDate.text,
                             inscriptionLimitTime.text,
                             eventAction,
-                            event)
+                            event,
+                            imageUri.value)
 
                     if (eventAction == EventAction.CREATE) {
                       // viewModel.displayMyNewEvent(newEvent)
