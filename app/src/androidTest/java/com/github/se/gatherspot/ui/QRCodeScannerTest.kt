@@ -30,6 +30,8 @@ class QRCodeScannerTest {
       cameraPreview.assertIsDisplayed()
       scaffold.assertExists()
       scaffold.assertIsDisplayed()
+      goBackButton.assertExists()
+      goBackButton.assertIsDisplayed()
     }
   }
 
