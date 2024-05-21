@@ -57,6 +57,7 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.getEventImageHeader
+import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.eventUI.CalendarReminderGenerator.Companion.generateCalendarReminder
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.qrcode.EventQRCodeUI
@@ -72,12 +73,13 @@ fun EventUI(
     event: Event,
     navActions: NavigationActions,
     eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel
+    eventsViewModel: EventsViewModel,
+    eventDao: EventDao?
 ) {
   if (event.organizerID == Firebase.auth.currentUser?.uid) {
     EventUIOrganizer(event, navActions, eventUIViewModel)
   } else {
-    EventUINonOrganizer(event, navActions, eventUIViewModel, eventsViewModel)
+    EventUINonOrganizer(event, navActions, eventUIViewModel, eventsViewModel, eventDao)
   }
 }
 
@@ -87,7 +89,8 @@ fun EventUINonOrganizer(
     event: Event,
     navActions: NavigationActions,
     eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel
+    eventsViewModel: EventsViewModel,
+    eventDao: EventDao?
 ) {
 
   val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
@@ -132,7 +135,8 @@ fun EventUINonOrganizer(
             isButtonEnabled,
             buttonText,
             showDialogRegistration,
-            registrationState)
+            registrationState,
+            eventDao)
       }) { innerPadding ->
         Column(
             modifier =
@@ -278,13 +282,15 @@ fun RegisterButton(
     isButtonEnabled: Boolean,
     buttonText: String,
     showDialogRegistration: Boolean?,
-    registrationState: RegistrationState?
+    registrationState: RegistrationState?,
+    eventDao: EventDao?
 ) {
   Button(
       onClick = {
         eventUIViewModel.registerForEvent(event)
         eventsViewModel.updateNewRegistered(event)
         eventUIViewModel.clickRegisterButton()
+        eventDao?.insert(event)
       },
       enabled = isButtonEnabled,
       modifier = Modifier.fillMaxWidth().testTag("registerButton"),

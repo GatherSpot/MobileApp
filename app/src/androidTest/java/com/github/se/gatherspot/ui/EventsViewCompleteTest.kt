@@ -51,7 +51,8 @@ class EventsViewCompleteTest {
                 event = eventObject,
                 navActions = NavigationActions(navController),
                 eventUIViewModel = EventUIViewModel(eventObject),
-                eventsViewModel = viewModel)
+                eventsViewModel = viewModel,
+                eventDao = null)
           }
           composable("profile") {
             ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel() })

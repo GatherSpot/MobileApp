@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import androidx.room.Room
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
@@ -32,6 +33,7 @@ import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
+import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.FollowListUI
 import com.github.se.gatherspot.ui.SignUp
@@ -73,6 +75,8 @@ class MainActivity : ComponentActivity() {
   private lateinit var navController: NavHostController
   private var eventsViewModel: EventsViewModel? = null
   private var chatsViewModel: ChatsListViewModel? = null
+  private var db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
+  private val eventDao = db.EventDao()
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,7 +139,8 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
                     eventUIViewModel = EventUIViewModel(eventObject),
-                    eventsViewModel = eventsViewModel!!)
+                    eventsViewModel = eventsViewModel!!,
+                    eventDao)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val gson: Gson =
@@ -153,7 +158,8 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
-                    viewModel = eventsViewModel!!)
+                    viewModel = eventsViewModel!!,
+                    eventDao = eventDao)
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -202,7 +208,8 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(
                     nav = NavigationActions(navController),
                     eventUtils = EventUtils(),
-                    eventsViewModel!!)
+                    eventsViewModel!!,
+                    eventDao = eventDao)
               }
               composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }

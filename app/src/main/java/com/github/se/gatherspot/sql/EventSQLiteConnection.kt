@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.github.se.gatherspot.model.event.Event
 
 @Dao
@@ -22,4 +23,6 @@ interface EventDao {
   @Insert fun insert(vararg event: Event)
 
   @Delete fun delete(event: Event)
+
+  @Update fun update(event: Event)
 }

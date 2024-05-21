@@ -62,6 +62,7 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import java.time.format.DateTimeFormatter
@@ -100,7 +101,8 @@ fun EventDataForm(
     viewModel: EventsViewModel,
     nav: NavigationActions,
     eventAction: EventAction,
-    event: Event? = null
+    event: Event? = null,
+    eventDao: EventDao?
 ) {
   // State of the event
   val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -497,9 +499,10 @@ fun EventDataForm(
                             imageUri.value)
 
                     if (eventAction == EventAction.CREATE) {
-                      // viewModel.displayMyNewEvent(newEvent)
+                      eventDao?.insert(newEvent)
                     } else {
                       viewModel.editMyEvent(newEvent)
+                      eventDao?.update(newEvent)
                     }
                   } catch (e: Exception) {
                     errorMessage = e.message.toString()
