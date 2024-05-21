@@ -101,7 +101,11 @@ class MainActivity : ComponentActivity() {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           navController = rememberNavController()
 
-          NavHost(navController = navController, startDestination = "auth") {
+          // Check if user is already authenticated
+          val user = FirebaseAuth.getInstance().currentUser
+          val startDestination = if (user != null && user.isEmailVerified) "home" else "auth"
+
+          NavHost(navController = navController, startDestination = startDestination) {
             navigation(startDestination = "login", route = "auth") {
               composable("login") { LogIn(NavigationActions(navController), signInLauncher) }
 
