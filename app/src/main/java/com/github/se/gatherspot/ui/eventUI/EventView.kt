@@ -77,7 +77,7 @@ fun EventUI(
     eventDao: EventDao?
 ) {
   if (event.organizerID == Firebase.auth.currentUser?.uid) {
-    EventUIOrganizer(event, navActions, eventUIViewModel)
+    EventUIOrganizer(event, navActions, eventUIViewModel, eventsViewModel, eventDao)
   } else {
     EventUINonOrganizer(event, navActions, eventUIViewModel, eventsViewModel, eventDao)
   }
@@ -119,7 +119,8 @@ fun EventUINonOrganizer(
             backgroundColor = Color.White,
             navigationIcon = {
               IconButton(
-                  onClick = { navActions.goBack() }, modifier = Modifier.testTag("goBackButton")) {
+                  onClick = { navActions.controller.navigate("events") },
+                  modifier = Modifier.testTag("goBackButton")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go back to overview")
@@ -167,7 +168,9 @@ fun EventUINonOrganizer(
 fun EventUIOrganizer(
     event: Event,
     navActions: NavigationActions,
-    eventUIViewModel: EventUIViewModel
+    eventUIViewModel: EventUIViewModel,
+    eventsViewModel: EventsViewModel,
+    eventDao: EventDao?
 ) {
 
   val organizerRating by eventUIViewModel.organizerRating.observeAsState()
@@ -187,7 +190,8 @@ fun EventUIOrganizer(
             backgroundColor = Color.White,
             navigationIcon = {
               IconButton(
-                  onClick = { navActions.goBack() }, modifier = Modifier.testTag("goBackButton")) {
+                  onClick = { navActions.controller.navigate("events") },
+                  modifier = Modifier.testTag("goBackButton")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go back to overview")
@@ -208,7 +212,10 @@ fun EventUIOrganizer(
                   }
               // Delete button
               IconButton(
-                  onClick = { eventUIViewModel.clickDeleteButton() },
+                  onClick = {
+                    eventUIViewModel.clickDeleteButton()
+                    eventsViewModel.deleteFromLocalDatabase(eventDao, event)
+                  },
                   modifier = Modifier.testTag("deleteEventButton")) {
                     Icon(
                         modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
@@ -246,7 +253,7 @@ fun EventUIOrganizer(
               onClick = {
                 // Delete the event
                 eventUtils.deleteEvent(event)
-                navActions.goBack()
+                navActions.controller.navigate("events")
                 eventUIViewModel.dismissAlert()
               }) {
                 Text("Delete")
@@ -288,9 +295,9 @@ fun RegisterButton(
   Button(
       onClick = {
         eventUIViewModel.registerForEvent(event)
-        eventsViewModel.updateNewRegistered(event)
         eventUIViewModel.clickRegisterButton()
-        eventDao?.insert(event)
+        eventsViewModel.updateNewRegistered(event)
+        eventsViewModel.addToLocalDatabase(eventDao, event)
       },
       enabled = isButtonEnabled,
       modifier = Modifier.fillMaxWidth().testTag("registerButton"),

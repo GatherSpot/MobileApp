@@ -54,6 +54,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseImages
@@ -229,7 +230,7 @@ fun EventDataForm(
     }
   }
 
-  Log.d("ll", "untilll")
+  var newEvent: Event? = null
 
   Scaffold(
       modifier = Modifier.testTag("EventDataFormScreen"),
@@ -480,7 +481,7 @@ fun EventDataForm(
                   try {
                     // give the event if update
                     uploadImage()
-                    val newEvent =
+                    newEvent =
                         eventUtils.validateAndCreateOrUpdateEvent(
                             title.text,
                             description.text,
@@ -499,10 +500,10 @@ fun EventDataForm(
                             imageUri.value)
 
                     if (eventAction == EventAction.CREATE) {
-                      eventDao?.insert(newEvent)
+                      viewModel.addToLocalDatabase(eventDao, newEvent!!)
                     } else {
-                      viewModel.editMyEvent(newEvent)
-                      eventDao?.update(newEvent)
+                      viewModel.editMyEvent(newEvent!!)
+                      viewModel.updateLocalDatabase(eventDao, newEvent!!)
                     }
                   } catch (e: Exception) {
                     errorMessage = e.message.toString()
@@ -517,7 +518,8 @@ fun EventDataForm(
                       nav.controller.navigate("events")
                     } else {
                       // Go back to the event details
-                      nav.goBack()
+                      val json = newEvent!!.toJson()
+                      nav.controller.navigate("event/$json")
                     }
                   }
                 },

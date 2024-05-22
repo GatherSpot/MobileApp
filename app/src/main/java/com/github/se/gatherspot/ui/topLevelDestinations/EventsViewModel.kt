@@ -9,7 +9,9 @@ import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.utils.UtilsForTests
+import com.github.se.gatherspot.sql.EventDao
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,8 +28,6 @@ class EventsViewModel : ViewModel() {
   private var loadedFilteredEvents: MutableList<Event> = mutableListOf()
   val eventFirebaseConnection = EventFirebaseConnection()
   var previousInterests = mutableListOf<Interests>()
-
-  // This is the id of the of the user logged in by default during tests.
 
   init {
     viewModelScope.launch {
@@ -135,6 +135,18 @@ class EventsViewModel : ViewModel() {
         break
       }
     }
+  }
+
+  fun addToLocalDatabase(eventDao: EventDao?, event: Event) {
+    viewModelScope.launch(Dispatchers.IO) { eventDao?.insert(event) }
+  }
+
+  fun updateLocalDatabase(eventDao: EventDao?, event: Event) {
+    viewModelScope.launch(Dispatchers.IO) { eventDao?.update(event) }
+  }
+
+  fun deleteFromLocalDatabase(eventDao: EventDao?, event: Event) {
+    viewModelScope.launch(Dispatchers.IO) { eventDao?.delete(event) }
   }
 }
 
