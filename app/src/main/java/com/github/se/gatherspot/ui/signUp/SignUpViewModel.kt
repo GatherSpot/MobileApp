@@ -14,7 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class SignUpViewModel() : ViewModel() {
+class SignUpViewModel : ViewModel() {
   var userName = MutableLiveData("")
   var userNameError = MutableLiveData("")
   var email = MutableLiveData("")
@@ -92,14 +92,14 @@ class SignUpViewModel() : ViewModel() {
   fun signUp() {
     Firebase.auth
         .createUserWithEmailAndPassword(email.value!!, password.value!!)
-        .addOnSuccessListener() {
+        .addOnSuccessListener {
           Firebase.auth.currentUser!!.sendEmailVerification()
           isEverythingOk.value = false
           waitingEmailConfirmation.value = true
           Profile.add(userName.value!!, Firebase.auth.uid!!)
           checkEmailVerification()
         }
-        .addOnFailureListener() {
+        .addOnFailureListener {
           when (it) {
             is FirebaseAuthUserCollisionException -> {
               emailError.value = "Email already in use, try signing in!"

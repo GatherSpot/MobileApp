@@ -177,7 +177,7 @@ fun BioField(
     updateBio: (String) -> Unit,
     edit: Boolean
 ) {
-  Column() {
+  Column {
     OutlinedTextField(
         label = { Text("Bio") },
         value = bio.value,
@@ -239,7 +239,7 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
   val setImageUri = viewModel::updateProfileImage
   val deleteImage = viewModel::removeProfilePicture
 
-  Column() {
+  Column {
     SaveCancelButtons(save, cancel)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
       CircleImagePicker(
@@ -274,7 +274,7 @@ fun ProfileScreen(viewModel: ProfileViewModel) {
   val follow = viewModel::follow
   val addFriend = viewModel::requestFriend
 
-  Column() {
+  Column {
     FollowButtons(back, follow, following.value, addFriend)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       CircleImageViewer(

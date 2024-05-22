@@ -207,7 +207,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
           Firebase.firestore
               .collection(EVENTS)
               .orderBy("eventID")
-              .whereIn("eventID", idlist?.elements ?: listOf())
+              .whereIn("eventID", idlist.elements ?: listOf())
               .startAfter(offset!!.get("eventID"))
               .limit(number)
               .get()

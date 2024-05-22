@@ -30,6 +30,7 @@ class Converters {
   fun toCollection(collection: String): FirebaseCollection {
     return FirebaseCollection.valueOf(collection)
   }
+
   // we don't care if it isn't same as everywhere else, we just want it small, eg : no / or :
   private val dateFormat = "ddMMyyyy"
   private val timeFormat = "HHmm"

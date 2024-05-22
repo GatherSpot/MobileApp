@@ -191,15 +191,6 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   */
 
-  /** Deletes a profile from the database */
-  override fun delete(id: String) {
-    // delete associated data from other collection TODO
-    // delete ratings using registrations to find such events
-    // delete registrations
-    // (delete User ? No)
-    super.delete(id)
-  }
-
   /**
    * Converts a document to a profile
    *

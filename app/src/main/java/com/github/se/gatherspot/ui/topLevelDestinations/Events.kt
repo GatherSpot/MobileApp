@@ -298,23 +298,23 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                 Text(
                     text =
                         "Start date: ${
-                            event.eventStartDate?.format(
-                                DateTimeFormatter.ofPattern(
-                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
-                                )
+                        event.eventStartDate?.format(
+                            DateTimeFormatter.ofPattern(
+                                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                             )
-                        }",
+                        )
+                    }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
                 Text(
                     text =
                         "End date: ${
-                            event.eventEndDate?.format(
-                                DateTimeFormatter.ofPattern(
-                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
-                                )
+                        event.eventEndDate?.format(
+                            DateTimeFormatter.ofPattern(
+                                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                             )
-                        }",
+                        )
+                    }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
                 Text(text = event.title, fontSize = 14.sp)

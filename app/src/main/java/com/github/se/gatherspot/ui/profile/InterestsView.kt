@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.model.Interests
 
-public class InterestsView {
+class InterestsView {
   @Preview
   @Composable
   fun InterestsPreview() {
@@ -42,7 +42,7 @@ public class InterestsView {
       interests: State<Set<Interests>?>,
       swap: (Interests) -> Unit
   ) {
-    FlowRow() {
+    FlowRow {
       interestList.forEach { interest ->
         val selected = interests.value?.contains(interest) ?: false
         EditableInterest(interest, selected) { swap(interest) }
@@ -53,7 +53,7 @@ public class InterestsView {
   @OptIn(ExperimentalLayoutApi::class)
   @Composable
   fun ShowInterests(set: Set<Interests>) {
-    FlowRow() { set.forEach { interest -> UneditableInterest(interest, set.contains(interest)) } }
+    FlowRow { set.forEach { interest -> UneditableInterest(interest, set.contains(interest)) } }
   }
 
   @OptIn(ExperimentalMaterial3Api::class)

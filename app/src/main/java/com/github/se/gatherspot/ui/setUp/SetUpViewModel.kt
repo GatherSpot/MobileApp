@@ -12,7 +12,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
-class SetUpViewModel() : ViewModel() {
+class SetUpViewModel : ViewModel() {
   var profile = ProfileFirebaseConnection().fetch(Firebase.auth.uid ?: "TEST") {}
   var interests = MutableLiveData(Interests.new())
   var bio = MutableLiveData("")

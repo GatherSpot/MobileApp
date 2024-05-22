@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 
-public class FollowList {
+class FollowList {
   companion object {
     /**
      * Get the list of followers for a user
