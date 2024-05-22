@@ -10,8 +10,10 @@ import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 
+/*
+ * Firebase connection for IdList.
+ */
 class IdListFirebaseConnection {
-  private val logTag = "IdListFirebaseConnection"
   private val COLLECTION = "ID_LIST"
   private val TAG = "IdListFirebaseConnection"
   private val fcoll = Firebase.firestore.collection(COLLECTION)
@@ -19,13 +21,13 @@ class IdListFirebaseConnection {
   private val getErrorMsg = "get failed with :"
 
   /**
-   * Fetches the IdList from Firebase
+   * Fetches the IdList from Firebase. NOTE : The IdList will be initially empty, to use it in a
+   * view, you need to update the view using a lambda function that updates the view.
    *
-   * @param id The id of the owner of the list (can be owned by a user, event, etc..).
-   * @param category The category of the IdList.
+   * @param id The id of the owner of the list (can be owned by a user, event, etc..)
+   * @param category The category of the IdList
    * @param update lambda returned when fetched, useful to update the viewModel
-   * @return the IdList NOTE : The IdList will be initially empty, to use it in a view, you need to
-   *   update the view using with a lambda function that updates the view
+   * @return the IdList
    */
   suspend fun fetchFromFirebase(
       id: String,
@@ -43,23 +45,23 @@ class IdListFirebaseConnection {
             val data = documents.documents
             val ids = data.map { it.id }
             idSet.elements = ids
-            Log.d(logTag, "DocumentSnapshot data: ${data}")
+            Log.d(TAG, "DocumentSnapshot data: ${data}")
           } else {
-            Log.d(logTag, "No such document")
+            Log.d(TAG, "No such document")
           }
           update()
           continuation.resume(idSet)
         }
         .addOnFailureListener { exception ->
-          Log.d(logTag, "get failed with ", exception)
+          Log.d(TAG, "get failed with ", exception)
           continuation.resume(null)
         }
   }
 
   /**
-   * Saves the IdList to Firebase
+   * Saves the IdList to Firebase.
    *
-   * @param idSet The IdList to save.
+   * @param idSet The IdList to save
    */
   fun saveToFirebase(idSet: IdList) {
     val tag = idSet.collection.name
@@ -71,15 +73,15 @@ class IdListFirebaseConnection {
         .collection(idSet.collection.toString())
         .document(id)
         .set(data)
-        .addOnSuccessListener { Log.d(logTag, "DocumentSnapshot successfully written!") }
-        .addOnFailureListener { e -> Log.w(logTag, "Error writing document", e) }
+        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+        .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
   }
 
   /**
-   * Creates a new list
+   * Creates a new list.
    *
-   * @param id The id of the owner of the list (can be owned by a user, event, etc..).
-   * @param tag The category of the IdList.
+   * @param id The id of the owner of the list (can be owned by a user, event, etc..)
+   * @param tag The category of the IdList
    * @param elements The elements to add to the list. @onSuccess a lambda function called on success
    * @return MutableLiveData<IdList> that returns the IdList created. Can be directly observed
    */
@@ -107,11 +109,11 @@ class IdListFirebaseConnection {
   }
 
   /**
-   * Deletes an element from the list
+   * Deletes an element from the list.
    *
-   * @param id The id of the owner of the list (can be owned by a user, event, etc..).
-   * @param category The category of the IdList.
-   * @param element The element to delete from the list.
+   * @param id The id of the owner of the list (can be owned by a user, event, etc..)
+   * @param category The category of the IdList
+   * @param element The element to delete from the list
    * @param onSuccess a lambda function called on success
    */
   fun deleteElement(
@@ -133,6 +135,14 @@ class IdListFirebaseConnection {
         .addOnFailureListener { exception -> Log.d(TAG, getErrorMsg, exception) }
   }
 
+  /**
+   * Fetches the IdList from Firebase.
+   *
+   * @param id The id of the owner of the list (can be owned by a user, event, etc..)
+   * @param category The category of the IdList
+   * @param onSuccess a lambda function called on success
+   * @return the IdList
+   */
   suspend fun fetch(id: String, category: FirebaseCollection, onSuccess: () -> Unit): IdList {
     Log.d(TAG, "Current id: $id")
     val tag = category.name
@@ -145,11 +155,11 @@ class IdListFirebaseConnection {
   }
 
   /**
-   * Adds an element to the list
+   * Adds an element to the list.
    *
-   * @param id The id of the owner of the list (can be owned by a user, event, etc..).
-   * @param category The category of the IdList.
-   * @param element The element to add to the list.
+   * @param id The id of the owner of the list (can be owned by a user, event, etc..)
+   * @param category The category of the IdList
+   * @param element The element to add to the list
    * @param onSuccess a lambda function called on success
    */
   fun addElement(id: String, category: FirebaseCollection, element: String, onSuccess: () -> Unit) {
@@ -167,17 +177,17 @@ class IdListFirebaseConnection {
   }
 
   /**
-   * Adds two elements to two different lists in a single batch
+   * Adds two elements to two different lists in a single batch.
    *
-   * @param id1 The id of the owner of the first list.
-   * @param category1 The category of the first list.
-   * @param element1 The element to add to the first list.
-   * @param id2 The id of the owner of the second list.
-   * @param category2 The category of the second list.
-   * @param element2 The element to add to the second list.
+   * @param id1 The id of the owner of the first list
+   * @param category1 The category of the first list
+   * @param element1 The element to add to the first list
+   * @param id2 The id of the owner of the second list
+   * @param category2 The category of the second list
+   * @param element2 The element to add to the second list
    * @return Task<Boolean> that returns true if the elements were added successfully, false
    *   otherwise. This is useful for example when following someone, this ensures we added the user
-   *   to the followers list and the user added us to their following list.
+   *   to the followers list and the user added us to their following list
    */
   fun addTwoInSingleBatch(
       id1: String,
@@ -205,14 +215,14 @@ class IdListFirebaseConnection {
   }
 
   /**
-   * Removes two elements from two different lists in a single batch
+   * Removes two elements from two different lists in a single batch.
    *
-   * @param id1 The id of the owner of the first list.
-   * @param category1 The category of the first list.
-   * @param element1 The element to remove from the first list.
-   * @param id2 The id of the owner of the second list.
-   * @param category2 The category of the second list.
-   * @param element2 The element to remove from the second list.
+   * @param id1 The id of the owner of the first list
+   * @param category1 The category of the first list
+   * @param element1 The element to remove from the first list
+   * @param id2 The id of the owner of the second list
+   * @param category2 The category of the second list
+   * @param element2 The element to remove from the second list
    * @param onSuccess a lambda function called on success
    */
   fun removeTwoInSingleBatch(
@@ -241,11 +251,11 @@ class IdListFirebaseConnection {
   }
 
   /**
-   * Checks if an element exists in the list
+   * Checks if an element exists in the list.
    *
-   * @param id The id of the owner of the list.
-   * @param category The category of the list.
-   * @param element The element to check if it exists in the list.
+   * @param id The id of the owner of the list
+   * @param category The category of the list
+   * @param element The element to check if it exists in the list
    * @return MutableLiveData<Boolean> that returns true if the element exists in the list, false
    *   otherwise, can be directly observed
    */
@@ -272,10 +282,10 @@ class IdListFirebaseConnection {
 
   // TODO : keep an eye on this function as it might create problems in the future
   /**
-   * Deletes a list
+   * Deletes a list.
    *
-   * @param id The id of the owner of the list.
-   * @param category The category of the list.
+   * @param id The id of the owner of the list
+   * @param category The category of the list
    * @param onSuccess a lambda function called on success
    */
   fun delete(id: String, category: FirebaseCollection, onSuccess: () -> Unit) {

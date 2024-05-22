@@ -1,5 +1,8 @@
 package com.github.se.gatherspot.firebase
 
+/*
+ * Enum class for Firebase collections.
+ */
 enum class FirebaseCollection {
   PROFILES,
   EVENTS,

@@ -13,17 +13,30 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 
+/*
+ * Firebase connection for ratings.
+ */
 class RatingFirebaseConnection {
   private val EVENT_COLLECTION = FirebaseCollection.EVENT_RATINGS.toString().lowercase()
   private val ORGANIZER_COLLECTION = FirebaseCollection.ORGANIZER_RATINGS.toString().lowercase()
   private val TAG = "RatingFirebaseConnection"
 
+  /**
+   * Collection of the ratings of the attendees of the event
+   *
+   * @param eventID the id of the event
+   */
   private fun attendeesRatingsCollection(eventID: String) =
       Firebase.firestore
           .collection(EVENT_COLLECTION)
           .document(eventID)
           .collection("attendees_ratings")
 
+  /**
+   * Collection of the events organized by the organizer.
+   *
+   * @param organizerID the id of the organizer
+   */
   private fun organizedEventsCollection(organizerID: String) =
       Firebase.firestore
           .collection(ORGANIZER_COLLECTION)
@@ -31,7 +44,7 @@ class RatingFirebaseConnection {
           .collection("organized_events")
 
   /**
-   * Fetches the rating of the user for the event
+   * Fetches the rating of the user for the event.
    *
    * @param eventID the id of the event
    * @param userID the id of the user
@@ -66,7 +79,7 @@ class RatingFirebaseConnection {
       }
 
   /**
-   * Fetches all the ratings given to the event
+   * Fetches all the ratings given to the event.
    *
    * @param eventID the id of the event
    * @return a map of user id to rating
@@ -95,7 +108,7 @@ class RatingFirebaseConnection {
       }
 
   /**
-   * Updates the rating given by the user for the event
+   * Updates the rating given by the user for the event.
    *
    * @param eventID the id of the event
    * @param userID the id of the user
@@ -128,7 +141,7 @@ class RatingFirebaseConnection {
   }
 
   /**
-   * Deletes the rating of the user for the event calls update(eventID, userID, Rating.UNRATED)
+   * Deletes the rating of the user for the event calls update(eventID, userID, Rating.UNRATED).
    *
    * @param eventID the id of the event
    * @param userID the id of the user
@@ -138,12 +151,11 @@ class RatingFirebaseConnection {
   }
 
   /**
-   * Deletes the attendees ratings of the event as well as the event rating document
+   * Deletes the attendees ratings of the event as well as the event rating document.
+   *
+   * !! Does not update the organizer rating documents !! This is mostly meant for clean up during.
    *
    * @param eventID the id of the event
-   *
-   * !! Does not update the organizer rating documents !! This is mostly meant for clean up during
-   * test
    */
   fun deleteEventRating(eventID: String) {
     suspend fun deleteAttendeesRating(eventID: String): Boolean =
@@ -160,7 +172,7 @@ class RatingFirebaseConnection {
   }
 
   /**
-   * Fetches the event's ratings base document not the individual ratings
+   * Fetches the event's ratings base document not the individual ratings.
    *
    * @param eventID the id of the event
    * @return the document of the event
@@ -183,7 +195,7 @@ class RatingFirebaseConnection {
 
   /**
    * Aggregates the attendee ratings of the event and updates the event document with the average
-   * rating and the count of ratings
+   * rating and the count of ratings.
    *
    * @param eventID the id of the event
    * @return the average rating and the count of ratings
@@ -229,7 +241,7 @@ class RatingFirebaseConnection {
 
   /**
    * Updates the organizer rating document with the average rating and the count of ratings of the
-   * event
+   * event.
    *
    * @param eventID the id of the event
    * @param data the data to update the organizer rating document with
@@ -253,7 +265,7 @@ class RatingFirebaseConnection {
   }
 
   /**
-   * Fetches the ratings of the the events organized by the organizer
+   * Fetches the ratings of the the events organized by the organizer.
    *
    * @param organizerID the id of the organizer
    * @return a map of event id to the fields of the event document as pairs
@@ -276,17 +288,16 @@ class RatingFirebaseConnection {
       }
 
   /*
-    THis would be the more appropriate way to aggregate the ratings of the organizer
+    This would be the more appropriate way to aggregate the ratings of the organizer
     however this requires an index on the organized_events collection
     Since this collection is created at runtime and that the index creation is not supported in the emulator
     another solution is created below.
 
     However, should there be a way to instantiate an index through code relatively quickly this would be the way to go
-
   */
 
   /**
-   * Aggregates the ratings of the organizer
+   * Aggregates the ratings of the organizer.
    *
    * @param organizerID the id of the organizer
    * @return the average rating and the count of ratings
@@ -356,7 +367,6 @@ class RatingFirebaseConnection {
   }
 
   /*
-
   /**
    * Aggregates the ratings of the organizer
    *
@@ -405,7 +415,7 @@ class RatingFirebaseConnection {
      */
 
   /**
-   * Fetches the organizer's overall rating document
+   * Fetches the organizer's overall rating document.
    *
    * @param organizerID the id of the organizer
    * @return the document of the organizer
@@ -427,7 +437,7 @@ class RatingFirebaseConnection {
       }
 
   /**
-   * Deletes the organizer's organized events ratings as well as the organizer rating document
+   * Deletes the organizer's organized events ratings as well as the organizer rating document.
    *
    * @param organizerID the id of the organizer
    */
@@ -444,6 +454,12 @@ class RatingFirebaseConnection {
     Firebase.firestore.collection(ORGANIZER_COLLECTION).document(organizerID).delete()
   }
 
+  /**
+   * Fetches the rating of the event.
+   *
+   * @param eventID the id of the event
+   * @return the rating of the event if the event has not been rated, returns UNRATED
+   */
   suspend fun fetchEventGlobalRating(eventID: String): Double? =
       suspendCancellableCoroutine { continuation ->
         Firebase.firestore
@@ -461,6 +477,12 @@ class RatingFirebaseConnection {
             }
       }
 
+  /**
+   * Fetches the rating of the organizer.
+   *
+   * @param organizerID the id of the organizer
+   * @return the rating of the organizer if the organizer has not been rated, returns UNRATED
+   */
   suspend fun fetchOrganizerGlobalRating(organizerID: String): Double? =
       suspendCancellableCoroutine { continuation ->
         Firebase.firestore
