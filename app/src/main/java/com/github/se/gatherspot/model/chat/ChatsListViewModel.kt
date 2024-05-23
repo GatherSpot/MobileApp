@@ -9,6 +9,14 @@ import com.github.se.gatherspot.model.event.Event
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ * ViewModel for the list of chats.
+ *
+ * @property PAGE_SIZE Number of chats to load at a time.
+ * @property _uiState MutableStateFlow<ChatUIState> The current state of the UI.
+ * @property eventFirebaseConnection EventFirebaseConnection Connection to the Firebase database for
+ *   events.
+ */
 class ChatsListViewModel : ViewModel() {
 
   val PAGE_SIZE: Long = 9
@@ -21,6 +29,12 @@ class ChatsListViewModel : ViewModel() {
   // TEMPORARY
   // val listEvents = listOf("-NwJSmLmQDUlF9booiq7")
   //
+
+  /**
+   * Fetches the next set of events from the database.
+   *
+   * @param uid String? The user ID.
+   */
   suspend fun fetchNext(uid: String?) {
 
     if (uid == null) {
@@ -39,4 +53,9 @@ class ChatsListViewModel : ViewModel() {
   }
 }
 
+/**
+ * Represents the state of the UI.
+ *
+ * @property list MutableList<Event> The list of events.
+ */
 data class ChatUIState(val list: MutableList<Event> = mutableListOf())

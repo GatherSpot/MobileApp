@@ -10,12 +10,22 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.TimeUnit
 
+/**
+ * Analyser for detecting barcodes in images.
+ *
+ * @property onBarcodeDetected Callback function to be called when a barcode is detected.
+ */
 @SuppressLint("UnsafeOptInUsageError")
 class BarCodeAnalyser(
     private val onBarcodeDetected: (barcodes: List<Barcode>) -> Unit,
 ) : ImageAnalysis.Analyzer {
   private var lastAnalyzedTimeStamp = 0L
 
+  /**
+   * Search the image for barcodes.
+   *
+   * @param image ImageProxy The image to analyze.
+   */
   override fun analyze(image: ImageProxy) {
     val currentTimestamp = System.currentTimeMillis()
     if (currentTimestamp - lastAnalyzedTimeStamp >= TimeUnit.SECONDS.toMillis(1)) {

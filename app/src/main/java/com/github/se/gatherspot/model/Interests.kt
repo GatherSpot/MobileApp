@@ -2,6 +2,7 @@ package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.R
 
+/** Enum class representing the interests that a user can have. */
 enum class Interests {
   SPORT {
     override fun getIconId(): Int {
@@ -143,7 +144,11 @@ enum class Interests {
 
   // This companion object contains utility functions for working with Interests
   companion object {
-    /** The list of all Interests */
+    /**
+     * The list of all Interests
+     *
+     * @return the list of Interests
+     */
     fun toList(): List<Interests> {
       return entries
     }
@@ -218,6 +223,12 @@ enum class Interests {
   }
 }
 
+/**
+ * Returns the icon for an event based on the interests of the event
+ *
+ * @param interests the interests of the event
+ * @return the icon for the event
+ */
 fun getEventIcon(interests: Set<Interests>?): Int {
   if (interests != null && interests.isNotEmpty()) {
     val mostPreciseCategory =
@@ -228,6 +239,12 @@ fun getEventIcon(interests: Set<Interests>?): Int {
   }
 }
 
+/**
+ * Returns the header image for an event based on the interests of the event
+ *
+ * @param interests the interests of the event
+ * @return the header image for the event
+ */
 fun getEventImageHeader(interests: Set<Interests>?): Int {
   if (interests != null && interests.isNotEmpty()) {
     val mostPreciseCategory =

@@ -14,6 +14,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * ViewModel for the chat.
+ *
+ * @property eventId String The ID of the event the chat is associated with.
+ * @property chatMessagesFirebase ChatMessagesFirebaseConnection Connection to the Firebase database
+ *   for chat messages.
+ * @property messages StateFlow<List<ChatMessage>> The list of messages in the chat.
+ * @property event Event? The event the chat is associated with.
+ */
 class ChatViewModel(val eventId: String) : ViewModel() {
   val chatMessagesFirebase = ChatMessagesFirebaseConnection()
   private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -25,6 +34,7 @@ class ChatViewModel(val eventId: String) : ViewModel() {
     listenToMessages()
   }
 
+  /** Fetches the messages and event from the database. */
   private fun fetchMessagesAndEvent() {
     viewModelScope.launch {
       try {
@@ -45,6 +55,7 @@ class ChatViewModel(val eventId: String) : ViewModel() {
     }
   }
 
+  /** Listens to messages in the database. */
   fun listenToMessages() {
     FirebaseFirestore.getInstance()
         .collection(chatMessagesFirebase.CHATS)
@@ -65,6 +76,13 @@ class ChatViewModel(val eventId: String) : ViewModel() {
         }
   }
 
+  /**
+   * Adds a message to the chat.
+   *
+   * @param messageId String The ID of the message.
+   * @param senderId String The ID of the sender of the message.
+   * @param messageText String The content of the message.
+   */
   fun addMessage(messageId: String, senderId: String, messageText: String) {
     val newMessage =
         ChatMessage(
@@ -83,6 +101,11 @@ class ChatViewModel(val eventId: String) : ViewModel() {
     }
   }
 
+  /**
+   * Removes a message from the chat.
+   *
+   * @param messageId String The ID of the message.
+   */
   fun removeMessage(messageId: String) {
     viewModelScope.launch {
       try {
