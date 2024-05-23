@@ -9,16 +9,17 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.setUp.SetUpView
 import com.github.se.gatherspot.ui.setUp.SetUpViewModel
 
-@Preview
-@Composable
-fun SetUpProfilePreview() {
-  val nav = rememberNavController()
-  SetUpProfile(NavigationActions(nav))
-}
-
+/** Composable for the setup profile screen. */
 @Composable
 fun SetUpProfile(nav: NavigationActions) {
   val storeOwner = LocalViewModelStoreOwner.current!!
   val viewModel = viewModel<SetUpViewModel>(viewModelStoreOwner = storeOwner)
   SetUpView(viewModel, nav)
+}
+
+@Preview
+@Composable
+fun SetUpProfilePreview() {
+  val nav = rememberNavController()
+  SetUpProfile(NavigationActions(nav))
 }

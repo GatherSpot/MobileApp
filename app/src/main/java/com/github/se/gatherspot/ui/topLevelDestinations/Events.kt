@@ -68,9 +68,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
-/** Composable that displays events * */
-
-// listOf("Your interests", "None")
+/**
+ * Composable for the events screen.
+ *
+ * @param viewModel The view model for the events view
+ * @param nav The navigation actions
+ */
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
@@ -256,6 +259,13 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
       }
 }
 
+/**
+ * Composable that displays a single event as a row.
+ *
+ * @param event The event to display
+ * @param ratingFBC The rating firebase connection
+ * @param navigation The navigation actions
+ */
 @Composable
 fun EventRow(event: Event, ratingFBC: RatingFirebaseConnection, navigation: NavigationActions) {
   var globalOrganizerRating by remember { mutableStateOf<Double?>(null) }
@@ -363,6 +373,13 @@ fun EventRow(event: Event, ratingFBC: RatingFirebaseConnection, navigation: Navi
       }
 }
 
+/**
+ * Composable that displays a message when no events are loaded.
+ *
+ * @param viewModel The view model for the events view
+ * @param interests The interests in the filter
+ * @param fetch The function to call when refreshing the events
+ */
 @Composable
 fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: () -> Unit) {
 
@@ -385,6 +402,11 @@ fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: 
   }
 }
 
+/**
+ * Composable that displays an interest as a dropdown item with a state.
+ *
+ * @param interest The interest to display
+ */
 @Composable
 fun StatefulDropdownItem(interest: Interests) {
 
@@ -410,37 +432,3 @@ fun StatefulDropdownItem(interest: Interests) {
       },
   )
 }
-/*
-// Preview for the Event UI, for testing purposes
-@Preview
-@Composable
-fun EventUIPreview() {
-  // Set global uid for testing
-  val event =
-      Event(
-          id = "idTestEvent",
-          title = "Event Title",
-          description =
-              "Hello: I am a description of the event just saying that I would love to say" +
-                  "that Messi is not the best player in the world, but I can't. I am sorry.",
-          attendanceMaxCapacity = 5,
-          attendanceMinCapacity = 1,
-          categories = setOf(Interests.BASKETBALL),
-          eventEndDate = LocalDate.of(2025, 4, 15),
-          eventStartDate = LocalDate.of(2025, 4, 10),
-          globalRating = 4,
-          inscriptionLimitDate = LocalDate.of(2025, 4, 1),
-          inscriptionLimitTime = LocalTime.of(23, 59),
-          location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
-          registeredUsers = mutableListOf(),
-          timeBeginning = LocalTime.of(11, 0),
-          timeEnding = LocalTime.of(13, 0),
-          organizerID = Profile.testOrganizer().id)
-  val viewModel = EventRegistrationViewModel(listOf(""))
-  EventUI(
-      event = event,
-      navActions = NavigationActions(rememberNavController()),
-      registrationViewModel = viewModel,
-      eventsViewModel = EventsViewModel())
-}
-*/

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/** ViewModel for the events screen. */
 class EventsViewModel : ViewModel() {
 
   val PAGESIZE: Long = 9
@@ -37,14 +38,17 @@ class EventsViewModel : ViewModel() {
     }
   }
 
+  /** Fetches the events that the user has created and update viewModel. */
   suspend fun fetchMyEvents() {
     myEvents = eventFirebaseConnection.fetchMyEvents()
   }
 
+  /** Fetches the events that the user has registered to and update viewModel. */
   suspend fun fetchRegisteredTo() {
     registeredTo = eventFirebaseConnection.fetchRegisteredTo()
   }
 
+  /** Fetches the events from the followed users and update viewModel. */
   suspend fun fetchEventsFromFollowedUsers() {
     val ids =
         FollowList.following(
@@ -53,23 +57,36 @@ class EventsViewModel : ViewModel() {
     fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.elements)
   }
 
+  /** Display the events that the user has created. */
   fun displayMyEvents() {
     _uiState.value = UIState(myEvents)
   }
 
+  /** Display the events that the user has registered to. */
   fun displayRegisteredTo() {
     _uiState.value = UIState(registeredTo)
   }
 
+  /** Display the events from the followed users. */
   fun displayEventsFromFollowedUsers() {
     _uiState.value = UIState(fromFollowedUsers)
   }
 
+  /**
+   * Update the registration status of an event in the loaded events.
+   *
+   * @param event The event to update
+   */
   fun updateNewRegistered(event: Event) {
     updateLoaded(event)
     updateFiltered(event)
   }
 
+  /**
+   * Edit an event in the myEvents list.
+   *
+   * @param event The event to edit
+   */
   fun editMyEvent(event: Event) {
     for (i in 0 until myEvents.size) {
       if (myEvents[i].id == event.id) {
@@ -80,6 +97,11 @@ class EventsViewModel : ViewModel() {
     }
   }
 
+  /**
+   * Fetches the next events and updates the viewModel.
+   *
+   * @param l The list of interests to filter by
+   */
   suspend fun fetchNext(l: MutableList<Interests>) {
 
     val newRequest = l != previousInterests
@@ -100,6 +122,11 @@ class EventsViewModel : ViewModel() {
     }
   }
 
+  /**
+   * Filter the events based on the interests.
+   *
+   * @param s The list of interests to filter by
+   */
   fun filter(s: List<Interests>) {
     if (s.isEmpty()) {
       removeFilter()
@@ -111,10 +138,16 @@ class EventsViewModel : ViewModel() {
     _uiState.value = UIState(newEvents)
   }
 
+  /** Remove the filter and display all events. */
   fun removeFilter() {
     _uiState.value = UIState(loadedEvents)
   }
 
+  /**
+   * Get the list of loaded events.
+   *
+   * @return The list of loaded events
+   */
   fun getLoadedEvents(): MutableList<Event> {
     return loadedEvents
   }

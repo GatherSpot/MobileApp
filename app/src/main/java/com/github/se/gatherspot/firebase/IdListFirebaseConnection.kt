@@ -64,7 +64,6 @@ class IdListFirebaseConnection {
   fun saveToFirebase(idSet: IdList) {
     val tag = idSet.collection.name
     val id = idSet.id
-    // TODO : check if this good way to store data
     val data = hashMapOf("ids" to idSet.elements.toList())
     fcoll
         .document(tag)
@@ -278,7 +277,6 @@ class IdListFirebaseConnection {
     return data
   }
 
-  // TODO : keep an eye on this function as it might create problems in the future
   /**
    * Deletes a list.
    *

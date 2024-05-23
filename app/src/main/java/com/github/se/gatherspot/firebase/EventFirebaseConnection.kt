@@ -512,11 +512,11 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             "categories" to element.categories?.toList(),
             "registeredUsers" to element.registeredUsers,
             "finalAttendee" to
-                when (element.finalAttendees) { // TODO Harmonize spelling to one or the other
-                  null -> mutableListOf<String>()
+                when (element.finalAttendees) {
+                  null -> mutableListOf()
                   else -> element.finalAttendees
                 },
-            "globalRating" to // TODO Change globalRating to an Int ?
+            "globalRating" to
                 when (element.globalRating) {
                   null -> "null"
                   else -> element.globalRating.toString()
@@ -527,7 +527,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                   "" -> Firebase.auth.currentUser?.uid ?: Profile.testOrganizer().id
                   else -> element.organizerID
                 },
-            "eventStatus" to element.eventStatus) // TODO remove ?
+            "eventStatus" to element.eventStatus)
 
     Firebase.firestore
         .collection(COLLECTION)

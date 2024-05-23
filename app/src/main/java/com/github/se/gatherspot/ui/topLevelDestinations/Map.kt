@@ -48,6 +48,13 @@ private const val DEFAULT_ZOOM_LEVEL = 15f
 val backToPositionButton = mutableStateOf(false)
 var toggleRegisteredEvents = mutableStateOf(true)
 
+/**
+ * Composable for the map screen. Wrapper around the MapComposable to handle the current location
+ * and camera position state.
+ *
+ * @param nav The navigation actions
+ * @param testPosition A nullable LatLng object for testing purposes
+ */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
@@ -106,6 +113,7 @@ fun Map(nav: NavigationActions, testPosition: LatLng? = null) {
   }
 }
 
+/** Composable for the map. */
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable

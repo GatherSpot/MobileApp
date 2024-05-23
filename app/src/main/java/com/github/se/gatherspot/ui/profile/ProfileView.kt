@@ -190,8 +190,6 @@ private fun FollowButtons(
 
           Text(text = "Add Friend")
         }
-        // TODO : make if so it does not move add friend around (make if either a chip or put it
-        // in a fixed size box)
         Text(
             text = if (following) "Unfollow" else "  Follow",
             modifier = Modifier.clickable { follow() }.testTag("follow"))

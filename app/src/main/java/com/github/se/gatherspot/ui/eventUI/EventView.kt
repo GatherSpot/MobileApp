@@ -396,7 +396,6 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
                   navActions.controller.navigate("profile")
                 }
               }) {
-        // TODO implement image here: do it later
         Box(
             contentAlignment = Alignment.Center,
             modifier =
@@ -574,7 +573,7 @@ fun ColumnScope.EventBody(
       GeoMap(
           userCoordinates = location,
           interestsCoordinates = emptyList(),
-          mapViewModifier = Modifier.fillMaxWidth().height(200.dp))
+          modifier = Modifier.fillMaxWidth().height(200.dp))
     } ?: BasicText(text = "No location provided for this event")
   }
   // Event Dates and Times

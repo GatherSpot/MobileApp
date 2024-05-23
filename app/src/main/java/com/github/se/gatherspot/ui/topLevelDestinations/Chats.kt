@@ -47,6 +47,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
 
+/**
+ * Composable for the chats screen.
+ *
+ * @param viewModel The view model for the chats view
+ * @param nav The navigation actions
+ */
 @Composable
 fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
 
@@ -67,7 +73,7 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
   }
 
   Scaffold(
-      topBar = { ChatsTopAppBar(nav, "Chats") },
+      topBar = { ChatsTopAppBar("Chats") },
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { tld -> nav.navigateTo(tld) },
@@ -115,19 +121,17 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
                 fetched = true
               }
             }
-            //              LaunchedEffect(key1 = FirebaseAuth.getInstance().currentUser?.uid) {
-            //                  try {
-            //                      viewModel.fetchNext()
-            //                  }
-            //                  catch (e: Exception) {
-            //                        Log.d("ptdr","Error fetching chats: $e")
-            //                  }
-            //              }
           }
         }
       }
 }
 
+/**
+ * Composable for a chat row.
+ *
+ * @param event The event to display
+ * @param navigation The navigation actions
+ */
 @Composable
 fun ChatRow(event: Event, navigation: NavigationActions) {
 
@@ -148,36 +152,11 @@ fun ChatRow(event: Event, navigation: NavigationActions) {
         }
 
         Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
-          //          if (chatWithIndicator.chat.peopleIDs.size > 2) {
-          //
-          //            Text(
-          //                text = "Chat between ${chatWithIndicator.chat.peopleIDs.size} people",
-          //                fontWeight = FontWeight.Bold,
-          //                fontSize = 10.sp)
-          //          } else {
-          //            Text(
-          //                text =
-          //                    "Chat between ${chatWithIndicator.chat.peopleIDs[0]} and
-          // ${chatWithIndicator.chat.peopleIDs[1]}", // TODO: change with usernames
-          //                fontWeight = FontWeight.Bold,
-          //                fontSize = 10.sp)
-          //          }
-          Text(
-              text = event.title, // TODO: change with event name
-              fontWeight = FontWeight.Bold,
-              fontSize = 10.sp)
+          Text(text = event.title, fontWeight = FontWeight.Bold, fontSize = 10.sp)
         }
 
         Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
           Row(verticalAlignment = Alignment.CenterVertically) {
-            //            when (chatWithIndicator.unreadMessages) {
-            //              0 -> Text("", color = Color(0xFF00668A), fontSize = 14.sp)
-            //              else ->
-            //                  Text(
-            //                      "${chatWithIndicator.unreadMessages} new messages",
-            //                      color = Color(255, 165, 0),
-            //                      fontSize = 14.sp)
-            //            }
             Icon(
                 painter = painterResource(R.drawable.arrow_right),
                 contentDescription = null,
@@ -188,8 +167,13 @@ fun ChatRow(event: Event, navigation: NavigationActions) {
   Divider(color = Color.Black, thickness = 1.dp)
 }
 
+/**
+ * Composable for the chats top app bar.
+ *
+ * @param title The title of the app bar
+ */
 @Composable
-fun ChatsTopAppBar(navActions: NavigationActions, title: String) {
+fun ChatsTopAppBar(title: String) {
   TopAppBar(
       modifier = Modifier.testTag("chatsTopBar"),
       title = { androidx.compose.material.Text(text = title, color = Color.Black) },
