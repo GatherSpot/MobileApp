@@ -33,8 +33,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.intents.CircleImagePicker
-import com.github.se.gatherspot.intents.CircleImageViewer
+import com.github.se.gatherspot.utils.CircleImagePicker
+import com.github.se.gatherspot.utils.CircleImageViewer
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions

@@ -177,9 +177,9 @@ fun MapComposable(
 
             for (event in
                 viewModel!!.events.toSet().subtract(viewModel.registered_events.toList().toSet())) {
-              if (MainActivity.selectedInterests.isEmpty() ||
+              if (MainActivity.selectedInterests.value!!.isEmpty() ||
                   (event?.categories ?: setOf())
-                      .intersect(MainActivity.selectedInterests.toSet())
+                      .intersect(MainActivity.selectedInterests.value!!)
                       .isNotEmpty()) {
                 Marker(
                     state =
@@ -199,9 +199,9 @@ fun MapComposable(
             }
             for (event in (viewModel.registered_events.toSet())) {
               if (toggleRegisteredEvents.value &&
-                  (MainActivity.selectedInterests.isEmpty() ||
+                  (MainActivity.selectedInterests.value!!.isEmpty() ||
                       (event?.categories ?: setOf())
-                          .intersect(MainActivity.selectedInterests.toSet())
+                          .intersect(MainActivity.selectedInterests.value!!)
                           .isNotEmpty())) {
                 Marker(
                     state =

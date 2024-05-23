@@ -2,140 +2,132 @@ package com.github.se.gatherspot.ui.topLevelDestinations
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.utils.UtilsForTests
+import com.github.se.gatherspot.sql.AppDatabase
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.google.firebase.auth.auth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
-class EventsViewModel : ViewModel() {
-
+class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
+  private val eventDao = localDataBase.EventDao()
+  private val uid = Firebase.auth.uid!!
   val PAGESIZE: Long = 9
-  private var _uiState = MutableStateFlow(UIState())
-  val uiState: StateFlow<UIState> = _uiState
-  private var loadedEvents: MutableList<Event> = mutableListOf()
-  private var myEvents: MutableList<Event> = mutableListOf()
-  private var registeredTo: MutableList<Event> = mutableListOf()
-  private var fromFollowedUsers: MutableList<Event> = mutableListOf()
-  private var loadedFilteredEvents: MutableList<Event> = mutableListOf()
+  private var _allEvents = MutableLiveData<List<Event>>(listOf())
+  private var _myEvents = MutableLiveData<List<Event>>(listOf())
+  private var _registeredTo = MutableLiveData<List<Event>>(listOf())
+  private var _fromFollowedUsers = MutableLiveData<List<Event>>(listOf())
   val eventFirebaseConnection = EventFirebaseConnection()
-  var previousInterests = mutableListOf<Interests>()
+  // To synchronize between screens, it is initialized with the selected interests from MainActivity
+  private var _interests = MutableLiveData(MainActivity.selectedInterests.value!!)
+  private var _showFilterDialog = MutableLiveData(false)
+  val tabList = listOf("Mine", "Feed", "Planned", "Follows")
+  //we start at Feed, so default is 1 !!!
 
-  // This is the id of the of the user logged in by default during tests.
-
+  val allEvents: LiveData<List<Event>> = _allEvents
+  val myEvents: LiveData<List<Event>> = _myEvents
+  val registeredTo: LiveData<List<Event>> = _registeredTo
+  val fromFollowedUsers: LiveData<List<Event>> = _fromFollowedUsers
+  val showFilterDialog: LiveData<Boolean> = _showFilterDialog
+// fetch all event lists on activity start.
   init {
-    viewModelScope.launch {
-      val events = eventFirebaseConnection.fetchNextEvents(PAGESIZE)
-      loadedEvents = events.toMutableList()
-      _uiState.value = UIState(loadedEvents)
-    }
+    fetchWithInterests()
+    fetchMyEvents()
+    fetchRegisteredTo()
+    fetchFromFollowedUsers()
   }
-
-  suspend fun fetchMyEvents() {
-    myEvents = eventFirebaseConnection.fetchMyEvents()
-  }
-
-  suspend fun fetchRegisteredTo() {
-    registeredTo = eventFirebaseConnection.fetchRegisteredTo()
-  }
-
-  suspend fun fetchEventsFromFollowedUsers() {
-    val ids =
-        FollowList.following(
-            FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId)
-    Log.d(TAG, "ids from viewModel ${ids.elements}")
-    fromFollowedUsers = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.elements)
-  }
-
-  fun displayMyEvents() {
-    _uiState.value = UIState(myEvents)
-  }
-
-  fun displayRegisteredTo() {
-    _uiState.value = UIState(registeredTo)
-  }
-
-  fun displayEventsFromFollowedUsers() {
-    _uiState.value = UIState(fromFollowedUsers)
-  }
-
-  fun updateNewRegistered(event: Event) {
-    updateLoaded(event)
-    updateFiltered(event)
-  }
-
-  fun editMyEvent(event: Event) {
-    for (i in 0 until myEvents.size) {
-      if (myEvents[i].id == event.id) {
-        myEvents[i] = event
-        displayMyEvents()
-        return
+  fun fetchMyEvents() {
+    viewModelScope.launch(Dispatchers.IO) {
+      _myEvents.postValue(eventDao.getAllFromOrganizerId(uid))
+      try {
+        val events = eventFirebaseConnection.fetchMyEvents()
+        _myEvents.postValue(events)
+        eventDao.insert(*events.toTypedArray())
+      } catch (_: Exception) {
       }
     }
   }
 
-  suspend fun fetchNext(l: MutableList<Interests>) {
-
-    val newRequest = l != previousInterests
-
-    if (newRequest) {
-      eventFirebaseConnection.offset = null
-      loadedFilteredEvents = mutableListOf()
+  fun fetchRegisteredTo() {
+    viewModelScope.launch(Dispatchers.IO) {
+      _registeredTo.postValue(eventDao.getAllWhereIdIsRegistered(uid))
+      lateinit var events: List<Event>
+      try {
+        events = eventFirebaseConnection.fetchRegisteredTo()
+        _registeredTo.postValue(events)
+        eventDao.insert(*events.toTypedArray())
+      } catch (_: Exception) {
+      }
     }
-    previousInterests = l.toMutableList()
-    if (l.isEmpty()) {
-      val nextEvents = eventFirebaseConnection.fetchNextEvents(PAGESIZE)
-      loadedEvents.addAll(nextEvents)
-      _uiState.value = UIState(loadedEvents)
-    } else {
-      val nextEvents = eventFirebaseConnection.fetchEventsBasedOnInterests(PAGESIZE, l)
-      loadedFilteredEvents.addAll(nextEvents)
-      _uiState.value = UIState(loadedFilteredEvents)
+  }
+  fun fetchFromFollowedUsers() {
+    // TODO implement fetch thoses ids from localdatabase, as they are never stale locally
+    viewModelScope.launch(Dispatchers.IO) {
+      val ids =
+      FollowList.following(
+        FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId
+      )
+      Log.d(TAG, "ids from viewModel ${ids.elements}")
+      val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.elements)
+      _fromFollowedUsers.postValue(events)
     }
   }
 
-  fun filter(s: List<Interests>) {
-    if (s.isEmpty()) {
-      removeFilter()
-      return
+  fun fetchWithInterests(){
+    viewModelScope.launch(Dispatchers.IO) {
+      val newEvents = eventFirebaseConnection.fetchEventsBasedOnInterests(PAGESIZE,_interests.value!!.toList())
+      val events = _allEvents.value!!.plus(newEvents)
+      _allEvents.postValue(events)
     }
-
-    val newEvents =
-        loadedEvents.filter { event -> event.categories?.any { it in s } ?: false }.toMutableList()
-    _uiState.value = UIState(newEvents)
   }
 
+  fun setFilter(s: Set<Interests>) {
+    // check if change
+    if (s == _interests.value){return}
+    // change -> reset offset and update interests
+    _interests.value = s
+    resetOffset()
+    fetchWithInterests()
+  }
+
+  fun revertFilter() { MainActivity.selectedInterests.value = _interests.value; dismissDialog() }
+  fun applyFilter() { setFilter(MainActivity.selectedInterests.value!!); dismissDialog() }
+  fun showDialog() { _showFilterDialog.value = true }
+  fun dismissDialog() { _showFilterDialog.value = false }
   fun removeFilter() {
-    _uiState.value = UIState(loadedEvents)
+    _interests.value = setOf()
+    resetOffset()
   }
-
-  fun getLoadedEvents(): MutableList<Event> {
-    return loadedEvents
+  private fun resetOffset(){
+    eventFirebaseConnection.offset = null
+    _allEvents.value = listOf()
   }
-
-  private fun updateLoaded(event: Event) {
-    for (i in 0 until loadedEvents.size) {
-      if (event.id == loadedEvents[i].id) {
-        loadedEvents[i] = event
-        break
-      }
+  fun getEventTiming(event: Event): eventTiming{
+    val today = LocalDate.now()
+    return when {
+      event.eventStartDate!!.isBefore(today) -> eventTiming.PAST
+      event.eventStartDate!!.isEqual(today) -> eventTiming.TODAY
+      else -> eventTiming.FUTURE
     }
   }
+  fun isOrganizer(event: Event) = event.organizerID == uid
+  fun isRegistered(event: Event) = event.registeredUsers.contains(uid)
 
-  private fun updateFiltered(event: Event) {
-    for (i in 0 until loadedFilteredEvents.size) {
-      if (event.id == loadedFilteredEvents[i].id) {
-        loadedFilteredEvents[i] = event
-        break
-      }
-    }
+  enum class eventTiming {
+    PAST,
+    TODAY,
+    FUTURE,
   }
 }
-
-data class UIState(val list: MutableList<Event> = mutableListOf())

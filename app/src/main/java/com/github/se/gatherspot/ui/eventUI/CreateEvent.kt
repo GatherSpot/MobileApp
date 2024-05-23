@@ -22,5 +22,5 @@ fun CreateEvent(nav: NavigationActions, eventUtils: EventUtils, viewModel: Event
 @Preview
 @Composable
 fun CreateEventPreview() {
-  CreateEvent(NavigationActions(rememberNavController()), EventUtils(), EventsViewModel())
+//  CreateEvent(NavigationActions(rememberNavController()), EventUtils(), EventsViewModel())
 }

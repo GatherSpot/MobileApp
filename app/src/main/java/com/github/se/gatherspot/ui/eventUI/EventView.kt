@@ -50,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.intents.BannerImageViewer
+import com.github.se.gatherspot.utils.BannerImageViewer
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -283,7 +283,7 @@ fun RegisterButton(
   Button(
       onClick = {
         eventUIViewModel.registerForEvent(event)
-        eventsViewModel.updateNewRegistered(event)
+        //eventsViewModel.updateNewRegistered(event)
         eventUIViewModel.clickRegisterButton()
       },
       enabled = isButtonEnabled,

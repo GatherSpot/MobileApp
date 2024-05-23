@@ -220,6 +220,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
   }
 
   suspend fun fetchEventsBasedOnInterests(number: Long, l: List<Interests>): MutableList<Event> {
+    // if interests are empty, default to normal one, this reduces frontend complexity.
+    if (l.isEmpty()){return fetchNextEvents(number)}
     val querySnapshot: QuerySnapshot =
         if (offset == null) {
           Firebase.firestore

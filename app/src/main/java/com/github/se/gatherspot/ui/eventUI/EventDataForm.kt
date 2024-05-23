@@ -57,7 +57,7 @@ import androidx.core.net.toUri
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseImages
-import com.github.se.gatherspot.intents.BannerImagePicker
+import com.github.se.gatherspot.utils.BannerImagePicker
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
@@ -496,11 +496,6 @@ fun EventDataForm(
                             event,
                             imageUri.value)
 
-                    if (eventAction == EventAction.CREATE) {
-                      // viewModel.displayMyNewEvent(newEvent)
-                    } else {
-                      viewModel.editMyEvent(newEvent)
-                    }
                   } catch (e: Exception) {
                     errorMessage = e.message.toString()
                     showErrorDialog = true

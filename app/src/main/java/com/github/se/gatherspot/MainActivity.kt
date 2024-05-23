@@ -1,6 +1,7 @@
 package com.github.se.gatherspot
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -8,17 +9,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
@@ -32,6 +37,7 @@ import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
+import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.FollowListUI
 import com.github.se.gatherspot.ui.SignUp
@@ -67,18 +73,22 @@ class MainActivity : ComponentActivity() {
     var mapViewModel: MapViewModel? = null
     lateinit var app: Application
     var savedCameraPositionState: CameraPositionState? = null
-    var selectedInterests: MutableList<Interests> = mutableListOf()
+    var selectedInterests = MutableLiveData(Interests.new())
+    var localDatabaseName = "localDataBase"
   }
 
   private lateinit var navController: NavHostController
-  private var eventsViewModel: EventsViewModel? = null
   private var chatsViewModel: ChatsListViewModel? = null
-
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
     // val chatViewModel = ChatViewModel()
+    val context: Context = applicationContext
+    val localDataBase = Room.databaseBuilder(
+      context,
+      AppDatabase::class.java, localDatabaseName
+    ).build()
     app = application
     mapViewModel = MapViewModel(app)
 
@@ -110,50 +120,36 @@ class MainActivity : ComponentActivity() {
 
             navigation(startDestination = "events", route = "home") {
               composable("events") {
-                when {
-                  eventsViewModel == null -> {
-                    eventsViewModel = EventsViewModel()
-                    Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
-                  }
-                  else ->
-                      Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
-                }
+                val eventsViewModel = viewModel { EventsViewModel(localDataBase) }
+                Events(viewModel = eventsViewModel, nav = NavigationActions(navController))
               }
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
-                val gson: Gson =
-                    GsonBuilder()
-                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                        .create()
                 val eventObject =
-                    gson.fromJson(
-                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+                  backStackEntry.arguments!!.getString("eventJson")?.let {
+                    Event.fromJson(
+                      it
+                    )
+                  }
                 EventUI(
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
                     eventUIViewModel = EventUIViewModel(eventObject),
-                    eventsViewModel = eventsViewModel!!)
+                    eventsViewModel = viewModel(){EventsViewModel(localDataBase)})
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
-                val gson: Gson =
-                    GsonBuilder()
-                        .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                        .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                        .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                        .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                        .create()
 
                 val eventObject =
-                    gson.fromJson(
-                        backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+                  backStackEntry.arguments!!.getString("eventJson")?.let {
+                    Event.fromJson(
+                      it
+                    )
+                  }
                 EditEvent(
                     event = eventObject!!,
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
-                    viewModel = eventsViewModel!!)
+                    viewModel = viewModel {EventsViewModel(localDataBase) })
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -202,7 +198,7 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(
                     nav = NavigationActions(navController),
                     eventUtils = EventUtils(),
-                    eventsViewModel!!)
+                    viewModel(){EventsViewModel(localDataBase) })
               }
               composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }
