@@ -21,11 +21,11 @@ class EnvironmentSetter {
     /** This function logs in the user for testing purposes this user has his email verified */
     fun testLogin() {
       runBlocking {
-          if (Firebase.auth.currentUser?.uid != testLoginUID) {
-              Firebase.auth
-                  .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;") // uid =
-                  .await()
-          }
+        if (Firebase.auth.currentUser?.uid != testLoginUID) {
+          Firebase.auth
+              .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;") // uid =
+              .await()
+        }
       }
     }
 
@@ -104,9 +104,7 @@ class EnvironmentSetter {
     }
 
     fun allTestCleanUp(userName: String) {
-      runTest {
-        removeUserName(userName)
-      }
+      runTest { removeUserName(userName) }
     }
 
     private fun checkEmailNotUsed(email: String) {
