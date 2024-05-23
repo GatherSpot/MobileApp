@@ -5,7 +5,6 @@ package com.github.se.gatherspot.ui.eventUI
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
@@ -22,5 +21,5 @@ fun CreateEvent(nav: NavigationActions, eventUtils: EventUtils, viewModel: Event
 @Preview
 @Composable
 fun CreateEventPreview() {
-//  CreateEvent(NavigationActions(rememberNavController()), EventUtils(), EventsViewModel())
+  //  CreateEvent(NavigationActions(rememberNavController()), EventUtils(), EventsViewModel())
 }

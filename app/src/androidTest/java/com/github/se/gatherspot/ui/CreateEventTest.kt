@@ -54,13 +54,15 @@ class CreateEventTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @Before fun setUp() {
+  @Before
+  fun setUp() {
     runBlocking { testLogin() }
     val context = ApplicationProvider.getApplicationContext<Context>()
     db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
   }
 
-  @After fun cleanUp() {
+  @After
+  fun cleanUp() {
     runBlocking { testLoginCleanUp() }
     db.close()
   }

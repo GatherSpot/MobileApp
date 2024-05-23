@@ -29,7 +29,6 @@ import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
-import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -38,6 +37,7 @@ import org.junit.Test
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var eventsViewModel: EventsViewModel
+
   @Before
   fun setUp() {
     runBlocking {

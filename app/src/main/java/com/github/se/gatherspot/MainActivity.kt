@@ -9,7 +9,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +22,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
@@ -33,10 +31,6 @@ import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.model.utils.LocalDateDeserializer
-import com.github.se.gatherspot.model.utils.LocalDateSerializer
-import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
-import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.FollowListUI
@@ -59,11 +53,7 @@ import com.github.se.gatherspot.ui.topLevelDestinations.LogIn
 import com.github.se.gatherspot.ui.topLevelDestinations.Map
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.maps.android.compose.CameraPositionState
-import java.time.LocalDate
-import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
   companion object {
@@ -79,16 +69,15 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var navController: NavHostController
   private var chatsViewModel: ChatsListViewModel? = null
+
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
     // val chatViewModel = ChatViewModel()
     val context: Context = applicationContext
-    val localDataBase = Room.databaseBuilder(
-      context,
-      AppDatabase::class.java, localDatabaseName
-    ).build()
+    val localDataBase =
+        Room.databaseBuilder(context, AppDatabase::class.java, localDatabaseName).build()
     app = application
     mapViewModel = MapViewModel(app)
 
@@ -126,30 +115,21 @@ class MainActivity : ComponentActivity() {
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
                 val eventObject =
-                  backStackEntry.arguments!!.getString("eventJson")?.let {
-                    Event.fromJson(
-                      it
-                    )
-                  }
+                    backStackEntry.arguments!!.getString("eventJson")?.let { Event.fromJson(it) }
                 EventUI(
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
                     eventUIViewModel = EventUIViewModel(eventObject),
-                    eventsViewModel = viewModel(){EventsViewModel(localDataBase)})
+                    eventsViewModel = viewModel() { EventsViewModel(localDataBase) })
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
-
                 val eventObject =
-                  backStackEntry.arguments!!.getString("eventJson")?.let {
-                    Event.fromJson(
-                      it
-                    )
-                  }
+                    backStackEntry.arguments!!.getString("eventJson")?.let { Event.fromJson(it) }
                 EditEvent(
                     event = eventObject!!,
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
-                    viewModel = viewModel {EventsViewModel(localDataBase) })
+                    viewModel = viewModel { EventsViewModel(localDataBase) })
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -198,7 +178,7 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(
                     nav = NavigationActions(navController),
                     eventUtils = EventUtils(),
-                    viewModel(){EventsViewModel(localDataBase) })
+                    viewModel() { EventsViewModel(localDataBase) })
               }
               composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }

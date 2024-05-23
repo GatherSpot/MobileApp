@@ -57,13 +57,13 @@ import androidx.core.net.toUri
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseImages
-import com.github.se.gatherspot.utils.BannerImagePicker
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
+import com.github.se.gatherspot.utils.BannerImagePicker
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -495,7 +495,6 @@ fun EventDataForm(
                             eventAction,
                             event,
                             imageUri.value)
-
                   } catch (e: Exception) {
                     errorMessage = e.message.toString()
                     showErrorDialog = true

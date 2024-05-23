@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performScrollToNode
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -76,9 +74,7 @@ class EventsViewCompleteTest {
 
       val indexBasketball = Interests.BASKETBALL.ordinal
 
-      categories[indexBasketball] {
-        performClick()
-      }
+      categories[indexBasketball] { performClick() }
 
       setFilterButton { performClick() }
 

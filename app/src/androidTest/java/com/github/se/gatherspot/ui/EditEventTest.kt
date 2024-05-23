@@ -49,10 +49,10 @@ class EditEventTest {
       val navController = rememberNavController()
 
       EditEvent(
-        nav = NavigationActions(navController),
-        eventUtils = EventUtils(),
-        event = testEvent,
-        EventsViewModel(db))
+          nav = NavigationActions(navController),
+          eventUtils = EventUtils(),
+          event = testEvent,
+          EventsViewModel(db))
     }
   }
 

@@ -22,6 +22,7 @@ interface EventDao {
 
   @Query("SELECT * FROM event WHERE registeredUsers LIKE '%' || :id || '%'")
   fun getAllWhereIdIsRegistered(id: String): List<Event>
+
   @Query("SELECT * FROM event WHERE id = :id") fun get(id: String): Event
 
   @Insert fun insert(vararg event: Event)
