@@ -103,7 +103,8 @@ class MainActivity : ComponentActivity() {
 
           // Check if user is already authenticated
           val user = FirebaseAuth.getInstance().currentUser
-          val startDestination = if (user != null && user.isEmailVerified) "home" else "auth"
+          var startDestination = "auth"
+          if (user != null && user.isEmailVerified) startDestination = "home"
 
           NavHost(navController = navController, startDestination = startDestination) {
             navigation(startDestination = "login", route = "auth") {
@@ -114,14 +115,9 @@ class MainActivity : ComponentActivity() {
 
             navigation(startDestination = "events", route = "home") {
               composable("events") {
-                when {
-                  eventsViewModel == null -> {
-                    eventsViewModel = EventsViewModel()
-                    Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
-                  }
-                  else ->
-                      Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
-                }
+                if (eventsViewModel == null) eventsViewModel = EventsViewModel()
+
+                Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
               }
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
@@ -183,13 +179,8 @@ class MainActivity : ComponentActivity() {
               }
 
               composable("chats") {
-                when {
-                  chatsViewModel == null -> {
-                    chatsViewModel = ChatsListViewModel()
-                    Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
-                  }
-                  else -> Chats(chatsViewModel!!, NavigationActions(navController))
-                }
+                if (chatsViewModel == null) chatsViewModel = ChatsListViewModel()
+                Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
               }
 
               composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
