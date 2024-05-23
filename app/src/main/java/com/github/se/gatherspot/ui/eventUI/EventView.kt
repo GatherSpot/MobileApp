@@ -422,10 +422,10 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
             fontSize = 16.sp)
         if (organizerRating > 0.0) {
           Spacer(modifier = Modifier.width(8.dp))
-          Text(text = "was rated:", fontWeight = FontWeight.Light, fontSize = 16.sp)
+          Text(text = "whose rate is", fontWeight = FontWeight.Light, fontSize = 16.sp)
           Spacer(modifier = Modifier.width(4.dp))
           Text(text = "$organizerRating", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-          Text(text = "/ 5.0", fontWeight = FontWeight.Light, fontSize = 16.sp)
+          Text(text = "/5.0", fontWeight = FontWeight.Light, fontSize = 16.sp)
         }
       }
 }

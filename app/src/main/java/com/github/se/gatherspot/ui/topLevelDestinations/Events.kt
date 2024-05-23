@@ -50,11 +50,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.getEventIcon
@@ -73,6 +75,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
+  val ratingFBC = RatingFirebaseConnection()
   val state = viewModel.uiState.collectAsState()
   var previousScrollPosition by remember { mutableIntStateOf(0) }
   var loading by remember { mutableStateOf(false) }
@@ -230,7 +233,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                     Modifier.padding(vertical = 15.dp)
                         .padding(paddingValues)
                         .testTag("eventsList")) {
-                  items(events) { event -> EventRow(event, nav) }
+                  items(events) { event -> EventRow(event, ratingFBC, nav) }
                 }
 
             LaunchedEffect(lazyState.isScrollInProgress) {
@@ -254,7 +257,13 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 }
 
 @Composable
-fun EventRow(event: Event, navigation: NavigationActions) {
+fun EventRow(event: Event, ratingFBC: RatingFirebaseConnection, navigation: NavigationActions) {
+  var globalOrganizerRating by remember { mutableStateOf<Double?>(null) }
+
+  LaunchedEffect(event.id) {
+    Log.d(",", "calling func")
+    globalOrganizerRating = ratingFBC.fetchOrganizerGlobalRating(event.organizerID)
+  }
   val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests"
   val isPastEvent = event.eventStartDate?.isBefore(LocalDate.now()) ?: false
   val isToday = event.eventStartDate?.isEqual(LocalDate.now()) ?: false
@@ -317,7 +326,22 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                     }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
-                Text(text = event.title, fontSize = 14.sp)
+                Text(
+                    text = event.title,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis)
+                when {
+                  globalOrganizerRating != null ->
+                      Text(
+                          "Organizer Rating:$globalOrganizerRating/5.0",
+                          fontSize = 10.sp,
+                          fontWeight = FontWeight.Bold,
+                          maxLines = 1,
+                          overflow = TextOverflow.Ellipsis)
+                  else -> {}
+                }
               }
 
               Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
