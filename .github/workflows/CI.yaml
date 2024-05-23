@@ -40,6 +40,8 @@ jobs:
           distribution: "temurin"
           java-version: "17"
       # Firebase emulator
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
       - name: Start Firebase Emulator
         run: firebase emulators:start --only firestore,auth,database &
 
