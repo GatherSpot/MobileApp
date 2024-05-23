@@ -309,7 +309,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         val querySnapshot: QuerySnapshot =
             Firebase.firestore
                 .collection(EVENTS)
-                .orderBy("eventID")
+                .orderBy("organizerID")
                 .whereIn("organizerID", ids)
                 .get()
                 .await()
