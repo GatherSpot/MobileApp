@@ -104,7 +104,7 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: |
-            firebase emulators:exec --token ${{ secrets.firebase }} --project gatherspot './gradlew connectedcheck --parallel --build-cache --info'
+            firebase emulators:exec  "./gradlew connectedcheck --parallel --build-cache --info" --token ${{ secrets.firebase }} --project gatherspot
 
 
       # This step generates the coverage report which will be uploaded to sonar
