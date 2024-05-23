@@ -45,8 +45,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,6 +56,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,6 +66,7 @@ import androidx.room.Room
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.getEventIcon
@@ -70,7 +74,9 @@ import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -146,6 +152,12 @@ fun EventList(vm: EventsViewModel, fetch: () -> Unit, events: State<List<Event>>
 }
 @Composable
 fun EventItem(event: Event, getEventTiming: (Event)->EventsViewModel.eventTiming, isOrganizer: (Event) -> Boolean, isRegistered: (Event) -> Boolean, navigation: NavigationActions) {
+  var globalOrganizerRating by remember { mutableStateOf<Double?>(null) }
+  val ratingFBC = RatingFirebaseConnection()
+  LaunchedEffect(event.id) {
+    Log.d(",", "calling func")
+    globalOrganizerRating = ratingFBC.fetchOrganizerGlobalRating(event.organizerID)
+  }
   Box(
       modifier =
       Modifier
@@ -214,7 +226,22 @@ fun EventItem(event: Event, getEventTiming: (Event)->EventsViewModel.eventTiming
                         }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
-                Text(text = event.title, fontSize = 14.sp)
+                Text(
+                    text = event.title,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis)
+                when {
+                  globalOrganizerRating != null ->
+                      Text(
+                          "Organizer Rating:$globalOrganizerRating/5.0",
+                          fontSize = 10.sp,
+                          fontWeight = FontWeight.Bold,
+                          maxLines = 1,
+                          overflow = TextOverflow.Ellipsis)
+                  else -> {}
+                }
               }
 
               Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
