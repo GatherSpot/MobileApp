@@ -2,7 +2,6 @@ package com.github.se.gatherspot.viewModel
 
 import android.util.Log
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
@@ -26,10 +25,7 @@ class EventRegistrationViewModelTest {
     testLogin()
   }
 
-  @After
-  fun cleanUp() {
-    testLoginCleanUp()
-  }
+  @After fun cleanUp() {}
 
   @Test
   fun testRegisterForEventChangeEventListRegistered() = runBlocking {
@@ -103,6 +99,5 @@ class EventRegistrationViewModelTest {
 
     // To keep a clean database delete the test event
     EventFirebaseConnection().delete("idTestEvent")
-    testLoginCleanUp()
   }
 }

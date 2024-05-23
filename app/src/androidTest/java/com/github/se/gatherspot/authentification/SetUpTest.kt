@@ -10,7 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.screens.SetUpScreen
@@ -47,11 +46,7 @@ class SetUpTest : TestCase() {
                 interests = setOf()))
   }
 
-  @After
-  fun cleanUp() = runBlocking {
-    ProfileFirebaseConnection().delete(Firebase.auth.uid!!)
-    testLoginCleanUp()
-  }
+  @After fun cleanUp() = runBlocking { ProfileFirebaseConnection().delete(Firebase.auth.uid!!) }
 
   @OptIn(ExperimentalTestApi::class)
   @Test

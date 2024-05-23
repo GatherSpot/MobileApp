@@ -8,7 +8,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EnvironmentSetter.Companion.profileFirebaseConnection
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
@@ -47,7 +46,6 @@ class EventUITest {
   }
 
   fun cleanUp() {
-    testLoginCleanUp()
     runBlocking {
       ProfileFirebaseConnection().delete(testLoginUID)
       ProfileFirebaseConnection().delete(Profile.testParticipant().id)

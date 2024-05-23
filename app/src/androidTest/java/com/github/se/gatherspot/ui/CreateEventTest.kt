@@ -16,7 +16,6 @@ import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
@@ -55,7 +54,7 @@ class CreateEventTest {
 
   @Before fun setUp() = runBlocking { testLogin() }
 
-  @After fun cleanUp() = runBlocking { testLoginCleanUp() }
+  @After fun cleanUp() = runBlocking {}
 
   // Restructured to use EventDataFormScreen
   @Test

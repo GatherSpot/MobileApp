@@ -99,7 +99,6 @@ class EventUIViewModelTest {
   @After
   fun tearDown() {
     // Clean up the test environment
-    EnvironmentSetter.testLoginCleanUp()
     ProfileFirebaseConnection().delete(testLoginUID)
   }
 
@@ -245,6 +244,5 @@ class EventUIViewModelTest {
 
     // To keep a clean database delete the test event
     EventFirebaseConnection().delete("idTestEvent")
-    EnvironmentSetter.testLoginCleanUp()
   }
 }
