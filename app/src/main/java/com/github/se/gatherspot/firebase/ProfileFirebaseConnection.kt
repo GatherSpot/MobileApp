@@ -10,9 +10,7 @@ import com.google.firebase.firestore.firestore
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-/*
- * Firebase connection for profiles.
- */
+/** Firebase connection for profiles. */
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   override val COLLECTION = FirebaseCollection.PROFILES.toString().lowercase()

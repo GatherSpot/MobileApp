@@ -19,12 +19,13 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.tasks.await
 
-/* Class to handle the connection to the Firebase database for events.
-
-* @property COLLECTION: The collection name for events
-* @property TAG: The tag for logging
-* @property offset: The offset for fetching events
-*/
+/**
+ * Class to handle the connection to the Firebase database for events.
+ *
+ * @property COLLECTION: The collection name for events
+ * @property TAG: The tag for logging
+ * @property offset: The offset for fetching events
+ */
 class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
   override val COLLECTION = FirebaseCollection.EVENTS.toString().lowercase()

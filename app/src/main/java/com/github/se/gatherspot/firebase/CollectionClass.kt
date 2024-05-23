@@ -1,6 +1,6 @@
 package com.github.se.gatherspot.firebase
 
-/*
+/**
  * Abstract class for a collection class.
  *
  * @property id The ID of the collection

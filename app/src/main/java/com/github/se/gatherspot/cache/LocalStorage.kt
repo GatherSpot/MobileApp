@@ -11,13 +11,12 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
 
-/*
-   * Local storage for draft events.
-   *
-   * @property context The context of the application
-   * @property gson The Gson object for serialization
-
-*/
+/**
+ * Local storage for draft events.
+ *
+ * @property context The context of the application
+ * @property gson The Gson object for serialization
+ */
 class LocalStorage(private val context: Context) {
   private val gson =
       GsonBuilder().registerTypeAdapter(Bitmap::class.java, ImageBitmapSerializer()).create()

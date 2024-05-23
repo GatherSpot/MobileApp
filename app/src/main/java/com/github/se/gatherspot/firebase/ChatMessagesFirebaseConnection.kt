@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.tasks.await
 
-/*
+/**
  * Firebase connection for chat messages.
  *
  * @property TAG The tag for logging

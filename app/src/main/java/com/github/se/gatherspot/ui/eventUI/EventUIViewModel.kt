@@ -15,12 +15,18 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel class for handling event UI logic
+ *
+ * @param event the event
+ * @property ownRating the rating of the user
+ * @property organizerRating the rating of the organizer
+ * @property eventRating the rating of the event
+ * @property organizer the organizer of the event
+ */
 class EventUIViewModel(private val event: Event) :
     EventRegistrationViewModel(event.registeredUsers) {
-  // Rate !
 
-  // registered as Set
-  // On launch (Fetch organizer, Fetch registered)
   private var _organizer = MutableLiveData<Profile>()
   private lateinit var _attendees: List<String>
   private var _ownRating = MutableLiveData<Rating>()
@@ -52,6 +58,11 @@ class EventUIViewModel(private val event: Event) :
   val eventRating: LiveData<Double> = _eventRating
   val organizer: LiveData<Profile> = _organizer
 
+  /**
+   * Rate the event
+   *
+   * @param newRating the new rating
+   */
   fun rateEvent(newRating: Rating) {
     viewModelScope.launch {
       /*if (!isOver(Event)){
@@ -79,10 +90,20 @@ class EventUIViewModel(private val event: Event) :
     }
   }
 
+  /**
+   * Check if the user is the organizer of the event
+   *
+   * @return true if the user is the organizer of the event, false otherwise
+   */
   fun isOrganizer(): Boolean {
     return userID == event.organizerID
   }
 
+  /**
+   * Check if the user can rate the event
+   *
+   * @return true if the user can rate the event, false otherwise
+   */
   fun canRate(): Boolean {
     return !isOrganizer() &&
         event.registeredUsers.contains(userID) &&

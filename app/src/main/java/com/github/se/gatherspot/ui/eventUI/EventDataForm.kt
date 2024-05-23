@@ -48,7 +48,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -62,6 +61,8 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.ui.eventUI.EventAction.CREATE
+import com.github.se.gatherspot.ui.eventUI.EventAction.EDIT
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import java.time.format.DateTimeFormatter
@@ -83,9 +84,13 @@ private val CREATE_SPECIFIC_MESSAGES: List<String> =
 private val EDIT_SPECIFIC_MESSAGES: List<String> =
     listOf("Edit an event", "Edit event", "Error on the event edition")
 private val MESSAGES = arrayOf(CREATE_SPECIFIC_MESSAGES, EDIT_SPECIFIC_MESSAGES)
-private val eventFirebaseConnection = EventFirebaseConnection()
 
-/** Composable routine that creates a scrollable Box with the content passed as a parameter */
+/**
+ * Composable function that creates a scrollable Box with the content passed as a parameter
+ *
+ * @param content the content to be displayed
+ * @return a Box with the content passed as a parameter
+ */
 @Composable
 fun ScrollableContent(content: @Composable () -> Unit) {
   Box(modifier = Modifier.fillMaxSize()) {
@@ -93,6 +98,15 @@ fun ScrollableContent(content: @Composable () -> Unit) {
   }
 }
 
+/**
+ * Composable function that displays the form to create or edit an event
+ *
+ * @param eventUtils the event utilities
+ * @param viewModel the events view model
+ * @param nav the navigation actions
+ * @param eventAction the action to perform (create or edit)
+ * @param event the event to edit
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDataForm(
@@ -147,7 +161,6 @@ fun EventDataForm(
   // Coroutine scope for launching coroutines
   val coroutineScope = rememberCoroutineScope()
   // Permission handling
-  val lifecycleOwner = LocalLifecycleOwner.current
   val locationPermissionGranted = remember {
     mutableStateOf(
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -187,26 +200,6 @@ fun EventDataForm(
       }
     }
   }
-  /*
-   if (eventAction == EventAction.EDIT) {
-     event!!
-     title = TextFieldValue(event.title)
-     description = TextFieldValue(event.description!!)
-     location = event.location
-     locationName = event.location?.name ?: ""
-     Log.d("ll", event.categories?.size.toString() ?: "0")
-     event.categories?.let { categories.addAll(it) }
-     eventStartDate = TextFieldValue(event.eventStartDate!!.format(dateFormatter) ?: "")
-     eventEndDate = TextFieldValue(event.eventEndDate?.format(dateFormatter) ?: "")
-     eventTimeStart = TextFieldValue(event.timeBeginning!!.format(timeFormatter) ?: "")
-     eventTimeEnd = TextFieldValue(event.timeEnding!!.format(timeFormatter) ?: "")
-     maxAttendees = TextFieldValue(event.attendanceMaxCapacity?.toString() ?: "")
-     minAttendees = TextFieldValue(event.attendanceMinCapacity.toString())
-     inscriptionLimitDate = TextFieldValue(event.inscriptionLimitDate?.format(dateFormatter) ?: "")
-     inscriptionLimitTime = TextFieldValue(event.inscriptionLimitTime?.format(timeFormatter) ?: "")
-   }
-
-  */
 
   if (eventAction == EventAction.CREATE) {
     // Restore the draft
@@ -226,8 +219,6 @@ fun EventDataForm(
       categories.addAll(draft.categories ?: emptySet())
     }
   }
-
-  Log.d("ll", "untilll")
 
   Scaffold(
       modifier = Modifier.testTag("EventDataFormScreen"),
@@ -540,7 +531,12 @@ fun EventDataForm(
   Log.d("ll", "end")
 }
 
-/** Composable function that displays a dropdown menu to select the interests */
+/**
+ * Composable function that displays a dropdown menu to select the interests
+ *
+ * @param interests the list of interests
+ * @param categories the list of categories
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InterestSelector(interests: List<Interests>, categories: MutableList<Interests>) {
@@ -586,7 +582,13 @@ fun InterestSelector(interests: List<Interests>, categories: MutableList<Interes
       }
 }
 
-/** Composable function that displays an alert dialog with an error message */
+/**
+ * Composable function that displays an alert dialog with an error message
+ *
+ * @param errorTitle the title of the error
+ * @param errorMessage the error message
+ * @param onDismiss the action to perform when the dialog is dismissed
+ */
 @Composable
 fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
   AlertDialog(
@@ -601,6 +603,12 @@ fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
       dismissButton = {})
 }
 
+/**
+ * Enum class that represents the possible actions to perform on an event
+ *
+ * @property CREATE the action to create an event
+ * @property EDIT the action to edit an event
+ */
 enum class EventAction {
   CREATE,
   EDIT

@@ -13,9 +13,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-/*
- * Firebase connection for ratings.
- */
+/** Firebase connection for ratings. */
 class RatingFirebaseConnection {
   private val EVENT_COLLECTION = FirebaseCollection.EVENT_RATINGS.toString().lowercase()
   private val ORGANIZER_COLLECTION = FirebaseCollection.ORGANIZER_RATINGS.toString().lowercase()

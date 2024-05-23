@@ -4,9 +4,7 @@ import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
-/*
- * Class for Firebase image storage.
- */
+/** Class for Firebase image storage. */
 class FirebaseImages {
   private val firebaseStorage = FirebaseStorage.getInstance()
   private val PICTURE_BASE_STORAGE = firebaseStorage.getReference("images")

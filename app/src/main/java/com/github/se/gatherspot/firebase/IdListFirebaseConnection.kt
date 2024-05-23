@@ -10,9 +10,7 @@ import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 
-/*
- * Firebase connection for IdList.
- */
+/** Firebase connection for IdList. */
 class IdListFirebaseConnection {
   private val COLLECTION = "ID_LIST"
   private val TAG = "IdListFirebaseConnection"

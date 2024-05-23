@@ -15,7 +15,16 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/** ViewModel class for handling event registration logic */
+/**
+ * ViewModel class for handling event registration logic
+ *
+ * @param registered the list of registered users
+ * @property registrationState the registration state
+ * @property displayAlertRegistration boolean that tells if the alert dialog for the registration
+ *   should be displayed
+ * @property displayAlertDeletion boolean that tells if the alert dialog for the deletion should be
+ *   displayed
+ */
 open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
   // TODO : use hilt injection instead of hardcoded userId to remove this test handle in production
   private val userId = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
@@ -54,7 +63,11 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
 
   private val eventFirebaseConnection = EventFirebaseConnection()
 
-  /** Registers the user for the given event */
+  /**
+   * Registers the user for the given event
+   *
+   * @param event the event to register for
+   */
   fun registerForEvent(event: Event) {
     // Perform registration logic here, such as making network requests
     viewModelScope.launch {
@@ -81,20 +94,24 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
     }
   }
 
+  // Self-explanatory
   fun clickRegisterButton() {
     _displayAlertRegistration.value = true
   }
 
+  // Self-explanatory
   fun clickDeleteButton() {
     _displayAlertDeletion.value = true
   }
 
+  // Self-explanatory
   fun dismissAlert() {
     _displayAlertRegistration.value = false
     _displayAlertDeletion.value = false
   }
 }
 
+/** Sealed class for holding the registration state */
 sealed class RegistrationState {
   data object Success : RegistrationState()
 
