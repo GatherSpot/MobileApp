@@ -42,6 +42,8 @@ jobs:
       # Firebase emulator
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
+      - name: Start Emulator
+        run: firebase emulators:start --token ${{ secrets.FIREBASE }} --project gatherspot --only firestore,auth,storage,database
 
 
       # Caching is a very useful part of a CI, as a workflow is executed in a clean environment every time,
