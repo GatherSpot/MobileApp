@@ -13,5 +13,19 @@
       "enabled": false
     },
     "singleProjectMode": true
+  },
+  "hosting": {
+    "public": "deploy",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }
