@@ -42,9 +42,6 @@ jobs:
       # Firebase emulator
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
-      - name: Start Emulator
-        run: firebase emulators:start --token ${{ secrets.FIREBASE }} --project gatherspot --only firestore,auth,storage,database &
-
 
       # Caching is a very useful part of a CI, as a workflow is executed in a clean environment every time,
       # this means that one would need to re-download and re-process gradle files for every run. Which is very time consuming.
@@ -92,8 +89,6 @@ jobs:
 
       # Run Unit tests
       - name: Run tests
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: |
           # To run the CI with debug information, add --info
           firebase emulators:exec './gradlew check --parallel --build-cache'
@@ -108,7 +103,8 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedCheck --parallel --build-cache --info
+          script: firebase emulators:exec --token ${{ secrets.FIREBASE }} --project gatherspot ./gradlew connectedCheck --parallel --build-cache --info
+
 
       # This step generates the coverage report which will be uploaded to sonar
       - name: Generate Coverage Report
