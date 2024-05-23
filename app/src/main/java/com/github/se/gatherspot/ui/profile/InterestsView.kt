@@ -22,19 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.model.Interests
 
+/** A class for a view that displays the user's interests. */
 class InterestsView {
-  @Preview
-  @Composable
-  fun InterestsPreview() {
-    val interests = MutableLiveData(Interests.addInterest(Interests.new(), Interests.FOOTBALL))
-    EditInterests(
-        interestList = Interests.toList(),
-        interests = interests.observeAsState(),
-    ) {
-      interests.value = Interests.flipInterest(interests.value ?: setOf(), it)
-    }
-  }
 
+  /**
+   * Composable for editing the user's interests.
+   *
+   * @param interestList The list of interests
+   * @param interests The user's interests
+   * @param swap The function to use when selecting interests
+   */
   @OptIn(ExperimentalLayoutApi::class)
   @Composable
   fun EditInterests(
@@ -50,12 +47,24 @@ class InterestsView {
     }
   }
 
+  /**
+   * Composable for showing the user's interests.
+   *
+   * @param set The set of interests
+   */
   @OptIn(ExperimentalLayoutApi::class)
   @Composable
   fun ShowInterests(set: Set<Interests>) {
     FlowRow { set.forEach { interest -> UneditableInterest(interest, set.contains(interest)) } }
   }
 
+  /**
+   * Composable for an editable interest.
+   *
+   * @param interest The interest
+   * @param selected Whether the interest is selected
+   * @param onClick The function to use when the interest is clicked
+   */
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   private fun EditableInterest(interest: Interests, selected: Boolean, onClick: (Int) -> Unit) {
@@ -82,6 +91,12 @@ class InterestsView {
                 .testTag(if (selected) "remove ${interest.name}" else "add ${interest.name}"))
   }
 
+  /**
+   * Composable for an uneditable interest.
+   *
+   * @param interest The interest
+   * @param selected Whether the interest is selected
+   */
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   private fun UneditableInterest(interest: Interests, selected: Boolean) {
@@ -91,6 +106,18 @@ class InterestsView {
           label = { Text(interest.name) },
           selected = true,
           modifier = Modifier.padding(horizontal = 4.dp).testTag(interest.name))
+    }
+  }
+
+  @Preview
+  @Composable
+  fun InterestsPreview() {
+    val interests = MutableLiveData(Interests.addInterest(Interests.new(), Interests.FOOTBALL))
+    EditInterests(
+        interestList = Interests.toList(),
+        interests = interests.observeAsState(),
+    ) {
+      interests.value = Interests.flipInterest(interests.value ?: setOf(), it)
     }
   }
 }

@@ -10,6 +10,11 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
+/**
+ * Composable for displaying a QR code.
+ *
+ * @param bitmap The QR code bitmap
+ */
 @Composable
 fun QRCodeDisplay(bitmap: Bitmap) {
   Image(

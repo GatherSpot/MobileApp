@@ -28,6 +28,11 @@ import com.google.gson.GsonBuilder
 import java.time.LocalDate
 import java.time.LocalTime
 
+/**
+ * Composable for displaying the QR code for an event.
+ *
+ * @param event The event to generate the QR code for
+ */
 @Composable
 fun EventQRCodeUI(event: Event) {
   var qrCodeBitmap: Bitmap? by remember { mutableStateOf(null) }

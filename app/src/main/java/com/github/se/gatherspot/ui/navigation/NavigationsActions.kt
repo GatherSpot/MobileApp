@@ -2,9 +2,16 @@ package com.github.se.gatherspot.ui.navigation
 
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.github.se.gatherspot.R
+import com.github.se.gatherspot.R.*
 
+/** Wrapper for navigating between screens. */
 open class NavigationActions(val controller: NavHostController) {
+
+  /**
+   * Navigate to a top-level destination.
+   *
+   * @param tld The top-level destination
+   */
   fun navigateTo(tld: TopLevelDestination) {
     controller.navigate(tld.route) {
       // Pop up to the start destination of the graph to
@@ -19,11 +26,20 @@ open class NavigationActions(val controller: NavHostController) {
     }
   }
 
+  /** Navigate to the previous screen. */
   fun goBack() {
     controller.popBackStack()
   }
 }
 
+/**
+ * Route constants.
+ *
+ * @property EVENTS The events route
+ * @property MAP The map route
+ * @property CHATS The chats route
+ * @property PROFILE The profile route
+ */
 object Route {
   const val EVENTS = "events"
   const val MAP = "map"
@@ -33,7 +49,7 @@ object Route {
 
 val TOP_LEVEL_DESTINATIONS =
     listOf(
-        TopLevelDestination(Route.EVENTS, R.drawable.event, R.string.events),
-        TopLevelDestination(Route.MAP, R.drawable.map_black, R.string.map),
-        TopLevelDestination(Route.CHATS, R.drawable.chat, R.string.chats),
-        TopLevelDestination(Route.PROFILE, R.drawable.profile, R.string.profile))
+        TopLevelDestination(Route.EVENTS, drawable.event, string.events),
+        TopLevelDestination(Route.MAP, drawable.map_black, string.map),
+        TopLevelDestination(Route.CHATS, drawable.chat, string.chats),
+        TopLevelDestination(Route.PROFILE, drawable.profile, string.profile))

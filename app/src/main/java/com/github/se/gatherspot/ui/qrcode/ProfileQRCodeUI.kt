@@ -16,6 +16,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.gatherspot.model.qrcode.QRCodeUtils
 
+/**
+ * Composable for displaying the QR code for a profile.
+ *
+ * @param id The ID of the profile
+ */
 @Composable
 fun ProfileQRCodeUI(id: String) {
   var qrCodeBitmap: Bitmap? by remember { mutableStateOf(null) }

@@ -41,6 +41,12 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 import com.github.se.gatherspot.ui.qrcode.ProfileQRCodeUI
 
+/**
+ * A composable for the profile screen.
+ *
+ * @param nav The navigation actions
+ * @param viewModel The view model for the profile
+ */
 @Composable
 fun ProfileScaffold(nav: NavigationActions, viewModel: OwnProfileViewModel) {
   Scaffold(
@@ -61,6 +67,13 @@ fun ProfileScaffold(nav: NavigationActions, viewModel: OwnProfileViewModel) {
       })
 }
 
+/**
+ * A composable for the upper bar of the profile screen.
+ *
+ * @param viewModel The view model for the profile
+ * @param nav The navigation actions
+ * @param edit The function to call when the edit button is clicked
+ */
 @Composable
 fun TopBarOwnProfile(viewModel: OwnProfileViewModel, nav: NavigationActions, edit: () -> Unit) {
   Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
@@ -73,6 +86,11 @@ fun TopBarOwnProfile(viewModel: OwnProfileViewModel, nav: NavigationActions, edi
   }
 }
 
+/**
+ * A composable for the edit button.
+ *
+ * @param edit The function to call when the button is clicked
+ */
 @Composable
 fun EditButton(edit: () -> Unit) {
   Icon(
@@ -81,6 +99,11 @@ fun EditButton(edit: () -> Unit) {
       modifier = Modifier.clickable { edit() }.size(24.dp).testTag("edit"))
 }
 
+/**
+ * A composable for the followers button.
+ *
+ * @param nav The navigation actions
+ */
 @Composable
 fun Followers(nav: NavigationActions) {
   Column(horizontalAlignment = Alignment.Start) {
@@ -91,6 +114,11 @@ fun Followers(nav: NavigationActions) {
   }
 }
 
+/**
+ * A composable for the following button.
+ *
+ * @param nav The navigation actions
+ */
 @Composable
 fun Following(nav: NavigationActions) {
   Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(horizontal = 30.dp)) {
@@ -101,6 +129,12 @@ fun Following(nav: NavigationActions) {
   }
 }
 
+/**
+ * A composable for the save and cancel buttons.
+ *
+ * @param save The function to call when the save button is clicked
+ * @param cancel The function to call when the cancel button is clicked
+ */
 @Composable
 fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit) {
   Row(
@@ -111,6 +145,12 @@ fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit) {
       }
 }
 
+/**
+ * A composable for the log out button.
+ *
+ * @param nav The navigation actions
+ * @param viewModel The view model for the profile
+ */
 @Composable
 fun LogOutButton(nav: NavigationActions, viewModel: OwnProfileViewModel) {
   Icon(
@@ -119,8 +159,14 @@ fun LogOutButton(nav: NavigationActions, viewModel: OwnProfileViewModel) {
       modifier = Modifier.clickable { viewModel.logout(nav) }.size(24.dp).testTag("logout"))
 }
 
-// TODO: add state for the buttons for better ui when we have time, I want to catch up to
-// propagate functionalities first
+/**
+ * A composable for the follow buttons.
+ *
+ * @param back The function to call when the back button is clicked
+ * @param follow The function to call when the follow button is clicked
+ * @param following Whether the user is following the profile
+ * @param addFriend The function to call when the add friend button is clicked
+ */
 @Composable
 private fun FollowButtons(
     back: () -> Unit,
@@ -170,6 +216,14 @@ private fun UsernameField(
   }
 }
 
+/**
+ * A composable for the bio field.
+ *
+ * @param bio The bio
+ * @param bioValid String that is empty if the bio is valid, otherwise it contains an error message
+ * @param updateBio The function to call when the bio is updated
+ * @param edit Whether the bio is editable
+ */
 @Composable
 fun BioField(
     bio: State<String>,

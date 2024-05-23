@@ -12,6 +12,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
+/** ViewModel for the user's profile setup. */
 class SetUpViewModel : ViewModel() {
   var profile = ProfileFirebaseConnection().fetch(Firebase.auth.uid ?: "TEST") {}
   var interests = MutableLiveData(Interests.new())
@@ -34,7 +35,6 @@ class SetUpViewModel : ViewModel() {
     interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
 
-  // TODO : change this from the setter of the model after I refactor it :)
   fun setBio(string: String) {
     bio.value = string
     bioError = Profile.checkBio(string)
@@ -55,6 +55,7 @@ class SetUpViewModel : ViewModel() {
         .invokeOnCompletion { isDone.postValue(true) }
   }
 
+  /** Move to the next step in the setup process. */
   fun next() {
     when (currentStep.value) {
       "Interests" -> currentStep.value = "Bio"

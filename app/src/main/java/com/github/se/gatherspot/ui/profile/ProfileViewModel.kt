@@ -19,6 +19,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
+/** ViewModel for the user's own profile. */
 class OwnProfileViewModel : ViewModel() {
   private lateinit var _profile: Profile
   private var _username = MutableLiveData("")
@@ -56,6 +57,7 @@ class OwnProfileViewModel : ViewModel() {
   val bioError: LiveData<String>
     get() = _bioError
 
+  /** Toggle the variable coding for whether the profile is being edited */
   fun edit() {
     _isEditing.value = true
   }
@@ -71,6 +73,7 @@ class OwnProfileViewModel : ViewModel() {
     }
   }
 
+  /** Update the profile with the current values. */
   fun update() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
@@ -78,23 +81,39 @@ class OwnProfileViewModel : ViewModel() {
     _image.value = _profile.image
   }
 
+  /** Cancel the editing of the profile. */
   private fun cancelText() {
     _username.value = _profile.userName
     _bio.value = _profile.bio
     _interests.value = _profile.interests
   }
 
+  /**
+   * Update the username of the profile.
+   *
+   * @param userName The new username
+   */
   fun updateUsername(userName: String) {
     _username.value = userName
     _userNameIsUniqueCheck.value = false
     Profile.checkUsername(userName, null, _userNameError) { _userNameIsUniqueCheck.value = true }
   }
 
+  /**
+   * Update the bio of the profile.
+   *
+   * @param bio The new bio
+   */
   fun updateBio(bio: String) {
     _bioError = Profile.checkBio(bio)
     _bio.value = bio
   }
 
+  /**
+   * Update the profile image.
+   *
+   * @param url The new image URL
+   */
   fun updateProfileImage(url: String) {
     _image.value = url
   }
@@ -111,6 +130,7 @@ class OwnProfileViewModel : ViewModel() {
     }
   }
 
+  /** Remove the profile picture. */
   fun removeProfilePicture() {
     viewModelScope.launch {
       FirebaseImages().removeProfilePicture(_profile.id)
@@ -119,6 +139,11 @@ class OwnProfileViewModel : ViewModel() {
     }
   }
 
+  /**
+   * Flip an interest.
+   *
+   * @param interest The interest to flip
+   */
   fun flipInterests(interest: Interests) {
     _interests.value = Interests.flipInterest(interests.value ?: setOf(), interest)
   }
@@ -129,23 +154,32 @@ class OwnProfileViewModel : ViewModel() {
     }
   }
 
+  /** Save the edited profile and exit editing mode. */
   fun save() {
     saveImage()
     saveText()
     _isEditing.value = false
   }
 
+  /** Cancel the editing of the profile and exit editing mode. */
   fun cancel() {
     cancelText()
     _isEditing.value = false
   }
 
+  /** Log out the user. */
   fun logout(nav: NavigationActions) {
     Firebase.auth.signOut()
     nav.controller.navigate("auth")
   }
 }
 
+/**
+ * ViewModel for viewing another user's profile.
+ *
+ * @param target The target user's ID
+ * @param nav The navigation controller
+ */
 class ProfileViewModel(val target: String, private val nav: NavHostController) : ViewModel() {
   private var _profile = MutableLiveData<Profile>()
   private var _isFollowing = MutableLiveData(false)
@@ -174,7 +208,7 @@ class ProfileViewModel(val target: String, private val nav: NavHostController) :
     }
   }
 
-  // TODO : replace ?: with hilt injection
+  /** Toggle the following status of the user. */
   fun follow() {
     if (_profile.isInitialized) {
       if (_isFollowing.value == null) return
@@ -184,11 +218,14 @@ class ProfileViewModel(val target: String, private val nav: NavHostController) :
     }
   }
 
-  fun requestFriend() {
-    // TODO : even if implemented this will not be visible until we add a friend request view, hence
-    // I prefer to add ViewProfile functionality to other classes first
-  }
+  /**
+   * NOT IMPLEMENTED
+   *
+   * Request to be friends with the user.
+   */
+  fun requestFriend() {}
 
+  /** Navigate back. */
   fun back() {
     NavigationActions(nav).goBack()
   }

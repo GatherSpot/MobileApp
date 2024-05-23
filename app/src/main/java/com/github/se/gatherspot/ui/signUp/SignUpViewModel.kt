@@ -14,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+/** ViewModel for the sign up screen. */
 class SignUpViewModel : ViewModel() {
   var userName = MutableLiveData("")
   var userNameError = MutableLiveData("")
@@ -35,12 +36,14 @@ class SignUpViewModel : ViewModel() {
             isUsernameUnique)
   }
 
+  /** Update the username and check if it is unique. */
   fun updateUsername(string: String) {
     userName.value = string
     isUsernameUnique = false
     Profile.checkUsername(string, null, userNameError) { isUsernameUnique = true }
   }
 
+  /** Update the email and check if it is valid. */
   fun updateEmail(string: String) {
     email.value = string
     val emailRegex = Regex("^[A-Za-z](.*)(@)(.+)(\\.)(.+)")
@@ -48,6 +51,7 @@ class SignUpViewModel : ViewModel() {
     updateEverythingOk()
   }
 
+  /** Update the password and check if it is valid. */
   fun updatePassword(string: String) {
     password.value = string
     val passRegex = """^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$"""
@@ -56,10 +60,12 @@ class SignUpViewModel : ViewModel() {
     updateEverythingOk()
   }
 
+  /** Flip the visibility of the password. */
   fun flipPasswordVisibility() {
     isPassWordVisible.value = !(isPassWordVisible.value!!)
   }
 
+  /** Resend the verification email. */
   fun resendEmail() {
     Firebase.auth.currentUser!!.sendEmailVerification()
   }
@@ -67,7 +73,7 @@ class SignUpViewModel : ViewModel() {
   private val scope = CoroutineScope(Dispatchers.Main)
   private var job: Job? = null
 
-  // periodically check if email is verified, then run finished when it is
+  /** Periodically check if email is verified, then run finish() when it is. */
   private fun checkEmailVerification() {
     job =
         scope.launch {
@@ -89,6 +95,7 @@ class SignUpViewModel : ViewModel() {
     job?.cancel()
   }
 
+  /** Sign up the user. */
   fun signUp() {
     Firebase.auth
         .createUserWithEmailAndPassword(email.value!!, password.value!!)

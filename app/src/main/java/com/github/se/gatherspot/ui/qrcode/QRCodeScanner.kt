@@ -44,6 +44,11 @@ import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+/**
+ * Composable for the QR code scanner.
+ *
+ * @param navigationActions The navigation actions
+ */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun QRCodeScanner(navigationActions: NavigationActions) {
@@ -76,6 +81,11 @@ fun QRCodeScanner(navigationActions: NavigationActions) {
       }
 }
 
+/**
+ * Composable for the camera preview when scanning QR codes
+ *
+ * @param navigationActions The navigation actions
+ */
 @Composable
 fun CameraPreview(navigationActions: NavigationActions) {
   val context = LocalContext.current
@@ -140,6 +150,12 @@ fun CameraPreview(navigationActions: NavigationActions) {
       })
 }
 
+/**
+ * Analyse the QR code and return a string equal to a navigation route.
+ *
+ * @param text The text from the QR code
+ * @return The navigation string
+ */
 @SuppressLint("SuspiciousIndentation")
 fun analyseAppQRCode(text: String): String {
   val parts = text.split("/")
