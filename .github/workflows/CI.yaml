@@ -104,7 +104,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: firebase emulators:exec --project gatherspot --token ${{ secrets.FIREBASE }} './gradlew connectedCheck --parallel --build-cache --info'
+          script: firebase emulators:exec --project gatherspot --token ${{ secrets.FIREBASE }} --project gatherspot './gradlew connectedCheck --parallel --build-cache --info'
 
       # This step generates the coverage report which will be uploaded to sonar
       - name: Generate Coverage Report
