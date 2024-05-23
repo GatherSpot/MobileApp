@@ -10,10 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -24,28 +21,25 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
 
   @get:Rule val composeTestRule = createComposeRule()
+
   companion object {
     init {
       val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
       firestore.useEmulator("10.0.2.2", 8080)
       val auth: FirebaseAuth = FirebaseAuth.getInstance()
       auth.useEmulator("10.0.2.2", 9099)
-      Firebase.auth.createUserWithEmailAndPassword("test","test")
-      Firebase.auth.createUserWithEmailAndPassword("test@test.com","testPassword123")
+      Firebase.auth.createUserWithEmailAndPassword("test", "test")
+      Firebase.auth.createUserWithEmailAndPassword("test@test.com", "testPassword123")
     }
   }
-
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -92,7 +86,6 @@ class SignUpTest : TestCase() {
       verifDialog.assertIsDisplayed()
       verifDialog.performClick()
     }
-
   }
 
   @OptIn(ExperimentalTestApi::class)
