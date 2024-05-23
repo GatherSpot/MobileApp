@@ -101,7 +101,12 @@ class MainActivity : ComponentActivity() {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           navController = rememberNavController()
 
-          NavHost(navController = navController, startDestination = "auth") {
+          // Check if user is already authenticated
+          val user = FirebaseAuth.getInstance().currentUser
+          var startDestination = "auth"
+          if (user != null && user.isEmailVerified) startDestination = "home"
+
+          NavHost(navController = navController, startDestination = startDestination) {
             navigation(startDestination = "login", route = "auth") {
               composable("login") { LogIn(NavigationActions(navController), signInLauncher) }
 
@@ -110,14 +115,9 @@ class MainActivity : ComponentActivity() {
 
             navigation(startDestination = "events", route = "home") {
               composable("events") {
-                when {
-                  eventsViewModel == null -> {
-                    eventsViewModel = EventsViewModel()
-                    Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
-                  }
-                  else ->
-                      Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
-                }
+                if (eventsViewModel == null) eventsViewModel = EventsViewModel()
+
+                Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
               }
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
@@ -179,13 +179,8 @@ class MainActivity : ComponentActivity() {
               }
 
               composable("chats") {
-                when {
-                  chatsViewModel == null -> {
-                    chatsViewModel = ChatsListViewModel()
-                    Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
-                  }
-                  else -> Chats(chatsViewModel!!, NavigationActions(navController))
-                }
+                if (chatsViewModel == null) chatsViewModel = ChatsListViewModel()
+                Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
               }
 
               composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
