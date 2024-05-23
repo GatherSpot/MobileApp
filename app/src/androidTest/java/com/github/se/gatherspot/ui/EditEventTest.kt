@@ -9,6 +9,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.event.Event
@@ -36,6 +37,7 @@ class EditEventTest {
 
   @Before
   fun grantLocationPermission() {
+    testLogin()
     val context = ApplicationProvider.getApplicationContext<Context>()
     val packageName = context.packageName
     val uiAutomation =

@@ -77,23 +77,14 @@ class EventsViewCompleteTest {
       val indexBasketball = Interests.BASKETBALL.ordinal
 
       categories[indexBasketball] {
-        composeTestRule
-            .onNodeWithTag("dropdown")
-            .performScrollToNode(
-                hasTestTag(enumValues<Interests>().toList()[indexBasketball].toString()))
-        assertExists()
         performClick()
       }
 
-      filterMenu { performClick() }
+      setFilterButton { performClick() }
 
       composeTestRule.waitForIdle()
 
-      refresh { performClick() }
-
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 4000)
-      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 4000)
-      //  composeTestRule.waitUntilAtLeastOneExists(hasTestTag("Test Event"), 6000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 6000)
       eventRow.performClick()
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {

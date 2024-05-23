@@ -58,11 +58,6 @@ class CreateEventTest {
     runBlocking { testLogin() }
     val context = ApplicationProvider.getApplicationContext<Context>()
     db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val eventUtils = EventUtils()
-      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel(db))
-    }
   }
 
   @After fun cleanUp() {
@@ -73,6 +68,11 @@ class CreateEventTest {
   // Restructured to use EventDataFormScreen
   @Test
   fun testIsEverythingExist() {
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      val eventUtils = EventUtils()
+      CreateEvent(nav = NavigationActions(navController), eventUtils, EventsViewModel(db))
+    }
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       // Check if every element are displayed
       eventScaffold { assertExists() }
