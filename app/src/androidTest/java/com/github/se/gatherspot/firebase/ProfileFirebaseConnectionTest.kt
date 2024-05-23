@@ -48,7 +48,6 @@ class ProfileFirebaseConnectionTest {
     runTest {
       async { profileFirebaseConnection.delete(toAdd.id) }.await()
       async { profileFirebaseConnection.delete(usernameTooLong.id) }.await()
-      Firebase.auth.signOut()
     }
   }
 
