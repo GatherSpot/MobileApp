@@ -355,8 +355,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         Log.d(TAG, "goodForCoverage")
         val querySnapshot: QuerySnapshot =
             Firebase.firestore
-                .collection(COLLECTION)
-                .orderBy("eventID")
+                .collection(EVENTS)
+                .orderBy("organizerID")
                 .whereIn("organizerID", ids)
                 .get()
                 .await()
