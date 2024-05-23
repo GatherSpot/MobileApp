@@ -20,9 +20,9 @@ class EnvironmentSetter {
 
     /** This function logs in the user for testing purposes this user has his email verified */
     fun testLogin() {
-      runBlocking {
-        if ((Firebase.auth.currentUser == null) ||
-            (Firebase.auth.currentUser!!.uid != testLoginUID)) {
+      if ((Firebase.auth.currentUser == null) ||
+          (Firebase.auth.currentUser!!.uid != testLoginUID)) {
+        runBlocking {
           Firebase.auth
               .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;") // uid =
               .await()

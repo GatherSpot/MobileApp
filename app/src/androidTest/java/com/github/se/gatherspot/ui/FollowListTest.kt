@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
@@ -26,31 +27,33 @@ import org.junit.Test
 class FollowListTest {
   @get:Rule val composeTestRule = createComposeRule()
   val fb = ProfileFirebaseConnection()
+  val loggedInProfile = Profile("neverDeleted", "I am never deleted", "", testLoginUID, setOf())
+  val profileTest =
+      // Profile("TEST", "Here for testing purposes", "", "TEST", setOf(Interests.FOOTBALL))
+      loggedInProfile
+  val profileTest2 = Profile("TEST2", "Me too", "", "TEST2", setOf(Interests.NIGHTLIFE))
 
   @Before
   fun setUp() {
-    val profileTest =
-        Profile("TEST", "Here for testing purposes", "", "TEST", setOf(Interests.FOOTBALL))
-    val profileTest2 = Profile("TEST2", "Me too", "", "TEST2", setOf(Interests.NIGHTLIFE))
-
+    testLogin()
     fb.add(profileTest)
     fb.add(profileTest2)
     FollowList.follow("TEST", "TEST2")
     FollowList.follow("TEST2", "TEST")
+    Thread.sleep(2000)
   }
 
   @After
   fun clean() {
-    FollowList.unfollow("TEST", "TEST2")
-    FollowList.unfollow("TEST2", "TEST")
-    fb.delete("TEST")
-    fb.delete("TEST2")
+    FollowList.unfollow(profileTest.id, profileTest2.id)
+    FollowList.unfollow(profileTest2.id, profileTest.id)
+    fb.delete(profileTest.id)
+    fb.delete(profileTest2.id)
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testFollower() {
-    testLogin()
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "profile") {
@@ -80,6 +83,8 @@ class FollowListTest {
         assertIsDisplayed()
         assertHasClickAction()
       }
+
+      Thread.sleep(2000)
 
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("FollowList"), 10000)
 
