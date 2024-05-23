@@ -42,11 +42,11 @@ jobs:
       # Firebase emulator
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
+      - name: Authenticate Firebase CLI
+        run: firebase login --non-interactive --token ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       - name: Firebase init
         run: firebase init
       - name: Start Firebase Emulator
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: firebase emulators:start --only firestore,auth,database &
 
 
