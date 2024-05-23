@@ -74,9 +74,7 @@ import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -93,6 +91,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
   val showDialog = viewModel::showDialog
   val applyFilter = viewModel::applyFilter
   val revertFilter = viewModel::revertFilter
+  val removeFilter = viewModel::removeFilter
   Scaffold(
       modifier = Modifier.testTag("EventsScreen"),
       topBar = {
@@ -109,7 +108,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
       }) { paddingValues ->
           if (showInterestsDialog) {
-            InterestsDialog(MainActivity.selectedInterests.observeAsState() , {applyFilter()},{revertFilter()})
+            InterestsDialog(MainActivity.selectedInterests.observeAsState() , applyFilter, revertFilter, removeFilter)
           }
           // Box for content to add the topbar and bottombar padding automatically
           Box(modifier = Modifier.padding(paddingValues)){
@@ -120,7 +119,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
   }
 
 @Composable
-fun EventList(vm: EventsViewModel, fetch: () -> Unit, events: State<List<Event>>, nav: NavigationActions, isFeed: Boolean = false){
+fun EventList(vm: EventsViewModel, fetch: () -> Unit, events: State<List<Event>>, nav: NavigationActions, testTag: String, isFeed: Boolean = false){
   val lazyState = rememberLazyListState()
   //utility to extend lazyList to know when we scrolled to the end
   fun LazyListState.isScrolledToEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
@@ -141,7 +140,7 @@ fun EventList(vm: EventsViewModel, fetch: () -> Unit, events: State<List<Event>>
       modifier =
       Modifier
         .padding(vertical = 15.dp)
-        .testTag("eventsList")) {
+        .testTag(testTag)) {
       items(events.value) { event -> EventItem(event,vm::getEventTiming,vm::isOrganizer,vm::isRegistered, nav) }
     }
     // used to tell the viewModel to fetch more events when we get to the end of the list
@@ -151,7 +150,7 @@ fun EventList(vm: EventsViewModel, fetch: () -> Unit, events: State<List<Event>>
   }
 }
 @Composable
-fun EventItem(event: Event, getEventTiming: (Event)->EventsViewModel.eventTiming, isOrganizer: (Event) -> Boolean, isRegistered: (Event) -> Boolean, navigation: NavigationActions) {
+fun EventItem(event: Event, getEventTiming: (Event)->EventsViewModel.EventTiming, isOrganizer: (Event) -> Boolean, isRegistered: (Event) -> Boolean, navigation: NavigationActions) {
   var globalOrganizerRating by remember { mutableStateOf<Double?>(null) }
   val ratingFBC = RatingFirebaseConnection()
   LaunchedEffect(event.id) {
@@ -164,9 +163,9 @@ fun EventItem(event: Event, getEventTiming: (Event)->EventsViewModel.eventTiming
         .background(
           color =
           when (getEventTiming(event)) {
-            EventsViewModel.eventTiming.PAST -> Color.LightGray
-            EventsViewModel.eventTiming.TODAY -> Color.Green
-            EventsViewModel.eventTiming.FUTURE -> Color.White
+            EventsViewModel.EventTiming.PAST -> Color.LightGray
+            EventsViewModel.EventTiming.TODAY -> Color.Green
+            EventsViewModel.EventTiming.FUTURE -> Color.White
           },
           // maybe find a way to discern if it is ours in other way than the timing, as it becomes non intuitive
 //            Color.LightGray
@@ -290,11 +289,12 @@ fun Empty(viewModel: EventsViewModel, interests: MutableLiveData<Set<Interests>>
   }
 }
 @Composable
-fun InterestsDialog(selectedInterests: State<Set<Interests>?>, setFilter: () -> Unit, revertFilter: () -> Unit) {
+fun InterestsDialog(selectedInterests: State<Set<Interests>?>, setFilter: () -> Unit, revertFilter: () -> Unit, resetFilter: () -> Unit) {
   //TODO make functions to remove random side-effects from here
   AlertDialog(
       onDismissRequest = { revertFilter()},
       title = { Text("Select Interests") },
+      modifier = Modifier.testTag("interestsDialog"),
       text = {
         val items = Interests.toList()
         LazyColumn {
@@ -302,6 +302,7 @@ fun InterestsDialog(selectedInterests: State<Set<Interests>?>, setFilter: () -> 
             Row(
               Modifier
                 .fillMaxWidth()
+                .testTag(item.name)
                 .clickable {
                   MainActivity.selectedInterests.value =
                     Interests.flipInterest(MainActivity.selectedInterests.value!!, item)
@@ -317,8 +318,13 @@ fun InterestsDialog(selectedInterests: State<Set<Interests>?>, setFilter: () -> 
         }
       },
       confirmButton = {
-        Button(onClick = { setFilter() }) {
+        Button(onClick = { setFilter() }, modifier = Modifier.testTag("setFilterButton")) {
           Text("Confirm")
+        }
+      },
+      dismissButton = {
+        Button(onClick = { resetFilter() }, modifier = Modifier.testTag("removeFilter")) {
+        Text("Remove Filter")
         }
       }
     )
@@ -356,6 +362,7 @@ fun EventTypeTab(tabList: List<String>, pagerState: PagerState){
       Tab(
         text = { Text(title) },
         selected = pagerState.currentPage == index,
+        modifier = Modifier.testTag(title),
         onClick = {
           coroutineScope.launch {
             pagerState.animateScrollToPage(index)
@@ -371,10 +378,10 @@ fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: PagerState){
   HorizontalPager(state = pagerState) {page ->
     when (page) {
       //fun EventList(vm: EventsViewModel, events: State<List<Event>>, nav: NavigationActions){
-      0 -> EventList(vm, vm::fetchMyEvents, vm.myEvents.observeAsState(listOf()), nav)
-      1 -> EventList(vm, vm::fetchWithInterests, vm.allEvents.observeAsState(listOf()), nav, true)
-      2 -> EventList(vm, vm::fetchRegisteredTo, vm.registeredTo.observeAsState(listOf()), nav)
-      3 -> EventList(vm, vm::fetchFromFollowedUsers, vm.fromFollowedUsers.observeAsState(listOf()), nav)
+      0 -> EventList(vm, vm::fetchMyEvents, vm.myEvents.observeAsState(listOf()), nav, "myEventsList")
+      1 -> EventList(vm, vm::fetchWithInterests, vm.allEvents.observeAsState(listOf()), nav, "eventsList", true)
+      2 -> EventList(vm, vm::fetchRegisteredTo, vm.registeredTo.observeAsState(listOf()), nav, "registeredEventsList")
+      3 -> EventList(vm, vm::fetchFromFollowedUsers, vm.fromFollowedUsers.observeAsState(listOf()), nav,"followedEventsList")
       else -> throw IllegalStateException("Invalid page index")
     }
   }

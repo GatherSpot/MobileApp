@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -17,7 +16,10 @@ import com.github.se.gatherspot.sql.AppDatabase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -29,6 +31,10 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   private var _myEvents = MutableLiveData<List<Event>>(listOf())
   private var _registeredTo = MutableLiveData<List<Event>>(listOf())
   private var _fromFollowedUsers = MutableLiveData<List<Event>>(listOf())
+  private val viewModelJob = SupervisorJob()
+  private val viewModelScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+  private var fetchJob: Job? = null
+
   val eventFirebaseConnection = EventFirebaseConnection()
   // To synchronize between screens, it is initialized with the selected interests from MainActivity
   private var _interests = MutableLiveData(MainActivity.selectedInterests.value!!)
@@ -86,7 +92,8 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   }
 
   fun fetchWithInterests(){
-    viewModelScope.launch(Dispatchers.IO) {
+    fetchJob?.cancel()
+    fetchJob = viewModelScope.launch(Dispatchers.IO) {
       val newEvents = eventFirebaseConnection.fetchEventsBasedOnInterests(PAGESIZE,_interests.value!!.toList())
       val events = _allEvents.value!!.plus(newEvents)
       _allEvents.postValue(events)
@@ -105,27 +112,30 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   fun revertFilter() { MainActivity.selectedInterests.value = _interests.value; dismissDialog() }
   fun applyFilter() { setFilter(MainActivity.selectedInterests.value!!); dismissDialog() }
   fun showDialog() { _showFilterDialog.value = true }
-  fun dismissDialog() { _showFilterDialog.value = false }
+  private fun dismissDialog() { _showFilterDialog.value = false }
   fun removeFilter() {
+    dismissDialog()
+    MainActivity.selectedInterests.value = setOf()
     _interests.value = setOf()
     resetOffset()
+    fetchWithInterests()
   }
   private fun resetOffset(){
     eventFirebaseConnection.offset = null
     _allEvents.value = listOf()
   }
-  fun getEventTiming(event: Event): eventTiming{
+  fun getEventTiming(event: Event): EventTiming{
     val today = LocalDate.now()
     return when {
-      event.eventStartDate!!.isBefore(today) -> eventTiming.PAST
-      event.eventStartDate!!.isEqual(today) -> eventTiming.TODAY
-      else -> eventTiming.FUTURE
+      event.eventStartDate!!.isBefore(today) -> EventTiming.PAST
+      event.eventStartDate!!.isEqual(today) -> EventTiming.TODAY
+      else -> EventTiming.FUTURE
     }
   }
   fun isOrganizer(event: Event) = event.organizerID == uid
   fun isRegistered(event: Event) = event.registeredUsers.contains(uid)
 
-  enum class eventTiming {
+  enum class EventTiming {
     PAST,
     TODAY,
     FUTURE,
