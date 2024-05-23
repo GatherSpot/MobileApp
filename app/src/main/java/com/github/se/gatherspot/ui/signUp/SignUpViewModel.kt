@@ -76,6 +76,7 @@ class SignUpViewModel() : ViewModel() {
             user?.reload()?.addOnCompleteListener {
               if (user.isEmailVerified) {
                 // Email is verified, you can now proceed
+                Log.d("SignUpViewModel", "Email verified!")
                 finish()
               }
             }
@@ -90,6 +91,7 @@ class SignUpViewModel() : ViewModel() {
   }
 
   fun signUp() {
+    Log.d("SignUpViewModel", "Signing up")
     Firebase.auth
         .createUserWithEmailAndPassword(email.value!!, password.value!!)
         .addOnSuccessListener() {

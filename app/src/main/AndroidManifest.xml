@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <application
+        android:networkSecurityConfig="@xml/http_exception_for_firebase_emulator"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

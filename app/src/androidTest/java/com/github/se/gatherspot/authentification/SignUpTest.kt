@@ -18,27 +18,34 @@ import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
 
   @get:Rule val composeTestRule = createComposeRule()
-
-  @After
-  fun cleanUp() {
-    val currentUser = FirebaseAuth.getInstance().currentUser
-    if (currentUser != null) {
-      ProfileFirebaseConnection().delete(currentUser.uid)
-      testLoginCleanUp()
+  companion object {
+    init {
+      val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+      firestore.useEmulator("10.0.2.2", 8080)
+      val auth: FirebaseAuth = FirebaseAuth.getInstance()
+      auth.useEmulator("10.0.2.2", 9099)
+      Firebase.auth.createUserWithEmailAndPassword("test","test")
+      Firebase.auth.createUserWithEmailAndPassword("test@test.com","testPassword123")
     }
   }
+
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -57,7 +64,6 @@ class SignUpTest : TestCase() {
         }
       }
     }
-
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField {
         assertExists()
@@ -81,14 +87,12 @@ class SignUpTest : TestCase() {
         performClick()
       }
 
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 6000)
-
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 100000)
       verifDialog.assertExists()
       verifDialog.assertIsDisplayed()
       verifDialog.performClick()
     }
 
-    signUpCleanUp(userName)
   }
 
   @OptIn(ExperimentalTestApi::class)
