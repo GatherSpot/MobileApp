@@ -73,9 +73,12 @@ class EventsViewCompleteTest {
       composeTestRule.waitForIdle()
       interestsDialog { assertIsDisplayed() }
 
-      val indexBasketball = Interests.BASKETBALL.ordinal
+      val sport = Interests.BASKETBALL
 
-      categories[indexBasketball] { performClick() }
+      categories[sport.ordinal] {
+        composeTestRule
+        performClick()
+      }
 
       setFilterButton { performClick() }
 
