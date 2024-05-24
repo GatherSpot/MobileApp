@@ -14,6 +14,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * Composable for the bottom navigation menu.
+ *
+ * @param onTabSelect The function to call when a tab is selected
+ * @param tabList The list of tabs
+ * @param selectedItem The selected item
+ */
 @Composable
 fun BottomNavigationMenu(
     onTabSelect: (TopLevelDestination) -> Unit,

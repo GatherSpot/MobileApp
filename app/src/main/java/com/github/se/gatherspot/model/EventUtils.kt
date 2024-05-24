@@ -34,6 +34,7 @@ import org.json.JSONArray
 
 private const val ELEMENTS_TO_DISPLAY = 5
 
+/** Utility class for events */
 class EventUtils {
 
   private val eventFirebaseConnection = EventFirebaseConnection()
@@ -314,6 +315,14 @@ class EventUtils {
     return event
   }
 
+  /**
+   * Validate a date
+   *
+   * @param date The date to validate
+   * @param eMessage The error message to throw if the date is invalid
+   * @return The parsed date
+   * @throws Exception if the date is invalid
+   */
   fun validateDate(date: String, eMessage: String): LocalDate {
     try {
       return LocalDate.parse(
@@ -323,6 +332,14 @@ class EventUtils {
     }
   }
 
+  /**
+   * Validate a time
+   *
+   * @param time The time to validate
+   * @param eMessage The error message to throw if the time is invalid
+   * @return The parsed time
+   * @throws Exception if the time is invalid
+   */
   fun validateTime(time: String, eMessage: String): LocalTime {
     try {
       return LocalTime.parse(time, DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT))
@@ -331,6 +348,14 @@ class EventUtils {
     }
   }
 
+  /**
+   * Validate a number
+   *
+   * @param number The number to validate
+   * @param eMessage The error message to throw if the number is invalid
+   * @return The parsed number
+   * @throws Exception if the number is invalid
+   */
   fun validateNumber(number: String, eMessage: String): Int {
     try {
       return number.toInt()
@@ -339,7 +364,14 @@ class EventUtils {
     }
   }
 
-  /** Fetch location suggestions from the OpenStreetMap API. */
+  /**
+   * Fetch location suggestions from the OpenStreetMap API.
+   *
+   * @param context: The context of the application
+   * @param query: The query to search for
+   * @return A list of location suggestions
+   * @throws Exception if the request fails
+   */
   suspend fun fetchLocationSuggestions(context: Context, query: String): List<Location> =
       withContext(Dispatchers.IO) {
         if (query.isEmpty()) return@withContext emptyList()
@@ -404,6 +436,15 @@ class EventUtils {
     }
   }
 
+  /**
+   * Calculate the distance between two GPS coordinates
+   *
+   * @param lat1: The latitude of the first location
+   * @param lon1: The longitude of the first location
+   * @param lat2: The latitude of the second location
+   * @param lon2: The longitude of the second location
+   * @return The distance between the two locations in kilometers
+   */
   fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
     val earthRadius = 6371.0 // in kilometers
 
@@ -418,6 +459,24 @@ class EventUtils {
     return earthRadius * c
   }
 
+  /**
+   * Save a draft event to the local storage
+   *
+   * @param title: The title of the event
+   * @param description: A short description of the event
+   * @param location: The location of the event (GPS coordinates)
+   * @param startDate: The date of the start the event
+   * @param endDate: The date the event ends, if it is a multi-day event.
+   * @param startTime: The time in the eventStartDate the event starts
+   * @param endTime: The time in the eventEndDate the event ends
+   * @param maxAttendees: The maximum number of attendees
+   * @param minAttendees: The minimum number of attendees
+   * @param dateLimitInscription: The last date to register for the event
+   * @param timeLimitInscription: The last time to register for the event
+   * @param categories: The categories of the event
+   * @param image: The image of the event
+   * @param context: The context of the application
+   */
   fun saveDraftEvent(
       title: String?,
       description: String?,
@@ -454,11 +513,23 @@ class EventUtils {
     localStorage.storeDraftEvent(draftEvent)
   }
 
+  /**
+   * Retrieve a draft event from the local storage
+   *
+   * @param context: The context of the application
+   * @return The draft event
+   */
   fun retrieveFromDraft(context: Context): DraftEvent? {
     val localStorage = LocalStorage(context)
     return localStorage.loadDraftEvent()
   }
 
+  /**
+   * Delete a draft event from the local storage
+   *
+   * @param context: The context of the application
+   * @throws Exception if the draft event cannot be deleted
+   */
   fun deleteDraft(context: Context) {
     val localStorage = LocalStorage(context)
     try {

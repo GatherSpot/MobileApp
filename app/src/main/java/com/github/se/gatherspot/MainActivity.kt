@@ -65,6 +65,10 @@ import com.google.maps.android.compose.CameraPositionState
 import java.time.LocalDate
 import java.time.LocalTime
 
+/**
+ * The main activity for the app. This activity is responsible for setting up the navigation and
+ * some global variables.
+ */
 class MainActivity : ComponentActivity() {
   companion object {
     var isOnline: Boolean = false
@@ -117,7 +121,12 @@ class MainActivity : ComponentActivity() {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           navController = rememberNavController()
 
-          NavHost(navController = navController, startDestination = "auth") {
+          // Check if user is already authenticated
+          val user = FirebaseAuth.getInstance().currentUser
+          var startDestination = "auth"
+          if (user != null && user.isEmailVerified) startDestination = "home"
+
+          NavHost(navController = navController, startDestination = startDestination) {
             navigation(startDestination = "login", route = "auth") {
               composable("login") { LogIn(NavigationActions(navController), signInLauncher) }
 
@@ -126,14 +135,9 @@ class MainActivity : ComponentActivity() {
 
             navigation(startDestination = "events", route = "home") {
               composable("events") {
-                when {
-                  eventsViewModel == null -> {
-                    eventsViewModel = EventsViewModel()
-                    Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
-                  }
-                  else ->
-                      Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
-                }
+                if (eventsViewModel == null) eventsViewModel = EventsViewModel()
+
+                Events(viewModel = eventsViewModel!!, nav = NavigationActions(navController))
               }
               composable("event/{eventJson}") { backStackEntry ->
                 // Create a new Gson instance with the custom serializers and deserializers
@@ -197,13 +201,8 @@ class MainActivity : ComponentActivity() {
               }
 
               composable("chats") {
-                when {
-                  chatsViewModel == null -> {
-                    chatsViewModel = ChatsListViewModel()
-                    Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
-                  }
-                  else -> Chats(chatsViewModel!!, NavigationActions(navController))
-                }
+                if (chatsViewModel == null) chatsViewModel = ChatsListViewModel()
+                Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
               }
 
               composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
@@ -231,10 +230,18 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+
   override fun onDestroy() {
     super.onDestroy()
     unregisterReceiver(networkChangeReceiver)
   }
+
+  /**
+   * Handles the result of the sign in activity.
+   *
+   * @param result The result of the sign in activity
+   * @param navController The navigation controller
+   */
 
   @RequiresApi(Build.VERSION_CODES.S)
   private fun onSignInResult(

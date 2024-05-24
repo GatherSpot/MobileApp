@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.ui
 
-import androidx.compose.ui.node.*
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule

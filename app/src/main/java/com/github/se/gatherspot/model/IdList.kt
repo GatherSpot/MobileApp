@@ -19,12 +19,23 @@ class IdList(
     var elements: List<String>,
     val collection: FirebaseCollection
 ) : CollectionClass() {
+
+  /**
+   * Add an element to the list
+   *
+   * @param elementId the id of the element to add
+   */
   fun add(elementId: String) {
     IdListFirebaseConnection().addElement(id, collection, elementId) {
       elements = elements.plus(elementId)
     }
   }
 
+  /**
+   * Remove an element from the list
+   *
+   * @param elementId the id of the element to remove
+   */
   fun remove(elementId: String) {
     IdListFirebaseConnection().deleteElement(id, collection, elementId) {
       elements = elements.minus(elementId)
@@ -43,9 +54,22 @@ class IdList(
     fun new(id: String, collection: FirebaseCollection, elements: List<String>) =
         IdListFirebaseConnection().add(id, collection, elements) {}
 
+    /**
+     * Fetch an IdList from Firebase
+     *
+     * @param id the id of the list
+     * @param collection the collection associated with the list
+     * @param onSuccess a callback to execute when the list is fetched
+     */
     suspend fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) =
         IdListFirebaseConnection().fetch(id, collection) { onSuccess() }
 
+    /**
+     * Create an empty IdList
+     *
+     * @param id the id of the list
+     * @param collection the collection associated with the list
+     */
     fun empty(id: String, collection: FirebaseCollection) = IdList(id, listOf(), collection)
   }
 }

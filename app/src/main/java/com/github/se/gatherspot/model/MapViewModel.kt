@@ -22,6 +22,11 @@ import com.google.maps.android.compose.CameraPositionState
 import kotlin.math.PI
 import kotlin.math.cos
 
+/**
+ * ViewModel for the map.
+ *
+ * @property application Application The application.
+ */
 @RequiresApi(Build.VERSION_CODES.S)
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -29,6 +34,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     val EARTH_RADIUS = 6371000 // Earth's radius in meters
 
+    /**
+     * Function to calculate distance change for a given angle at a latitude
+     *
+     * @param angle the angle in degrees
+     * @param latitude the latitude in degrees
+     * @return the distance change in meters
+     */
     fun degreeToMeters(angle: Double, latitude: Double): Double {
       val latitudeRadians = Math.toRadians(latitude)
       val circumference =
@@ -39,7 +51,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
       return distanceChange
     }
 
-    // Function to calculate angle change for a given distance at a latitude
+    /**
+     * Function to calculate angle change for a given distance at a latitude
+     *
+     * @param distance the distance in meters
+     * @param latitude the latitude in degrees
+     * @return the angle change in degrees
+     */
     fun metersToDegree(distance: Double, latitude: Double): Double {
       val latitudeRadians = Math.toRadians(latitude)
       val circumference =
@@ -84,6 +102,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fetchLocation()
   }
 
+  /** Fetches and updates the location of the user. */
   @RequiresApi(Build.VERSION_CODES.S)
   fun fetchLocation() {
     if (ActivityCompat.checkSelfPermission(
@@ -100,6 +119,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
   }
 
+  /**
+   * Fetches the events visible at the moment on the map, and stores them in the registered_events
+   * and events lists.
+   */
   suspend fun fetchEvents() {
     val list =
         IdListFirebaseConnection()

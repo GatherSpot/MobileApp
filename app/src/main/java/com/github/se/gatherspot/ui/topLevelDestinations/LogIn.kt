@@ -33,10 +33,15 @@ import com.firebase.ui.auth.AuthUI
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
+/**
+ * Composable for the login screen.
+ *
+ * @param nav The navigation actions
+ * @param launcher The activity result launcher
+ */
 @Composable
 fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
-  // Manages logging into accounts and signing up
-  // Gmail / Tequila
+
   val s = "Welcome to the GatherSpot !"
   val WIDTH = 240
 
@@ -85,6 +90,14 @@ fun LogIn(nav: NavigationActions, launcher: ActivityResultLauncher<Intent>) {
       }
 }
 
+/**
+ * Composable for the authentication button.
+ *
+ * @param onClick The action to perform when the button is clicked
+ * @param testTag The test tag for the button
+ * @param content The content of the button
+ * @param width The width of the button
+ */
 @Composable
 fun AuthenticationButton(onClick: () -> Unit, testTag: String, content: String, width: Int) {
   Button(

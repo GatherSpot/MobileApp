@@ -39,6 +39,12 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
+/**
+ * Composable for the sign up view.
+ *
+ * @param vm The view model for the sign up view
+ * @param nav The navigation actions
+ */
 class SignUpView {
   @Composable
   fun SignUp(vm: SignUpViewModel, nav: NavigationActions) {

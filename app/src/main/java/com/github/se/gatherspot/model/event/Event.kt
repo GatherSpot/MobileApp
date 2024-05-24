@@ -66,6 +66,11 @@ data class Event(
     val globalRating: Int?,
 ) : CollectionClass() {
 
+  /**
+   * Converts the event to a JSON string.
+   *
+   * @return The JSON string representing the event.
+   */
   fun toJson(): String {
     val eventJson = gson.toJson(this)
     return URLEncoder.encode(eventJson, StandardCharsets.US_ASCII.toString()).replace("+", "%20")
@@ -81,6 +86,12 @@ data class Event(
             .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
             .create()
 
+    /**
+     * Converts a JSON string to an event.
+     *
+     * @param string The JSON string representing the event.
+     * @return The event.
+     */
     fun fromJson(string: String): Event {
       val eventJson = string.replace("%20", "+")
       return gson.fromJson(eventJson, Event::class.java)

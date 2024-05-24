@@ -24,6 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 
+/**
+ * A composable that allows the user to pick an image from the gallery.
+ *
+ * @param imageUri The URI of the image
+ * @param placeHolder The placeholder image
+ * @param pictureName The name of the picture
+ * @param updateImageUri The function to update the image URI
+ * @param deleteImage The function to delete the image
+ */
 @Composable
 fun CircleImagePicker(
     imageUri: String,
@@ -47,6 +56,13 @@ fun CircleImagePicker(
       }
 }
 
+/**
+ * A composable that displays an image in a circle.
+ *
+ * @param imageUri The URI of the image
+ * @param placeHolder The placeholder image
+ * @param pictureName The name of the picture
+ */
 @Composable
 fun CircleImageViewer(imageUri: String, placeHolder: Int, pictureName: String) {
   Column(
@@ -58,6 +74,15 @@ fun CircleImageViewer(imageUri: String, placeHolder: Int, pictureName: String) {
       }
 }
 
+/**
+ * A composable that features a banner image picker.
+ *
+ * @param imageUri The URI of the image
+ * @param placeHolder The placeholder image
+ * @param pictureName The name of the picture
+ * @param updateImageUri The function to update the image URI
+ * @param deleteImage The function to delete the image
+ */
 @Composable
 fun BannerImagePicker(
     imageUri: String,
@@ -82,6 +107,13 @@ fun BannerImagePicker(
       }
 }
 
+/**
+ * A composable that displays an image in a rectangle.
+ *
+ * @param imageUri The URI of the image
+ * @param placeHolder The placeholder image
+ * @param pictureName The name of the picture
+ */
 @Composable
 fun BannerImageViewer(imageUri: String, placeHolder: Int, pictureName: String) {
   Column(
@@ -95,6 +127,13 @@ fun BannerImageViewer(imageUri: String, placeHolder: Int, pictureName: String) {
       }
 }
 
+/**
+ * A composable that displays an image.
+ *
+ * @param imageUri The URI of the image
+ * @param placeHolder The placeholder image
+ * @param pictureName The name of the picture
+ */
 @Composable
 fun ViewImage(imageUri: String, placeHolder: Int, pictureName: String) {
 
@@ -107,6 +146,14 @@ fun ViewImage(imageUri: String, placeHolder: Int, pictureName: String) {
       modifier = Modifier.testTag("image"))
 }
 
+/**
+ * A composable that allows the user to pick an image from the gallery.
+ *
+ * @param imageUri The URI of the image
+ * @param placeHolder The placeholder image
+ * @param pictureName The name of the picture
+ * @param updateImageUri The function to update the image URI
+ */
 @Composable
 fun EditImage(
     imageUri: String,

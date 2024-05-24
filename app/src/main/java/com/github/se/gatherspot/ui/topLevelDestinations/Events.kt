@@ -50,11 +50,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.getEventIcon
@@ -66,13 +68,17 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
-/** Composable that displays events * */
-
-// listOf("Your interests", "None")
+/**
+ * Composable for the events screen.
+ *
+ * @param viewModel The view model for the events view
+ * @param nav The navigation actions
+ */
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
+  val ratingFBC = RatingFirebaseConnection()
   val state = viewModel.uiState.collectAsState()
   var previousScrollPosition by remember { mutableIntStateOf(0) }
   var loading by remember { mutableStateOf(false) }
@@ -230,7 +236,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                     Modifier.padding(vertical = 15.dp)
                         .padding(paddingValues)
                         .testTag("eventsList")) {
-                  items(events) { event -> EventRow(event, nav) }
+                  items(events) { event -> EventRow(event, ratingFBC, nav) }
                 }
 
             LaunchedEffect(lazyState.isScrollInProgress) {
@@ -253,8 +259,21 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
       }
 }
 
+/**
+ * Composable that displays a single event as a row.
+ *
+ * @param event The event to display
+ * @param ratingFBC The rating firebase connection
+ * @param navigation The navigation actions
+ */
 @Composable
-fun EventRow(event: Event, navigation: NavigationActions) {
+fun EventRow(event: Event, ratingFBC: RatingFirebaseConnection, navigation: NavigationActions) {
+  var globalOrganizerRating by remember { mutableStateOf<Double?>(null) }
+
+  LaunchedEffect(event.id) {
+    Log.d(",", "calling func")
+    globalOrganizerRating = ratingFBC.fetchOrganizerGlobalRating(event.organizerID)
+  }
   val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests"
   val isPastEvent = event.eventStartDate?.isBefore(LocalDate.now()) ?: false
   val isToday = event.eventStartDate?.isEqual(LocalDate.now()) ?: false
@@ -298,26 +317,41 @@ fun EventRow(event: Event, navigation: NavigationActions) {
                 Text(
                     text =
                         "Start date: ${
-                            event.eventStartDate?.format(
-                                DateTimeFormatter.ofPattern(
-                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
-                                )
+                        event.eventStartDate?.format(
+                            DateTimeFormatter.ofPattern(
+                                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                             )
-                        }",
+                        )
+                    }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
                 Text(
                     text =
                         "End date: ${
-                            event.eventEndDate?.format(
-                                DateTimeFormatter.ofPattern(
-                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
-                                )
+                        event.eventEndDate?.format(
+                            DateTimeFormatter.ofPattern(
+                                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                             )
-                        }",
+                        )
+                    }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
-                Text(text = event.title, fontSize = 14.sp)
+                Text(
+                    text = event.title,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis)
+                when {
+                  globalOrganizerRating != null ->
+                      Text(
+                          "Organizer Rating:$globalOrganizerRating/5.0",
+                          fontSize = 10.sp,
+                          fontWeight = FontWeight.Bold,
+                          maxLines = 1,
+                          overflow = TextOverflow.Ellipsis)
+                  else -> {}
+                }
               }
 
               Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
@@ -339,6 +373,13 @@ fun EventRow(event: Event, navigation: NavigationActions) {
       }
 }
 
+/**
+ * Composable that displays a message when no events are loaded.
+ *
+ * @param viewModel The view model for the events view
+ * @param interests The interests in the filter
+ * @param fetch The function to call when refreshing the events
+ */
 @Composable
 fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: () -> Unit) {
 
@@ -361,6 +402,11 @@ fun Empty(viewModel: EventsViewModel, interests: MutableList<Interests>, fetch: 
   }
 }
 
+/**
+ * Composable that displays an interest as a dropdown item with a state.
+ *
+ * @param interest The interest to display
+ */
 @Composable
 fun StatefulDropdownItem(interest: Interests) {
 
@@ -386,37 +432,3 @@ fun StatefulDropdownItem(interest: Interests) {
       },
   )
 }
-/*
-// Preview for the Event UI, for testing purposes
-@Preview
-@Composable
-fun EventUIPreview() {
-  // Set global uid for testing
-  val event =
-      Event(
-          id = "idTestEvent",
-          title = "Event Title",
-          description =
-              "Hello: I am a description of the event just saying that I would love to say" +
-                  "that Messi is not the best player in the world, but I can't. I am sorry.",
-          attendanceMaxCapacity = 5,
-          attendanceMinCapacity = 1,
-          categories = setOf(Interests.BASKETBALL),
-          eventEndDate = LocalDate.of(2025, 4, 15),
-          eventStartDate = LocalDate.of(2025, 4, 10),
-          globalRating = 4,
-          inscriptionLimitDate = LocalDate.of(2025, 4, 1),
-          inscriptionLimitTime = LocalTime.of(23, 59),
-          location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
-          registeredUsers = mutableListOf(),
-          timeBeginning = LocalTime.of(11, 0),
-          timeEnding = LocalTime.of(13, 0),
-          organizerID = Profile.testOrganizer().id)
-  val viewModel = EventRegistrationViewModel(listOf(""))
-  EventUI(
-      event = event,
-      navActions = NavigationActions(rememberNavController()),
-      registrationViewModel = viewModel,
-      eventsViewModel = EventsViewModel())
-}
-*/
