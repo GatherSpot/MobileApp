@@ -85,7 +85,7 @@ class EventsViewCompleteTest {
       composeTestRule.waitForIdle()
 
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 6000)
-      eventRow.performClick()
+      eventItem.performClick()
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
@@ -97,7 +97,7 @@ class EventsViewCompleteTest {
     }
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
       composeTestRule.waitForIdle()
-      eventRow.performClick()
+      eventItem.performClick()
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)

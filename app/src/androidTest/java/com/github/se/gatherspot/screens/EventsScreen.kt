@@ -15,7 +15,7 @@ class EventsScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val createMenu: KNode = onNode { hasTestTag("createMenu") }
   val emptyText: KNode = onNode { hasTestTag("empty") }
   val eventsList: KNode = onNode { hasTestTag("eventsList") }
-  val eventRow: KNode = onNode { hasText("Basketball", substring = true, ignoreCase = true) }
+  val eventItem: KNode = onNode { hasTestTag("eventItem") }
   val interestsDialog: KNode = onNode { hasTestTag("interestsDialog") }
   val refresh: KNode = onNode { hasTestTag("refresh") }
   val fetchingText: KNode = onNode { hasTestTag("fetch") }

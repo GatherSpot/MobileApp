@@ -192,7 +192,7 @@ private fun EventItem(
                   //          },
                   shape = RoundedCornerShape(5.dp))
               .clickable { navigation.controller.navigate("event/${event.toJson()}") }
-              .testTag(event.title)
+              .testTag("eventItem")
               .fillMaxSize()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
