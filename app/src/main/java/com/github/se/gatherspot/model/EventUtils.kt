@@ -324,10 +324,12 @@ class EventUtils {
             eventStatus = EventStatus.CREATED,
         )
     // Add the event to the database
-    try {
-      eventFirebaseConnection.add(event)
-      eventDao?.insert(event)
-    } catch (_: Exception) {}
+    runBlocking {
+      try {
+        eventFirebaseConnection.add(event)
+        eventDao?.insert(event)
+      } catch (_: Exception) {}
+    }
     return event
   }
 
