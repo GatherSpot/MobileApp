@@ -15,16 +15,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -36,6 +40,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
@@ -70,6 +76,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private val WIDTH = 300.dp
 private val WIDTH_2ELEM = 150.dp
@@ -94,7 +103,9 @@ private val MESSAGES = arrayOf(CREATE_SPECIFIC_MESSAGES, EDIT_SPECIFIC_MESSAGES)
 @Composable
 fun ScrollableContent(content: @Composable () -> Unit) {
   Box(modifier = Modifier.fillMaxSize()) {
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) { content() }
+    Column(modifier = Modifier
+        .verticalScroll(rememberScrollState())
+        .padding(16.dp)) { content() }
   }
 }
 
@@ -186,7 +197,7 @@ fun EventDataForm(
   val deleteImage: () -> Unit = {
     runBlocking {
       // if we create event it should never be already in the database
-      if (eventAction == EventAction.EDIT) {
+      if (eventAction == EDIT) {
         event?.id?.let { FirebaseImages().removePicture("eventImage", it) }
       }
     }
@@ -201,7 +212,7 @@ fun EventDataForm(
     }
   }
 
-  if (eventAction == EventAction.CREATE) {
+  if (eventAction == CREATE) {
     // Restore the draft
     val draft = eventUtils.retrieveFromDraft(context)
     if (draft != null) {
@@ -233,7 +244,7 @@ fun EventDataForm(
               // SAVE DRAFT
               IconButton(
                   onClick = {
-                    if (eventAction == EventAction.CREATE) {
+                    if (eventAction == CREATE) {
                       eventUtils.saveDraftEvent(
                           title.text,
                           description.text,
@@ -318,14 +329,20 @@ fun EventDataForm(
           // Create event form
           Column(
               modifier =
-                  Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
+              Modifier
+                  .padding(innerPadding)
+                  .padding(horizontal = 28.dp)
+                  .testTag("formColumn"),
               verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
               horizontalAlignment = Alignment.CenterHorizontally,
           ) {
             Text(text = "Fields with * are required", modifier = Modifier.testTag("requiredFields"))
             // Title
             OutlinedTextField(
-                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputTitle"),
+                modifier = Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("inputTitle"),
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Event Title*") },
@@ -333,25 +350,45 @@ fun EventDataForm(
             // Description
             OutlinedTextField(
                 modifier =
-                    Modifier.width(WIDTH).height(DESCRIPTION_HEIGHT).testTag("inputDescription"),
+                Modifier
+                    .width(WIDTH)
+                    .height(DESCRIPTION_HEIGHT)
+                    .testTag("inputDescription"),
                 value = description,
                 onValueChange = { description = it },
                 label = { Text("Description*") },
                 placeholder = { Text("Describe the event") })
             // Start Date
-            OutlinedTextField(
-                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputStartDateEvent"),
-                value = eventStartDate,
-                onValueChange = { eventStartDate = it },
-                label = { Text("Start Date of the event*") },
-                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+            Row {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(WIDTH)
+                        .height(HEIGHT)
+                        .testTag("inputStartDateEvent"),
+                    value = eventStartDate,
+                    onValueChange = { eventStartDate = it },
+                    label = { Text("Start Date of the event*") },
+                    placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+
+                MyDatePickerDialog(
+                    onDateChange = { eventStartDate = TextFieldValue(it) },
+                )
+            }
             // End Date
-            OutlinedTextField(
-                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
-                value = eventEndDate,
-                onValueChange = { eventEndDate = it },
-                label = { Text("End date of the event") },
-                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+              Row {
+                  OutlinedTextField(
+                      modifier = Modifier
+                          .width(WIDTH)
+                          .height(HEIGHT)
+                          .testTag("inputEndDateEvent"),
+                      value = eventEndDate,
+                      onValueChange = { eventEndDate = it },
+                      label = { Text("End date of the event") },
+                      placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+                  MyDatePickerDialog(
+                      onDateChange = { eventEndDate = TextFieldValue(it) },
+                  )
+              }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -359,7 +396,10 @@ fun EventDataForm(
                   // Time Start
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeStartEvent"),
+                      Modifier
+                          .width(WIDTH_2ELEM)
+                          .height(HEIGHT)
+                          .testTag("inputTimeStartEvent"),
                       value = eventTimeStart,
                       onValueChange = { eventTimeStart = it },
                       label = { Text("Start time*") },
@@ -368,7 +408,10 @@ fun EventDataForm(
                   // Time End
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeEndEvent"),
+                      Modifier
+                          .width(WIDTH_2ELEM)
+                          .height(HEIGHT)
+                          .testTag("inputTimeEndEvent"),
                       value = eventTimeEnd,
                       onValueChange = { eventTimeEnd = it },
                       label = { Text("End time*") },
@@ -383,10 +426,11 @@ fun EventDataForm(
                 onExpandedChange = { isDropdownExpanded = it }) {
                   OutlinedTextField(
                       modifier =
-                          Modifier.menuAnchor()
-                              .width(WIDTH)
-                              .height(HEIGHT)
-                              .testTag("inputLocation"),
+                      Modifier
+                          .menuAnchor()
+                          .width(WIDTH)
+                          .height(HEIGHT)
+                          .testTag("inputLocation"),
                       // Do a query to get a location from text input
                       value = locationName,
                       onValueChange = { newValue ->
@@ -431,7 +475,10 @@ fun EventDataForm(
                   // Min attendees
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
+                      Modifier
+                          .width(WIDTH_2ELEM)
+                          .height(HEIGHT)
+                          .testTag("inputMinAttendees"),
                       value = minAttendees,
                       onValueChange = { minAttendees = it },
                       label = { Text("Min Attendees") },
@@ -439,7 +486,10 @@ fun EventDataForm(
                   // Max attendees
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
+                      Modifier
+                          .width(WIDTH_2ELEM)
+                          .height(HEIGHT)
+                          .testTag("inputMaxAttendees"),
                       value = maxAttendees,
                       onValueChange = { maxAttendees = it },
                       label = { Text("Max Attendees") },
@@ -449,7 +499,10 @@ fun EventDataForm(
             // Inscription limit date
             OutlinedTextField(
                 modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
+                Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("inputInscriptionLimitDate"),
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
                 label = { Text("Inscription Limit Date") },
@@ -457,7 +510,10 @@ fun EventDataForm(
             // Inscription limit time
             OutlinedTextField(
                 modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
+                Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("inputInscriptionLimitTime"),
                 value = inscriptionLimitTime,
                 onValueChange = { inscriptionLimitTime = it },
                 label = { Text("Inscription Limit Time") },
@@ -487,7 +543,7 @@ fun EventDataForm(
                             event,
                             imageUri.value)
 
-                    if (eventAction == EventAction.CREATE) {
+                    if (eventAction == CREATE) {
                       // viewModel.displayMyNewEvent(newEvent)
                     } else {
                       viewModel.editMyEvent(newEvent)
@@ -500,7 +556,7 @@ fun EventDataForm(
                   eventUtils.deleteDraft(context)
 
                   if (!showErrorDialog) {
-                    if (eventAction == EventAction.CREATE) {
+                    if (eventAction == CREATE) {
                       // Go back to the list of events
                       nav.controller.navigate("events")
                     } else {
@@ -509,7 +565,10 @@ fun EventDataForm(
                     }
                   }
                 },
-                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
+                modifier = Modifier
+                    .width(WIDTH)
+                    .height(HEIGHT)
+                    .testTag("createEventButton"),
                 enabled =
                     (title.text != "") &&
                         (description.text != "") &&
@@ -553,7 +612,10 @@ fun InterestSelector(interests: List<Interests>, categories: MutableList<Interes
             placeholder = { Text(text = "Select categories") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            modifier = Modifier.menuAnchor().width(WIDTH).height(HEIGHT))
+            modifier = Modifier
+                .menuAnchor()
+                .width(WIDTH)
+                .height(HEIGHT))
 
         ExposedDropdownMenu(
             modifier = Modifier.testTag("exposedDropdownMenu"),
@@ -612,4 +674,90 @@ fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
 enum class EventAction {
   CREATE,
   EDIT
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyDatePickerDialog(
+    onDateSelected: (String) -> Unit,
+    onDismiss: () -> Unit,
+    initialDate: String
+) {
+    fun convertMillisToDate(millis: Long): String {
+        val formatter = SimpleDateFormat(EventFirebaseConnection.DATE_FORMAT_DISPLAYED, Locale.getDefault())
+        return formatter.format(Date(millis))
+    }
+    val datePickerState = rememberDatePickerState()
+
+    val selectedDate = datePickerState.selectedDateMillis?.let {
+        convertMillisToDate(it)
+    } ?: initialDate
+
+    DatePickerDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            Button(onClick = {
+                onDateSelected(selectedDate)
+                onDismiss()
+            }
+
+            ) {
+
+                Text(text = "OK")
+            }
+        },
+        dismissButton = {
+            Button(onClick = {
+                onDismiss()
+            }) {
+                Text(text = "Cancel")
+            }
+        }
+    ) {
+        DatePicker(
+            state = datePickerState
+        )
+    }
+}
+
+@Composable
+fun MyDatePickerDialog( onDateChange : (String) -> Unit ) {
+
+    var showDatePicker by remember {
+        mutableStateOf(false)
+    }
+
+    var date by remember { //TODO check if this is even necessary
+        mutableStateOf("Open date picker dialog")
+    }
+
+    androidx.compose.material.IconButton(
+        onClick = {
+            // Open DatePickerDialog
+                  showDatePicker = true
+        },
+        modifier = Modifier
+            .height(HEIGHT)
+            .testTag("DatePickerButton"),
+    ) {
+        androidx.compose.material.Icon(
+            modifier = Modifier
+                .size(HEIGHT.times(0.5f))
+                .testTag("DatePickerIcon"),
+            painter = rememberVectorPainter(image = Icons.Filled.DateRange),
+            contentDescription = "Date picker icon"
+        )
+    }
+
+
+    if (showDatePicker) {
+        MyDatePickerDialog(
+            onDateSelected = { date = it
+                             onDateChange(it)
+                             },
+            onDismiss = { showDatePicker = false },
+            initialDate = date
+        )
+    }
 }
