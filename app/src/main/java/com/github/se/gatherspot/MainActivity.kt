@@ -230,7 +230,6 @@ class MainActivity : ComponentActivity() {
     }
   }
 
-
   override fun onDestroy() {
     super.onDestroy()
     unregisterReceiver(networkChangeReceiver)
@@ -242,7 +241,6 @@ class MainActivity : ComponentActivity() {
    * @param result The result of the sign in activity
    * @param navController The navigation controller
    */
-
   @RequiresApi(Build.VERSION_CODES.S)
   private fun onSignInResult(
       result: FirebaseAuthUIAuthenticationResult,

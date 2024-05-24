@@ -9,9 +9,7 @@ import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.utils.UtilsForTests
-import com.github.se.gatherspot.sql.EventDao
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -170,17 +168,22 @@ class EventsViewModel : ViewModel() {
     }
   }
 
-  fun addToLocalDatabase(eventDao: EventDao?, event: Event) {
-    viewModelScope.launch(Dispatchers.IO) { eventDao?.insert(event) }
+  // should not be used anymore
+  /*
+   fun addToLocalDatabase(eventDao: EventDao?, event: Event) {
+     viewModelScope.launch(Dispatchers.IO) { eventDao?.insert(event) }
+   }
+
+   fun updateLocalDatabase(eventDao: EventDao?, event: Event) {
+     viewModelScope.launch(Dispatchers.IO) { eventDao?.update(event) }
+   }
+
+   fun deleteFromLocalDatabase(eventDao: EventDao?, event: Event) {
+     viewModelScope.launch(Dispatchers.IO) { eventDao?.delete(event) }
+
   }
 
-  fun updateLocalDatabase(eventDao: EventDao?, event: Event) {
-    viewModelScope.launch(Dispatchers.IO) { eventDao?.update(event) }
-  }
-
-  fun deleteFromLocalDatabase(eventDao: EventDao?, event: Event) {
-    viewModelScope.launch(Dispatchers.IO) { eventDao?.delete(event) }
-  }
+    */
 }
 
 data class UIState(val list: MutableList<Event> = mutableListOf())

@@ -239,10 +239,7 @@ fun EventUIOrganizer(
                   }
               // Delete button
               IconButton(
-                  onClick = {
-                    eventUIViewModel.clickDeleteButton()
-                    eventsViewModel.deleteFromLocalDatabase(eventDao, event)
-                  },
+                  onClick = { eventUIViewModel.clickDeleteButton() },
                   modifier = Modifier.testTag("deleteEventButton")) {
                     Icon(
                         modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
@@ -279,7 +276,7 @@ fun EventUIOrganizer(
               modifier = Modifier.testTag("okButton"),
               onClick = {
                 // Delete the event
-                eventUtils.deleteEvent(event)
+                eventUtils.deleteEvent(event, eventDao)
                 navActions.controller.navigate("events")
                 eventUIViewModel.dismissAlert()
               }) {
@@ -334,10 +331,9 @@ fun RegisterButton(
 ) {
   Button(
       onClick = {
-        eventUIViewModel.registerForEvent(event)
+        eventUIViewModel.registerForEvent(event, eventDao)
         eventUIViewModel.clickRegisterButton()
         eventsViewModel.updateNewRegistered(event)
-        eventsViewModel.addToLocalDatabase(eventDao, event)
       },
       enabled = isButtonEnabled,
       modifier = Modifier.fillMaxWidth().testTag("registerButton"),

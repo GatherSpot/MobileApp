@@ -223,7 +223,6 @@ fun EventDataForm(
     }
   }
 
-
   var newEvent: Event? = null
 
   Scaffold(
@@ -494,10 +493,12 @@ fun EventDataForm(
                             imageUri.value)
 
                     if (eventAction == EventAction.CREATE) {
-                      viewModel.addToLocalDatabase(eventDao, newEvent!!)
+                      // should not be needed anymore
+                      // viewModel.addToLocalDatabase(eventDao, newEvent!!)
                     } else {
                       viewModel.editMyEvent(newEvent!!)
-                      viewModel.updateLocalDatabase(eventDao, newEvent!!)
+                      // should not be needed anymore
+                      // viewModel.updateLocalDatabase(eventDao, newEvent!!)
                     }
                   } catch (e: Exception) {
                     errorMessage = e.message.toString()

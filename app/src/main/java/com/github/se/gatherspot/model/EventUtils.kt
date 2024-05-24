@@ -13,6 +13,7 @@ import com.github.se.gatherspot.model.event.DraftEvent
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.eventUI.EventAction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -68,7 +69,8 @@ class EventUtils {
       minAttendees: Int?,
       dateLimitInscription: LocalDate?,
       timeLimitInscription: LocalTime?,
-      image: String
+      image: String,
+      eventDao: EventDao?
   ): Event {
 
     // First fetch an unique ID for the event
@@ -95,8 +97,12 @@ class EventUtils {
             eventStatus = EventStatus.CREATED)
 
     // Add the event to the database
-    eventFirebaseConnection.add(event)
-
+    runBlocking {
+      try {
+        eventFirebaseConnection.add(event)
+        eventDao?.insert(event)
+      } catch (_: Exception) {}
+    }
     return event
   }
 
@@ -105,7 +111,7 @@ class EventUtils {
    *
    * @param event: The event to delete
    */
-  fun deleteEvent(event: Event) {
+  fun deleteEvent(event: Event, eventDao: EventDao?) {
     // Remove the event from all the users who registered for it
     val idListFirebase = IdListFirebaseConnection()
     runBlocking {
@@ -117,8 +123,11 @@ class EventUtils {
           idListFirebase.saveToFirebase(registeredEvents)
         }
       }
+      try {
+        eventFirebaseConnection.delete(event.id)
+        eventDao?.delete(event)
+      } catch (_: Exception) {}
     }
-    eventFirebaseConnection.delete(event.id)
   }
 
   /**
@@ -155,7 +164,8 @@ class EventUtils {
       timeLimitInscription: String,
       eventAction: EventAction,
       event: Event? = null,
-      image: String
+      image: String,
+      eventDao: EventDao? = null
   ): Event {
     // test if the date is valid
     val parsedEventStartDate = validateDate(eventStartDate, "Invalid date format")
@@ -254,7 +264,8 @@ class EventUtils {
           parsedMinAttendees,
           parsedDateLimitInscription,
           parsedTimeLimitInscription,
-          image)
+          image,
+          eventDao)
     } else {
       return editEvent(
           title,
@@ -270,7 +281,8 @@ class EventUtils {
           parsedDateLimitInscription,
           parsedTimeLimitInscription,
           event!!,
-          image)
+          image,
+          eventDao)
     }
   }
 
@@ -288,7 +300,8 @@ class EventUtils {
       dateLimitInscription: LocalDate?,
       timeLimitInscription: LocalTime?,
       oldEvent: Event,
-      image: String
+      image: String,
+      eventDao: EventDao?
   ): Event {
     val event =
         Event(
@@ -311,7 +324,10 @@ class EventUtils {
             eventStatus = EventStatus.CREATED,
         )
     // Add the event to the database
-    eventFirebaseConnection.add(event)
+    try {
+      eventFirebaseConnection.add(event)
+      eventDao?.insert(event)
+    } catch (_: Exception) {}
     return event
   }
 
