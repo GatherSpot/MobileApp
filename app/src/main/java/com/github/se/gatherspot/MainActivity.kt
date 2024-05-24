@@ -100,7 +100,12 @@ class MainActivity : ComponentActivity() {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           navController = rememberNavController()
 
-          NavHost(navController = navController, startDestination = "auth") {
+          // Check if user is already authenticated
+          val user = FirebaseAuth.getInstance().currentUser
+          var startDestination = "auth"
+          if (user != null && user.isEmailVerified) startDestination = "home"
+
+          NavHost(navController = navController, startDestination = startDestination) {
             navigation(startDestination = "login", route = "auth") {
               composable("login") { LogIn(NavigationActions(navController), signInLauncher) }
 
@@ -155,13 +160,8 @@ class MainActivity : ComponentActivity() {
               }
 
               composable("chats") {
-                when {
-                  chatsViewModel == null -> {
-                    chatsViewModel = ChatsListViewModel()
-                    Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
-                  }
-                  else -> Chats(chatsViewModel!!, NavigationActions(navController))
-                }
+                if (chatsViewModel == null) chatsViewModel = ChatsListViewModel()
+                Chats(viewModel = chatsViewModel!!, nav = NavigationActions(navController))
               }
 
               composable("qrCodeScanner") { QRCodeScanner(NavigationActions(navController)) }
