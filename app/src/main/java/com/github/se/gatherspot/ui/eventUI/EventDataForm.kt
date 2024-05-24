@@ -9,6 +9,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -92,8 +93,8 @@ private val MESSAGES = arrayOf(CREATE_SPECIFIC_MESSAGES, EDIT_SPECIFIC_MESSAGES)
  * @return a Box with the content passed as a parameter
  */
 @Composable
-fun ScrollableContent(content: @Composable () -> Unit) {
-  Box(modifier = Modifier.fillMaxSize()) {
+fun ScrollableContent(paddingValues: PaddingValues, content: @Composable () -> Unit) {
+  Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) { content() }
   }
 }
@@ -146,6 +147,7 @@ fun EventDataForm(
   var inscriptionLimitTime by remember {
     mutableStateOf(TextFieldValue(event?.inscriptionLimitTime?.format(timeFormatter) ?: ""))
   }
+  var imageUri by remember { mutableStateOf(event?.image ?: "") }
 
   var showErrorDialog by remember { mutableStateOf(false) }
   var errorMessage = ""
@@ -180,9 +182,8 @@ fun EventDataForm(
   }
 
   // image logic
-  val imageUri = remember { mutableStateOf("") }
   val placeHolder = R.drawable.default_event_image
-  val updateImageUri: (String) -> Unit = { imageUri.value = it }
+  val updateImageUri: (String) -> Unit = { imageUri = it }
   val deleteImage: () -> Unit = {
     runBlocking {
       // if we create event it should never be already in the database
@@ -190,13 +191,12 @@ fun EventDataForm(
         event?.id?.let { FirebaseImages().removePicture("eventImage", it) }
       }
     }
-    imageUri.value = ""
+    imageUri = ""
   }
   val uploadImage: () -> Unit = {
     if (event != null) {
       runBlocking {
-        imageUri.value =
-            FirebaseImages().pushPicture(imageUri.value.toUri(), "eventImage", event.id)
+        imageUri = FirebaseImages().pushPicture(imageUri.toUri(), "eventImage", event.id)
       }
     }
   }
@@ -216,6 +216,7 @@ fun EventDataForm(
       minAttendees = TextFieldValue(draft.attendanceMinCapacity ?: "")
       inscriptionLimitDate = TextFieldValue(draft.inscriptionLimitDate ?: "")
       inscriptionLimitTime = TextFieldValue(draft.inscriptionLimitTime ?: "")
+      imageUri = draft.image
       categories.addAll(draft.categories ?: emptySet())
     }
   }
@@ -247,7 +248,7 @@ fun EventDataForm(
                           inscriptionLimitDate.text,
                           inscriptionLimitTime.text,
                           categories.toSet(),
-                          image = imageUri.value,
+                          image = imageUri,
                           context = context)
                     }
                     nav.goBack()
@@ -263,7 +264,7 @@ fun EventDataForm(
               // ERASE FIELDS
               Button(
                   onClick = {
-                    if (imageUri.value.isNotEmpty()) {
+                    if (imageUri.isNotEmpty()) {
                       deleteImage()
                     }
                     title = TextFieldValue("")
@@ -277,7 +278,7 @@ fun EventDataForm(
                     minAttendees = TextFieldValue("")
                     inscriptionLimitDate = TextFieldValue("")
                     inscriptionLimitTime = TextFieldValue("")
-                    imageUri.value = ""
+                    imageUri = ""
                     categories.clear()
                     eventUtils.deleteDraft(context)
                   },
@@ -302,7 +303,7 @@ fun EventDataForm(
                         inscriptionLimitDate.text,
                         inscriptionLimitTime.text,
                         categories.toSet(),
-                        image = imageUri.value,
+                        image = imageUri,
                         context = context)
                   },
                   modifier = Modifier.testTag("saveDraftButton"),
@@ -312,9 +313,9 @@ fun EventDataForm(
             })
       }) { innerPadding ->
         // Make the content scrollable
-        ScrollableContent {
+        ScrollableContent(innerPadding) {
           // Image picker
-          BannerImagePicker(imageUri.value, placeHolder, "event", updateImageUri, deleteImage)
+          BannerImagePicker(imageUri, placeHolder, "event", updateImageUri, deleteImage)
           // Create event form
           Column(
               modifier =
@@ -485,7 +486,7 @@ fun EventDataForm(
                             inscriptionLimitTime.text,
                             eventAction,
                             event,
-                            imageUri.value)
+                            imageUri)
 
                     if (eventAction == EventAction.CREATE) {
                       // viewModel.displayMyNewEvent(newEvent)
