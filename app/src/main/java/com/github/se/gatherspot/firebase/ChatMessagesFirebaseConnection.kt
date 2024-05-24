@@ -8,6 +8,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Firebase connection for chat messages.
+ *
+ * @property TAG The tag for logging
+ * @property CHATS The collection name for chats
+ * @property MESSAGES The collection name for messages
+ * @property DATE_TIME_FORMAT The format for date and time
+ */
 class ChatMessagesFirebaseConnection {
 
   private val TAG = "ChatMessagesFirebase"
@@ -15,7 +23,13 @@ class ChatMessagesFirebaseConnection {
   val MESSAGES = "messages"
   private val DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
-  /** Fetches messages for a given event. */
+  /**
+   * Fetches the chat messages for an event.
+   *
+   * @param eventId The ID of the event
+   * @param number The number of messages to fetch
+   * @return The list of chat messages
+   */
   suspend fun fetchMessages(eventId: String, number: Long): MutableList<ChatMessage> {
     val messagesRef =
         FirebaseFirestore.getInstance()
@@ -29,7 +43,12 @@ class ChatMessagesFirebaseConnection {
     return querySnapshot.documents.mapNotNull { getFromDocument(it) }.toMutableList()
   }
 
-  /** Adds a chat message under a specific event. */
+  /**
+   * Adds a chat message to a specific event.
+   *
+   * @param eventId The ID of the event
+   * @param message The chat message to add
+   */
   fun addMessage(eventId: String, message: ChatMessage) {
     val messageMap =
         hashMapOf(
@@ -47,7 +66,12 @@ class ChatMessagesFirebaseConnection {
         .addOnFailureListener { exception -> Log.w(TAG, "Error adding document", exception) }
   }
 
-  /** Removes a chat message from a specific event. */
+  /**
+   * Removes a chat message from a specific event.
+   *
+   * @param eventId The ID of the event
+   * @param messageId The ID of the message
+   */
   fun removeMessage(eventId: String, messageId: String) {
     FirebaseFirestore.getInstance()
         .collection(CHATS)
@@ -58,7 +82,12 @@ class ChatMessagesFirebaseConnection {
         .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
   }
 
-  /** Maps a Firestore document to a ChatMessage object. */
+  /**
+   * Converts a document snapshot to a chat message.
+   *
+   * @param d The document snapshot
+   * @return The chat message or null if the document is invalid
+   */
   fun getFromDocument(d: DocumentSnapshot): ChatMessage? {
     val messageId = d.id
     val senderId = d.getString("senderId") ?: return null

@@ -6,8 +6,16 @@ import android.provider.CalendarContract.Events
 import com.github.se.gatherspot.model.event.Event
 import java.util.Calendar
 
+/** Class for generating calendar reminders for events. */
 class CalendarReminderGenerator {
   companion object {
+
+    /**
+     * Generates a calendar reminder for an event.
+     *
+     * @param event the event
+     * @return the intent for the calendar reminder
+     */
     fun generateCalendarReminder(event: Event): Intent {
 
       val intent =

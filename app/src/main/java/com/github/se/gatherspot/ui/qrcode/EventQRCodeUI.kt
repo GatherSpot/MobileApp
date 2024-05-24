@@ -1,9 +1,17 @@
 package com.github.se.gatherspot.ui.qrcode
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.testTag
@@ -20,6 +28,11 @@ import com.google.gson.GsonBuilder
 import java.time.LocalDate
 import java.time.LocalTime
 
+/**
+ * Composable for displaying the QR code for an event.
+ *
+ * @param event The event to generate the QR code for
+ */
 @Composable
 fun EventQRCodeUI(event: Event) {
   var qrCodeBitmap: Bitmap? by remember { mutableStateOf(null) }

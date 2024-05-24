@@ -27,6 +27,40 @@ import com.github.se.gatherspot.ui.profile.BioField
 import com.github.se.gatherspot.ui.profile.InterestsView
 import com.github.se.gatherspot.utils.CircleImagePicker
 
+/**
+ * Composable for the setup view.
+ *
+ * @param vm The view model for the setup view
+ * @param nav The navigation actions
+ */
+@Composable
+fun SetUpView(vm: SetUpViewModel, nav: NavigationActions) {
+  val currentStep = vm.currentStep.observeAsState()
+  val isDone = vm.isDone.observeAsState(false)
+  val doneButton = vm.doneButton.observeAsState(false)
+  Scaffold(
+      bottomBar = {
+        Box(modifier = Modifier.padding(16.dp)) {
+          if (doneButton.value == true) DoneButton(isDone.value, nav) else NextButton(vm::next)
+        }
+      },
+      content = { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+          when (currentStep.value) {
+            "Interests" -> Interests(vm)
+            "Bio" -> Bio(vm)
+            "Image" -> Image(vm)
+            "Done" -> Done()
+          }
+        }
+      })
+}
+
+/**
+ * Composable for a next button.
+ *
+ * @param next The action to perform when the button is clicked
+ */
 @Composable
 fun NextButton(next: () -> Unit) {
   Button(
@@ -44,6 +78,12 @@ fun NextButton(next: () -> Unit) {
       }
 }
 
+/**
+ * Composable for a done button.
+ *
+ * @param isDone Whether the setup is done
+ * @param nav The navigation actions
+ */
 @Composable
 fun DoneButton(isDone: Boolean, nav: NavigationActions) {
   Button(
@@ -64,8 +104,6 @@ private fun Interests(vm: SetUpViewModel) {
   val flipInterests = vm::flipInterests
   Column(
       modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp).testTag("setUpInterests")) {
-        // TODO : add scroll ???
-        // TODO : add condition minimum 3 interests ?
         Text(text = "Choose your interests", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
         InterestsView().EditInterests(Interests.toList(), interests, flipInterests)
@@ -106,27 +144,4 @@ private fun Done() {
     Spacer(modifier = Modifier.height(30.dp))
     Text(text = "Welcome and have fun using GatherSpot !!!", fontSize = 20.sp)
   }
-}
-
-@Composable
-fun SetUpView(vm: SetUpViewModel, nav: NavigationActions) {
-  val currentStep = vm.currentStep.observeAsState()
-  val isDone = vm.isDone.observeAsState(false)
-  val doneButton = vm.doneButton.observeAsState(false)
-  Scaffold(
-      bottomBar = {
-        Box(modifier = Modifier.padding(16.dp)) {
-          if (doneButton.value == true) DoneButton(isDone.value, nav) else NextButton(vm::next)
-        }
-      },
-      content = { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-          when (currentStep.value) {
-            "Interests" -> Interests(vm)
-            "Bio" -> Bio(vm)
-            "Image" -> Image(vm)
-            "Done" -> Done()
-          }
-        }
-      })
 }

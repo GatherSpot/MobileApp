@@ -10,13 +10,14 @@ import com.google.firebase.firestore.firestore
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 
+/** Firebase connection for profiles. */
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   override val COLLECTION = FirebaseCollection.PROFILES.toString().lowercase()
   override val TAG = "FirebaseConnection" // Used for debugging/logs
 
   /**
-   * Fetches the profile from the database
+   * Fetches the profile from the database.
    *
    * @param id the id of the user
    * @param onSuccess lambda returned when fetched, useful to update the viewModel
@@ -48,8 +49,10 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   /**
+   * Gets the UID of the user logged in the current instance.
+   *
    * @return the UID of the user logged in the current instance, or null if the user is not logged
-   *   in.
+   *   in
    */
   fun getCurrentUserUid(): String? {
     return FirebaseAuth.getInstance().currentUser?.uid
@@ -57,9 +60,10 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
 
   /**
    * Checks if the username exists in the database Once the check is done, the onComplete lambda is
-   * called with the result of the check : true if the username exists, false otherwise
+   * called with the result of the check : true if the username exists, false otherwise.
    *
    * @param userName the username to check
+   * @param onComplete the lambda to call when the check is done
    */
   fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
 
@@ -72,10 +76,11 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   /**
-   * Fetches the profile from the database with given username if the username does not exist, the
-   * function returns null if two profiles have the same username, one is returned
+   * Fetches the profile from the database with given username. If two profiles have the same
+   * username, one is returned.
    *
    * @param userName the username of the user
+   * @return the profile with the given username, or null if the username does not exist
    */
   suspend fun fetchFromUserName(userName: String): Profile? =
       suspendCancellableCoroutine { continuation ->
@@ -96,7 +101,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
       }
 
   /**
-   * Adds or overrides a profile to the database
+   * Adds or overrides a profile to the database.
    *
    * @param element the profile to add
    */
@@ -116,7 +121,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   /**
-   * Updates a field of a profile in the database
+   * Updates a field of a profile in the database.
    *
    * @param id the id of the profile
    * @param field the field to update : {userName, bio, image, interests}
@@ -149,17 +154,16 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
           }
         }
       }
-    /*
-    "registeredEvents" -> {
-      updateRegisteredEvents(id, value as Set<String>)
-      return
-    }*/
     }
 
     super.update(id, field, value)
   }
 
-  /** Calls the add function to update the profile in the database */
+  /**
+   * Calls the add function to update the profile in the database
+   *
+   * @param profile the profile to update
+   */
   fun update(profile: Profile) {
     this.add(profile)
   }
@@ -177,27 +181,6 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         .update("interests", Interests.toCompressedString(interests))
         .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
         .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
-  }
-
-  /* fun updateRegisteredEvents(id: String, eventIDs: Set<String>) {
-
-    Firebase.firestore
-        .collection(COLLECTION)
-        .document(id)
-        .update("registeredEvents", FieldValue.arrayUnion(*eventIDs.toTypedArray()))
-        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
-        .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
-  }
-
-  */
-
-  /** Deletes a profile from the database */
-  override fun delete(id: String) {
-    // delete associated data from other collection TODO
-    // delete ratings using registrations to find such events
-    // delete registrations
-    // (delete User ? No)
-    super.delete(id)
   }
 
   /**

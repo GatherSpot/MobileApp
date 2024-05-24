@@ -78,9 +78,12 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlinx.coroutines.launch
 
-/** Composable that displays events * */
-
-// listOf("Your interests", "None")
+/**
+ * Composable for the events screen.
+ *
+ * @param viewModel The view model for the events view
+ * @param nav The navigation actions
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -206,23 +209,23 @@ private fun EventItem(
                 Text(
                     text =
                         "Start date: ${
-                            event.eventStartDate?.format(
-                                DateTimeFormatter.ofPattern(
-                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
-                                )
+                        event.eventStartDate?.format(
+                            DateTimeFormatter.ofPattern(
+                                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                             )
-                        }",
+                        )
+                    }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
                 Text(
                     text =
                         "End date: ${
-                            event.eventEndDate?.format(
-                                DateTimeFormatter.ofPattern(
-                                    EventFirebaseConnection.DATE_FORMAT_DISPLAYED
-                                )
+                        event.eventEndDate?.format(
+                            DateTimeFormatter.ofPattern(
+                                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
                             )
-                        }",
+                        )
+                    }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
                 Text(
@@ -262,6 +265,13 @@ private fun EventItem(
       }
 }
 
+/**
+ * Composable that displays a message when no events are loaded.
+ *
+ * @param viewModel The view model for the events view
+ * @param interests The interests in the filter
+ * @param fetch The function to call when refreshing the events
+ */
 @Composable
 private fun Empty(
     viewModel: EventsViewModel,

@@ -55,6 +55,10 @@ import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.maps.android.compose.CameraPositionState
 
+/**
+ * The main activity for the app. This activity is responsible for setting up the navigation and
+ * some global variables.
+ */
 class MainActivity : ComponentActivity() {
   companion object {
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
@@ -188,6 +192,12 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+  /**
+   * Handles the result of the sign in activity.
+   *
+   * @param result The result of the sign in activity
+   * @param navController The navigation controller
+   */
   @RequiresApi(Build.VERSION_CODES.S)
   private fun onSignInResult(
       result: FirebaseAuthUIAuthenticationResult,
