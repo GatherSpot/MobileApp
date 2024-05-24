@@ -111,7 +111,7 @@ class EventUtils {
    *
    * @param event: The event to delete
    */
-  fun deleteEvent(event: Event, eventDao: EventDao?) {
+  fun deleteEvent(event: Event, eventDao: EventDao? = null) {
     // Remove the event from all the users who registered for it
     val idListFirebase = IdListFirebaseConnection()
     runBlocking {

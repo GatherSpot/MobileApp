@@ -68,7 +68,7 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
    *
    * @param event the event to register for
    */
-  fun registerForEvent(event: Event, eventDao: EventDao?) {
+  fun registerForEvent(event: Event, eventDao: EventDao? = null) {
     // Perform registration logic here, such as making network requests
     viewModelScope.launch {
       // Simulate network request delay
