@@ -119,7 +119,7 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 }
 
 @Composable
-fun EventList(
+private fun EventList(
     vm: EventsViewModel,
     fetch: () -> Unit,
     events: State<List<Event>>,
@@ -153,7 +153,7 @@ fun EventList(
 }
 
 @Composable
-fun EventItem(
+private fun EventItem(
     event: Event,
     getEventTiming: (Event) -> EventsViewModel.EventTiming,
     isOrganizer: (Event) -> Boolean,
@@ -263,7 +263,7 @@ fun EventItem(
 }
 
 @Composable
-fun Empty(
+private fun Empty(
     viewModel: EventsViewModel,
     interests: MutableLiveData<Set<Interests>>,
     fetch: () -> Unit
@@ -289,7 +289,7 @@ fun Empty(
 }
 
 @Composable
-fun InterestsDialog(
+private fun InterestsDialog(
     selectedInterests: State<Set<Interests>?>,
     setFilter: () -> Unit,
     revertFilter: () -> Unit,
@@ -332,7 +332,7 @@ fun InterestsDialog(
 }
 
 @Composable
-fun CreateAndFilterButton(nav: NavigationActions, showDialog: () -> Unit) {
+private fun CreateAndFilterButton(nav: NavigationActions, showDialog: () -> Unit) {
   Column {
     Button(
         onClick = { showDialog() },
@@ -353,7 +353,7 @@ fun CreateAndFilterButton(nav: NavigationActions, showDialog: () -> Unit) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EventTypeTab(tabList: List<String>, pagerState: PagerState) {
+private fun EventTypeTab(tabList: List<String>, pagerState: PagerState) {
   val coroutineScope = rememberCoroutineScope()
   TabRow(selectedTabIndex = pagerState.currentPage) {
     tabList.forEachIndexed { index, title ->
@@ -368,7 +368,7 @@ fun EventTypeTab(tabList: List<String>, pagerState: PagerState) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: PagerState) {
+private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: PagerState) {
   HorizontalPager(state = pagerState) { page ->
     when (page) {
       // fun EventList(vm: EventsViewModel, events: State<List<Event>>, nav: NavigationActions){
@@ -406,7 +406,7 @@ fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: PagerState) {
 @RequiresApi(Build.VERSION_CODES.S)
 @Preview
 @Composable
-fun EventUIPreview() {
+private fun EventUIPreview() {
   val nav = rememberNavController()
   val context = LocalContext.current
   val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
