@@ -70,6 +70,7 @@ class EventsViewCompleteTest {
     }
     ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
       filterMenu.performClick()
+      composeTestRule.waitForIdle()
       interestsDialog { assertIsDisplayed() }
 
       val indexBasketball = Interests.BASKETBALL.ordinal
