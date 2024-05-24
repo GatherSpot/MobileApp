@@ -22,8 +22,11 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +44,11 @@ import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+/**
+ * Composable for the QR code scanner.
+ *
+ * @param navigationActions The navigation actions
+ */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun QRCodeScanner(navigationActions: NavigationActions) {
@@ -73,6 +81,11 @@ fun QRCodeScanner(navigationActions: NavigationActions) {
       }
 }
 
+/**
+ * Composable for the camera preview when scanning QR codes
+ *
+ * @param navigationActions The navigation actions
+ */
 @Composable
 fun CameraPreview(navigationActions: NavigationActions) {
   val context = LocalContext.current
@@ -137,6 +150,12 @@ fun CameraPreview(navigationActions: NavigationActions) {
       })
 }
 
+/**
+ * Analyse the QR code and return a string equal to a navigation route.
+ *
+ * @param text The text from the QR code
+ * @return The navigation string
+ */
 @SuppressLint("SuspiciousIndentation")
 fun analyseAppQRCode(text: String): String {
   val parts = text.split("/")

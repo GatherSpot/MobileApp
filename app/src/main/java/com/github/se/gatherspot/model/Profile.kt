@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 
-// NOTE : I will add interests once theses are pushed
 /**
  * Profile data object
  *
@@ -31,10 +30,22 @@ class Profile(
       return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
     }
 
+    /**
+     * Fetch a profile from Firebase
+     *
+     * @param id the id of the profile
+     * @param onSuccess the function to call when the profile is fetched
+     */
     fun fromFirebase(id: String, onSuccess: () -> Unit) {
       ProfileFirebaseConnection().fetch(id) { onSuccess() }
     }
 
+    /**
+     * Create an empty profile
+     *
+     * @param id the id of the user
+     * @return an empty profile useful for tests and the creation of a new profile.
+     */
     fun empty(id: String) = Profile("", "", "", id, setOf())
 
     /**
@@ -67,9 +78,21 @@ class Profile(
       }
     }
 
+    /**
+     * Add a profile to Firebase (with default values)
+     *
+     * @param username the username of the user
+     * @param id the id of the user
+     */
     fun add(username: String, id: String) =
         ProfileFirebaseConnection().add(Profile(username, "", "", id, Interests.new()))
 
+    /**
+     * Check if a bio is valid
+     *
+     * @param bio the bio to check
+     * @return a string with an error message if bio is invalid
+     */
     fun checkBio(bio: String): MutableLiveData<String> {
       val res = MutableLiveData<String>()
       if (bio.length > 100) {

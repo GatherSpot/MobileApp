@@ -43,6 +43,13 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import java.util.UUID
 import kotlinx.coroutines.launch
 
+/**
+ * Composable for the a chat screen.
+ *
+ * @param viewModel The view model for the chat view
+ * @param currentUserId The current user's ID
+ * @param navActions The navigation actions
+ */
 @Composable
 fun ChatUI(viewModel: ChatViewModel, currentUserId: String, navActions: NavigationActions) {
   val messages = viewModel.messages.collectAsState().value
@@ -89,6 +96,12 @@ fun ChatUI(viewModel: ChatViewModel, currentUserId: String, navActions: Navigati
       }
 }
 
+/**
+ * Composable for a chat message card.
+ *
+ * @param message The chat message
+ * @param isCurrentUser Whether the message is from the current user
+ */
 @Composable
 fun ChatMessageCard(message: ChatMessage, isCurrentUser: Boolean) {
   val backgroundColor = if (isCurrentUser) Color(0xFF90EE90) else Color.White
@@ -111,6 +124,12 @@ fun ChatMessageCard(message: ChatMessage, isCurrentUser: Boolean) {
       }
 }
 
+/**
+ * Composable for a chat top bar.
+ *
+ * @param navActions The navigation actions
+ * @param title The title of the app bar
+ */
 @Composable
 fun CustomTopAppBar(navActions: NavigationActions, title: String) {
   TopAppBar(
@@ -129,6 +148,13 @@ fun CustomTopAppBar(navActions: NavigationActions, title: String) {
       elevation = 4.dp)
 }
 
+/**
+ * Composable for the message input field.
+ *
+ * @param text The text in the input field
+ * @param onTextChange The action to perform when the text changes
+ * @param onSend The action to perform when the send button is clicked
+ */
 @Composable
 fun MessageInputField(text: String, onTextChange: (String) -> Unit, onSend: () -> Unit) {
   Row(

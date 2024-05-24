@@ -1,5 +1,16 @@
 package com.github.se.gatherspot.model
 
+/**
+ * Enum class representing the rating of a user.
+ *
+ * The ratings are:
+ * - UNRATED
+ * - ONE_STAR
+ * - TWO_STARS
+ * - THREE_STARS
+ * - FOUR_STARS
+ * - FIVE_STARS
+ */
 enum class Rating {
   UNRATED,
   ONE_STAR,
@@ -9,6 +20,13 @@ enum class Rating {
   FIVE_STARS;
 
   companion object {
+
+    /**
+     * Get the rating from a long value.
+     *
+     * @param rating the long value of the rating
+     * @return the rating, UNRATED if the long value is not a valid rating
+     */
     fun fromLong(rating: Long): Rating {
       return when (rating) {
         1L -> ONE_STAR
@@ -20,6 +38,12 @@ enum class Rating {
       }
     }
 
+    /**
+     * Get the long value of a rating.
+     *
+     * @param rating the rating
+     * @return the long value of the rating, 0 if the rating is UNRATED
+     */
     fun toLong(rating: Rating): Long {
       return when (rating) {
         ONE_STAR -> 1

@@ -7,6 +7,11 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.signUp.SignUpView
 import com.github.se.gatherspot.ui.signUp.SignUpViewModel
 
+/**
+ * Composable for the sign up screen.
+ *
+ * @param nav The navigation actions
+ */
 @Composable
 fun SignUp(nav: NavigationActions) {
   val storeOwner = LocalViewModelStoreOwner.current!!

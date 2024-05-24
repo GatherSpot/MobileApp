@@ -4,14 +4,18 @@ import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
+/** Class for Firebase image storage. */
 class FirebaseImages {
   private val firebaseStorage = FirebaseStorage.getInstance()
   private val PICTURE_BASE_STORAGE = firebaseStorage.getReference("images")
   private val PROFILE_PICTURE_STORAGE = "profile_images"
 
   /**
-   * A function that pushes the profile picture to the profile image cloud storage on success
-   * returns the image url, elses empty
+   * A function that pushes the profile picture to the profile image cloud storage on success.
+   *
+   * @param imageUri The URI of the image
+   * @param userId The ID of the user
+   * @return The image URL or an empty string on failure
    */
   suspend fun pushProfilePicture(imageUri: Uri, userId: String): String {
     return if (imageUri != Uri.EMPTY && userId.isNotEmpty()) {
@@ -22,8 +26,12 @@ class FirebaseImages {
   }
 
   /**
-   * A function that pushes the profile picture to the profile image cloud storage on success
-   * returns the image url, elses empty
+   * A function that pushes the profile picture to the profile image cloud storage on success.
+   *
+   * @param imageUri The URI of the image
+   * @param subFolder The subfolder to store the image in
+   * @param id The ID of the image
+   * @return The image URL or an empty string on failure
    */
   suspend fun pushPicture(imageUri: Uri, subFolder: String, id: String): String {
     return if (imageUri != Uri.EMPTY && subFolder.isNotEmpty() && id.isNotEmpty()) {
@@ -39,7 +47,13 @@ class FirebaseImages {
     }
   }
 
-  /** A function that removes the picture from the cloud storage */
+  /**
+   * A function that removes the picture from the cloud storage.
+   *
+   * @param subFolder The subfolder to store the image in
+   * @param saveAs The ID of the image
+   * @return True on success, false on failure
+   */
   suspend fun removePicture(subFolder: String, saveAs: String): Boolean {
     return if (subFolder.isNotEmpty() && saveAs.isNotEmpty()) {
       try {
@@ -53,7 +67,12 @@ class FirebaseImages {
     }
   }
 
-  /** A function that removes the user profile picture from the cloud storage */
+  /**
+   * A function that removes the user profile picture from the cloud storage.
+   *
+   * @param userId The ID of the user
+   * @return True on success, false on failure
+   */
   suspend fun removeProfilePicture(userId: String): Boolean {
     return if (userId.isNotEmpty()) {
       removePicture(PROFILE_PICTURE_STORAGE, userId)

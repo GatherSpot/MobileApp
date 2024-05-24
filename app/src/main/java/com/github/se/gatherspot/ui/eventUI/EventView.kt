@@ -67,6 +67,16 @@ import com.google.firebase.auth.auth
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+/**
+ * Composable that displays the UI for an event. It displays the title, description, organizer,
+ * rating, categories, location, dates and times. It is different for the organizer of the event and
+ * for the participants.
+ *
+ * @param event the event to display
+ * @param navActions the navigation actions
+ * @param eventUIViewModel the view model for the event UI
+ * @param eventsViewModel the view model for the events
+ */
 @Composable
 fun EventUI(
     event: Event,
@@ -81,7 +91,16 @@ fun EventUI(
   }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/**
+ * EventUINonOrganizer displays the UI for an event for a participant. It displays the title,
+ * description, organizer, rating, categories, location, dates and times, and a button to register
+ * for the event.
+ *
+ * @param event the event to display
+ * @param navActions the navigation actions
+ * @param eventUIViewModel the view model for the event UI
+ * @param eventsViewModel the view model for the events
+ */
 @Composable
 fun EventUINonOrganizer(
     event: Event,
@@ -158,7 +177,15 @@ fun EventUINonOrganizer(
       }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/**
+ * EventUIOrganizer displays the UI for an event for the organizer. It displays the title,
+ * description, organizer, rating, categories, location, dates and times, and buttons to edit and
+ * delete the event.
+ *
+ * @param event the event to display
+ * @param navActions the navigation actions
+ * @param eventUIViewModel the view model for the event UI
+ */
 @Composable
 fun EventUIOrganizer(
     event: Event,
@@ -258,6 +285,7 @@ fun EventUIOrganizer(
   }
 }
 
+/** EventRating displays the rating of the event. */
 @Composable
 fun EventRating(eventRating: Double?) {
   if ((eventRating ?: 0.0) > 0.0) {
@@ -270,6 +298,18 @@ fun EventRating(eventRating: Double?) {
   }
 }
 
+/**
+ * RegisterButton displays a button to register to an event. It also displays an alert dialog to
+ * show the result of the registration.
+ *
+ * @param event the event to register for
+ * @param eventUIViewModel the view model for the event UI
+ * @param eventsViewModel the view model for the events
+ * @param isButtonEnabled true if the button is enabled, false otherwise
+ * @param buttonText the text to display on the button
+ * @param showDialogRegistration true if the dialog should be displayed, false otherwise
+ * @param registrationState the state of the registration
+ */
 @Composable
 fun RegisterButton(
     event: Event,
@@ -314,6 +354,11 @@ fun RegisterButton(
   }
 }
 
+/**
+ * Chip displays a chip with the name of an interest.
+ *
+ * @param interest the interest to display
+ */
 @Composable
 fun Chip(interest: Interests) {
   Surface(
@@ -328,6 +373,13 @@ fun Chip(interest: Interests) {
       }
 }
 
+/**
+ * ProfileIndicator displays info about the organizer of the event.
+ *
+ * @param profile the profile of the organizer
+ * @param navActions the navigation actions
+ * @param organizerRating the rating of the organizer
+ */
 @Composable
 fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizerRating: Double) {
   if (profile == null) return
@@ -344,7 +396,6 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
                   navActions.controller.navigate("profile")
                 }
               }) {
-        // TODO implement image here: do it later
         Box(
             contentAlignment = Alignment.Center,
             modifier =
@@ -404,6 +455,12 @@ fun StarRating(ownRating: Long, onRatingChanged: (Long) -> Unit) {
       }
 }
 
+/**
+ * ExportToCalendarIcon displays a clickable calendar icon that exports the event to the user's
+ * calendar.
+ *
+ * @param event the event to save to the calendar
+ */
 @Composable
 fun ExportToCalendarIcon(event: Event) {
   val context = LocalContext.current
@@ -424,6 +481,9 @@ fun ExportToCalendarIcon(event: Event) {
 /**
  * RatingDisplay is a composable that displays a row with a text "Rate this event" and a StarRating
  * composable.
+ *
+ * @param ownRating the current rating of the event
+ * @param eventUIViewModel the view model for the event UI
  */
 @Composable
 fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel) {
@@ -445,6 +505,15 @@ fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel) {
       }
 }
 
+/**
+ * EventBody displays the body of the event, including the image, description, organizer,
+ * categories, location, dates and times.
+ *
+ * @param event the event to display
+ * @param organizerProfile the profile of the organizer
+ * @param organizerRating the rating of the organizer
+ * @param navActions the navigation actions
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ColumnScope.EventBody(
@@ -504,7 +573,7 @@ fun ColumnScope.EventBody(
       GeoMap(
           userCoordinates = location,
           interestsCoordinates = emptyList(),
-          mapViewModifier = Modifier.fillMaxWidth().height(200.dp))
+          modifier = Modifier.fillMaxWidth().height(200.dp))
     } ?: BasicText(text = "No location provided for this event")
   }
   // Event Dates and Times
@@ -548,39 +617,3 @@ fun ColumnScope.EventBody(
   }
   EventQRCodeUI(event = event)
 }
-
-// Preview for the Event UI, for testing purposes
-/*
-@Preview
-@Composable
-fun EventUIPreview() {
-  // Set global uid for testing
-  val event =
-      Event(
-          id = "idTestEvent",
-          title = "Event Title",
-          description =
-              "Hello: I am a description of the event just saying that I would love to say" +
-                  "that Messi is not the best player in the world, but I can't. I am sorry.",
-          attendanceMaxCapacity = 5,
-          attendanceMinCapacity = 1,
-          categories = setOf(Interests.BASKETBALL),
-          eventEndDate = LocalDate.of(2024, 4, 15),
-          eventStartDate = LocalDate.of(2024, 4, 10),
-          globalRating = 4,
-          inscriptionLimitDate = LocalDate.of(2025, 4, 1),
-          inscriptionLimitTime = LocalTime.of(23, 59),
-          location = Location(46.51878838760822, 6.5619011030383, "IC BC"),
-          registeredUsers = mutableListOf(),
-          timeBeginning = LocalTime.of(11, 0),
-          timeEnding = LocalTime.of(13, 0),
-          image = "",
-          organizerID = Profile.testOrganizer().id)
-  val viewModel = EventUIViewModel(event)
-  EventUI(
-      event = event,
-      navActions = NavigationActions(rememberNavController()),
-      eventUIViewModel = viewModel,
-      eventsViewModel = EventsViewModel())
-}
-*/

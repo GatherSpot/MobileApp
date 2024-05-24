@@ -39,6 +39,13 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.Profile
 
+/**
+ * Composable for the follow list screen.
+ *
+ * @param navActions The navigation actions
+ * @param title The title of the screen
+ * @param ids The list of user IDs to display
+ */
 @Composable
 fun FollowListUI(navActions: NavHostController, title: String, ids: suspend () -> IdList) {
   val fb = ProfileFirebaseConnection()
@@ -88,6 +95,11 @@ fun FollowListUI(navActions: NavHostController, title: String, ids: suspend () -
       }
 }
 
+/**
+ * Composable for the loading screen.
+ *
+ * @param s The string to display
+ */
 @Composable
 fun Loading(s: String) {
   Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
@@ -97,6 +109,7 @@ fun Loading(s: String) {
   }
 }
 
+/** Composable for the empty screen. */
 @Composable
 fun Empty() {
   Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
@@ -104,6 +117,12 @@ fun Empty() {
   }
 }
 
+/**
+ * Composable for a row containing info about a user.
+ *
+ * @param p The profile to display
+ * @param navActions The navigation actions
+ */
 @Composable
 fun UserRow(p: Profile, navActions: NavHostController) {
   Box(
@@ -116,7 +135,6 @@ fun UserRow(p: Profile, navActions: NavHostController) {
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
               Column(modifier = Modifier.weight(1f)) {
                 // TODO profile picture
-                // p.image
               }
 
               Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
