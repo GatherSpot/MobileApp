@@ -61,7 +61,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseImages
@@ -529,7 +528,6 @@ fun EventDataForm(
                             eventAction,
                             event,
                             imageUri.value)
-
 
                     if (eventAction == CREATE) {
                       // viewModel.displayMyNewEvent(newEvent)
