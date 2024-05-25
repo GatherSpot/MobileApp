@@ -29,7 +29,7 @@ class EventUIViewModel(private val event: Event) :
 
   private var _organizer = MutableLiveData<Profile>()
   private lateinit var _attendees: List<String>
-  private var _ownRating = MutableLiveData<Rating>()
+  private var _ownRating = MutableLiveData(Rating.UNRATED)
   private var _organizerRating = MutableLiveData<Double>()
   private var _eventRating = MutableLiveData<Double>()
   private val userID = Firebase.auth.currentUser?.uid ?: "TEST"
