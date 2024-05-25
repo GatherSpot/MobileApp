@@ -1,6 +1,8 @@
 package com.github.se.gatherspot.ui.eventUI
 
 import android.Manifest
+import android.app.TimePickerDialog
+
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -394,16 +396,23 @@ fun EventDataForm(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                   // Time Start
-                  OutlinedTextField(
-                      modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputTimeStartEvent"),
-                      value = eventTimeStart,
-                      onValueChange = { eventTimeStart = it },
-                      label = { Text("Start time*") },
-                      placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+                Row {
+                    OutlinedTextField(
+                        modifier =
+                        Modifier
+                            .width(WIDTH_2ELEM)
+                            .height(HEIGHT)
+                            .testTag("inputTimeStartEvent"),
+                        value = eventTimeStart,
+                        onValueChange = { eventTimeStart = it },
+                        label = { Text("Start time*") },
+                        placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+
+                    MyTimePickerDialog(
+                        onTimeChange = { eventTimeStart = TextFieldValue(it) },
+                        title = "Select start time")
+                }
+
 
                   // Time End
                   OutlinedTextField(
@@ -758,6 +767,80 @@ fun MyDatePickerDialog( onDateChange : (String) -> Unit ) {
                              },
             onDismiss = { showDatePicker = false },
             initialDate = date
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyTimePickerDialog(
+    onTimeSelected: (String) -> Unit,
+    onDismiss: () -> Unit,
+    initialTime: String,
+    title : String
+) {
+
+    val listener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+        val time = (hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0'))
+        onTimeSelected(time)
+        onDismiss()
+    }
+
+    val initialHour = try {initialTime.split(":", limit = 2)[0].toInt()} catch (e: Exception) {12}
+    val initialMinutes = try {initialTime.split(":", limit = 2)[1].toInt()} catch (e: Exception) {0}
+
+    val timePickerDialog = TimePickerDialog(
+        LocalContext.current,
+        listener,
+        initialHour,
+        initialMinutes,
+        true
+    )
+
+    timePickerDialog.setMessage(title)
+    timePickerDialog.setOnDismissListener { onDismiss() }
+
+    timePickerDialog.show()
+
+}
+@Composable
+fun MyTimePickerDialog( onTimeChange : (String) -> Unit, title: String ) {
+
+    var showTimePicker by remember {
+        mutableStateOf(false)
+    }
+
+    var time by remember { //TODO check if this is even necessary
+        mutableStateOf("Open time picker dialog")
+    }
+
+    androidx.compose.material.IconButton(
+        onClick = {
+            // Open TimePickerDialog
+            showTimePicker = true
+        },
+        modifier = Modifier
+            .height(HEIGHT)
+            .testTag("TimePickerButton"),
+    ) {
+        androidx.compose.material.Icon(
+            modifier = Modifier
+                .size(HEIGHT.times(0.5f))
+                .testTag("TimePickerIcon"),
+            painter = rememberVectorPainter(image = Icons.Filled.DateRange),
+            contentDescription = "Time picker icon"
+        )
+    }
+
+    if (showTimePicker) {
+        MyTimePickerDialog(
+            onTimeSelected = { time = it
+                             onTimeChange(it)
+                             },
+            onDismiss = { showTimePicker = false },
+            initialTime = time,
+            title = title
         )
     }
 }
