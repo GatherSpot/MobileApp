@@ -15,8 +15,6 @@ import java.time.LocalTime
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 
 class EventRegistrationViewModelTest {
@@ -24,6 +22,7 @@ class EventRegistrationViewModelTest {
   init {
     testLogin()
   }
+
   @Test
   fun testRegisterForEventChangeEventListRegistered() = runBlocking {
     // Set global uid
