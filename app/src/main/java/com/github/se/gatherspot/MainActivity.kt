@@ -1,8 +1,9 @@
 package com.github.se.gatherspot
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,7 +32,9 @@ import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.network.NetworkChangeReceiver
 import com.github.se.gatherspot.sql.AppDatabase
+import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.FollowListUI
 import com.github.se.gatherspot.ui.SignUp
@@ -61,6 +64,7 @@ import com.google.maps.android.compose.CameraPositionState
  */
 class MainActivity : ComponentActivity() {
   companion object {
+    var isOnline: Boolean = false
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
     lateinit var mapLauncher: ActivityResultLauncher<String>
     var mapAccess = false
@@ -68,20 +72,23 @@ class MainActivity : ComponentActivity() {
     lateinit var app: Application
     var savedCameraPositionState: CameraPositionState? = null
     var selectedInterests = MutableLiveData(Interests.new())
-    var localDatabaseName = "localDataBase"
   }
 
   private lateinit var navController: NavHostController
+  private lateinit var networkChangeReceiver: NetworkChangeReceiver
+  private var eventsViewModel: EventsViewModel? = null
   private var chatsViewModel: ChatsListViewModel? = null
+  private lateinit var localDatabase:
+      AppDatabase // = Room.databaseBuilder(applicationContext, AppDatabase::class.java,
+  // "db").build()
+  private lateinit var eventDao: EventDao
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    // val chatViewModel = ChatViewModel()
-    val context: Context = applicationContext
-    val localDataBase =
-        Room.databaseBuilder(context, AppDatabase::class.java, localDatabaseName).build()
+    localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
+    eventDao = localDatabase.EventDao()
     app = application
     mapViewModel = MapViewModel(app)
 
@@ -96,6 +103,9 @@ class MainActivity : ComponentActivity() {
           ->
           mapAccess = isGranted
         }
+
+    networkChangeReceiver = NetworkChangeReceiver { connected -> isOnline = connected }
+    registerReceiver(networkChangeReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
     setContent {
       GatherSpotTheme {
@@ -118,7 +128,7 @@ class MainActivity : ComponentActivity() {
 
             navigation(startDestination = "events", route = "home") {
               composable("events") {
-                val eventsViewModel = viewModel { EventsViewModel(localDataBase) }
+                val eventsViewModel = viewModel { EventsViewModel(localDatabase) }
                 Events(viewModel = eventsViewModel, nav = NavigationActions(navController))
               }
               composable("event/{eventJson}") { backStackEntry ->
@@ -129,16 +139,20 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
                     eventUIViewModel = EventUIViewModel(eventObject),
-                    eventsViewModel = viewModel() { EventsViewModel(localDataBase) })
+                    eventsViewModel = viewModel() { EventsViewModel(localDatabase) },
+                    eventDao
+                  )
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val eventObject =
                     backStackEntry.arguments!!.getString("eventJson")?.let { Event.fromJson(it) }
                 EditEvent(
-                    event = eventObject!!,
-                    eventUtils = EventUtils(),
-                    nav = NavigationActions(navController),
-                    viewModel = viewModel { EventsViewModel(localDataBase) })
+                  event = eventObject!!,
+                  eventUtils = EventUtils(),
+                  nav = NavigationActions(navController),
+                  viewModel = viewModel { EventsViewModel(localDatabase) },
+                  eventDao = eventDao
+                )
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -182,7 +196,9 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(
                     nav = NavigationActions(navController),
                     eventUtils = EventUtils(),
-                    viewModel() { EventsViewModel(localDataBase) })
+                    viewModel() { EventsViewModel(localDatabase) },
+                    eventDao = eventDao
+                  )
               }
               composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }
@@ -190,6 +206,11 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    unregisterReceiver(networkChangeReceiver)
   }
 
   /**

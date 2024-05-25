@@ -53,6 +53,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseImages
@@ -60,6 +61,7 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.eventUI.EventAction.CREATE
 import com.github.se.gatherspot.ui.eventUI.EventAction.EDIT
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -114,7 +116,8 @@ fun EventDataForm(
     viewModel: EventsViewModel,
     nav: NavigationActions,
     eventAction: EventAction,
-    event: Event? = null
+    event: Event? = null,
+    eventDao: EventDao?
 ) {
   // State of the event
   val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -219,6 +222,8 @@ fun EventDataForm(
       categories.addAll(draft.categories ?: emptySet())
     }
   }
+
+  var newEvent: Event? = null
 
   Scaffold(
       modifier = Modifier.testTag("EventDataFormScreen"),
@@ -469,7 +474,7 @@ fun EventDataForm(
                   try {
                     // give the event if update
                     uploadImage()
-                    val newEvent =
+                    newEvent =
                         eventUtils.validateAndCreateOrUpdateEvent(
                             title.text,
                             description.text,
@@ -499,7 +504,8 @@ fun EventDataForm(
                       nav.controller.navigate("events")
                     } else {
                       // Go back to the event details
-                      nav.goBack()
+                      val json = newEvent!!.toJson()
+                      nav.controller.navigate("event/$json")
                     }
                   }
                 },

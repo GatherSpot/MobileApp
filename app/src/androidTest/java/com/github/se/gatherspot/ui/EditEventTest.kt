@@ -52,7 +52,9 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel(db))
+          EventsViewModel(db),
+          db.EventDao()
+        )
     }
   }
 
@@ -154,7 +156,6 @@ class EditEventTest {
 
   @Test
   fun testEditEventFieldsAreCorrects() {
-
     // Check that every field is displayed
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventTitle.assert(hasText("Test Event"))
@@ -196,7 +197,6 @@ class EditEventTest {
 
   @Test
   fun testEditEventFieldsAreEditable() {
-
     // Check that every field is displayed
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventTitle {

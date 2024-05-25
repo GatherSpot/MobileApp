@@ -11,6 +11,7 @@ import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.sql.EventDao
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -67,7 +68,7 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
    *
    * @param event the event to register for
    */
-  fun registerForEvent(event: Event) {
+  fun registerForEvent(event: Event, eventDao: EventDao? = null) {
     // Perform registration logic here, such as making network requests
     viewModelScope.launch {
       // Simulate network request delay
@@ -85,25 +86,24 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
       }
       if (!(event.registeredUsers.contains(userId))) {
         event.registeredUsers.add(userId)
+        eventDao?.insert(event)
         eventFirebaseConnection.addRegisteredUser(event.id, userId)
         registeredEventsList.add(event.id)
         _registrationState.value = RegistrationState.Success
         return@launch
       }
     }
+   _displayAlertRegistration.value = true
   }
 
-  // Self-explanatory
   fun clickRegisterButton() {
     _displayAlertRegistration.value = true
   }
 
-  // Self-explanatory
   fun clickDeleteButton() {
     _displayAlertDeletion.value = true
   }
 
-  // Self-explanatory
   fun dismissAlert() {
     _displayAlertRegistration.value = false
     _displayAlertDeletion.value = false

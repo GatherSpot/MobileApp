@@ -171,8 +171,8 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     _allEvents.value = listOf()
   }
   /*
-  Get the timing of the event
-  @Param event: Event to get the timing of
+   * Get the timing of the event
+   * @Param event: Event to get the timing of
    */
   fun getEventTiming(event: Event): EventTiming {
     val today = LocalDate.now()
@@ -183,15 +183,15 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     }
   }
   /*
-  Check if the user is the organizer of the event
-  @Param event: Event to check if the user is the organizer of
+   * Check if the user is the organizer of the event
+   * @Param event: Event to check if the user is the organizer of
    */
 
   fun isOrganizer(event: Event) = event.organizerID == uid
 
   /*
-  Check if the user is registered to the event
-  @Param event: Event to check if the user is registered to
+   * Check if the user is registered to the event
+   * @Param event: Event to check if the user is registered to
    */
   fun isRegistered(event: Event) = event.registeredUsers.contains(uid)
 
@@ -199,5 +199,30 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     PAST,
     TODAY,
     FUTURE,
+  }
+
+  /**
+   * Edit an event in the myEvents list
+   * This is used to update the view of the event when we come back from the event data form
+   * @param event The event to edit
+   */
+  fun editMyEvent(event: Event) {
+        _myEvents.value = _myEvents.value!!.toMutableList().apply {
+            set(indexOf(event), event)
+        }
+    }
+  /**
+   * Update the list of events when a new registration is made
+   * this is useful to maintain the list of events up to date after registering
+   * @param event The event to add to the list
+   */
+  fun updateNewRegistered(event: Event) {
+    _allEvents.value = _allEvents.value!!.toMutableList().map {
+      if (it.id == event.id) event else it
+    }
+    _registeredTo.value = _registeredTo.value!!.toMutableList().map {
+      if (it.id == event.id) event else it
+    }
+
   }
 }
