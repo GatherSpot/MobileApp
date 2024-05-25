@@ -175,8 +175,9 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
   implementation(libs.androidx.core.animation)
   implementation(libs.play.services.location)
+    implementation(libs.androidx.room.common)
 
-  // ---------------------- /IMPLEMENTATION> ------------------
+    // ---------------------- /IMPLEMENTATION> ------------------
 
   // DEBUG IMPLEMENTATION DEPENDENCIES
 
