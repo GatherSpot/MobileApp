@@ -23,9 +23,9 @@ import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.eventUI.EventUI
 import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.async
@@ -37,6 +37,7 @@ import org.junit.Test
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var db: AppDatabase
+
   @Before
   fun setUp() {
     runBlocking {
@@ -47,8 +48,10 @@ class EventUITest {
       async { profileFirebaseConnection.fetch(Profile.testOrganizer().id) }.await()
       async { profileFirebaseConnection.fetch(testLoginUID) }.await()
     }
-    db = Room.inMemoryDatabaseBuilder(
-      ApplicationProvider.getApplicationContext(), AppDatabase::class.java).build()
+    db =
+        Room.inMemoryDatabaseBuilder(
+                ApplicationProvider.getApplicationContext(), AppDatabase::class.java)
+            .build()
   }
 
   fun cleanUp() {
@@ -105,8 +108,7 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "")
 
-      EventUI(
-          event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(db), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -154,8 +156,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
               image = "")
-      EventUI(
-          event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(db), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
@@ -233,8 +234,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
               image = "")
-      EventUI(
-          event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(db), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       description {
@@ -299,8 +299,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
               image = "")
-      EventUI(
-          event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(db), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton {
@@ -351,8 +350,7 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "")
 
-      EventUI(
-          event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(db), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       registerButton { performClick() }
@@ -396,8 +394,7 @@ class EventUITest {
               image = "")
       val eventfirebase = EventFirebaseConnection()
       eventfirebase.add(event)
-      EventUI(
-          event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(db), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -432,8 +429,7 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "")
 
-      EventUI(
-          event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(db), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       calendarButton { assertIsDisplayed() }
@@ -467,8 +463,7 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "")
 
-      EventUI(
-          event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(db), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       editEventButton { assertIsDisplayed() }
@@ -496,12 +491,7 @@ class EventUITest {
     val eventUIViewModel = EventUIViewModel(pastEventRegisteredTo)
     composeTestRule.setContent {
       val navController = rememberNavController()
-      EventUI(
-          pastEventRegisteredTo,
-          NavigationActions(navController),
-          eventUIViewModel,
-          EventsViewModel(db),
-          null)
+      EventUI(pastEventRegisteredTo, NavigationActions(navController), eventUIViewModel, null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
@@ -512,13 +502,13 @@ class EventUITest {
               .toString())
       Log.e("isEventOver", EventUtils().isEventOver(pastEventRegisteredTo).toString())
       assert(eventUIViewModel.canRate())
+      sleep(6000)
       starRow {
         performScrollTo()
         assertIsDisplayed()
       }
 
       bottomSpacer { performScrollTo() }
-
       starIcon_1 { assertIsDisplayed() }
     }
   }
@@ -548,8 +538,7 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "EventUITestImage")
 
-      EventUI(
-          event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(db), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)

@@ -139,19 +139,15 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
                     eventUIViewModel = EventUIViewModel(eventObject),
-                    eventsViewModel = viewModel() { EventsViewModel(localDatabase) },
-                    eventDao
-                  )
+                    eventDao)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val eventObject =
                     backStackEntry.arguments!!.getString("eventJson")?.let { Event.fromJson(it) }
                 EditEvent(
-                  event = eventObject!!,
-                  eventUtils = EventUtils(),
-                  nav = NavigationActions(navController),
-                  viewModel = viewModel { EventsViewModel(localDatabase) },
-                  eventDao = eventDao
+                    event = eventObject!!,
+                    eventUtils = EventUtils(),
+                    nav = NavigationActions(navController),
                 )
               }
 
@@ -196,9 +192,7 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(
                     nav = NavigationActions(navController),
                     eventUtils = EventUtils(),
-                    viewModel() { EventsViewModel(localDatabase) },
-                    eventDao = eventDao
-                  )
+                )
               }
               composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }

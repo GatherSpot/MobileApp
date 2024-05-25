@@ -200,29 +200,4 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     TODAY,
     FUTURE,
   }
-
-  /**
-   * Edit an event in the myEvents list
-   * This is used to update the view of the event when we come back from the event data form
-   * @param event The event to edit
-   */
-  fun editMyEvent(event: Event) {
-        _myEvents.value = _myEvents.value!!.toMutableList().apply {
-            set(indexOf(event), event)
-        }
-    }
-  /**
-   * Update the list of events when a new registration is made
-   * this is useful to maintain the list of events up to date after registering
-   * @param event The event to add to the list
-   */
-  fun updateNewRegistered(event: Event) {
-    _allEvents.value = _allEvents.value!!.toMutableList().map {
-      if (it.id == event.id) event else it
-    }
-    _registeredTo.value = _registeredTo.value!!.toMutableList().map {
-      if (it.id == event.id) event else it
-    }
-
-  }
 }

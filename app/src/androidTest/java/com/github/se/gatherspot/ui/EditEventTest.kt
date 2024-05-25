@@ -19,7 +19,6 @@ import com.github.se.gatherspot.screens.EventDataFormScreen
 import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.eventUI.EditEvent
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
@@ -52,9 +51,7 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel(db),
-          db.EventDao()
-        )
+      )
     }
   }
 
