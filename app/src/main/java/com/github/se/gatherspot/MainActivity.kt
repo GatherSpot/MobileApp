@@ -2,6 +2,8 @@ package com.github.se.gatherspot
 
 import android.app.Application
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import androidx.room.Room
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.EventUtils
@@ -32,6 +35,9 @@ import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
+import com.github.se.gatherspot.network.NetworkChangeReceiver
+import com.github.se.gatherspot.sql.AppDatabase
+import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.FollowListUI
 import com.github.se.gatherspot.ui.SignUp
@@ -65,6 +71,7 @@ import java.time.LocalTime
  */
 class MainActivity : ComponentActivity() {
   companion object {
+    var isOnline: Boolean = false
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
     lateinit var mapLauncher: ActivityResultLauncher<String>
     var mapAccess = false
@@ -75,14 +82,20 @@ class MainActivity : ComponentActivity() {
   }
 
   private lateinit var navController: NavHostController
+  private lateinit var networkChangeReceiver: NetworkChangeReceiver
   private var eventsViewModel: EventsViewModel? = null
   private var chatsViewModel: ChatsListViewModel? = null
+  private lateinit var db:
+      AppDatabase // = Room.databaseBuilder(applicationContext, AppDatabase::class.java,
+  // "db").build()
+  private lateinit var eventDao: EventDao
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    // val chatViewModel = ChatViewModel()
+    db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
+    eventDao = db.EventDao()
     app = application
     mapViewModel = MapViewModel(app)
 
@@ -97,6 +110,9 @@ class MainActivity : ComponentActivity() {
           ->
           mapAccess = isGranted
         }
+
+    networkChangeReceiver = NetworkChangeReceiver { connected -> isOnline = connected }
+    registerReceiver(networkChangeReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
     setContent {
       GatherSpotTheme {
@@ -139,7 +155,8 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     navActions = NavigationActions(navController),
                     eventUIViewModel = EventUIViewModel(eventObject),
-                    eventsViewModel = eventsViewModel!!)
+                    eventsViewModel = eventsViewModel!!,
+                    eventDao)
               }
               composable("editEvent/{eventJson}") { backStackEntry ->
                 val gson: Gson =
@@ -157,7 +174,8 @@ class MainActivity : ComponentActivity() {
                     event = eventObject!!,
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
-                    viewModel = eventsViewModel!!)
+                    viewModel = eventsViewModel!!,
+                    eventDao = eventDao)
               }
 
               composable("map") { Map(NavigationActions(navController)) }
@@ -201,7 +219,8 @@ class MainActivity : ComponentActivity() {
                 CreateEvent(
                     nav = NavigationActions(navController),
                     eventUtils = EventUtils(),
-                    eventsViewModel!!)
+                    eventsViewModel!!,
+                    eventDao = eventDao)
               }
               composable("setup") { SetUpProfile(NavigationActions(navController)) }
             }
@@ -209,6 +228,11 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    unregisterReceiver(networkChangeReceiver)
   }
 
   /**
