@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.WatchLater
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -415,17 +416,23 @@ fun EventDataForm(
 
 
                   // Time End
-                  OutlinedTextField(
-                      modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputTimeEndEvent"),
-                      value = eventTimeEnd,
-                      onValueChange = { eventTimeEnd = it },
-                      label = { Text("End time*") },
-                      placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+                Row {
+                    OutlinedTextField(
+                        modifier =
+                        Modifier
+                            .width(WIDTH_2ELEM)
+                            .height(HEIGHT)
+                            .testTag("inputTimeEndEvent"),
+                        value = eventTimeEnd,
+                        onValueChange = { eventTimeEnd = it },
+                        label = { Text("End time*") },
+                        placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+
+                    MyTimePickerDialog(
+                        onTimeChange = { eventTimeEnd = TextFieldValue(it) },
+                        title = "Select end time")
                 }
+            }
             // Location
             var isDropdownExpanded by remember { mutableStateOf(false) }
             var searchJob by remember { mutableStateOf<Job?>(null) }
@@ -691,7 +698,6 @@ enum class EventAction {
 fun MyDatePickerDialog(
     onDateSelected: (String) -> Unit,
     onDismiss: () -> Unit,
-    initialDate: String
 ) {
     fun convertMillisToDate(millis: Long): String {
         val formatter = SimpleDateFormat(EventFirebaseConnection.DATE_FORMAT_DISPLAYED, Locale.getDefault())
@@ -701,7 +707,7 @@ fun MyDatePickerDialog(
 
     val selectedDate = datePickerState.selectedDateMillis?.let {
         convertMillisToDate(it)
-    } ?: initialDate
+    } ?: ""
 
     DatePickerDialog(
         onDismissRequest = { onDismiss() },
@@ -737,9 +743,6 @@ fun MyDatePickerDialog( onDateChange : (String) -> Unit ) {
         mutableStateOf(false)
     }
 
-    var date by remember { //TODO check if this is even necessary
-        mutableStateOf("Open date picker dialog")
-    }
 
     androidx.compose.material.IconButton(
         onClick = {
@@ -762,17 +765,15 @@ fun MyDatePickerDialog( onDateChange : (String) -> Unit ) {
 
     if (showDatePicker) {
         MyDatePickerDialog(
-            onDateSelected = { date = it
+            onDateSelected = {
                              onDateChange(it)
                              },
-            onDismiss = { showDatePicker = false },
-            initialDate = date
+            onDismiss = { showDatePicker = false }
         )
     }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTimePickerDialog(
     onTimeSelected: (String) -> Unit,
@@ -828,7 +829,7 @@ fun MyTimePickerDialog( onTimeChange : (String) -> Unit, title: String ) {
             modifier = Modifier
                 .size(HEIGHT.times(0.5f))
                 .testTag("TimePickerIcon"),
-            painter = rememberVectorPainter(image = Icons.Filled.DateRange),
+            painter = rememberVectorPainter(image = Icons.Filled.WatchLater),
             contentDescription = "Time picker icon"
         )
     }
