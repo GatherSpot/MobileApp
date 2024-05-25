@@ -85,7 +85,8 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel())
+          EventsViewModel(),
+          null)
     }
 
     // Check that every field is displayed
@@ -157,7 +158,8 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel())
+          EventsViewModel(),
+          null)
     }
 
     // Check that every field is displayed
@@ -208,7 +210,8 @@ class EditEventTest {
           nav = NavigationActions(navController),
           eventUtils = EventUtils(),
           event = testEvent,
-          EventsViewModel())
+          EventsViewModel(),
+          null)
     }
 
     // Check that every field is displayed
