@@ -94,11 +94,7 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
         return@launch
       }
     }
-    _displayAlertRegistration.value = true
-  }
-
-  fun clickRegisterButton() {
-    _displayAlertRegistration.value = true
+    _displayAlertRegistration.postValue(true)
   }
 
   fun clickDeleteButton() {

@@ -21,16 +21,9 @@ import org.junit.Test
 
 class EventRegistrationViewModelTest {
 
-  @Before
-  fun setUp() {
+  init {
     testLogin()
   }
-
-  @After
-  fun cleanUp() {
-    testLoginCleanUp()
-  }
-
   @Test
   fun testRegisterForEventChangeEventListRegistered() = runBlocking {
     // Set global uid
