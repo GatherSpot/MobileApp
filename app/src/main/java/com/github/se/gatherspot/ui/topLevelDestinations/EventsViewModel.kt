@@ -28,6 +28,8 @@ class EventsViewModel : ViewModel() {
   val eventFirebaseConnection = EventFirebaseConnection()
   var previousInterests = mutableListOf<Interests>()
 
+  // This is the id of the of the user logged in by default during tests.
+
   init {
     viewModelScope.launch {
       val events = eventFirebaseConnection.fetchNextEvents(PAGESIZE)
@@ -167,23 +169,6 @@ class EventsViewModel : ViewModel() {
       }
     }
   }
-
-  // should not be used anymore
-  /*
-   fun addToLocalDatabase(eventDao: EventDao?, event: Event) {
-     viewModelScope.launch(Dispatchers.IO) { eventDao?.insert(event) }
-   }
-
-   fun updateLocalDatabase(eventDao: EventDao?, event: Event) {
-     viewModelScope.launch(Dispatchers.IO) { eventDao?.update(event) }
-   }
-
-   fun deleteFromLocalDatabase(eventDao: EventDao?, event: Event) {
-     viewModelScope.launch(Dispatchers.IO) { eventDao?.delete(event) }
-
-  }
-
-    */
 }
 
 data class UIState(val list: MutableList<Event> = mutableListOf())

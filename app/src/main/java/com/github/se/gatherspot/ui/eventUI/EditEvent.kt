@@ -3,7 +3,6 @@ package com.github.se.gatherspot.ui.eventUI
 import androidx.compose.runtime.Composable
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 
@@ -20,14 +19,12 @@ fun EditEvent(
     nav: NavigationActions,
     eventUtils: EventUtils,
     event: Event,
-    viewModel: EventsViewModel,
-    eventDao: EventDao?
+    viewModel: EventsViewModel
 ) {
   EventDataForm(
       eventUtils = eventUtils,
       viewModel = viewModel,
       nav = nav,
       eventAction = EventAction.EDIT,
-      event = event,
-      eventDao = eventDao)
+      event = event)
 }

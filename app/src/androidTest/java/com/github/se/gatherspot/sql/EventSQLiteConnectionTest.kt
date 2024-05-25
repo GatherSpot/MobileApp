@@ -89,34 +89,4 @@ class EventSQLiteConnectionTest {
     assertNull(getVal1)
     assertNotNull(getVal2)
   }
-
-  @Test
-  @Throws(Exception::class)
-  fun update() {
-    eventDao.insert(event1)
-    val modifiedEvent =
-        Event(
-            id = "1",
-            title = "New Title",
-            description = "New Description",
-            attendanceMaxCapacity = 10,
-            attendanceMinCapacity = 5,
-            organizerID = Profile.testParticipant().id,
-            categories = setOf(Interests.BOWLING),
-            eventEndDate = LocalDate.of(2024, 4, 15),
-            eventStartDate = LocalDate.of(2024, 4, 14),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = null,
-            registeredUsers = mutableListOf(),
-            timeBeginning = LocalTime.of(13, 0),
-            timeEnding = LocalTime.of(16, 0),
-            image = "")
-    eventDao.update(modifiedEvent)
-    val modifiedEventFromDB = eventDao.get("1")
-    assert(modifiedEventFromDB.title == modifiedEvent.title)
-    assert(modifiedEventFromDB.description == modifiedEvent.description)
-    assert(modifiedEventFromDB.attendanceMinCapacity == 5)
-  }
 }

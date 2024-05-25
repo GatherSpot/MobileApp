@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.model.EventUtils
-import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 
@@ -16,22 +15,13 @@ import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
  * @param viewModel the events view model
  */
 @Composable
-fun CreateEvent(
-    nav: NavigationActions,
-    eventUtils: EventUtils,
-    viewModel: EventsViewModel,
-    eventDao: EventDao?
-) {
+fun CreateEvent(nav: NavigationActions, eventUtils: EventUtils, viewModel: EventsViewModel) {
   EventDataForm(
-      eventUtils = eventUtils,
-      viewModel = viewModel,
-      nav = nav,
-      eventAction = EventAction.CREATE,
-      eventDao = eventDao)
+      eventUtils = eventUtils, viewModel = viewModel, nav = nav, eventAction = EventAction.CREATE)
 }
 
 @Preview
 @Composable
 fun CreateEventPreview() {
-  CreateEvent(NavigationActions(rememberNavController()), EventUtils(), EventsViewModel(), null)
+  CreateEvent(NavigationActions(rememberNavController()), EventUtils(), EventsViewModel())
 }

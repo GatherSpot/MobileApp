@@ -43,8 +43,8 @@ class Converters {
    * @return the string
    */
   @TypeConverter
-  fun fromDate(date: LocalDate?): String? {
-    return date?.format(DateTimeFormatter.ofPattern(dateFormat))
+  fun fromDate(date: LocalDate): String {
+    return date.format(DateTimeFormatter.ofPattern(dateFormat))
   }
 
   /**
@@ -54,8 +54,7 @@ class Converters {
    * @return the date
    */
   @TypeConverter
-  fun toDate(date: String?): LocalDate? {
-    if (date == null) return null
+  fun toDate(date: String): LocalDate {
     return LocalDate.parse(date, DateTimeFormatter.ofPattern(dateFormat))
   }
 
@@ -66,8 +65,8 @@ class Converters {
    * @return the string
    */
   @TypeConverter
-  fun fromTime(time: LocalTime?): String? {
-    return time?.format(DateTimeFormatter.ofPattern(timeFormat))
+  fun fromTime(time: LocalTime): String {
+    return time.format(DateTimeFormatter.ofPattern(timeFormat))
   }
 
   /**
@@ -77,8 +76,7 @@ class Converters {
    * @return the time
    */
   @TypeConverter
-  fun toTime(time: String?): LocalTime? {
-    if (time == null) return null
+  fun toTime(time: String): LocalTime {
     return LocalTime.parse(time, DateTimeFormatter.ofPattern(timeFormat))
   }
 

@@ -57,7 +57,6 @@ import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.getEventImageHeader
-import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.eventUI.CalendarReminderGenerator.Companion.generateCalendarReminder
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.qrcode.EventQRCodeUI
@@ -83,13 +82,12 @@ fun EventUI(
     event: Event,
     navActions: NavigationActions,
     eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel,
-    eventDao: EventDao?
+    eventsViewModel: EventsViewModel
 ) {
   if (event.organizerID == Firebase.auth.currentUser?.uid) {
-    EventUIOrganizer(event, navActions, eventUIViewModel, eventsViewModel, eventDao)
+    EventUIOrganizer(event, navActions, eventUIViewModel)
   } else {
-    EventUINonOrganizer(event, navActions, eventUIViewModel, eventsViewModel, eventDao)
+    EventUINonOrganizer(event, navActions, eventUIViewModel, eventsViewModel)
   }
 }
 
@@ -108,8 +106,7 @@ fun EventUINonOrganizer(
     event: Event,
     navActions: NavigationActions,
     eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel,
-    eventDao: EventDao?
+    eventsViewModel: EventsViewModel
 ) {
 
   val showDialogRegistration by eventUIViewModel.displayAlertRegistration.observeAsState()
@@ -138,8 +135,7 @@ fun EventUINonOrganizer(
             backgroundColor = Color.White,
             navigationIcon = {
               IconButton(
-                  onClick = { navActions.controller.navigate("events") },
-                  modifier = Modifier.testTag("goBackButton")) {
+                  onClick = { navActions.goBack() }, modifier = Modifier.testTag("goBackButton")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go back to overview")
@@ -155,8 +151,7 @@ fun EventUINonOrganizer(
             isButtonEnabled,
             buttonText,
             showDialogRegistration,
-            registrationState,
-            eventDao)
+            registrationState)
       }) { innerPadding ->
         Column(
             modifier =
@@ -195,9 +190,7 @@ fun EventUINonOrganizer(
 fun EventUIOrganizer(
     event: Event,
     navActions: NavigationActions,
-    eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel,
-    eventDao: EventDao?
+    eventUIViewModel: EventUIViewModel
 ) {
 
   val organizerRating by eventUIViewModel.organizerRating.observeAsState()
@@ -217,8 +210,7 @@ fun EventUIOrganizer(
             backgroundColor = Color.White,
             navigationIcon = {
               IconButton(
-                  onClick = { navActions.controller.navigate("events") },
-                  modifier = Modifier.testTag("goBackButton")) {
+                  onClick = { navActions.goBack() }, modifier = Modifier.testTag("goBackButton")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go back to overview")
@@ -276,8 +268,8 @@ fun EventUIOrganizer(
               modifier = Modifier.testTag("okButton"),
               onClick = {
                 // Delete the event
-                eventUtils.deleteEvent(event, eventDao)
-                navActions.controller.navigate("events")
+                eventUtils.deleteEvent(event)
+                navActions.goBack()
                 eventUIViewModel.dismissAlert()
               }) {
                 Text("Delete")
@@ -326,14 +318,13 @@ fun RegisterButton(
     isButtonEnabled: Boolean,
     buttonText: String,
     showDialogRegistration: Boolean?,
-    registrationState: RegistrationState?,
-    eventDao: EventDao?
+    registrationState: RegistrationState?
 ) {
   Button(
       onClick = {
-        eventUIViewModel.registerForEvent(event, eventDao)
-        eventUIViewModel.clickRegisterButton()
+        eventUIViewModel.registerForEvent(event)
         eventsViewModel.updateNewRegistered(event)
+        eventUIViewModel.clickRegisterButton()
       },
       enabled = isButtonEnabled,
       modifier = Modifier.fillMaxWidth().testTag("registerButton"),
