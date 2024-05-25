@@ -2,7 +2,6 @@ package com.github.se.gatherspot.ui.eventUI
 
 import android.Manifest
 import android.app.TimePickerDialog
-
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -74,14 +73,14 @@ import com.github.se.gatherspot.ui.eventUI.EventAction.CREATE
 import com.github.se.gatherspot.ui.eventUI.EventAction.EDIT
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 private val WIDTH = 300.dp
 private val WIDTH_2ELEM = 150.dp
@@ -106,9 +105,7 @@ private val MESSAGES = arrayOf(CREATE_SPECIFIC_MESSAGES, EDIT_SPECIFIC_MESSAGES)
 @Composable
 fun ScrollableContent(content: @Composable () -> Unit) {
   Box(modifier = Modifier.fillMaxSize()) {
-    Column(modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .padding(16.dp)) { content() }
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) { content() }
   }
 }
 
@@ -332,20 +329,14 @@ fun EventDataForm(
           // Create event form
           Column(
               modifier =
-              Modifier
-                  .padding(innerPadding)
-                  .padding(horizontal = 28.dp)
-                  .testTag("formColumn"),
+                  Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
               verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
               horizontalAlignment = Alignment.CenterHorizontally,
           ) {
             Text(text = "Fields with * are required", modifier = Modifier.testTag("requiredFields"))
             // Title
             OutlinedTextField(
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputTitle"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputTitle"),
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Event Title*") },
@@ -353,57 +344,47 @@ fun EventDataForm(
             // Description
             OutlinedTextField(
                 modifier =
-                Modifier
-                    .width(WIDTH)
-                    .height(DESCRIPTION_HEIGHT)
-                    .testTag("inputDescription"),
+                    Modifier.width(WIDTH).height(DESCRIPTION_HEIGHT).testTag("inputDescription"),
                 value = description,
                 onValueChange = { description = it },
                 label = { Text("Description*") },
                 placeholder = { Text("Describe the event") })
             // Start Date
             Row {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .width(WIDTH)
-                        .height(HEIGHT)
-                        .testTag("inputStartDateEvent"),
-                    value = eventStartDate,
-                    onValueChange = { eventStartDate = it },
-                    label = { Text("Start Date of the event*") },
-                    placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+              OutlinedTextField(
+                  modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputStartDateEvent"),
+                  value = eventStartDate,
+                  onValueChange = { eventStartDate = it },
+                  label = { Text("Start Date of the event*") },
+                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
 
-                MyDatePickerDialog(
-                    onDateChange = { eventStartDate = TextFieldValue(it) },
-                )
+              MyDatePickerDialog(
+                  onDateChange = { eventStartDate = TextFieldValue(it) },
+              )
             }
             // End Date
-              Row {
-                  OutlinedTextField(
-                      modifier = Modifier
-                          .width(WIDTH)
-                          .height(HEIGHT)
-                          .testTag("inputEndDateEvent"),
-                      value = eventEndDate,
-                      onValueChange = { eventEndDate = it },
-                      label = { Text("End date of the event") },
-                      placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
-                  MyDatePickerDialog(
-                      onDateChange = { eventEndDate = TextFieldValue(it) },
-                  )
-              }
+            Row {
+              OutlinedTextField(
+                  modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
+                  value = eventEndDate,
+                  onValueChange = { eventEndDate = it },
+                  label = { Text("End date of the event") },
+                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+              MyDatePickerDialog(
+                  onDateChange = { eventEndDate = TextFieldValue(it) },
+              )
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                   // Time Start
-                Row {
+                  Row {
                     OutlinedTextField(
                         modifier =
-                        Modifier
-                            .width(WIDTH_2ELEM)
-                            .height(HEIGHT)
-                            .testTag("inputTimeStartEvent"),
+                            Modifier.width(WIDTH_2ELEM)
+                                .height(HEIGHT)
+                                .testTag("inputTimeStartEvent"),
                         value = eventTimeStart,
                         onValueChange = { eventTimeStart = it },
                         label = { Text("Start time*") },
@@ -411,18 +392,15 @@ fun EventDataForm(
 
                     MyTimePickerDialog(
                         onTimeChange = { eventTimeStart = TextFieldValue(it) },
-                        title = "Select start time")
-                }
-
+                        title = "Select start time",
+                        textFieldValue = eventTimeStart)
+                  }
 
                   // Time End
-                Row {
+                  Row {
                     OutlinedTextField(
                         modifier =
-                        Modifier
-                            .width(WIDTH_2ELEM)
-                            .height(HEIGHT)
-                            .testTag("inputTimeEndEvent"),
+                            Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeEndEvent"),
                         value = eventTimeEnd,
                         onValueChange = { eventTimeEnd = it },
                         label = { Text("End time*") },
@@ -430,9 +408,10 @@ fun EventDataForm(
 
                     MyTimePickerDialog(
                         onTimeChange = { eventTimeEnd = TextFieldValue(it) },
-                        title = "Select end time")
+                        title = "Select end time",
+                        textFieldValue = eventTimeEnd)
+                  }
                 }
-            }
             // Location
             var isDropdownExpanded by remember { mutableStateOf(false) }
             var searchJob by remember { mutableStateOf<Job?>(null) }
@@ -442,11 +421,10 @@ fun EventDataForm(
                 onExpandedChange = { isDropdownExpanded = it }) {
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .menuAnchor()
-                          .width(WIDTH)
-                          .height(HEIGHT)
-                          .testTag("inputLocation"),
+                          Modifier.menuAnchor()
+                              .width(WIDTH)
+                              .height(HEIGHT)
+                              .testTag("inputLocation"),
                       // Do a query to get a location from text input
                       value = locationName,
                       onValueChange = { newValue ->
@@ -491,10 +469,7 @@ fun EventDataForm(
                   // Min attendees
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputMinAttendees"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
                       value = minAttendees,
                       onValueChange = { minAttendees = it },
                       label = { Text("Min Attendees") },
@@ -502,10 +477,7 @@ fun EventDataForm(
                   // Max attendees
                   OutlinedTextField(
                       modifier =
-                      Modifier
-                          .width(WIDTH_2ELEM)
-                          .height(HEIGHT)
-                          .testTag("inputMaxAttendees"),
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
                       value = maxAttendees,
                       onValueChange = { maxAttendees = it },
                       label = { Text("Max Attendees") },
@@ -515,10 +487,7 @@ fun EventDataForm(
             // Inscription limit date
             OutlinedTextField(
                 modifier =
-                Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputInscriptionLimitDate"),
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
                 label = { Text("Inscription Limit Date") },
@@ -526,10 +495,7 @@ fun EventDataForm(
             // Inscription limit time
             OutlinedTextField(
                 modifier =
-                Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("inputInscriptionLimitTime"),
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
                 value = inscriptionLimitTime,
                 onValueChange = { inscriptionLimitTime = it },
                 label = { Text("Inscription Limit Time") },
@@ -581,10 +547,7 @@ fun EventDataForm(
                     }
                   }
                 },
-                modifier = Modifier
-                    .width(WIDTH)
-                    .height(HEIGHT)
-                    .testTag("createEventButton"),
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
                 enabled =
                     (title.text != "") &&
                         (description.text != "") &&
@@ -628,10 +591,7 @@ fun InterestSelector(interests: List<Interests>, categories: MutableList<Interes
             placeholder = { Text(text = "Select categories") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            modifier = Modifier
-                .menuAnchor()
-                .width(WIDTH)
-                .height(HEIGHT))
+            modifier = Modifier.menuAnchor().width(WIDTH).height(HEIGHT))
 
         ExposedDropdownMenu(
             modifier = Modifier.testTag("exposedDropdownMenu"),
@@ -692,156 +652,125 @@ enum class EventAction {
   EDIT
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyDatePickerDialog(
     onDateSelected: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    fun convertMillisToDate(millis: Long): String {
-        val formatter = SimpleDateFormat(EventFirebaseConnection.DATE_FORMAT_DISPLAYED, Locale.getDefault())
-        return formatter.format(Date(millis))
-    }
-    val datePickerState = rememberDatePickerState()
+  fun convertMillisToDate(millis: Long): String {
+    val formatter =
+        SimpleDateFormat(EventFirebaseConnection.DATE_FORMAT_DISPLAYED, Locale.getDefault())
+    return formatter.format(Date(millis))
+  }
+  val datePickerState = rememberDatePickerState()
 
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        convertMillisToDate(it)
-    } ?: ""
+  val selectedDate = datePickerState.selectedDateMillis?.let { convertMillisToDate(it) } ?: ""
 
-    DatePickerDialog(
-        onDismissRequest = { onDismiss() },
-        confirmButton = {
-            Button(onClick = {
-                onDateSelected(selectedDate)
-                onDismiss()
-            }
-
-            ) {
-
-                Text(text = "OK")
-            }
-        },
-        dismissButton = {
-            Button(onClick = {
-                onDismiss()
+  DatePickerDialog(
+      onDismissRequest = { onDismiss() },
+      confirmButton = {
+        Button(
+            onClick = {
+              onDateSelected(selectedDate)
+              onDismiss()
             }) {
-                Text(text = "Cancel")
+              Text(text = "OK")
             }
-        }
-    ) {
-        DatePicker(
-            state = datePickerState
-        )
-    }
+      },
+      dismissButton = { Button(onClick = { onDismiss() }) { Text(text = "Cancel") } }) {
+        DatePicker(state = datePickerState)
+      }
 }
 
 @Composable
-fun MyDatePickerDialog( onDateChange : (String) -> Unit ) {
+fun MyDatePickerDialog(onDateChange: (String) -> Unit) {
 
-    var showDatePicker by remember {
-        mutableStateOf(false)
-    }
+  var showDatePicker by remember { mutableStateOf(false) }
 
+  androidx.compose.material.IconButton(
+      onClick = {
+        // Open DatePickerDialog
+        showDatePicker = true
+      },
+      modifier = Modifier.height(HEIGHT).testTag("DatePickerButton"),
+  ) {
+    androidx.compose.material.Icon(
+        modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("DatePickerIcon"),
+        painter = rememberVectorPainter(image = Icons.Filled.DateRange),
+        contentDescription = "Date picker icon")
+  }
 
-    androidx.compose.material.IconButton(
-        onClick = {
-            // Open DatePickerDialog
-                  showDatePicker = true
-        },
-        modifier = Modifier
-            .height(HEIGHT)
-            .testTag("DatePickerButton"),
-    ) {
-        androidx.compose.material.Icon(
-            modifier = Modifier
-                .size(HEIGHT.times(0.5f))
-                .testTag("DatePickerIcon"),
-            painter = rememberVectorPainter(image = Icons.Filled.DateRange),
-            contentDescription = "Date picker icon"
-        )
-    }
-
-
-    if (showDatePicker) {
-        MyDatePickerDialog(
-            onDateSelected = {
-                             onDateChange(it)
-                             },
-            onDismiss = { showDatePicker = false }
-        )
-    }
+  if (showDatePicker) {
+    MyDatePickerDialog(
+        onDateSelected = { onDateChange(it) }, onDismiss = { showDatePicker = false })
+  }
 }
-
 
 @Composable
 fun MyTimePickerDialog(
     onTimeSelected: (String) -> Unit,
     onDismiss: () -> Unit,
     initialTime: String,
-    title : String
+    title: String
 ) {
 
-    val listener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+  val listener =
+      TimePickerDialog.OnTimeSetListener { _, hour, minute ->
         val time = (hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0'))
         onTimeSelected(time)
         onDismiss()
-    }
+      }
 
-    val initialHour = try {initialTime.split(":", limit = 2)[0].toInt()} catch (e: Exception) {12}
-    val initialMinutes = try {initialTime.split(":", limit = 2)[1].toInt()} catch (e: Exception) {0}
+  val initialHour =
+      try {
+        initialTime.split(":", limit = 2)[0].toInt()
+      } catch (e: Exception) {
+        12
+      }
+  val initialMinutes =
+      try {
+        initialTime.split(":", limit = 2)[1].toInt()
+      } catch (e: Exception) {
+        0
+      }
 
-    val timePickerDialog = TimePickerDialog(
-        LocalContext.current,
-        listener,
-        initialHour,
-        initialMinutes,
-        true
-    )
+  val timePickerDialog =
+      TimePickerDialog(LocalContext.current, listener, initialHour, initialMinutes, true)
 
-    timePickerDialog.setMessage(title)
-    timePickerDialog.setOnDismissListener { onDismiss() }
+  timePickerDialog.setMessage(title)
+  timePickerDialog.setOnDismissListener { onDismiss() }
 
-    timePickerDialog.show()
-
+  timePickerDialog.show()
 }
+
 @Composable
-fun MyTimePickerDialog( onTimeChange : (String) -> Unit, title: String ) {
+fun MyTimePickerDialog(
+    onTimeChange: (String) -> Unit,
+    title: String,
+    textFieldValue: TextFieldValue
+) {
 
-    var showTimePicker by remember {
-        mutableStateOf(false)
-    }
+  var showTimePicker by remember { mutableStateOf(false) }
 
-    var time by remember { //TODO check if this is even necessary
-        mutableStateOf("Open time picker dialog")
-    }
+  androidx.compose.material.IconButton(
+      onClick = {
+        // Open TimePickerDialog
+        showTimePicker = true
+      },
+      modifier = Modifier.height(HEIGHT).testTag("TimePickerButton"),
+  ) {
+    androidx.compose.material.Icon(
+        modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("TimePickerIcon"),
+        painter = rememberVectorPainter(image = Icons.Filled.WatchLater),
+        contentDescription = "Time picker icon")
+  }
 
-    androidx.compose.material.IconButton(
-        onClick = {
-            // Open TimePickerDialog
-            showTimePicker = true
-        },
-        modifier = Modifier
-            .height(HEIGHT)
-            .testTag("TimePickerButton"),
-    ) {
-        androidx.compose.material.Icon(
-            modifier = Modifier
-                .size(HEIGHT.times(0.5f))
-                .testTag("TimePickerIcon"),
-            painter = rememberVectorPainter(image = Icons.Filled.WatchLater),
-            contentDescription = "Time picker icon"
-        )
-    }
-
-    if (showTimePicker) {
-        MyTimePickerDialog(
-            onTimeSelected = { time = it
-                             onTimeChange(it)
-                             },
-            onDismiss = { showTimePicker = false },
-            initialTime = time,
-            title = title
-        )
-    }
+  if (showTimePicker) {
+    MyTimePickerDialog(
+        onTimeSelected = { onTimeChange(it) },
+        onDismiss = { showTimePicker = false },
+        initialTime = textFieldValue.text,
+        title = title)
+  }
 }
