@@ -67,6 +67,18 @@ data class Event(
 ) : CollectionClass() {
 
   /**
+   * Simply returns whether the event is over
+   *
+   * @returns True if event is over, False otherwise
+   */
+  fun isOver(): Boolean {
+    val now = LocalDate.now()
+    val timeNow = LocalTime.now()
+    return this.eventEndDate?.isBefore(now) == true ||
+        (this.eventEndDate == now && this.timeEnding?.isBefore(timeNow) == true)
+  }
+
+  /**
    * Converts the event to a JSON string.
    *
    * @return The JSON string representing the event.

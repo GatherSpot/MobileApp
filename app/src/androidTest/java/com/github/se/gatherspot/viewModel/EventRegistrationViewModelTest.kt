@@ -4,6 +4,7 @@ import android.util.Log
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.ui.eventUI.EventRegistrationViewModel
@@ -27,8 +28,6 @@ class EventRegistrationViewModelTest {
   fun testRegisterForEventChangeEventListRegistered() = runBlocking {
     // Set global uid
 
-    val viewModel = EventRegistrationViewModel(listOf())
-
     val event =
         Event(
             id = "idTestEvent",
@@ -49,18 +48,19 @@ class EventRegistrationViewModelTest {
             timeBeginning = LocalTime.of(10, 0),
             timeEnding = LocalTime.of(12, 0),
             image = "")
+    val viewModel = EventRegistrationViewModel(event)
     val eventFirebaseConnection = EventFirebaseConnection()
     eventFirebaseConnection.add(event)
-    viewModel.registerForEvent(event)
+    viewModel.changeStatus()
     delay(2000)
+    assert(viewModel.registrationState.value is RegistrationState.Registered)
     assertEquals(event.registeredUsers.size, 1)
-    EventFirebaseConnection().delete("idTestEvent")
+    EventUtils().deleteEvent(event)
   }
 
   @Test
-  fun testAlreadyRegistered(): Unit = runBlocking {
+  fun testRegisterAndUnregister(): Unit = runBlocking {
     if (Firebase.auth.currentUser == null) Log.d("testAlreadyRegistered", "User is null")
-    val viewModel = EventRegistrationViewModel(listOf())
     val event =
         Event(
             id = "idTestEvent",
@@ -81,20 +81,17 @@ class EventRegistrationViewModelTest {
             inscriptionLimitDate = null,
             inscriptionLimitTime = null,
             image = "")
-
+    val viewModel = EventRegistrationViewModel(event)
     val eventFirebaseConnection = EventFirebaseConnection()
     eventFirebaseConnection.add(event)
-    viewModel.registerForEvent(event)
-    delay(5000)
-    viewModel.registerForEvent(event)
-    runBlocking {
-      delay(1000)
-      val error = viewModel.registrationState.value
-      assertEquals(RegistrationState.Error("Already registered for this event"), error)
-    }
-
+    viewModel.changeStatus()
+    delay(2000)
+    assert(viewModel.registrationState.value is RegistrationState.Registered)
+    viewModel.changeStatus()
+    delay(2000)
+    assert(viewModel.registrationState.value is RegistrationState.Unregistered)
     // To keep a clean database delete the test event
-    EventFirebaseConnection().delete("idTestEvent")
+    EventUtils().deleteEvent(event)
     testLoginCleanUp()
   }
 }

@@ -383,6 +383,19 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         .update("registeredUsers", FieldValue.arrayUnion(uid))
         .await()
   }
+  /**
+   * Remove a user to the list of registered users for an event.
+   *
+   * @param eventID: The id of the event
+   * @param uid: The id of the user
+   */
+  suspend fun removeRegisteredUser(eventID: String, uid: String) {
+    Firebase.firestore
+        .collection(COLLECTION)
+        .document(eventID)
+        .update("registeredUsers", FieldValue.arrayRemove(uid))
+        .await()
+  }
 
   /**
    * Maps a string to a LocalTime object.

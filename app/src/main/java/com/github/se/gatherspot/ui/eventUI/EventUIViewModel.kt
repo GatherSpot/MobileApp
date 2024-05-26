@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.firebase.RatingFirebaseConnection
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
@@ -24,8 +23,7 @@ import kotlinx.coroutines.launch
  * @property eventRating the rating of the event
  * @property organizer the organizer of the event
  */
-class EventUIViewModel(private val event: Event) :
-    EventRegistrationViewModel(event.registeredUsers) {
+class EventUIViewModel(private val event: Event) : EventRegistrationViewModel(event) {
 
   private var _organizer = MutableLiveData<Profile>()
   private lateinit var _attendees: List<String>
@@ -105,8 +103,6 @@ class EventUIViewModel(private val event: Event) :
    * @return true if the user can rate the event, false otherwise
    */
   fun canRate(): Boolean {
-    return !isOrganizer() &&
-        event.registeredUsers.contains(userID) &&
-        EventUtils().isEventOver(event)
+    return !isOrganizer() && event.registeredUsers.contains(userID) && event.isOver()
   }
 }
