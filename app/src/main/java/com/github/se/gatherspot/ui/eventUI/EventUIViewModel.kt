@@ -115,6 +115,21 @@ class EventUIViewModel(private val event: Event) :
   }
 
 
+  /**
+   * Check if the user can attend the event
+   *
+   * @return true if the user can attend the event, false otherwise
+   */
+  fun canAttend(): Boolean {
+    return !isOrganizer() &&
+        event.registeredUsers.contains(userID) &&
+        !event.finalAttendees?.contains(userID)!!
+  }
+
+
+  /**
+   * Attend the event
+   */
   fun attendEvent() {
     viewModelScope.launch {
       if (event.organizerID == userID) {

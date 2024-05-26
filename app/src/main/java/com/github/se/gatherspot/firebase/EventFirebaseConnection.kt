@@ -65,8 +65,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
       return null
     }
     val eventID = d.getString("eventID")!!
-    val title = d.getString("title")!!
-    val description = d.getString("description")!!
+    val title = d.getString("title")?: eventID
+    val description = d.getString("description")?: ""
     val location: Location?
     val locationName = d.getString("locationName")!!
     location =
@@ -109,7 +109,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val categoriesList = d.get("categories") as List<String>
     val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
     val registeredUsers = d.get("registeredUsers") as MutableList<String>
-    val finalAttendee = d.get("finalAttendee") as MutableList<String>
+    val finalAttendee = d.get("finalAttendee") as MutableList<String> ?: mutableListOf()
     val image = d.getString("image")
     val globalRating =
         when (val rating = d.getString("globalRating")!!) {

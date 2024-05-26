@@ -157,6 +157,17 @@ fun EventUINonOrganizer(
             showDialogRegistration,
             registrationState,
             eventDao)
+          RegisterButton(
+              event,
+              eventUIViewModel,
+              eventsViewModel,
+              isButtonEnabled,
+              buttonText,
+              showDialogRegistration,
+              registrationState,
+              eventDao)
+
+
       }) { innerPadding ->
         Column(
             modifier =
