@@ -193,6 +193,7 @@ class CreateEventTest {
         performScrollTo()
         assertIsDisplayed()
       }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("DatePickerButton" + "start"), 6000)
       startDatePickerButton {
         performScrollTo()
         assertIsDisplayed()
