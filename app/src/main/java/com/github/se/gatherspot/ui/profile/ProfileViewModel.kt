@@ -38,7 +38,6 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
       // For retro compatibility reasons, we still have to add a fetch from firebase fallback,
       // unless we delete every account
       val profileFromRoom = db.ProfileDao().get(uid).value
-
       if (profileFromRoom != null) {
         _profile.postValue(profileFromRoom)
       } else {

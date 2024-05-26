@@ -1,20 +1,27 @@
 package com.github.se.gatherspot.sql
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
-import java.io.IOException
-import java.time.LocalDate
-import java.time.LocalTime
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import junit.framework.Assert.assertNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalTime
+import java.util.concurrent.CountDownLatch
 
 class EventSQLiteConnectionTest {
   private lateinit var eventDao: EventDao
@@ -73,21 +80,23 @@ class EventSQLiteConnectionTest {
 
   @Test
   @Throws(Exception::class)
-  fun writeAndRead() {
+  fun writeAndRead() = runTest {
     eventDao.insert(event1)
-    val getVal1 = eventDao.get("1")
-    assertEquals(event1, getVal1.value)
+    val getVal1 = eventDao.get("1").await()
+    assertEquals(event1, getVal1)
   }
 
   @Test
   @Throws(Exception::class)
-  fun delete() {
-    eventDao.insert(event1, event2)
-    eventDao.delete(event1)
-    val getVal1 = eventDao.get("1")
-    val getVal2 = eventDao.get("2")
-    assertNull(getVal1.value)
-    assertNotNull(getVal2.value)
+  fun delete()  {
+    runBlocking {
+      eventDao.insert(event1, event2)
+      eventDao.delete(event1)
+      val getVal1 = eventDao.get("1").await()
+      val getVal2 = eventDao.get("2").await()
+      assertNull(getVal1)
+      assertNotNull(getVal2)
+    }
   }
 
   @Test
@@ -113,8 +122,29 @@ class EventSQLiteConnectionTest {
             timeBeginning = LocalTime.of(13, 0),
             timeEnding = LocalTime.of(16, 0),
             image = "")
-    eventDao.update(modifiedEvent)
-    val modifiedEventFromDB = eventDao.get("1")
-    assertEquals(modifiedEventFromDB.value, modifiedEvent)
+    runBlocking {
+      eventDao.update(modifiedEvent)
+      val modifiedEventFromDB = eventDao.get("1").await()
+      assertEquals(modifiedEventFromDB, modifiedEvent)
+    }
   }
+}
+// used to force waiting for value, since LiveData is asynchronous
+suspend fun <T> LiveData<T>.await(): T? {
+  var t: T? = null
+  val latch = CountDownLatch(1)
+  val observer = object : Observer<T> {
+    override fun onChanged(value: T) {
+      t = value
+      latch.countDown()
+      this@await.removeObserver(this)
+    }
+  }
+  withContext(Dispatchers.Main) {
+    observeForever(observer)
+  }
+  withContext(Dispatchers.IO) {
+    latch.await()
+  }
+  return value
 }
