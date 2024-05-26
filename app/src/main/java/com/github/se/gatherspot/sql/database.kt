@@ -19,6 +19,8 @@ abstract class AppDatabase : RoomDatabase() {
   abstract fun EventDao(): EventDao
 
   abstract fun IdListDao(): IdListDao
+
+  abstract fun ProfileDao(): ProfileDao
 }
 
 class Converters {

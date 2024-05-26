@@ -63,7 +63,7 @@ interface FirebaseConnectionInterface<T : CollectionClass> {
    *
    * @param element The collection item
    */
-  fun add(element: T)
+  suspend fun add(element: T)
 
   /**
    * Update a collection item in the database.
@@ -72,7 +72,7 @@ interface FirebaseConnectionInterface<T : CollectionClass> {
    * @param field The field to update
    * @param value The new value
    */
-  fun update(id: String, field: String, value: Any) {
+  suspend fun update(id: String, field: String, value: Any) {
     Firebase.firestore
         .collection(COLLECTION.lowercase())
         .document(id)

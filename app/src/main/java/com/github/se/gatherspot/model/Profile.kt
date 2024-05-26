@@ -1,6 +1,8 @@
 package com.github.se.gatherspot.model
 
 import androidx.lifecycle.MutableLiveData
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 
@@ -13,11 +15,12 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
  * @param interests the interests of the user
  * @param id the id of the user
  */
+@Entity
 class Profile(
     var userName: String,
     var bio: String,
     var image: String,
-    override val id: String,
+    @PrimaryKey override val id: String,
     var interests: Set<Interests>,
 ) : CollectionClass() {
 
@@ -28,16 +31,6 @@ class Profile(
 
     fun testParticipant(): Profile {
       return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
-    }
-
-    /**
-     * Fetch a profile from Firebase
-     *
-     * @param id the id of the profile
-     * @param onSuccess the function to call when the profile is fetched
-     */
-    fun fromFirebase(id: String, onSuccess: () -> Unit) {
-      ProfileFirebaseConnection().fetch(id) { onSuccess() }
     }
 
     /**
@@ -71,21 +64,12 @@ class Profile(
       } else if (newName.length > 20) {
         res.postValue("Username cannot be longer than 20 characters")
       } else if (newName != oldName) {
-        ProfileFirebaseConnection().ifUsernameExists(newName) {
+        ProfileFirebaseConnection().usernameExists(newName) {
           res.postValue(if (it) "Username already taken" else "")
           onSuccess()
         }
       }
     }
-
-    /**
-     * Add a profile to Firebase (with default values)
-     *
-     * @param username the username of the user
-     * @param id the id of the user
-     */
-    fun add(username: String, id: String) =
-        ProfileFirebaseConnection().add(Profile(username, "", "", id, Interests.new()))
 
     /**
      * Check if a bio is valid

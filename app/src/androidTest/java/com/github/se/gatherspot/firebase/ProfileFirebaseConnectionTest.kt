@@ -107,12 +107,12 @@ class ProfileFirebaseConnectionTest {
     runBlocking {
       profileFirebaseConnection.add(toAdd)
       var wasSet = false
-      profileFirebaseConnection.ifUsernameExists(toAdd.userName) {
+      profileFirebaseConnection.usernameExists(toAdd.userName) {
         assertTrue(it)
         wasSet = true
       }
 
-      profileFirebaseConnection.ifUsernameExists("nonExistentUsername") {
+      profileFirebaseConnection.usernameExists("nonExistentUsername") {
         assertFalse(it)
         wasSet = true
       }

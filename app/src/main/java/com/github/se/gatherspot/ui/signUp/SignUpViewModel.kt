@@ -3,19 +3,24 @@ package com.github.se.gatherspot.ui.signUp
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
+import com.github.se.gatherspot.sql.AppDatabase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 /** ViewModel for the sign up screen. */
-class SignUpViewModel : ViewModel() {
+class SignUpViewModel(private val db: AppDatabase) : ViewModel() {
   var userName = MutableLiveData("")
   var userNameError = MutableLiveData("")
   var email = MutableLiveData("")
@@ -97,25 +102,27 @@ class SignUpViewModel : ViewModel() {
 
   /** Sign up the user. */
   fun signUp() {
-    Firebase.auth
-        .createUserWithEmailAndPassword(email.value!!, password.value!!)
-        .addOnSuccessListener {
-          Firebase.auth.currentUser!!.sendEmailVerification()
-          isEverythingOk.value = false
-          waitingEmailConfirmation.value = true
-          Profile.add(userName.value!!, Firebase.auth.uid!!)
-          checkEmailVerification()
-        }
-        .addOnFailureListener {
-          when (it) {
-            is FirebaseAuthUserCollisionException -> {
-              emailError.value = "Email already in use, try signing in!"
-              updateEverythingOk()
+    viewModelScope.launch(Dispatchers.IO) {
+      try {
+        Firebase.auth.createUserWithEmailAndPassword(email.value!!, password.value!!).await()
+        async {
+              Firebase.auth.currentUser!!.sendEmailVerification().await()
+              ProfileFirebaseConnection().add(Profile.empty(Firebase.auth.uid!!))
             }
-            else -> {
-              Log.e("SignUpViewModel", "Error: ${it.message}")
-            }
-          }
+            .await()
+
+        isEverythingOk.value = false
+        waitingEmailConfirmation.value = true
+        checkEmailVerification()
+      } catch (e: Exception) {
+        if (e is FirebaseAuthUserCollisionException) {
+          emailError.value = "Email already in use, try signing in!"
+          updateEverythingOk()
+        } else {
+          // TODO : add alert dialog to the view
+          Log.e("SignUpViewModel", "Error: ${e.message}")
         }
+      }
+    }
   }
 }
