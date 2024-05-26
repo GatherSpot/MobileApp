@@ -363,8 +363,7 @@ fun EventDataForm(
                   placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
 
               MyDatePickerDialog(
-                  onDateChange = { eventStartDate = TextFieldValue(it) },
-              )
+                  onDateChange = { eventStartDate = TextFieldValue(it) }, testTag = "start")
             }
             // End Date
             Row {
@@ -375,8 +374,7 @@ fun EventDataForm(
                   label = { Text("End date of the event") },
                   placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
               MyDatePickerDialog(
-                  onDateChange = { eventEndDate = TextFieldValue(it) },
-              )
+                  onDateChange = { eventEndDate = TextFieldValue(it) }, testTag = "end")
             }
 
             Row(
@@ -663,10 +661,7 @@ enum class EventAction {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyDatePickerDialog(
-    onDateSelected: (String) -> Unit,
-    onDismiss: () -> Unit,
-) {
+fun MyDatePickerDialog(onDateSelected: (String) -> Unit, onDismiss: () -> Unit) {
   fun convertMillisToDate(millis: Long): String {
     val formatter =
         SimpleDateFormat(EventFirebaseConnection.DATE_FORMAT_DISPLAYED, Locale.getDefault())
@@ -693,7 +688,7 @@ fun MyDatePickerDialog(
 }
 
 @Composable
-fun MyDatePickerDialog(onDateChange: (String) -> Unit) {
+fun MyDatePickerDialog(onDateChange: (String) -> Unit, testTag: String) {
 
   var showDatePicker by remember { mutableStateOf(false) }
 
@@ -702,17 +697,16 @@ fun MyDatePickerDialog(onDateChange: (String) -> Unit) {
         // Open DatePickerDialog
         showDatePicker = true
       },
-      modifier = Modifier.height(HEIGHT).testTag("DatePickerButton"),
+      modifier = Modifier.height(HEIGHT).testTag("DatePickerButton$testTag"),
   ) {
     androidx.compose.material.Icon(
-        modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("DatePickerIcon"),
+        modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("DatePickerIcon$testTag"),
         painter = rememberVectorPainter(image = Icons.Filled.DateRange),
         contentDescription = "Date picker icon")
   }
 
   if (showDatePicker) {
-    MyDatePickerDialog(
-        onDateSelected = { onDateChange(it) }, onDismiss = { showDatePicker = false })
+    MyDatePickerDialog(onDateSelected = { onDateChange(it) }) { showDatePicker = false }
   }
 }
 
@@ -767,12 +761,12 @@ fun MyTimePickerDialog(
         // Open TimePickerDialog
         showTimePicker = true
       },
-      modifier = Modifier.height(HEIGHT).testTag("TimePickerButton"),
+      modifier = Modifier.height(HEIGHT).testTag("TimePickerButton$title"),
   ) {
     androidx.compose.material.Icon(
-        modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("TimePickerIcon"),
+        modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("TimePickerIcon$title"),
         painter = rememberVectorPainter(image = Icons.Filled.WatchLater),
-        contentDescription = "Time picker icon")
+        contentDescription = "Time picker icon $title")
   }
 
   if (showTimePicker) {

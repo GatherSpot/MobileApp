@@ -49,8 +49,6 @@ class CreateEventTest {
         "pm grant $packageName android.permission.ACCESS_FINE_LOCATION")
   }
 
-  private val eventFirebaseConnection = EventFirebaseConnection()
-
   @get:Rule val composeTestRule = createComposeRule()
 
   @Before fun setUp() = runBlocking { testLogin() }
@@ -172,6 +170,7 @@ class CreateEventTest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testIsEverythingHere() {
 
@@ -194,7 +193,15 @@ class CreateEventTest {
         performScrollTo()
         assertIsDisplayed()
       }
+      startDatePickerButton {
+        performScrollTo()
+        assertIsDisplayed()
+      }
       eventEndDate {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      endDatePickerButton {
         performScrollTo()
         assertIsDisplayed()
       }
@@ -202,7 +209,15 @@ class CreateEventTest {
         performScrollTo()
         assertIsDisplayed()
       }
+      startTimePickerButton {
+        performScrollTo()
+        assertIsDisplayed()
+      }
       eventTimeEnd {
+        performScrollTo()
+        assertIsDisplayed()
+      }
+      endTimePickerButton {
         performScrollTo()
         assertIsDisplayed()
       }
