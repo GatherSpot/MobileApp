@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.intents
+package com.github.se.gatherspot.utils
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
