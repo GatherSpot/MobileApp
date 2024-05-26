@@ -13,7 +13,7 @@ interface ProfileDao {
 
   @Update fun update(profile: Profile)
 
-  @Query("SELECT * FROM profile WHERE id = :id") fun get(id: String): LiveData<Profile?>
+  @Query("SELECT * FROM profile WHERE id = :id") fun get(id: String): Profile?
 
   @Query("UPDATE profile SET image = :image WHERE id = :id")
   fun updateImage(id: String, image: String)

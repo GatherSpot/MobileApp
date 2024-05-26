@@ -71,17 +71,17 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
    */
   fun registerForEvent(event: Event, eventDao: EventDao? = null) {
     // Perform registration logic here, such as making network requests
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       // Simulate network request delay
       if (event.attendanceMaxCapacity != null) {
         if (event.registeredUsers.size >= event.attendanceMaxCapacity) {
-          _registrationState.value = RegistrationState.Error("Event is full")
+          _registrationState.postValue(RegistrationState.Error("Event is full"))
           return@launch
         }
       }
       // Check if the user is already registered for the event
       if (event.registeredUsers.contains(userId)) {
-        _registrationState.value = RegistrationState.Error("Already registered for this event")
+        _registrationState.postValue(RegistrationState.Error("Already registered for this event"))
         Log.e("EventRegistrationViewModel", "${registrationState.value}")
         return@launch
       }
@@ -90,23 +90,17 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
         eventDao?.insert(event)
         eventFirebaseConnection.addRegisteredUser(event.id, userId)
         registeredEventsList.add(event.id)
-        _registrationState.value = RegistrationState.Success
+        _registrationState.postValue(RegistrationState.Success)
         return@launch
       }
     }
+    _displayAlertRegistration.postValue(true)
   }
 
-  // Self-explanatory
-  fun clickRegisterButton() {
-    _displayAlertRegistration.value = true
-  }
-
-  // Self-explanatory
   fun clickDeleteButton() {
     _displayAlertDeletion.value = true
   }
 
-  // Self-explanatory
   fun dismissAlert() {
     _displayAlertRegistration.value = false
     _displayAlertDeletion.value = false
