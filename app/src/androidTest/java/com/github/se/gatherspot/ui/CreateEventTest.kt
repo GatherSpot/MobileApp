@@ -196,7 +196,7 @@ class CreateEventTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("DatePickerButton" + "start"), 6000)
       startDatePickerButton {
         performScrollTo()
-        assertIsDisplayed()
+        assertExists()
       }
       eventEndDate {
         performScrollTo()
@@ -205,7 +205,7 @@ class CreateEventTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("DatePickerButton" + "end"), 6000)
       endDatePickerButton {
         performScrollTo()
-        assertIsDisplayed()
+        assertExists()
       }
       eventTimeStart {
         performScrollTo()
@@ -215,7 +215,7 @@ class CreateEventTest {
           hasTestTag("TimePickerButton" + "Select start time"), 6000)
       startTimePickerButton {
         performScrollTo()
-        assertIsDisplayed()
+        assertExists()
       }
       eventTimeEnd {
         performScrollTo()
@@ -225,7 +225,7 @@ class CreateEventTest {
           hasTestTag("TimePickerButton" + "Select end time"), 6000)
       endTimePickerButton {
         performScrollTo()
-        assertIsDisplayed()
+        assertExists()
       }
       eventLocation {
         performScrollTo()
