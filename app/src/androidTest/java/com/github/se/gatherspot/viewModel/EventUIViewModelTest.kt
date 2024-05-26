@@ -29,13 +29,6 @@ import org.junit.Test
 class EventUIViewModelTest {
   private val ratingFirebaseConnection = RatingFirebaseConnection()
 
-  private val organizer =
-      Profile(
-          userName = "organizer",
-          bio = "bio",
-          image = "image",
-          id = "eventUIViewModelTest",
-          interests = setOf())
   private val event =
       Event(
           id = "eventUIViewModelTest",
@@ -210,7 +203,6 @@ class EventUIViewModelTest {
   @Test
   fun testAlreadyRegistered(): Unit = runBlocking {
     if (Firebase.auth.currentUser == null) Log.d("testAlreadyRegistered", "User is null")
-    val viewModel = EventUIViewModel(event)
     val event =
         Event(
             id = "idTestEvent",
@@ -232,6 +224,8 @@ class EventUIViewModelTest {
             inscriptionLimitTime = null,
             image = "")
 
+  val viewModel = EventUIViewModel(event)
+
     val eventFirebaseConnection = EventFirebaseConnection()
     eventFirebaseConnection.add(event)
     viewModel.registerForEvent(event)
@@ -247,4 +241,37 @@ class EventUIViewModelTest {
     EventFirebaseConnection().delete("idTestEvent")
     EnvironmentSetter.testLoginCleanUp()
   }
+
+@Test
+fun testAttendAsOrganizer() {
+    runBlocking {
+        val viewModel = EventUIViewModel(organizedEvent)
+        delay(1000)
+        assertEquals(false, viewModel.attended.value)
+        viewModel.attendEvent()
+        delay(1000)
+        assertEquals(false, viewModel.attended.value)
+    }
+}
+
+    @Test
+    fun testAttendEvent() {
+        runBlocking {
+            EventFirebaseConnection().add(event)
+            val viewModel = EventUIViewModel(event)
+            delay(1000)
+            assertEquals(false, viewModel.attended.value)
+            val uid = Firebase.auth.currentUser?.uid
+            viewModel.attendEvent() //not registered so attempt to attend should fail
+            delay(1000)
+            assertEquals(false, viewModel.attended.value)
+
+            viewModel.registerForEvent(event)
+            delay(400)
+            viewModel.attendEvent()
+            delay(1000)
+            assertEquals(true, viewModel.attended.value)
+
+        }
+    }
 }
