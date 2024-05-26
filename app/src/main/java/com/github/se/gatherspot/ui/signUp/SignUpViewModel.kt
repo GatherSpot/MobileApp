@@ -34,18 +34,21 @@ class SignUpViewModel(private val db: AppDatabase) : ViewModel() {
   private var isUsernameUnique = false
 
   private fun updateEverythingOk() {
-    isEverythingOk.value =
+    isEverythingOk.postValue(
         (userNameError.value == "" &&
             emailError.value == "" &&
             passwordError.value == "" &&
-            isUsernameUnique)
+            isUsernameUnique))
   }
 
   /** Update the username and check if it is unique. */
   fun updateUsername(string: String) {
     userName.value = string
     isUsernameUnique = false
-    Profile.checkUsername(string, null, userNameError) { isUsernameUnique = true }
+    viewModelScope.launch(Dispatchers.IO) {
+      Profile.checkUsername(string, null, userNameError)
+      isUsernameUnique = userNameError.value == ""
+    }
   }
 
   /** Update the email and check if it is valid. */
@@ -87,7 +90,7 @@ class SignUpViewModel(private val db: AppDatabase) : ViewModel() {
             user?.reload()?.addOnCompleteListener {
               if (user.isEmailVerified) {
                 // Email is verified, you can now proceed
-                finish()
+                emailIsVerified()
               }
             }
             delay(3000) // delay for 3 seconds before checking again
@@ -95,28 +98,28 @@ class SignUpViewModel(private val db: AppDatabase) : ViewModel() {
         }
   }
 
-  private fun finish() {
+  private fun emailIsVerified() {
     isFinished.value = true
     job?.cancel()
   }
 
-  /** Sign up the user. */
+  /** Sign up the user and create profile */
   fun signUp() {
     viewModelScope.launch(Dispatchers.IO) {
       try {
         Firebase.auth.createUserWithEmailAndPassword(email.value!!, password.value!!).await()
         async {
-              Firebase.auth.currentUser!!.sendEmailVerification().await()
-              ProfileFirebaseConnection().add(Profile.empty(Firebase.auth.uid!!))
+              Firebase.auth.currentUser!!.sendEmailVerification()
+              ProfileFirebaseConnection()
+                  .add(Profile(userName.value!!, "", "", Firebase.auth.uid!!, setOf()))
             }
             .await()
-
-        isEverythingOk.value = false
-        waitingEmailConfirmation.value = true
+        isEverythingOk.postValue(false)
+        waitingEmailConfirmation.postValue(true)
         checkEmailVerification()
       } catch (e: Exception) {
         if (e is FirebaseAuthUserCollisionException) {
-          emailError.value = "Email already in use, try signing in!"
+          emailError.postValue("Email already in use, try signing in!")
           updateEverythingOk()
         } else {
           // TODO : add alert dialog to the view

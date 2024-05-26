@@ -13,7 +13,7 @@ import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.sql.EventDao
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -54,10 +54,11 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
       IdList.empty(userId, FirebaseCollection.REGISTERED_EVENTS)
 
   init {
-    viewModelScope.launch {
-      registeredEventsList =
-          IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS) {}
-      delay(2000)
+    viewModelScope.launch(Dispatchers.IO) {
+      try {
+        registeredEventsList =
+            IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS)
+      } catch (_: Exception) {}
     }
   }
 

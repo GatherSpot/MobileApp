@@ -117,11 +117,9 @@ class EventUtils {
     runBlocking {
       event.registeredUsers.forEach { userID ->
         val registeredEvents =
-            idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
-        registeredEvents?.remove(event.id)
-        if (registeredEvents != null) {
-          idListFirebase.saveToFirebase(registeredEvents)
-        }
+            idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS)
+        registeredEvents.remove(event.id)
+        idListFirebase.saveToFirebase(registeredEvents)
       }
       try {
         eventFirebaseConnection.delete(event.id)

@@ -21,6 +21,7 @@ import junit.framework.TestCase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -81,7 +82,7 @@ class EventUIViewModelTest {
           globalRating = null)
 
   @Before
-  fun setUp() {
+  fun setUp() = runBlocking {
     // Set up the test environment
     EnvironmentSetter.testLogin()
     // Unrate events
@@ -97,7 +98,7 @@ class EventUIViewModelTest {
   }
 
   @After
-  fun tearDown() {
+  fun tearDown() = runTest {
     // Clean up the test environment
     EnvironmentSetter.testLoginCleanUp()
     ProfileFirebaseConnection().delete(testLoginUID)

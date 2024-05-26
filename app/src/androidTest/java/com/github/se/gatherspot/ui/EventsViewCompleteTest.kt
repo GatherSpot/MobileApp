@@ -1,5 +1,6 @@
 package com.github.se.gatherspot.ui
 
+import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -10,12 +11,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.screens.EditProfileScreen
 import com.github.se.gatherspot.screens.EventUIScreen
 import com.github.se.gatherspot.screens.EventsScreen
+import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.eventUI.EventUI
 import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -26,11 +30,27 @@ import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.io.IOException
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class EventsViewCompleteTest {
   @get:Rule val composeTestRule = createComposeRule()
+  private lateinit var db: AppDatabase
+
+  @Before
+  fun createDb() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+  }
+
+  @After
+  @Throws(IOException::class)
+  fun closeDb() {
+    db.close()
+  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -55,11 +75,11 @@ class EventsViewCompleteTest {
                 eventDao = null)
           }
           composable("profile") {
-            ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel() })
+            ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel(db) })
           }
           composable("viewProfile/{uid}") { backstackEntry ->
             backstackEntry.arguments?.getString("uid")?.let {
-              ProfileScreen(viewModel<ProfileViewModel> { ProfileViewModel(it, navController) })
+              ProfileScreen(viewModel<ProfileViewModel> { ProfileViewModel(it, navController, db) })
             }
           }
         }

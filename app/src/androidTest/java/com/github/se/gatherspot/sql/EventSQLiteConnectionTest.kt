@@ -76,7 +76,7 @@ class EventSQLiteConnectionTest {
   fun writeAndRead() {
     eventDao.insert(event1)
     val getVal1 = eventDao.get("1")
-    assertEquals(event1, getVal1)
+    assertEquals(event1, getVal1.value)
   }
 
   @Test
@@ -86,8 +86,8 @@ class EventSQLiteConnectionTest {
     eventDao.delete(event1)
     val getVal1 = eventDao.get("1")
     val getVal2 = eventDao.get("2")
-    assertNull(getVal1)
-    assertNotNull(getVal2)
+    assertNull(getVal1.value)
+    assertNotNull(getVal2.value)
   }
 
   @Test
@@ -115,8 +115,6 @@ class EventSQLiteConnectionTest {
             image = "")
     eventDao.update(modifiedEvent)
     val modifiedEventFromDB = eventDao.get("1")
-    assert(modifiedEventFromDB.title == modifiedEvent.title)
-    assert(modifiedEventFromDB.description == modifiedEvent.description)
-    assert(modifiedEventFromDB.attendanceMinCapacity == 5)
+    assertEquals(modifiedEventFromDB.value, modifiedEvent)
   }
 }

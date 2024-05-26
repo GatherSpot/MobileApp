@@ -129,6 +129,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
           Log.d(TAG, "Username already exists")
         }
       }
+      else -> super.update(id, field, value)
     }
   }
 

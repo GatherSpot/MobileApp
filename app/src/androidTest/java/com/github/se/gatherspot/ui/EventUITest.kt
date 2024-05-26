@@ -390,7 +390,7 @@ class EventUITest {
               timeEnding = LocalTime.of(16, 0),
               image = "")
       val eventfirebase = EventFirebaseConnection()
-      eventfirebase.add(event)
+      runBlocking { eventfirebase.add(event) }
       EventUI(
           event, NavigationActions(navController), EventUIViewModel(event), EventsViewModel(), null)
     }

@@ -18,6 +18,7 @@ import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -35,7 +36,7 @@ class AllTest : TestCase() {
   @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
 
   @After
-  fun cleanUp() {
+  fun cleanUp() = runTest {
     try {
       val p = runBlocking { ProfileFirebaseConnection().fetchFromUserName("AuthEndToEndTest") }
       p?.let { ProfileFirebaseConnection().delete(it.id) }

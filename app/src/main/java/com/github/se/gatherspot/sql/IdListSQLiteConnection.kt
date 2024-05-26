@@ -34,4 +34,14 @@ interface IdListDao {
    * @param idList the IdList
    */
   @Delete fun delete(idList: IdList)
+  /**
+   * Add element to the IdList element list
+   *
+   * @param collection the collection associated with the IdList
+   * @param id the id of the IdList
+   * @param element the element to add
+   */
+  @Query(
+      "UPDATE id_list SET elements = elements + :element WHERE collection = :collection AND id = :id")
+  fun addElement(collection: FirebaseCollection, id: String, element: String)
 }

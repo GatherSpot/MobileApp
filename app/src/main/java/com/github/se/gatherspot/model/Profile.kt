@@ -16,7 +16,7 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
  * @param id the id of the user
  */
 @Entity
-class Profile(
+data class Profile(
     var userName: String,
     var bio: String,
     var image: String,
@@ -49,11 +49,10 @@ class Profile(
      * @param oldName the old username
      * @return a string with the error message if there is one
      */
-    fun checkUsername(
+    suspend fun checkUsername(
         newName: String,
         oldName: String?,
         res: MutableLiveData<String>,
-        onSuccess: () -> Unit
     ) {
       val regex = ProfileRegex
       if (newName.isEmpty()) {
@@ -64,10 +63,9 @@ class Profile(
       } else if (newName.length > 20) {
         res.postValue("Username cannot be longer than 20 characters")
       } else if (newName != oldName) {
-        ProfileFirebaseConnection().usernameExists(newName) {
-          res.postValue(if (it) "Username already taken" else "")
-          onSuccess()
-        }
+        if (ProfileFirebaseConnection().usernameExists(newName))
+            res.postValue("Username already taken")
+        else res.postValue("")
       }
     }
 
