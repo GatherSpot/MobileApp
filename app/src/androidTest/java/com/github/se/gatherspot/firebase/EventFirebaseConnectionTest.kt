@@ -13,6 +13,8 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -23,6 +25,50 @@ import org.junit.Test
 class EventFirebaseConnectionTest {
 
   val eventFirebaseConnection = EventFirebaseConnection()
+    
+    val event1 = Event(
+        id = "efcTest1",
+        title = "efcTest1Title",
+        description = "",
+        location = null,
+        eventStartDate = null,
+        eventEndDate = null,
+        timeBeginning = null,
+        timeEnding = null,
+        attendanceMaxCapacity = null,
+        attendanceMinCapacity = 3013,
+        inscriptionLimitDate = null,
+        inscriptionLimitTime = null,
+        eventStatus = EventStatus.CREATED,
+        categories = setOf(),
+        organizerID = "efcTestOrganizerNOTID",
+        registeredUsers = mutableListOf(),
+        finalAttendees = mutableListOf(),
+        image = "",
+        globalRating = null
+    )
+
+    val event2 = Event(
+        id = "efcTest2",
+        title = "efcTest2Title",
+        description = "",
+        location = null,
+        eventStartDate = null,
+        eventEndDate = null,
+        timeBeginning = null,
+        timeEnding = null,
+        attendanceMaxCapacity = null,
+        attendanceMinCapacity = 3013,
+        inscriptionLimitDate = null,
+        inscriptionLimitTime = null,
+        eventStatus = EventStatus.CREATED,
+        categories = setOf(),
+        organizerID = "efcTestOrganizerNOTID",
+        registeredUsers = mutableListOf(),
+        finalAttendees = mutableListOf(),
+        image = "",
+        globalRating = null
+    )
 
   @Test
   fun testgetID() {
@@ -218,7 +264,8 @@ class EventFirebaseConnectionTest {
   fun fetchRegisteredToWorks() =
       runTest(timeout = Duration.parse("20s")) {
         testLogin()
-        Thread.sleep(10000)
+
+        Thread.sleep(3000)
         val events = eventFirebaseConnection.fetchRegisteredTo()
         assert(
             events.all { event ->
@@ -226,6 +273,21 @@ class EventFirebaseConnectionTest {
             })
         testLoginCleanUp()
       }
+
+    @Test
+    fun fetchAttendedWorks() =
+        runTest(timeout = Duration.parse("20s")) {
+            testLogin()
+
+            Thread.sleep(3000)
+            val events = eventFirebaseConnection.fetchAttended()
+            assert(
+                events.all { event ->
+                    (event.finalAttendees == null ||
+                    event.finalAttendees!!.contains(FirebaseAuth.getInstance().currentUser!!.uid))
+                })
+            testLoginCleanUp()
+        }
 
   @Test
   fun fetchEventsFromFollowedWorks() =
@@ -236,6 +298,53 @@ class EventFirebaseConnectionTest {
         assert(events.all { event -> idList.elements.contains(event.organizerID) })
         testLoginCleanUp()
       }
+
+    @Test
+    fun testAddRegisteredWorks(){
+        runBlocking {
+            eventFirebaseConnection.add(event1)
+            eventFirebaseConnection.add(event2)
+            eventFirebaseConnection.addRegisteredUser(event1.id, "efctestUser")
+
+            delay(400)
+
+            val fetch1 = async {eventFirebaseConnection.fetch(event1.id) as Event}.await()
+            val fetch2 = async {eventFirebaseConnection.fetch(event2.id) as Event}.await()
+
+            assert(fetch1.registeredUsers.contains("efctestUser"))
+            assert(!fetch2.registeredUsers.contains("efctestUser"))
+
+            eventFirebaseConnection.delete(event1.id)
+            eventFirebaseConnection.delete(event2.id)
+
+            delay(400)
+
+        }
+    }
+
+    @Test
+    fun testAddFinalAttendeeWorks(){
+        runBlocking {
+            eventFirebaseConnection.add(event1)
+            eventFirebaseConnection.add(event2)
+            eventFirebaseConnection.addFinalAttendee(event1.id, "efctestUser")
+
+            delay(400)
+
+            val fetch1 = async {eventFirebaseConnection.fetch(event1.id) as Event}.await()
+            val fetch2 = async {eventFirebaseConnection.fetch(event2.id) as Event}.await()
+
+            assert(fetch1.finalAttendees?.contains("efctestUser")==true)
+            assert(fetch2.finalAttendees?.contains("efctestUser")!=true)
+
+            eventFirebaseConnection.delete(event1.id)
+            eventFirebaseConnection.delete(event2.id)
+
+            delay(400)
+
+        }
+    }
+
 
   @Test
   fun deleteEvent() = runTest {
@@ -278,11 +387,11 @@ class EventFirebaseConnectionTest {
 
     eventFirebaseConnection.add(event)
     var resultEvent: Event? = null
-    async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
+    async { resultEvent = eventFirebaseConnection.fetch(eventID) }.await()
     assertNotNull(resultEvent)
     assertEquals(resultEvent!!.id, eventID)
     eventFirebaseConnection.delete(eventID)
-    async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
+    async { resultEvent = eventFirebaseConnection.fetch(eventID) }.await()
     assertEquals(resultEvent, null)
   }
 
@@ -312,7 +421,7 @@ class EventFirebaseConnectionTest {
 
     eventFirebaseConnection.add(event)
     var resultEvent: Event? = null
-    async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
+    async { resultEvent = eventFirebaseConnection.fetch(eventID) }.await()
     assertNotNull(resultEvent)
     assertEquals(resultEvent!!.id, eventID)
     assertEquals(resultEvent!!.title, "Test Event")

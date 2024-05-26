@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.firebase.RatingFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
@@ -34,6 +35,7 @@ class EventUIViewModel(private val event: Event) :
   private var _eventRating = MutableLiveData<Double>()
   private val userID = Firebase.auth.currentUser?.uid ?: "TEST"
   private val ratingFirebaseConnection = RatingFirebaseConnection()
+  private var _attended = MutableLiveData<Boolean>()
 
   init {
     viewModelScope.launch {
@@ -48,6 +50,7 @@ class EventUIViewModel(private val event: Event) :
           ratingFirebaseConnection.fetchOrganizerGlobalRating(event.organizerID) ?: 0.0
       _eventRating.value = ratingFirebaseConnection.fetchEventGlobalRating(event.id) ?: 0.0
       _organizer.value = ProfileFirebaseConnection().fetch(event.organizerID)
+      _attended.value = event.finalAttendees?.contains(userID) ?: false
 
       delay(500)
     }
@@ -57,6 +60,7 @@ class EventUIViewModel(private val event: Event) :
   val organizerRating: LiveData<Double> = _organizerRating
   val eventRating: LiveData<Double> = _eventRating
   val organizer: LiveData<Profile> = _organizer
+  val attended: LiveData<Boolean> = _attended
 
   /**
    * Rate the event
@@ -108,5 +112,28 @@ class EventUIViewModel(private val event: Event) :
     return !isOrganizer() &&
         event.registeredUsers.contains(userID) &&
         EventUtils().isEventOver(event)
+  }
+
+
+  fun attendEvent() {
+    viewModelScope.launch {
+      if (event.organizerID == userID) {
+        Log.e("AttendEvent", "Organizer cannot attend its own event")
+        return@launch
+      }
+      if (event.finalAttendees?.contains(userID) == true) {
+        Log.e("AttendEvent", "User $userID is already attending the event ${event.id}")
+        return@launch
+      }
+      if (!event.registeredUsers.contains(userID)) {
+        Log.e("AttendEvent", "User $userID is not registered for the event ${event.id}")
+        return@launch
+      }
+      _attended.value = true
+      //event.finalAttendees.add(userID)
+        EventFirebaseConnection().addFinalAttendee(event.id, userID)
+
+
+    }
   }
 }

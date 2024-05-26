@@ -314,7 +314,28 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     return eventsFromQuerySnapshot(querySnapshot)
   }
 
-  /**
+    /**
+     * Fetch events the user has Attended.
+     *
+     * @return The list of events fetched
+     */
+    suspend fun fetchAttended(): MutableList<Event> {
+        Log.d(FirebaseAuth.getInstance().currentUser?.uid ?: "forTest", "fetchRegisteredTo: ")
+        val querySnapshot: QuerySnapshot =
+            Firebase.firestore
+                .collection(COLLECTION)
+                .orderBy("eventID")
+                .whereArrayContains(
+                    "finalAttendee", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
+                .get()
+                .await()
+
+        return eventsFromQuerySnapshot(querySnapshot)
+    }
+
+
+
+    /**
    * Fetch events that are in the bounds of latitude and longitude +- degrees.
    *
    * @param latitude: The latitude to search around
@@ -379,6 +400,21 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         .update("registeredUsers", FieldValue.arrayUnion(uid))
         .await()
   }
+
+
+    /**
+     * Add a user to the list of final attendee for an event.
+     *
+     * @param eventID: The id of the event
+     * @param uid: The id of the user
+     */
+    suspend fun addFinalAttendee(eventID: String, uid: String) {
+        Firebase.firestore
+            .collection(COLLECTION)
+            .document(eventID)
+            .update("finalAttendee", FieldValue.arrayUnion(uid))
+            .await()
+    }
 
   /**
    * Maps a string to a LocalTime object.
