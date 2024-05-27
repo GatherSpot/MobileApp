@@ -30,7 +30,7 @@ class EventUIViewModelTest {
   private val ratingFirebaseConnection = RatingFirebaseConnection()
     private val eventFirebaseConnection = EventFirebaseConnection()
 
-  private val event =
+  private val event = //isOver
       Event(
           id = "eventUIViewModelTest",
           title = "",
@@ -52,7 +52,7 @@ class EventUIViewModelTest {
           image = "",
           globalRating = null)
 
-    private val event2 =
+    private val event2 = //isStarted but is not Over
         Event(
             id = "eventUIViewModelTest2",
             title = "",
@@ -175,13 +175,16 @@ class EventUIViewModelTest {
   fun testCanRate() {
     runBlocking {
       val viewModel = EventUIViewModel(event)
-      val uid = Firebase.auth.currentUser?.uid
       delay(1000)
-      assertEquals(false, viewModel.canRate())
-      event.registeredUsers.add(uid!!)
+      assertEquals(false, viewModel.canRate()) //not registered
+      viewModel.registerForEvent(event)
+        delay(400)
+        assertEquals(false, viewModel.canRate()) //registered but not attended
+        viewModel.attendEvent()
       delay(1000)
-      assertEquals(true, viewModel.canRate())
-      val viewModel3 = EventUIViewModel(organizedEvent)
+        assertEquals(true, viewModel.attended.value)
+      assertEquals(true, viewModel.canRate()) //attended
+      val viewModel3 = EventUIViewModel(organizedEvent) //organizer
       delay(1000)
       assertEquals(false, viewModel3.canRate())
     }
@@ -313,7 +316,10 @@ fun testAttendAsOrganizer() {
             delay(400)
             viewModel.attendEvent()
             delay(1000)
-            assertEquals(true, viewModel.attended.value)
+            assertEquals(true, viewModel.attended.value) //is attending as far as the viewmodel is concerned
+
+            val fetched = async {EventFirebaseConnection().fetch(event.id)}.await()
+            assertEquals(true, fetched?.finalAttendees?.contains(testLoginUID) == true )
 
         }
     }

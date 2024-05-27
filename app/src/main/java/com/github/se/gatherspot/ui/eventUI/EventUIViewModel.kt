@@ -112,7 +112,7 @@ class EventUIViewModel(private val event: Event) :
    */
   fun canRate(): Boolean {
     return !isOrganizer() &&
-        event.registeredUsers.contains(userID) &&
+            (attended.value == true) &&
         EventUtils().isEventOver(event)
   }
 
@@ -147,7 +147,7 @@ class EventUIViewModel(private val event: Event) :
         return@launch
       }
       _attended.value = true
-      //event.finalAttendees.add(userID)
+      event.finalAttendees?.plus(userID)
       EventFirebaseConnection().addFinalAttendee(event.id, userID)
       _displayAlertAttend.value = true
 
