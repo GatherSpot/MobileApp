@@ -266,7 +266,7 @@ class EventFirebaseConnectionTest {
         testLogin()
 
         Thread.sleep(3000)
-        val events = eventFirebaseConnection.fetchRegisteredTo()
+        val events = eventFirebaseConnection.fetchUpComing()
         assert(
             events.all { event ->
               event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)

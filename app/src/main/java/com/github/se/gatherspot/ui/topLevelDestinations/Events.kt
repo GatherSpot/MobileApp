@@ -91,7 +91,8 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
   LaunchedEffect(init) {
     if (!init) {
       viewModel.fetchMyEvents()
-      viewModel.fetchRegisteredTo()
+      viewModel.fetchUpComing()
+      viewModel.fetchAttended()
       viewModel.fetchEventsFromFollowedUsers()
       init = true
     }
@@ -151,14 +152,24 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
                             modifier = Modifier.testTag("myEvents"))
 
                         DropdownMenuItem(
-                            text = { Text("REGISTERED TO") },
+                            text = { Text("UPCOMING") },
                             onClick = {
                               MainActivity.selectedInterests = mutableListOf()
-                              viewModel.displayRegisteredTo()
+                              viewModel.displayUpComing()
                               showDropdownMenu = false
                             },
-                            leadingIcon = { Icon(Icons.Filled.Info, "registeredTo") },
-                            modifier = Modifier.testTag("registeredTo"))
+                            leadingIcon = { Icon(Icons.Filled.Info, "upComing") },
+                            modifier = Modifier.testTag("upComing"))
+
+                        DropdownMenuItem(
+                            text = { Text("ATTENDED") },
+                            onClick = {
+                              MainActivity.selectedInterests = mutableListOf()
+                              viewModel.displayAttended()
+                              showDropdownMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Filled.Info, "attended") },
+                            modifier = Modifier.testTag("attended"))
 
                         DropdownMenuItem(
                             text = { Text("FROM FOLLOWED") },

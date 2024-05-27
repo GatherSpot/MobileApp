@@ -19,6 +19,8 @@ import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -308,8 +310,8 @@ class EventsTest {
 
       dropdown { assertIsDisplayed() }
 
-      registeredTo {
-        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("registeredTo"))
+      upComing {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("upComing"))
         performClick()
       }
 
@@ -318,6 +320,38 @@ class EventsTest {
       val listOfEvents = viewModel.uiState.value.list
       if (listOfEvents.isNotEmpty()) {
         assert(listOfEvents.all { event -> event.registeredUsers.contains(uid) })
+      }
+    }
+  }
+
+  @Test
+  fun testAttendedWorks() {
+    val viewModel = EventsViewModel()
+    Thread.sleep(2000)
+    composeTestRule.setContent {
+      val nav = NavigationActions(rememberNavController())
+      Events(viewModel = viewModel, nav = nav)
+    }
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu {
+        assertIsDisplayed()
+        performClick()
+      }
+
+      dropdown { assertIsDisplayed() }
+
+      attended {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("attended"))
+        performClick()
+      }
+
+      runBlocking { async { delay(2000) }.await() }
+      composeTestRule.waitForIdle()
+
+      val listOfEvents = viewModel.uiState.value.list
+      if (listOfEvents.isNotEmpty()) {
+        assert(listOfEvents.all { event -> (event.finalAttendees?.contains(uid) == true) })
       }
     }
   }

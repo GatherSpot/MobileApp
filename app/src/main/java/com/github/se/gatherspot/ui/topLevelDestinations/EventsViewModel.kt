@@ -22,7 +22,8 @@ class EventsViewModel : ViewModel() {
   val uiState: StateFlow<UIState> = _uiState
   private var loadedEvents: MutableList<Event> = mutableListOf()
   private var myEvents: MutableList<Event> = mutableListOf()
-  private var registeredTo: MutableList<Event> = mutableListOf()
+  private var upComing: MutableList<Event> = mutableListOf()
+  private var attended: MutableList<Event> = mutableListOf()
   private var fromFollowedUsers: MutableList<Event> = mutableListOf()
   private var loadedFilteredEvents: MutableList<Event> = mutableListOf()
   val eventFirebaseConnection = EventFirebaseConnection()
@@ -42,8 +43,13 @@ class EventsViewModel : ViewModel() {
   }
 
   /** Fetches the events that the user has registered to and update viewModel. */
-  suspend fun fetchRegisteredTo() {
-    registeredTo = eventFirebaseConnection.fetchRegisteredTo()
+  suspend fun fetchUpComing() {
+    upComing = eventFirebaseConnection.fetchUpComing()
+  }
+
+  /** Fetches the events that the user has attended and update viewModel. */
+  suspend fun fetchAttended() {
+    attended = eventFirebaseConnection.fetchAttended()
   }
 
   /** Fetches the events from the followed users and update viewModel. */
@@ -60,9 +66,14 @@ class EventsViewModel : ViewModel() {
     _uiState.value = UIState(myEvents)
   }
 
+  /** Display the events that the user has registered to and that aren't over */
+  fun displayUpComing() {
+    _uiState.value = UIState(upComing)
+  }
+
   /** Display the events that the user has registered to. */
-  fun displayRegisteredTo() {
-    _uiState.value = UIState(registeredTo)
+  fun displayAttended() {
+    _uiState.value = UIState(attended)
   }
 
   /** Display the events from the followed users. */
