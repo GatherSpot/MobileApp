@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.github.se.gatherspot.model.event.Event
@@ -48,7 +49,7 @@ interface EventDao {
    *
    * @param event the event
    */
-  @Insert fun insert(vararg event: Event)
+  @Insert(onConflict = OnConflictStrategy.REPLACE) fun insert(vararg event: Event)
 
   /**
    * Delete an event

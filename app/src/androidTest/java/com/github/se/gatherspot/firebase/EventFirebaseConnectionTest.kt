@@ -13,6 +13,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -218,7 +219,7 @@ class EventFirebaseConnectionTest {
   fun fetchRegisteredToWorks() =
       runTest(timeout = Duration.parse("20s")) {
         testLogin()
-        Thread.sleep(10000)
+        delay(4000)
         val events = eventFirebaseConnection.fetchRegisteredTo()
         assert(
             events.all { event ->

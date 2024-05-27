@@ -23,7 +23,9 @@ data class Profile(
     @PrimaryKey override val id: String,
     var interests: Set<Interests>,
 ) : CollectionClass() {
-
+    fun withNewImage(newImage: String?): Profile {
+      return Profile(userName,bio,newImage?:image,id,interests)
+    }
   companion object {
     fun testOrganizer(): Profile {
       return Profile("John Doe", "I am not a bot", "", "TEST", setOf(Interests.FOOTBALL))

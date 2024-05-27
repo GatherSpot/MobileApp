@@ -3,13 +3,14 @@ package com.github.se.gatherspot.sql
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.github.se.gatherspot.model.Profile
 
 @Dao
 interface ProfileDao {
-  @Insert fun insert(profile: Profile)
+  @Insert(onConflict = OnConflictStrategy.REPLACE) fun insert(profile: Profile)
 
   @Update fun update(profile: Profile)
 

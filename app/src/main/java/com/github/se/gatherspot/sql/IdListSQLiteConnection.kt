@@ -26,7 +26,7 @@ interface IdListDao {
    * @return the IdList
    */
   @Query("SELECT * FROM id_list WHERE collection = :collection AND id = :id")
-  fun get(collection: FirebaseCollection, id: String): IdList
+  fun get(collection: FirebaseCollection, id: String): IdList?
 
   /**
    * Delete an IdList

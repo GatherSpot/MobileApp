@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.github.se.gatherspot.firebase.FirebaseCollection
@@ -40,11 +41,13 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
       val profileFromRoom = db.ProfileDao().get(uid)
       if (profileFromRoom != null) {
         _profile.postValue(profileFromRoom)
+        _oldProfile = profileFromRoom.copy()
       } else {
         val profileFromFirebase = ProfileFirebaseConnection().fetch(uid)
         profileFromFirebase?.let {
-          db.ProfileDao().update(profileFromFirebase)
+          db.ProfileDao().insert(profileFromFirebase)
           _profile.postValue(profileFromFirebase)
+          _oldProfile = profileFromFirebase.copy()
         }
       }
     }
@@ -74,24 +77,6 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
   /** Toggle the variable coding for whether the profile is being edited */
   fun edit() {
     _isEditing.value = true
-  }
-
-  private fun saveText() {
-    if (_userNameError.value == "" &&
-        _bioError.value == "" &&
-        _userNameIsUniqueCheck.value == true) {
-      viewModelScope.launch(Dispatchers.IO) {
-        try {
-          _profile.value?.let {
-            ProfileFirebaseConnection().add(it)
-            db.ProfileDao().update(it)
-          }
-        } catch (e: Exception) {
-          // TODO show error dialog
-          Log.d("Profile", "${e.message}")
-        }
-      }
-    }
   }
 
   /**
@@ -134,25 +119,6 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
     _profile.value = _profile.value // force update
   }
 
-  private fun uploadProfileImage(imageUri: Uri?) {
-    viewModelScope.launch(Dispatchers.IO) {
-      try {
-        if (imageUri != null && imageUri != EMPTY) {
-          _profile.value?.let {
-            val newUrl = FirebaseImages().pushProfilePicture(imageUri, it.id)
-            if (newUrl.isNotEmpty()) {
-              updateProfileImage(newUrl)
-              ProfileFirebaseConnection().update(it.id, "image", newUrl)
-              db.ProfileDao().updateImage(uid, newUrl)
-            }
-          }
-        }
-      } catch (e: Exception) {
-        // TODO show error dialog
-      }
-    }
-  }
-
   /** Remove the profile picture. */
   fun removeProfilePicture() {
     viewModelScope.launch {
@@ -173,17 +139,36 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
     _profile.value?.interests = Interests.flipInterest(interests.value ?: setOf(), interest)
     _profile.value = _profile.value // force update
   }
-
-  private fun saveImage() {
-    if (!image.value.isNullOrEmpty()) {
-      uploadProfileImage(image.value!!.toUri())
-    }
+  private fun noErrors():Boolean{
+    return _userNameError.value == "" &&
+            _bioError.value == "" &&
+            _userNameIsUniqueCheck.value == true
   }
 
   /** Save the edited profile and exit editing mode. */
   fun save() {
-    saveText()
-    saveImage()
+    if (noErrors()) {
+      viewModelScope.launch(Dispatchers.IO) {
+        try {
+          //only do it if profile is initialized
+          _profile.value?.let {
+          //get new image if needed
+            val img = _profile.value?.image
+            var newUrl : String? = null
+            if (!img.isNullOrEmpty() && img != _oldProfile!!.image){
+              newUrl = FirebaseImages().pushProfilePicture(img.toUri(), uid)
+          }
+            val newProfile = _profile.value!!.withNewImage(newUrl)
+            ProfileFirebaseConnection().add(newProfile)
+            db.ProfileDao().update(newProfile)
+          }
+        } catch (e: Exception) {
+          // TODO show error dialog
+          Log.d("Profile", "${e.message}")
+          _profile.postValue(_oldProfile)
+        }
+      }
+    }
     _isEditing.value = false
   }
 
