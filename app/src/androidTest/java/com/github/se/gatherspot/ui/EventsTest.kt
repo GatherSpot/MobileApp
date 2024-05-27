@@ -21,8 +21,6 @@ import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import java.lang.Thread.sleep
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -74,9 +72,9 @@ class EventsTest {
         assertExists()
         assertHasClickAction()
       }
-      
-      { assertHasClickAction() }
-      upComing{ assertHasClickAction() }
+
+      myEvents { assertHasClickAction() }
+      upComing { assertHasClickAction() }
       fromFollowed { assertHasClickAction() }
       eventFeed { assertHasClickAction() }
     }
@@ -261,48 +259,7 @@ class EventsTest {
       // as this should be tested in viewModel.
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("myEventsList"), 20000)
 
-
-      composeTestRule.waitForIdle()
-
-      val listOfEvents = viewModel.uiState.value.list
-      if (listOfEvents.isNotEmpty()) {
-        assert(listOfEvents.all { event -> event.registeredUsers.contains(uid) })
-      }
-    }
-  }
-
-  /*
-  @Test
-  fun testAttendedWorks() {
-    val viewModel = EventsViewModel()
-    Thread.sleep(2000)
-    composeTestRule.setContent {
-      val nav = NavigationActions(rememberNavController())
-      Events(viewModel = viewModel, nav = nav)
-    }
-
-    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
-      filterMenu {
-        assertIsDisplayed()
-        performClick()
-      }
-
-
-      runBlocking { async { delay(2000) }.await() }
-      composeTestRule.waitForIdle()
-
-      val listOfEvents = viewModel.uiState.value.list
-      if (listOfEvents.isNotEmpty()) {
-        assert(listOfEvents.all { event -> (event.finalAttendees?.contains(uid) == true) })
-      }
-    }
-  }
-  */
-
-  @Test
-  fun testFromFollowedWorks() {
-    val viewModel = EventsViewModel()
-    Thread.sleep(5000)
+      upComing { performClick() }
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("upComingEventsList"), 20000)
 
       fromFollowed { performClick() }

@@ -36,7 +36,6 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   private val viewModelScope = CoroutineScope(Dispatchers.Main + viewModelJob)
   private var fetchJob: Job? = null
 
-
   val eventFirebaseConnection = EventFirebaseConnection()
   // To synchronize between screens, it is initialized with the selected interests from MainActivity
   private var _interests = MutableLiveData(MainActivity.selectedInterests.value!!)
@@ -72,13 +71,13 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
       } catch (_: Exception) {}
     }
   }
-  
+
   /*
   Fetch events that the user is registered to and that are not over from the local database and update the live data with the new events.
    */
   fun fetchAttended() {
     viewModelScope.launch(Dispatchers.IO) {
-      //_upComing.postValue(eventDao.getAllWhereIdIsRegistered(uid))
+      // _upComing.postValue(eventDao.getAllWhereIdIsRegistered(uid))
       lateinit var events: List<Event>
       try {
         events = eventFirebaseConnection.fetchAttended()
@@ -87,7 +86,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
       } catch (_: Exception) {}
     }
   }
-  
+
   /*
   Fetch events that the user is registered to and that are not over from the local database and update the live data with the new events.
    */

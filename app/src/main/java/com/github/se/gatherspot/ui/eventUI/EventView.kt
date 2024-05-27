@@ -158,7 +158,6 @@ fun EventUINonOrganizer(
               registrationState,
               eventDao)
         }
-
       }) { innerPadding ->
         Column(
             modifier =

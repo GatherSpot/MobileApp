@@ -299,7 +299,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     return eventsFromQuerySnapshot(querySnapshot)
   }
 
-    /*
+  /*
   /**
    * Fetch events the user is registered to.
    *
@@ -321,28 +321,27 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
 
      */
 
-    /**
-     * Fetch events the user is registered to and that are not over yet.
-     *
-     * @return The list of events fetched
-     */
-    suspend fun fetchUpComing(): MutableList<Event> {
-        Log.d(FirebaseAuth.getInstance().currentUser?.uid ?: "forTest", "fetchUpComing: ")
-        val querySnapshot: QuerySnapshot =
-            Firebase.firestore
-                .collection(COLLECTION)
-                .orderBy("eventEndDate")
-                .whereGreaterThanOrEqualTo(
-                    "eventEndDate",
-                    LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
-                .whereArrayContains(
-                    "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
-                .get()
-                .await()
+  /**
+   * Fetch events the user is registered to and that are not over yet.
+   *
+   * @return The list of events fetched
+   */
+  suspend fun fetchUpComing(): MutableList<Event> {
+    Log.d(FirebaseAuth.getInstance().currentUser?.uid ?: "forTest", "fetchUpComing: ")
+    val querySnapshot: QuerySnapshot =
+        Firebase.firestore
+            .collection(COLLECTION)
+            .orderBy("eventEndDate")
+            .whereGreaterThanOrEqualTo(
+                "eventEndDate",
+                LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
+            .whereArrayContains(
+                "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
+            .get()
+            .await()
 
-        return eventsFromQuerySnapshot(querySnapshot)
-    }
-
+    return eventsFromQuerySnapshot(querySnapshot)
+  }
 
   /**
    * Fetch events the user has Attended.

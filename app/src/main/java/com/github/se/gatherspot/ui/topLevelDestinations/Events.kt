@@ -409,12 +409,11 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
               "followedEventsList")
       4 ->
           EventList(
-            vm,
-            vm::fetchAttended,
-            vm.attended.observeAsState(listOf()),
-            nav,
-            "attendedEventsList")
-          
+              vm,
+              vm::fetchAttended,
+              vm.attended.observeAsState(listOf()),
+              nav,
+              "attendedEventsList")
       else -> throw IllegalStateException("Invalid page index")
     }
   }

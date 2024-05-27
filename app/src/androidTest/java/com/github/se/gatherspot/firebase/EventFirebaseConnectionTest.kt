@@ -444,7 +444,6 @@ class EventFirebaseConnectionTest {
     eventFirebaseConnection.delete(eventID)
   }
 
-
   @Test
   fun mapStringToTimeTest() = runTest {
     val time = eventFirebaseConnection.mapTimeStringToTime("Not good format")
