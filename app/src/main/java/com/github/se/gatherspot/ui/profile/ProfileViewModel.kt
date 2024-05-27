@@ -1,14 +1,11 @@
 package com.github.se.gatherspot.ui.profile
 
-import android.net.Uri
-import android.net.Uri.EMPTY
 import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.github.se.gatherspot.firebase.FirebaseCollection
@@ -139,10 +136,11 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
     _profile.value?.interests = Interests.flipInterest(interests.value ?: setOf(), interest)
     _profile.value = _profile.value // force update
   }
-  private fun noErrors():Boolean{
+
+  private fun noErrors(): Boolean {
     return _userNameError.value == "" &&
-            _bioError.value == "" &&
-            _userNameIsUniqueCheck.value == true
+        _bioError.value == "" &&
+        _userNameIsUniqueCheck.value == true
   }
 
   /** Save the edited profile and exit editing mode. */
@@ -150,14 +148,14 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
     if (noErrors()) {
       viewModelScope.launch(Dispatchers.IO) {
         try {
-          //only do it if profile is initialized
+          // only do it if profile is initialized
           _profile.value?.let {
-          //get new image if needed
+            // get new image if needed
             val img = _profile.value?.image
-            var newUrl : String? = null
-            if (!img.isNullOrEmpty() && img != _oldProfile!!.image){
+            var newUrl: String? = null
+            if (!img.isNullOrEmpty() && img != _oldProfile!!.image) {
               newUrl = FirebaseImages().pushProfilePicture(img.toUri(), uid)
-          }
+            }
             val newProfile = _profile.value!!.withNewImage(newUrl)
             ProfileFirebaseConnection().add(newProfile)
             db.ProfileDao().update(newProfile)

@@ -160,7 +160,8 @@ class MainActivity : ComponentActivity() {
 
               composable("profile") {
                 ProfileScaffold(
-                    NavigationActions(navController), viewModel { OwnProfileViewModel(localDatabase) })
+                    NavigationActions(navController),
+                    viewModel { OwnProfileViewModel(localDatabase) })
               }
 
               composable("followers") {
@@ -176,7 +177,9 @@ class MainActivity : ComponentActivity() {
               composable("viewProfile/{uid}") { backstackEntry ->
                 backstackEntry.arguments?.getString("uid")?.let {
                   ProfileScreen(
-                      viewModel<ProfileViewModel> { ProfileViewModel(it, navController, localDatabase) })
+                      viewModel<ProfileViewModel> {
+                        ProfileViewModel(it, navController, localDatabase)
+                      })
                 }
               }
 

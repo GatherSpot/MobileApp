@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.sql
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -37,12 +36,12 @@ interface EventDao {
    * @return the event
    */
   @Query("SELECT * FROM event WHERE id = :id") fun get(id: String): Event?
+
   @Query("SELECT * FROM event WHERE organizerID = :id")
   fun getAllFromOrganizerId(id: String): List<Event>?
 
   @Query("SELECT * FROM event WHERE registeredUsers LIKE '%' || :id || '%'")
   fun getAllWhereIdIsRegistered(id: String): List<Event>?
-
 
   /**
    * Insert an event

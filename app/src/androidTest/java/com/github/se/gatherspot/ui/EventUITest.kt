@@ -372,24 +372,24 @@ class EventUITest {
   @Test
   fun testAlreadyRegistered(): Unit = runBlocking {
     val event =
-      Event(
-        id = "1",
-        title = "Event Title",
-        description = "Hello: I am a description",
-        attendanceMaxCapacity = 10,
-        attendanceMinCapacity = 1,
-        organizerID = Profile.testParticipant().id,
-        categories = setOf(Interests.BASKETBALL),
-        eventEndDate = LocalDate.of(2024, 4, 15),
-        eventStartDate = LocalDate.of(2024, 4, 14),
-        globalRating = 4,
-        inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-        inscriptionLimitTime = LocalTime.of(23, 59),
-        location = null,
-        registeredUsers = mutableListOf(FirebaseAuth.getInstance().currentUser!!.uid),
-        timeBeginning = LocalTime.of(13, 0),
-        timeEnding = LocalTime.of(16, 0),
-        image = "")
+        Event(
+            id = "1",
+            title = "Event Title",
+            description = "Hello: I am a description",
+            attendanceMaxCapacity = 10,
+            attendanceMinCapacity = 1,
+            organizerID = Profile.testParticipant().id,
+            categories = setOf(Interests.BASKETBALL),
+            eventEndDate = LocalDate.of(2024, 4, 15),
+            eventStartDate = LocalDate.of(2024, 4, 14),
+            globalRating = 4,
+            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+            inscriptionLimitTime = LocalTime.of(23, 59),
+            location = null,
+            registeredUsers = mutableListOf(FirebaseAuth.getInstance().currentUser!!.uid),
+            timeBeginning = LocalTime.of(13, 0),
+            timeEnding = LocalTime.of(16, 0),
+            image = "")
     val eventfirebase = EventFirebaseConnection()
     eventfirebase.add(event)
     composeTestRule.setContent {

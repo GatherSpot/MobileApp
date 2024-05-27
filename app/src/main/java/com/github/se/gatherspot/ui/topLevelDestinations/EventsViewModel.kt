@@ -99,9 +99,8 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
       // Try to get from firebase and update local
       try {
         val ids =
-          FollowList.following(
-            FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId
-          )
+            FollowList.following(
+                FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId)
         Log.d(TAG, "ids from viewModel ${ids.elements}")
         val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.elements)
         eventDao.insert(*events.toTypedArray())
