@@ -152,7 +152,6 @@ fun EventUINonOrganizer(
           RegisterButton(
               event,
               eventUIViewModel,
-              eventsViewModel,
               isButtonEnabled,
               buttonText,
               showDialogRegistration,

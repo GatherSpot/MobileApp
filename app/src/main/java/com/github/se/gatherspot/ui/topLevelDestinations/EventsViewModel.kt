@@ -54,7 +54,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   init {
     fetchWithInterests()
     fetchMyEvents()
-    fetchRegisteredTo()
+    fetchUpComing()
     fetchFromFollowedUsers()
     fetchAttended()
     fetchMyEvents()
