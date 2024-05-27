@@ -148,24 +148,22 @@ fun EventUINonOrganizer(
             actions = { ExportToCalendarIcon(event) })
       },
       bottomBar = {
-          Column {
-              if (eventUIViewModel.canAttend())
+        Column {
+          if (eventUIViewModel.canAttend())
               AttendButton(
                   event,
                   eventUIViewModel,
               )
-              RegisterButton(
-                  event,
-                  eventUIViewModel,
-                  eventsViewModel,
-                  isButtonEnabled,
-                  buttonText,
-                  showDialogRegistration,
-                  registrationState,
-                  eventDao
-              )
-          }
-
+          RegisterButton(
+              event,
+              eventUIViewModel,
+              eventsViewModel,
+              isButtonEnabled,
+              buttonText,
+              showDialogRegistration,
+              registrationState,
+              eventDao)
+        }
       }) { innerPadding ->
         Column(
             modifier =
@@ -193,51 +191,43 @@ fun EventUINonOrganizer(
 
 @Composable
 fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel) {
-    val showDialogAttend by eventUIViewModel.displayAlertAttend.observeAsState()
-    val attended by eventUIViewModel.attended.observeAsState()
-    val buttonText = if (attended==true) "Attended" else "Attend"
-        /*
-        when (registrationState) {
-            is RegistrationState.Success -> "Registered"
-            is RegistrationState.Error ->
-                if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
-                else "Registered"
-            else -> "Register"
-        }
+  val showDialogAttend by eventUIViewModel.displayAlertAttend.observeAsState()
+  val attended by eventUIViewModel.attended.observeAsState()
+  val buttonText = if (attended == true) "Attended" else "Attend"
+  /*
+  when (registrationState) {
+      is RegistrationState.Success -> "Registered"
+      is RegistrationState.Error ->
+          if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
+          else "Registered"
+      else -> "Register"
+  }
 
-         */
+   */
 
-    Button(
-        onClick = {
-            eventUIViewModel.attendEvent()
-        },
-        enabled = (attended==false),
-        modifier = Modifier.fillMaxWidth().testTag("attendButton"),
-        colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
+  Button(
+      onClick = { eventUIViewModel.attendEvent() },
+      enabled = (attended == false),
+      modifier = Modifier.fillMaxWidth().testTag("attendButton"),
+      colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
         Text(buttonText, color = Color.White)
-    }
+      }
 
-    if (showDialogAttend!!) {
-        AlertDialog(
-            modifier = Modifier.testTag("alertBox"),
-            onDismissRequest = { eventUIViewModel.dismissAlert() },
-            title = { Text("Attending Result") },
-            text = {
-                Text("Attended")
-
-
-            },
-            confirmButton = {
-                Button(
-                    modifier = Modifier.testTag("okButton"),
-                    onClick = { eventUIViewModel.dismissAlert() }) {
-                    Text("OK")
-                }
-            })
-    }
+  if (showDialogAttend!!) {
+    AlertDialog(
+        modifier = Modifier.testTag("alertBox"),
+        onDismissRequest = { eventUIViewModel.dismissAlert() },
+        title = { Text("Attending Result") },
+        text = { Text("Attended") },
+        confirmButton = {
+          Button(
+              modifier = Modifier.testTag("okButton"),
+              onClick = { eventUIViewModel.dismissAlert() }) {
+                Text("OK")
+              }
+        })
+  }
 }
-
-
 
 /**
  * EventUIOrganizer displays the UI for an event for the organizer. It displays the title,

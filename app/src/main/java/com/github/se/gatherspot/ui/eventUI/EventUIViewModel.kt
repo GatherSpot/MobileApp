@@ -28,7 +28,6 @@ import kotlinx.coroutines.launch
 class EventUIViewModel(private val event: Event) :
     EventRegistrationViewModel(event.registeredUsers) {
 
-
   private val _organizer = MutableLiveData<Profile>()
   private val _displayAlertAttend = MutableLiveData(false)
   private val _ownRating = MutableLiveData(Rating.UNRATED)
@@ -111,11 +110,8 @@ class EventUIViewModel(private val event: Event) :
    * @return true if the user can rate the event, false otherwise
    */
   fun canRate(): Boolean {
-    return !isOrganizer() &&
-            (attended.value == true) &&
-        EventUtils().isEventOver(event)
+    return !isOrganizer() && (attended.value == true) && EventUtils().isEventOver(event)
   }
-
 
   /**
    * Check if the user can attend the event
@@ -125,13 +121,10 @@ class EventUIViewModel(private val event: Event) :
   fun canAttend(): Boolean {
     return !isOrganizer() &&
         event.registeredUsers.contains(userID) &&
-            EventUtils().isEventStarted(event)
+        EventUtils().isEventStarted(event)
   }
 
-
-  /**
-   * Attend the event
-   */
+  /** Attend the event */
   fun attendEvent() {
     viewModelScope.launch {
       if (event.organizerID == userID) {
@@ -150,9 +143,6 @@ class EventUIViewModel(private val event: Event) :
       event.finalAttendees?.plus(userID)
       EventFirebaseConnection().addFinalAttendee(event.id, userID)
       _displayAlertAttend.value = true
-
-
-
     }
   }
 

@@ -28,9 +28,9 @@ import org.junit.Test
 
 class EventUIViewModelTest {
   private val ratingFirebaseConnection = RatingFirebaseConnection()
-    private val eventFirebaseConnection = EventFirebaseConnection()
+  private val eventFirebaseConnection = EventFirebaseConnection()
 
-  private val event = //isOver
+  private val event = // isOver
       Event(
           id = "eventUIViewModelTest",
           title = "",
@@ -52,27 +52,27 @@ class EventUIViewModelTest {
           image = "",
           globalRating = null)
 
-    private val event2 = //isStarted but is not Over
-        Event(
-            id = "eventUIViewModelTest2",
-            title = "",
-            description = null,
-            location = null,
-            eventStartDate = LocalDate.of(2024, 5, 10),
-            eventEndDate = LocalDate.of(2026, 5, 11),
-            timeBeginning = null,
-            timeEnding = null,
-            attendanceMaxCapacity = null,
-            attendanceMinCapacity = 0,
-            inscriptionLimitDate = null,
-            inscriptionLimitTime = null,
-            eventStatus = EventStatus.CREATED,
-            categories = setOf(),
-            organizerID = "T1qNNU05QeeqB2OqIBb7GAtQd093",
-            registeredUsers = mutableListOf(),
-            finalAttendees = listOf(),
-            image = "",
-            globalRating = null)
+  private val event2 = // isStarted but is not Over
+      Event(
+          id = "eventUIViewModelTest2",
+          title = "",
+          description = null,
+          location = null,
+          eventStartDate = LocalDate.of(2024, 5, 10),
+          eventEndDate = LocalDate.of(2026, 5, 11),
+          timeBeginning = null,
+          timeEnding = null,
+          attendanceMaxCapacity = null,
+          attendanceMinCapacity = 0,
+          inscriptionLimitDate = null,
+          inscriptionLimitTime = null,
+          eventStatus = EventStatus.CREATED,
+          categories = setOf(),
+          organizerID = "T1qNNU05QeeqB2OqIBb7GAtQd093",
+          registeredUsers = mutableListOf(),
+          finalAttendees = listOf(),
+          image = "",
+          globalRating = null)
 
   private val organizedEvent =
       Event(
@@ -100,8 +100,8 @@ class EventUIViewModelTest {
   fun setUp() {
     // Set up the test environment
     EnvironmentSetter.testLogin()
-      eventFirebaseConnection.add(event)
-        eventFirebaseConnection.add(event2)
+    eventFirebaseConnection.add(event)
+    eventFirebaseConnection.add(event2)
     // Unrate events
     ratingFirebaseConnection.update(
         event.id, testLoginUID, Rating.UNRATED, "T1qNNU05QeeqB2OqIBb7GAtQd093")
@@ -112,7 +112,6 @@ class EventUIViewModelTest {
     val profileTestOrganiser = Profile("testOrganiser", "bio", "image", testLoginUID, setOf())
     ProfileFirebaseConnection().add(profile1)
     ProfileFirebaseConnection().add(profileTestOrganiser)
-
   }
 
   @After
@@ -176,40 +175,40 @@ class EventUIViewModelTest {
     runBlocking {
       val viewModel = EventUIViewModel(event)
       delay(1000)
-      assertEquals(false, viewModel.canRate()) //not registered
+      assertEquals(false, viewModel.canRate()) // not registered
       viewModel.registerForEvent(event)
-        delay(400)
-        assertEquals(false, viewModel.canRate()) //registered but not attended
-        viewModel.attendEvent()
+      delay(400)
+      assertEquals(false, viewModel.canRate()) // registered but not attended
+      viewModel.attendEvent()
       delay(1000)
-        assertEquals(true, viewModel.attended.value)
-      assertEquals(true, viewModel.canRate()) //attended
-      val viewModel3 = EventUIViewModel(organizedEvent) //organizer
+      assertEquals(true, viewModel.attended.value)
+      assertEquals(true, viewModel.canRate()) // attended
+      val viewModel3 = EventUIViewModel(organizedEvent) // organizer
       delay(1000)
       assertEquals(false, viewModel3.canRate())
     }
   }
 
-    @Test
-    fun testCanAttend() {
-        runBlocking {
-            val viewModel = EventUIViewModel(event)
-            delay(1000)
-            assertEquals(false, viewModel.canAttend()) //isn't registered
-            viewModel.registerForEvent(event)
-            delay(1000)
-            assertEquals(true, viewModel.canAttend()) // registered and event is over
-            val viewModel2 = EventUIViewModel(event2)
-            delay(1000)
-            assertEquals(false, viewModel2.canAttend())
-            viewModel2.registerForEvent(event2)
-            delay(1000)
-            assertEquals(true, viewModel2.canAttend())
-            val viewModel3 = EventUIViewModel(organizedEvent)
-            delay(1000)
-            assertEquals(false, viewModel3.canAttend())
-        }
+  @Test
+  fun testCanAttend() {
+    runBlocking {
+      val viewModel = EventUIViewModel(event)
+      delay(1000)
+      assertEquals(false, viewModel.canAttend()) // isn't registered
+      viewModel.registerForEvent(event)
+      delay(1000)
+      assertEquals(true, viewModel.canAttend()) // registered and event is over
+      val viewModel2 = EventUIViewModel(event2)
+      delay(1000)
+      assertEquals(false, viewModel2.canAttend())
+      viewModel2.registerForEvent(event2)
+      delay(1000)
+      assertEquals(true, viewModel2.canAttend())
+      val viewModel3 = EventUIViewModel(organizedEvent)
+      delay(1000)
+      assertEquals(false, viewModel3.canAttend())
     }
+  }
 
   // Copy pasted from EventRegistrationViewModelTest.kt (cannot have viewModel as attribute because
   // it must be initialized in the test)
@@ -271,7 +270,7 @@ class EventUIViewModelTest {
             inscriptionLimitTime = null,
             image = "")
 
-  val viewModel = EventUIViewModel(event)
+    val viewModel = EventUIViewModel(event)
 
     val eventFirebaseConnection = EventFirebaseConnection()
     eventFirebaseConnection.add(event)
@@ -289,38 +288,38 @@ class EventUIViewModelTest {
     EnvironmentSetter.testLoginCleanUp()
   }
 
-@Test
-fun testAttendAsOrganizer() {
+  @Test
+  fun testAttendAsOrganizer() {
     runBlocking {
-        val viewModel = EventUIViewModel(organizedEvent)
-        delay(1000)
-        assertEquals(false, viewModel.attended.value)
-        viewModel.attendEvent()
-        delay(1000)
-        assertEquals(false, viewModel.attended.value)
+      val viewModel = EventUIViewModel(organizedEvent)
+      delay(1000)
+      assertEquals(false, viewModel.attended.value)
+      viewModel.attendEvent()
+      delay(1000)
+      assertEquals(false, viewModel.attended.value)
     }
-}
+  }
 
-    @Test
-    fun testAttendEvent() {
-        runBlocking {
-            EventFirebaseConnection().add(event)
-            val viewModel = EventUIViewModel(event)
-            delay(1000)
-            assertEquals(false, viewModel.attended.value)
-            viewModel.attendEvent() //not registered so attempt to attend should fail
-            delay(1000)
-            assertEquals(false, viewModel.attended.value)
+  @Test
+  fun testAttendEvent() {
+    runBlocking {
+      EventFirebaseConnection().add(event)
+      val viewModel = EventUIViewModel(event)
+      delay(1000)
+      assertEquals(false, viewModel.attended.value)
+      viewModel.attendEvent() // not registered so attempt to attend should fail
+      delay(1000)
+      assertEquals(false, viewModel.attended.value)
 
-            viewModel.registerForEvent(event)
-            delay(400)
-            viewModel.attendEvent()
-            delay(1000)
-            assertEquals(true, viewModel.attended.value) //is attending as far as the viewmodel is concerned
+      viewModel.registerForEvent(event)
+      delay(400)
+      viewModel.attendEvent()
+      delay(1000)
+      assertEquals(
+          true, viewModel.attended.value) // is attending as far as the viewmodel is concerned
 
-            val fetched = async {EventFirebaseConnection().fetch(event.id)}.await()
-            assertEquals(true, fetched?.finalAttendees?.contains(testLoginUID) == true )
-
-        }
+      val fetched = async { EventFirebaseConnection().fetch(event.id) }.await()
+      assertEquals(true, fetched?.finalAttendees?.contains(testLoginUID) == true)
     }
+  }
 }
