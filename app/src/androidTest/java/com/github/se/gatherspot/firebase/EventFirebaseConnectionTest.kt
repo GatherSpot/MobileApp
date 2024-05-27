@@ -337,8 +337,8 @@ class EventFirebaseConnectionTest {
             assert(fetch1.finalAttendees?.contains("efctestUser")==true)
             assert(fetch2.finalAttendees?.contains("efctestUser")!=true)
 
-            eventFirebaseConnection.delete(event1.id)
-            eventFirebaseConnection.delete(event2.id)
+            //eventFirebaseConnection.delete(event1.id)
+            //eventFirebaseConnection.delete(event2.id)
 
             delay(400)
 

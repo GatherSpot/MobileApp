@@ -28,14 +28,16 @@ import kotlinx.coroutines.launch
 class EventUIViewModel(private val event: Event) :
     EventRegistrationViewModel(event.registeredUsers) {
 
-  private var _organizer = MutableLiveData<Profile>()
+
+  private val _organizer = MutableLiveData<Profile>()
+  private val _displayAlertAttend = MutableLiveData(false)
   private lateinit var _attendees: List<String>
-  private var _ownRating = MutableLiveData(Rating.UNRATED)
-  private var _organizerRating = MutableLiveData<Double>()
-  private var _eventRating = MutableLiveData<Double>()
+  private val _ownRating = MutableLiveData(Rating.UNRATED)
+  private val _organizerRating = MutableLiveData<Double>()
+  private val _eventRating = MutableLiveData<Double>()
   private val userID = Firebase.auth.currentUser?.uid ?: "TEST"
   private val ratingFirebaseConnection = RatingFirebaseConnection()
-  private var _attended = MutableLiveData<Boolean>()
+  private val _attended = MutableLiveData<Boolean>()
 
   init {
     viewModelScope.launch {
@@ -61,6 +63,7 @@ class EventUIViewModel(private val event: Event) :
   val eventRating: LiveData<Double> = _eventRating
   val organizer: LiveData<Profile> = _organizer
   val attended: LiveData<Boolean> = _attended
+  val displayAlertAttend: LiveData<Boolean> = _displayAlertAttend
 
   /**
    * Rate the event
@@ -122,8 +125,8 @@ class EventUIViewModel(private val event: Event) :
    */
   fun canAttend(): Boolean {
     return !isOrganizer() &&
-        event.registeredUsers.contains(userID) &&
-        !event.finalAttendees?.contains(userID)!!
+        event.registeredUsers.contains(userID)
+    //TODO add isEventStarted
   }
 
 
@@ -146,9 +149,16 @@ class EventUIViewModel(private val event: Event) :
       }
       _attended.value = true
       //event.finalAttendees.add(userID)
-        EventFirebaseConnection().addFinalAttendee(event.id, userID)
+      EventFirebaseConnection().addFinalAttendee(event.id, userID)
+      _displayAlertAttend.value = true
+
 
 
     }
+  }
+
+  override fun dismissAlert() {
+    super.dismissAlert()
+    _displayAlertAttend.value = false
   }
 }
