@@ -28,6 +28,7 @@ import org.junit.Test
 
 class EventUIViewModelTest {
   private val ratingFirebaseConnection = RatingFirebaseConnection()
+    private val eventFirebaseConnection = EventFirebaseConnection()
 
   private val event =
       Event(
@@ -50,6 +51,28 @@ class EventUIViewModelTest {
           finalAttendees = listOf(),
           image = "",
           globalRating = null)
+
+    private val event2 =
+        Event(
+            id = "eventUIViewModelTest2",
+            title = "",
+            description = null,
+            location = null,
+            eventStartDate = LocalDate.of(2024, 5, 10),
+            eventEndDate = LocalDate.of(2026, 5, 11),
+            timeBeginning = null,
+            timeEnding = null,
+            attendanceMaxCapacity = null,
+            attendanceMinCapacity = 0,
+            inscriptionLimitDate = null,
+            inscriptionLimitTime = null,
+            eventStatus = EventStatus.CREATED,
+            categories = setOf(),
+            organizerID = "T1qNNU05QeeqB2OqIBb7GAtQd093",
+            registeredUsers = mutableListOf(),
+            finalAttendees = listOf(),
+            image = "",
+            globalRating = null)
 
   private val organizedEvent =
       Event(
@@ -77,23 +100,24 @@ class EventUIViewModelTest {
   fun setUp() {
     // Set up the test environment
     EnvironmentSetter.testLogin()
+      eventFirebaseConnection.add(event)
+        eventFirebaseConnection.add(event2)
     // Unrate events
     ratingFirebaseConnection.update(
         event.id, testLoginUID, Rating.UNRATED, "T1qNNU05QeeqB2OqIBb7GAtQd093")
     ratingFirebaseConnection.update(organizedEvent.id, testLoginUID, Rating.UNRATED, testLoginUID)
 
     // Add profile to database
-    val profile1 = Profile("organizer", "bio", "image", "T1qNNU05QeeqB2OqIBb7GAtQd093", setOf())
+    val profile1 = Profile("Melvin", "bio", "image", "T1qNNU05QeeqB2OqIBb7GAtQd093", setOf())
     val profileTestOrganiser = Profile("testOrganiser", "bio", "image", testLoginUID, setOf())
     ProfileFirebaseConnection().add(profile1)
     ProfileFirebaseConnection().add(profileTestOrganiser)
+
   }
 
   @After
   fun tearDown() {
     // Clean up the test environment
-    EnvironmentSetter.testLoginCleanUp()
-    ProfileFirebaseConnection().delete(testLoginUID)
   }
 
   @Test
@@ -155,14 +179,34 @@ class EventUIViewModelTest {
       delay(1000)
       assertEquals(false, viewModel.canRate())
       event.registeredUsers.add(uid!!)
-      val viewModel2 = EventUIViewModel(event)
       delay(1000)
-      assertEquals(true, viewModel2.canRate())
+      assertEquals(true, viewModel.canRate())
       val viewModel3 = EventUIViewModel(organizedEvent)
       delay(1000)
       assertEquals(false, viewModel3.canRate())
     }
   }
+
+    @Test
+    fun testCanAttend() {
+        runBlocking {
+            val viewModel = EventUIViewModel(event)
+            delay(1000)
+            assertEquals(false, viewModel.canAttend()) //isn't registered
+            viewModel.registerForEvent(event)
+            delay(1000)
+            assertEquals(true, viewModel.canAttend()) // registered and event is over
+            val viewModel2 = EventUIViewModel(event2)
+            delay(1000)
+            assertEquals(false, viewModel2.canAttend())
+            viewModel2.registerForEvent(event2)
+            delay(1000)
+            assertEquals(true, viewModel2.canAttend())
+            val viewModel3 = EventUIViewModel(organizedEvent)
+            delay(1000)
+            assertEquals(false, viewModel3.canAttend())
+        }
+    }
 
   // Copy pasted from EventRegistrationViewModelTest.kt (cannot have viewModel as attribute because
   // it must be initialized in the test)
@@ -261,7 +305,6 @@ fun testAttendAsOrganizer() {
             val viewModel = EventUIViewModel(event)
             delay(1000)
             assertEquals(false, viewModel.attended.value)
-            val uid = Firebase.auth.currentUser?.uid
             viewModel.attendEvent() //not registered so attempt to attend should fail
             delay(1000)
             assertEquals(false, viewModel.attended.value)

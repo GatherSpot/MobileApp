@@ -31,7 +31,6 @@ class EventUIViewModel(private val event: Event) :
 
   private val _organizer = MutableLiveData<Profile>()
   private val _displayAlertAttend = MutableLiveData(false)
-  private lateinit var _attendees: List<String>
   private val _ownRating = MutableLiveData(Rating.UNRATED)
   private val _organizerRating = MutableLiveData<Double>()
   private val _eventRating = MutableLiveData<Double>()
@@ -125,8 +124,8 @@ class EventUIViewModel(private val event: Event) :
    */
   fun canAttend(): Boolean {
     return !isOrganizer() &&
-        event.registeredUsers.contains(userID)
-    //TODO add isEventStarted
+        event.registeredUsers.contains(userID) &&
+            EventUtils().isEventStarted(event)
   }
 
 
