@@ -63,7 +63,7 @@ class EventUITest {
     }
   }
 
-  private val pastEventRegisteredTo =
+  private val pastEventAttended =
       Event(
           id = "1",
           title = "Event Title",
@@ -79,6 +79,7 @@ class EventUITest {
           inscriptionLimitTime = LocalTime.of(23, 59),
           location = null,
           registeredUsers = mutableListOf(testLoginUID),
+          finalAttendees = listOf(testLoginUID),
           timeBeginning = LocalTime.of(13, 0),
           timeEnding = LocalTime.of(16, 0),
           image = "")
@@ -488,19 +489,20 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun ratingIsDisplayed() {
-    val eventUIViewModel = EventUIViewModel(pastEventRegisteredTo)
+    val eventUIViewModel = EventUIViewModel(pastEventAttended)
     composeTestRule.setContent {
       val navController = rememberNavController()
-      EventUI(pastEventRegisteredTo, NavigationActions(navController), eventUIViewModel, null)
+      EventUI(pastEventAttended, NavigationActions(navController), eventUIViewModel, null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
       Log.e(
           "In the list",
-          pastEventRegisteredTo.registeredUsers
-              .contains(FirebaseAuth.getInstance().currentUser!!.uid)
+          pastEventAttended.finalAttendees
+              ?.contains(FirebaseAuth.getInstance().currentUser!!.uid)
               .toString())
-      Log.e("isEventOver", EventUtils().isEventOver(pastEventRegisteredTo).toString())
+      Log.e("isEventOver", EventUtils().isEventOver(pastEventAttended).toString())
+        sleep(500)
       assert(eventUIViewModel.canRate())
       sleep(6000)
       starRow {
