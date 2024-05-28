@@ -346,6 +346,7 @@ class RatingFirebaseConnectionTest {
       assertEquals(secondRating, event2Attendees?.get(secondRater))
 
       // Ratings are correctly updated and fetched
+      delay(2000)
 
       val event1Data = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
       val event2Data = async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()
