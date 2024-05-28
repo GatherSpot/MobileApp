@@ -591,7 +591,14 @@ class EventUtils {
         (endDate == now &&
             event.eventStartDate != now &&
             event.timeEnding?.isAfter(timeNow) == true)
+  }
 
+  /**
+   * Check if an event is started.
+   *
+   * @param event: The event to check
+   * @return true if the event is started
+   */
   fun isEventStarted(event: Event): Boolean {
     val now = LocalDate.now()
     val timeNow = LocalTime.now()
