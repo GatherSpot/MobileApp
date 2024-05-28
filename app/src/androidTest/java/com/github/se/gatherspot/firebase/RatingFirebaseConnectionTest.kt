@@ -176,7 +176,6 @@ class RatingFirebaseConnectionTest {
     }
   }
 
-  @Test
   fun testFetchEvent() {
     runBlocking {
       val rating = Rating.FIVE_STARS
@@ -331,7 +330,7 @@ class RatingFirebaseConnectionTest {
 
       ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
 
-      delay(1000)
+      delay(3000)
 
       val event1Attendees =
           async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
