@@ -27,11 +27,13 @@ import com.google.firebase.ktx.Firebase
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.time.Duration
 
 @RunWith(AndroidJUnit4::class)
 class SetUpTest : TestCase() {
@@ -55,14 +57,13 @@ class SetUpTest : TestCase() {
 
   @After
   fun cleanUp() = runBlocking {
-    ProfileFirebaseConnection().delete(Firebase.auth.uid!!)
     testLoginCleanUp()
     db.close()
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun setUpTest() {
+  fun setUpTest() = runTest(timeout = Duration.parse("20s")) {
     val string = "123bioText"
     composeTestRule.setContent {
       val navController = rememberNavController()

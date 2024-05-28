@@ -33,6 +33,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.time.Duration
 
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
@@ -71,7 +72,7 @@ class SignUpTest : TestCase() {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun signUp() {
+  fun signUp() = runTest(timeout = Duration.parse("20s")){
     val email = "gatherspot2024@gmail.com"
     val userName = "GatherSpot"
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
