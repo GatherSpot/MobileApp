@@ -29,10 +29,13 @@ import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.time.Duration
 
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
@@ -496,7 +499,7 @@ class EventUITest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun ratingIsDisplayed() {
+  fun ratingIsDisplayed() = runTest(timeout = Duration.parse("20s")) {
     val eventUIViewModel = EventUIViewModel(pastEventAttended)
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -510,7 +513,7 @@ class EventUITest {
               ?.contains(FirebaseAuth.getInstance().currentUser!!.uid)
               .toString())
       Log.e("isEventOver", EventUtils().isEventOver(pastEventAttended).toString())
-      sleep(500)
+      sleep(400)
       assert(eventUIViewModel.canRate())
       sleep(6000)
       starRow {

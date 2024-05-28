@@ -383,7 +383,7 @@ class EventFirebaseConnectionTest {
   }
 
   @Test
-  fun nullCasesTest() = runTest {
+  fun nullCasesTest() = runTest(timeout = Duration.parse("20s")) {
     val eventID = eventFirebaseConnection.getNewID()
     val event =
         Event(
