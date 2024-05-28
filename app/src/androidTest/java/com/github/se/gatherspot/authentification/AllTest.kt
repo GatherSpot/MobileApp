@@ -50,6 +50,7 @@ class AllTest : TestCase() {
   @Before
   fun setup() {
     runBlocking {
+      FirebaseAuth.getInstance().signOut()
       val toDelete = async { ProfileFirebaseConnection().fetchFromUserName(USERNAME) }.await()
       if (toDelete != null) ProfileFirebaseConnection().delete(toDelete.id)
 

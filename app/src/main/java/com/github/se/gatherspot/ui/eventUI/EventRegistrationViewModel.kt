@@ -87,7 +87,7 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
       }
       if (!(event.registeredUsers.contains(userId))) {
         event.registeredUsers.add(userId)
-        eventDao?.insert(event)
+        // eventDao?.insert(event)
         eventFirebaseConnection.addRegisteredUser(event.id, userId)
         registeredEventsList.add(event.id)
         _registrationState.postValue(RegistrationState.Success)
@@ -101,7 +101,8 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
     _displayAlertDeletion.value = true
   }
 
-  fun dismissAlert() {
+  // Self-explanatory
+  open fun dismissAlert() {
     _displayAlertRegistration.value = false
     _displayAlertDeletion.value = false
   }

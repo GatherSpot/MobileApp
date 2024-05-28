@@ -8,9 +8,14 @@ import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -18,8 +23,9 @@ import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import java.lang.Thread.sleep
-import kotlinx.coroutines.runBlocking
+import java.time.LocalDate
+import java.time.LocalTime
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,20 +35,68 @@ class EventsTest {
   private lateinit var uid: String
   private lateinit var ids: List<String>
   private lateinit var viewModel: EventsViewModel
+  private val eventFirebaseConnection = EventFirebaseConnection()
+  private val futureRegisteredEvent =
+      Event(
+          id = "EventsTest1",
+          title = "deseruisse",
+          description = "null",
+          location = null,
+          eventStartDate = LocalDate.of(2026, 7, 10),
+          eventEndDate = LocalDate.of(2026, 7, 11),
+          timeBeginning = LocalTime.of(10, 0),
+          timeEnding = LocalTime.of(10, 0),
+          attendanceMaxCapacity = null,
+          attendanceMinCapacity = 0,
+          inscriptionLimitDate = null,
+          inscriptionLimitTime = null,
+          eventStatus = EventStatus.CREATED,
+          categories = setOf(),
+          organizerID = "T1qNNU05QeeqB2OqIBb7GAtQd093",
+          registeredUsers = mutableListOf(testLoginUID),
+          finalAttendees = listOf(),
+          image = "hac",
+          globalRating = null)
+
+  private val attendedEvent =
+      Event(
+          id = "EventsTest2",
+          title = "deseruisse",
+          description = "null",
+          location = null,
+          eventStartDate = LocalDate.of(2023, 7, 10),
+          eventEndDate = LocalDate.of(2023, 7, 11),
+          timeBeginning = LocalTime.of(10, 0),
+          timeEnding = LocalTime.of(10, 0),
+          attendanceMaxCapacity = null,
+          attendanceMinCapacity = 0,
+          inscriptionLimitDate = null,
+          inscriptionLimitTime = null,
+          eventStatus = EventStatus.CREATED,
+          categories = setOf(),
+          organizerID = "T1qNNU05QeeqB2OqIBb7GAtQd093",
+          registeredUsers = mutableListOf(testLoginUID),
+          finalAttendees = listOf(testLoginUID),
+          image = "hac",
+          globalRating = null)
 
   init {
     testLogin()
   }
 
   @Before
-  fun setUp() {
-    runBlocking {
-      uid = FirebaseAuth.getInstance().currentUser!!.uid
-      FollowList.follow(uid, uid)
-      ids = FollowList.following(uid).elements
-    }
+  fun setUp() = runTest {
+    uid = FirebaseAuth.getInstance().currentUser!!.uid
+    FollowList.follow(uid, uid)
+    ids = FollowList.following(uid).elements
+
     val context = ApplicationProvider.getApplicationContext<Context>()
+    melvinLogin()
     val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+
+    eventFirebaseConnection.add(futureRegisteredEvent)
+    eventFirebaseConnection.add(attendedEvent)
+
     viewModel = EventsViewModel(db)
   }
 
@@ -65,8 +119,9 @@ class EventsTest {
         assertExists()
         assertHasClickAction()
       }
+
       myEvents { assertHasClickAction() }
-      registeredTo { assertHasClickAction() }
+      upComing { assertHasClickAction() }
       fromFollowed { assertHasClickAction() }
       eventFeed { assertHasClickAction() }
     }
@@ -251,9 +306,8 @@ class EventsTest {
       // as this should be tested in viewModel.
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("myEventsList"), 20000)
 
-      registeredTo { performClick() }
-
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("registeredEventsList"), 20000)
+      upComing { performClick() }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("upComingEventsList"), 20000)
 
       fromFollowed { performClick() }
 
