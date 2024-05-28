@@ -27,15 +27,10 @@ import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlin.time.Duration
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.createTestCoroutineScope
-import java.lang.Thread.sleep
-import kotlin.time.Duration
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -49,22 +44,19 @@ class SignUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var db: AppDatabase
 
-  @OptIn(ExperimentalCoroutinesApi::class)
-  private val testDispatcher = UnconfinedTestDispatcher()
+  @OptIn(ExperimentalCoroutinesApi::class) private val testDispatcher = UnconfinedTestDispatcher()
   private val testScope = TestScope(testDispatcher)
 
   @Before
   fun setup() {
     val context = ApplicationProvider.getApplicationContext<Context>()
     db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
-    val viewModel = SignUpViewModel(db,testScope,testDispatcher)
+    val viewModel = SignUpViewModel(db, testScope, testDispatcher)
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
         navigation(startDestination = "signup", route = "auth") {
-          composable("signup") {
-            SignUp(viewModel, NavigationActions(navController))
-          }
+          composable("signup") { SignUp(viewModel, NavigationActions(navController)) }
         }
         navigation(startDestination = "events", route = "home") {
           composable("setup") { SetUpProfile(NavigationActions(navController)) }

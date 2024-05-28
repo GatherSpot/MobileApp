@@ -21,7 +21,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 /** ViewModel for the sign up screen. */
-class SignUpViewModel(private val db: AppDatabase, private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main), private var dispatcher: CoroutineDispatcher = Dispatchers.IO) : ViewModel() {
+class SignUpViewModel(
+    private val db: AppDatabase,
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main),
+    private var dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : ViewModel() {
   var userName = MutableLiveData("")
   var userNameError = MutableLiveData("")
   var email = MutableLiveData("")
