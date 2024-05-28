@@ -513,7 +513,7 @@ class EventUITest {
                   ?.contains(FirebaseAuth.getInstance().currentUser!!.uid)
                   .toString())
           Log.e("isEventOver", EventUtils().isEventOver(pastEventAttended).toString())
-          sleep(400)
+          sleep(4000)
           assert(eventUIViewModel.canRate())
           sleep(6000)
           starRow {
