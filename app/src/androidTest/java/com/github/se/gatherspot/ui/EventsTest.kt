@@ -270,78 +270,139 @@ class EventsTest {
 
      */
   }
-}
 
-@OptIn(ExperimentalTestApi::class)
-@Test
-fun entireCreationFlow() {
-  /*
-  val viewModel = EventsViewModel()
-  Thread.sleep(6000)
-  assert(viewModel.uiState.value.list.isNotEmpty())
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun entireCreationFlow() {
+    /*
+    val viewModel = EventsViewModel()
+    Thread.sleep(6000)
+    assert(viewModel.uiState.value.list.isNotEmpty())
 
-  composeTestRule.setContent {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "home") {
-      navigation(startDestination = "events", route = "home") {
-        composable("events") { Events(viewModel, NavigationActions(navController)) }
-      }
-      navigation(startDestination = "form", route = "createEvent") {
-        composable("form") {
-          CreateEvent(
-              nav = NavigationActions(navController),
-              eventUtils = EventUtils(),
-              viewModel = viewModel)
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      NavHost(navController = navController, startDestination = "home") {
+        navigation(startDestination = "events", route = "home") {
+          composable("events") { Events(viewModel, NavigationActions(navController)) }
         }
-      }
-      navigation(startDestination = "view", route = "event/{eventJson}") {
-        composable("view") { backStackEntry ->
-          val gson: Gson =
-              GsonBuilder()
-                  .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                  .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                  .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                  .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                  .create()
-          val eventObject =
-              gson.fromJson(backStackEntry.arguments?.getString("eventJson"), Event::class.java)
-          EventUI(
-              event = eventObject,
-              navActions = NavigationActions(navController),
-              registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
-              eventsViewModel = viewModel)
+        navigation(startDestination = "form", route = "createEvent") {
+          composable("form") {
+            CreateEvent(
+                nav = NavigationActions(navController),
+                eventUtils = EventUtils(),
+                viewModel = viewModel)
+          }
         }
-      }
-      navigation(startDestination = "edit", route = "editEvent/{eventJson}") {
-        composable("edit") { backStackEntry ->
-          val gson: Gson =
-              GsonBuilder()
-                  .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                  .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                  .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                  .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                  .create()
+        navigation(startDestination = "view", route = "event/{eventJson}") {
+          composable("view") { backStackEntry ->
+            val gson: Gson =
+                GsonBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                    .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                    .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                    .create()
+            val eventObject =
+                gson.fromJson(backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+            EventUI(
+                event = eventObject,
+                navActions = NavigationActions(navController),
+                registrationViewModel = EventRegistrationViewModel(eventObject.registeredUsers),
+                eventsViewModel = viewModel)
+          }
+        }
+        navigation(startDestination = "edit", route = "editEvent/{eventJson}") {
+          composable("edit") { backStackEntry ->
+            val gson: Gson =
+                GsonBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                    .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
+                    .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                    .create()
 
-          val eventObject =
-              gson.fromJson(backStackEntry.arguments?.getString("eventJson"), Event::class.java)
+            val eventObject =
+                gson.fromJson(backStackEntry.arguments?.getString("eventJson"), Event::class.java)
 
-          EditEvent(
-              event = eventObject,
-              eventUtils = EventUtils(),
-              nav = NavigationActions(navController),
-              viewModel = viewModel)
+            EditEvent(
+                event = eventObject,
+                eventUtils = EventUtils(),
+                nav = NavigationActions(navController),
+                viewModel = viewModel)
+          }
         }
       }
     }
-  }
-  composeTestRule.waitForIdle()
+    composeTestRule.waitForIdle()
 
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
+    composeTestRule.waitForIdle()
+
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+      composeTestRule.waitForIdle()
+      eventTitle.performScrollTo()
+      eventTitle.performTextInput("Basketball Game")
+      Espresso.closeSoftKeyboard()
+      eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
+      Espresso.closeSoftKeyboard()
+      eventStartDate.performTextInput("10/07/2024")
+      Espresso.closeSoftKeyboard()
+      eventEndDate.performTextInput("10/07/2024")
+      Espresso.closeSoftKeyboard()
+      eventTimeStart.performTextInput("13:00")
+      Espresso.closeSoftKeyboard()
+      eventTimeEnd.performTextInput("19:00")
+      Espresso.closeSoftKeyboard()
+      eventLocation.performTextInput("Bussy-Saint-Georges")
+      Espresso.closeSoftKeyboard()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
+      Espresso.closeSoftKeyboard()
+      locationProposition { performClick() }
+      Espresso.closeSoftKeyboard()
+      eventMaxAttendees.performTextInput("10")
+      Espresso.closeSoftKeyboard()
+      eventMinAttendees.performTextInput("5")
+      Espresso.closeSoftKeyboard()
+      eventInscriptionLimitDate.performTextInput("10/06/2024")
+      Espresso.closeSoftKeyboard()
+      eventInscriptionLimitTime.performTextInput("09:00")
+      Espresso.closeSoftKeyboard()
+      eventSaveButton.performScrollTo()
+      eventSaveButton.performClick()
+    }
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      filterMenu { performClick() }
+      myEvents {
+        composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("myEvents"))
+        performClick()
+      }
+      assert(
+          viewModel.uiState.value.list.any { event ->
+            event.description == "Ayo, 5v5: Come show your skills"
+          })
+      eventCreated { performClick() }
+    }
+
+    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      editEventButton { performClick() }
+    }
+
+    ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+      eventDescription { assertTextContains("Ayo, 5v5: Come show your skills") }
+    }
+
+    val event = viewModel.uiState.value.list.filter { e -> e.title == "Basketball Game" }[0]
+    EventFirebaseConnection().delete(event.id)
+
+     */
+  }
+
+  /*
   ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
-  composeTestRule.waitForIdle()
 
   ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-    composeTestRule.waitForIdle()
-    eventTitle.performScrollTo()
+    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
     eventTitle.performTextInput("Basketball Game")
     Espresso.closeSoftKeyboard()
     eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
@@ -372,66 +433,5 @@ fun entireCreationFlow() {
     eventSaveButton.performClick()
   }
 
-  ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
-    filterMenu { performClick() }
-    myEvents {
-      composeTestRule.onNodeWithTag("dropdown").performScrollToNode(hasTestTag("myEvents"))
-      performClick()
-    }
-    assert(
-        viewModel.uiState.value.list.any { event ->
-          event.description == "Ayo, 5v5: Come show your skills"
-        })
-    eventCreated { performClick() }
-  }
-
-  ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-    editEventButton { performClick() }
-  }
-
-  ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-    eventDescription { assertTextContains("Ayo, 5v5: Come show your skills") }
-  }
-
-  val event = viewModel.uiState.value.list.filter { e -> e.title == "Basketball Game" }[0]
-  EventFirebaseConnection().delete(event.id)
-
    */
 }
-
-/*
-ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
-
-ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-  composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
-  eventTitle.performTextInput("Basketball Game")
-  Espresso.closeSoftKeyboard()
-  eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
-  Espresso.closeSoftKeyboard()
-  eventStartDate.performTextInput("10/07/2024")
-  Espresso.closeSoftKeyboard()
-  eventEndDate.performTextInput("10/07/2024")
-  Espresso.closeSoftKeyboard()
-  eventTimeStart.performTextInput("13:00")
-  Espresso.closeSoftKeyboard()
-  eventTimeEnd.performTextInput("19:00")
-  Espresso.closeSoftKeyboard()
-  eventLocation.performTextInput("Bussy-Saint-Georges")
-  Espresso.closeSoftKeyboard()
-  composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
-  Espresso.closeSoftKeyboard()
-  locationProposition { performClick() }
-  Espresso.closeSoftKeyboard()
-  eventMaxAttendees.performTextInput("10")
-  Espresso.closeSoftKeyboard()
-  eventMinAttendees.performTextInput("5")
-  Espresso.closeSoftKeyboard()
-  eventInscriptionLimitDate.performTextInput("10/06/2024")
-  Espresso.closeSoftKeyboard()
-  eventInscriptionLimitTime.performTextInput("09:00")
-  Espresso.closeSoftKeyboard()
-  eventSaveButton.performScrollTo()
-  eventSaveButton.performClick()
-}
-
- */
