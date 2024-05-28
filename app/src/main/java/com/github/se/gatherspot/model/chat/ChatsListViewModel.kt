@@ -1,13 +1,15 @@
 package com.github.se.gatherspot.model.chat
 
-import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the list of chats.
@@ -19,37 +21,31 @@ import kotlinx.coroutines.flow.StateFlow
  */
 class ChatsListViewModel : ViewModel() {
 
-  val PAGE_SIZE: Long = 9
-  private var _uiState = MutableStateFlow(ChatUIState())
-  val uiState: StateFlow<ChatUIState> = _uiState
-  private var loadedEvents: MutableList<Event> = mutableListOf()
-  private var eventsIDS = listOf<String>()
-  val eventFirebaseConnection = EventFirebaseConnection()
+  private val PAGE_SIZE: Long = 9
+  private var _allEvents = MutableLiveData<List<Event>>(listOf())
+  val allEvents: LiveData<List<Event>> = _allEvents
+  private val eventFirebaseConnection = EventFirebaseConnection()
+  private val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "None"
 
-  // TEMPORARY
-  // val listEvents = listOf("-NwJSmLmQDUlF9booiq7")
-  //
+  init {
+    fetchNextEvents()
+  }
 
-  /**
-   * Fetches the next set of events from the database.
-   *
-   * @param uid String? The user ID.
-   */
-  suspend fun fetchNext(uid: String?) {
-
-    if (uid == null) {
-      return
+  /** Fetches the next set of events from the database. */
+  fun fetchNextEvents() {
+    viewModelScope.launch {
+      val eventIds = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS) {}
+      val events = eventFirebaseConnection.fetchNextEvents(eventIds, PAGE_SIZE)
+      val all = _allEvents.value!!.plus(events)
+      _allEvents.postValue(all)
     }
-    val idlist = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS) {}
+  }
 
-    eventsIDS = idlist.elements
-    Log.e("IDS", eventsIDS.toString())
-
-    _uiState.value = ChatUIState(loadedEvents)
-
-    val events = eventFirebaseConnection.fetchNextEvents(idlist, PAGE_SIZE)
-    loadedEvents.addAll(events)
-    _uiState.value = ChatUIState(loadedEvents)
+  /** Reset offset when a user wants to refresh */
+  fun resetOffset() {
+    eventFirebaseConnection.offset = null
+    _allEvents.postValue(listOf())
+    fetchNextEvents()
   }
 }
 
