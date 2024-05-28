@@ -283,8 +283,7 @@ class EventFirebaseConnectionTest {
         val events = eventFirebaseConnection.fetchAttended()
         assert(
             events.all { event ->
-              (
-                  event.finalAttendees!!.contains(FirebaseAuth.getInstance().currentUser!!.uid))
+              (event.finalAttendees!!.contains(FirebaseAuth.getInstance().currentUser!!.uid))
             })
         testLoginCleanUp()
       }

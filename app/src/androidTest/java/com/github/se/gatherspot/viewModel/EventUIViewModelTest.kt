@@ -293,10 +293,10 @@ class EventUIViewModelTest {
     runBlocking {
       val viewModel = EventUIViewModel(organizedEvent)
       delay(1000)
-      assertEquals(false, (viewModel.attended.value==true))
+      assertEquals(false, (viewModel.attended.value == true))
       viewModel.attendEvent()
       delay(1000)
-      assertEquals(false, (viewModel.attended.value==true))
+      assertEquals(false, (viewModel.attended.value == true))
     }
   }
 
@@ -306,17 +306,18 @@ class EventUIViewModelTest {
       EventFirebaseConnection().add(event)
       val viewModel = EventUIViewModel(event)
       delay(1000)
-      assertEquals(false, (viewModel.attended.value==true))
+      assertEquals(false, (viewModel.attended.value == true))
       viewModel.attendEvent() // not registered so attempt to attend should fail
       delay(1000)
-      assertEquals(false, (viewModel.attended.value==true))
+      assertEquals(false, (viewModel.attended.value == true))
 
       viewModel.registerForEvent(event)
       delay(400)
       viewModel.attendEvent()
       delay(1000)
       assertEquals(
-          true, (viewModel.attended.value==true)) // is attending as far as the viewmodel is concerned
+          true,
+          (viewModel.attended.value == true)) // is attending as far as the viewmodel is concerned
 
       val fetched = async { EventFirebaseConnection().fetch(event.id) }.await()
       assertEquals(true, fetched?.finalAttendees?.contains(testLoginUID) == true)

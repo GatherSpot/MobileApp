@@ -58,9 +58,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     fetchAttended()
     fetchMyEvents()
   }
-  /**
-  Fetch my events from the local database and update the live data with the new events.
-   */
+  /** Fetch my events from the local database and update the live data with the new events. */
   fun fetchMyEvents() {
     viewModelScope.launch(Dispatchers.IO) {
       _myEvents.postValue(eventDao.getAllFromOrganizerId(uid))
@@ -73,7 +71,8 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   }
 
   /**
-  Fetch events that the user is registered to and that are not over from the local database and update the live data with the new events.
+   * Fetch events that the user is registered to and that are not over from the local database and
+   * update the live data with the new events.
    */
   fun fetchAttended() {
     viewModelScope.launch(Dispatchers.IO) {
@@ -88,11 +87,13 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   }
 
   /**
-  Fetch events that the user is registered to and that are not over from the local database and update the live data with the new events.
+   * Fetch events that the user is registered to and that are not over from the local database and
+   * update the live data with the new events.
    */
   fun fetchUpComing() {
     viewModelScope.launch(Dispatchers.IO) {
-      //_upComing.postValue(eventDao.getAllWhereIdIsRegistered(uid)) //TODO Make the eventDAO function
+      // _upComing.postValue(eventDao.getAllWhereIdIsRegistered(uid)) //TODO Make the eventDAO
+      // function
       lateinit var events: List<Event>
       try {
         events = eventFirebaseConnection.fetchUpComing()
@@ -102,7 +103,8 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     }
   }
   /**
-  Fetch events from the users that the current user follows and update the live data with the new events.
+   * Fetch events from the users that the current user follows and update the live data with the new
+   * events.
    */
   fun fetchFromFollowedUsers() {
     // TODO implement fetch thoses ids from localdatabase, as they are never stale locally
@@ -117,7 +119,8 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   }
 
   /**
-  Fetch events from the database based on the interests of the user. Calling it again will fetch additional ones, unless we use resetOffset.
+   * Fetch events from the database based on the interests of the user. Calling it again will fetch
+   * additional ones, unless we use resetOffset.
    */
   fun fetchWithInterests() {
     fetchJob?.cancel()
@@ -131,8 +134,9 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
         }
   }
   /**
-  Used to do the needed logic when changing the filter
-  @Param s: Set of interests to filter the events
+   * Used to do the needed logic when changing the filter
+   *
+   * @Param s: Set of interests to filter the events
    */
   private fun setFilter(s: Set<Interests>) {
     // check if change
@@ -145,36 +149,27 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     fetchWithInterests()
   }
   /**
-  Set to cancel changes and revert to the previous filter from the view
-  It is actually used when we dismiss the dialog
+   * Set to cancel changes and revert to the previous filter from the view It is actually used when
+   * we dismiss the dialog
    */
   fun revertFilter() {
     MainActivity.selectedInterests.value = _interests.value
     dismissDialog()
   }
-  /**
-  Apply the filter from the view
-  Used when we commit the actual values from the dialog
-   */
+  /** Apply the filter from the view Used when we commit the actual values from the dialog */
   fun applyFilter() {
     setFilter(MainActivity.selectedInterests.value!!)
     dismissDialog()
   }
-  /**
-  Show the dialog to change the filter
-   */
+  /** Show the dialog to change the filter */
   fun showDialog() {
     _showFilterDialog.value = true
   }
-  /**
-  Dismiss the dialog to change the filter
-   */
+  /** Dismiss the dialog to change the filter */
   private fun dismissDialog() {
     _showFilterDialog.value = false
   }
-  /**
-  Remove the filter and show all events
-   */
+  /** Remove the filter and show all events */
   fun removeFilter() {
     dismissDialog()
     MainActivity.selectedInterests.value = setOf()
@@ -183,9 +178,9 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     fetchWithInterests()
   }
   /**
-   * Start fetching events from the beginning again.
-   * This is needed because the fetchWith interest will fetch additional events at each call.
-   * So we need to reset it if we fetch with a new filter.
+   * Start fetching events from the beginning again. This is needed because the fetchWith interest
+   * will fetch additional events at each call. So we need to reset it if we fetch with a new
+   * filter.
    */
   private fun resetOffset() {
     eventFirebaseConnection.offset = null
@@ -193,6 +188,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   }
   /**
    * Get the timing of the event
+   *
    * @Param event: Event to get the timing of
    */
   fun getEventTiming(event: Event): EventTiming {
@@ -205,13 +201,14 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   }
   /**
    * Check if the user is the organizer of the event
+   *
    * @Param event: Event to check if the user is the organizer of
    */
-
   fun isOrganizer(event: Event) = event.organizerID == uid
 
   /**
    * Check if the user is registered to the event
+   *
    * @Param event: Event to check if the user is registered to
    */
   fun isRegistered(event: Event) = event.registeredUsers.contains(uid)
