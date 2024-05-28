@@ -284,13 +284,13 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchEventsFromWorks() =
       runTest(timeout = Duration.parse("20s")) {
-          eventFirebaseConnection.add(event1)
-          eventFirebaseConnection.add(event2)
-          val idList : List<String> = listOf("efcTestOrganizerNOTID")
+        eventFirebaseConnection.add(event1)
+        eventFirebaseConnection.add(event2)
+        val idList: List<String> = listOf("efcTestOrganizerNOTID")
         val events = eventFirebaseConnection.fetchEventsFrom(idList)
         assert(events.all { event -> idList.contains(event.organizerID) })
-          eventFirebaseConnection.delete(event1.id)
-            eventFirebaseConnection.delete(event2.id)
+        eventFirebaseConnection.delete(event1.id)
+        eventFirebaseConnection.delete(event2.id)
       }
 
   @Test
