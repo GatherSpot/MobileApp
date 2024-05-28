@@ -27,6 +27,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -169,9 +170,12 @@ fun EventUINonOrganizer(
 
               Spacer(modifier = Modifier.height(16.dp).testTag("bottomSpacer"))
 
-              // Registration Button
-              // Spacer(modifier = Modifier.height(16.dp))
-
+              OutlinedButton(
+                  onClick = { navActions.controller.navigate("nfc_participant/${event.toJson()}") },
+                  enabled = EventUtils().isEventUnderway(event),
+                  modifier = Modifier.testTag("checkin")) {
+                    Text("Check-in")
+                  }
             }
       }
 }
@@ -251,6 +255,12 @@ fun EventUIOrganizer(
                   organizerRating = organizerRating,
                   navActions = navActions)
               EventRating(eventRating = eventRating)
+              OutlinedButton(
+                  onClick = { navActions.controller.navigate("nfc_organizer/${event.toJson()}") },
+                  enabled = EventUtils().isEventUnderway(event),
+                  modifier = Modifier.testTag("verifyCheckin")) {
+                    Text("Verify check-ins")
+                  }
             }
       }
   if (showDialogDelete!!) {

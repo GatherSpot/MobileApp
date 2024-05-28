@@ -5,10 +5,6 @@ class NFCService(NFCStatus: NFCStatus) {
   val status: NFCStatus = NFCStatus
   var newEvent: Boolean = false
 
-  fun startNFCService() {
-    // Start NFC service
-  }
-
   fun onEvent(function: (Profile) -> () -> Unit): () -> Unit {
     // Handle NFC event
     newEvent = true

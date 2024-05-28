@@ -565,8 +565,25 @@ class EventUtils {
    */
   fun isEventOver(event: Event): Boolean {
     val now = LocalDate.now()
-    val timeNow = LocalTime.now()
+    val timeNow = LocalTime.now().plusHours(2)
     return event.eventEndDate?.isBefore(now) == true ||
         (event.eventEndDate == now && event.timeEnding?.isBefore(timeNow) == true)
+  }
+
+  fun isEventUnderway(event: Event): Boolean {
+    val now = LocalDate.now()
+    val timeNow = LocalTime.now().plusHours(2)
+    val endDate: LocalDate = event.eventEndDate ?: event.eventStartDate!!.plusYears(10)
+    return (event.eventStartDate?.isBefore(now) == true && (endDate.isAfter(now)) == true) ||
+        (event.eventStartDate == now &&
+            event.timeBeginning?.isBefore(timeNow) == true &&
+            event.timeEnding?.isAfter(timeNow) == true) ||
+        (endDate == now &&
+            event.eventStartDate == now &&
+            event.timeEnding?.isAfter(timeNow) == true &&
+            event.timeBeginning?.isBefore(timeNow) == true) ||
+        (endDate == now &&
+            event.eventStartDate != now &&
+            event.timeEnding?.isAfter(timeNow) == true)
   }
 }

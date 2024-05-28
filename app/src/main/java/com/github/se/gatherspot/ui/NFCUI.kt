@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.NFCService
 import com.github.se.gatherspot.model.NFCStatus
@@ -33,19 +34,20 @@ fun NFCUI(nav: NavigationActions, nfc: NFCService, event: Event) {
   var completedText by remember { mutableStateOf("") }
 
   LaunchedEffect(key1 = nfc.newEvent) {
-    nfc.onEvent { data: Profile ->
-      {
-        if (nfc.status == NFCStatus.ORGANIZER) {
-          completedText += "\nParticipant with ID ${data.id} has scanned their NFC tag."
-          EventFirebaseConnection().update(event.id, "finalAttendee", data.id)
-        } else if (nfc.status == NFCStatus.PARTICIPANT) {
-          completedText = "Organizer has confirmed your attendance."
+    if (nfc.newEvent) {
+      nfc.onEvent { data: Profile ->
+        {
+          if (nfc.status == NFCStatus.ORGANIZER) {
+            completedText += "\nParticipant with ID ${data.id} has scanned their NFC tag."
+            EventFirebaseConnection().update(event.id, "finalAttendee", data.id)
+          } else if (nfc.status == NFCStatus.PARTICIPANT) {
+            completedText = "Organizer has confirmed your attendance."
+          }
         }
+        // Handle NFC event
       }
-      // Handle NFC event
-
+      nfc.newEvent = false
     }
-    nfc.newEvent = false
   }
 
   Scaffold(
@@ -67,16 +69,17 @@ fun NFCUI(nav: NavigationActions, nfc: NFCService, event: Event) {
             onTabSelect = { tld -> nav.navigateTo(tld) },
             tabList = TOP_LEVEL_DESTINATIONS,
             selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
-      }) { paddingValues ->
+      },
+      modifier = Modifier.testTag("nfc")) { paddingValues ->
         if (nfc.status == NFCStatus.ORGANIZER) {
           Text(
-              "Waiting for participants to scan their NFC tags.",
+              "Waiting for participants to scan their NFC tags.\n",
               modifier = Modifier.padding(paddingValues))
         } else if (nfc.status == NFCStatus.PARTICIPANT) {
           Text(
               "Present your phone to the organizer to confirm you came!",
               modifier = Modifier.padding(paddingValues))
         }
-        Text(text = completedText, modifier = Modifier.padding(paddingValues))
+        Text(text = completedText, modifier = Modifier.padding(paddingValues).testTag("text"))
       }
 }
