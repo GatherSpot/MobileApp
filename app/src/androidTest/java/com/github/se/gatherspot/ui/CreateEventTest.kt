@@ -179,6 +179,7 @@ class CreateEventTest {
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testIsEverythingHere() {
 
@@ -201,17 +202,39 @@ class CreateEventTest {
         performScrollTo()
         assertIsDisplayed()
       }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("DatePickerButton" + "start"), 6000)
+      startDatePickerButton {
+        performScrollTo()
+        assertExists()
+      }
       eventEndDate {
         performScrollTo()
         assertIsDisplayed()
+      }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("DatePickerButton" + "end"), 6000)
+      endDatePickerButton {
+        performScrollTo()
+        assertExists()
       }
       eventTimeStart {
         performScrollTo()
         assertIsDisplayed()
       }
+      composeTestRule.waitUntilAtLeastOneExists(
+          hasTestTag("TimePickerButton" + "Select start time"), 6000)
+      startTimePickerButton {
+        performScrollTo()
+        assertExists()
+      }
       eventTimeEnd {
         performScrollTo()
         assertIsDisplayed()
+      }
+      composeTestRule.waitUntilAtLeastOneExists(
+          hasTestTag("TimePickerButton" + "Select end time"), 6000)
+      endTimePickerButton {
+        performScrollTo()
+        assertExists()
       }
       eventLocation {
         performScrollTo()
