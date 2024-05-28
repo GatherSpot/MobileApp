@@ -27,13 +27,13 @@ import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlin.time.Duration
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.time.Duration
 
 @RunWith(AndroidJUnit4::class)
 class SignUpTest : TestCase() {
@@ -72,41 +72,42 @@ class SignUpTest : TestCase() {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun signUp() = runTest(timeout = Duration.parse("20s")){
-    val email = "gatherspot2024@gmail.com"
-    val userName = "GatherSpot"
-    ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
-      usernameField {
-        assertExists()
-        assertIsDisplayed()
-        performTextInput(userName)
-      }
-      emailField {
-        assertExists()
-        assertIsDisplayed()
-        performTextInput(email)
-      }
-      passwordField {
-        assertExists()
-        assertIsDisplayed()
-        performTextInput("GatherSpot,2024;")
-      }
-      Espresso.closeSoftKeyboard()
-      button {
-        assertExists()
-        assertIsDisplayed()
-        performClick()
-      }
+  fun signUp() =
+      runTest(timeout = Duration.parse("20s")) {
+        val email = "gatherspot2024@gmail.com"
+        val userName = "GatherSpot"
+        ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
+          usernameField {
+            assertExists()
+            assertIsDisplayed()
+            performTextInput(userName)
+          }
+          emailField {
+            assertExists()
+            assertIsDisplayed()
+            performTextInput(email)
+          }
+          passwordField {
+            assertExists()
+            assertIsDisplayed()
+            performTextInput("GatherSpot,2024;")
+          }
+          Espresso.closeSoftKeyboard()
+          button {
+            assertExists()
+            assertIsDisplayed()
+            performClick()
+          }
 
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 6000)
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 6000)
 
-      verifDialog.assertExists()
-      verifDialog.assertIsDisplayed()
-      verifDialog.performClick()
-    }
+          verifDialog.assertExists()
+          verifDialog.assertIsDisplayed()
+          verifDialog.performClick()
+        }
 
-    signUpCleanUp(userName)
-  }
+        signUpCleanUp(userName)
+      }
 
   @OptIn(ExperimentalTestApi::class)
   @Test

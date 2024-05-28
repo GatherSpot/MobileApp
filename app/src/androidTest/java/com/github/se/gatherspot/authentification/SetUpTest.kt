@@ -26,6 +26,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlin.time.Duration
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -33,7 +34,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.time.Duration
 
 @RunWith(AndroidJUnit4::class)
 class SetUpTest : TestCase() {
@@ -63,40 +63,42 @@ class SetUpTest : TestCase() {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun setUpTest() = runTest(timeout = Duration.parse("20s")) {
-    val string = "123bioText"
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val nav = NavigationActions(navController)
-      NavHost(navController, startDestination = "setup") {
-        composable("home") {
-          ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel(db) })
+  fun setUpTest() =
+      runTest(timeout = Duration.parse("20s")) {
+        val string = "123bioText"
+        composeTestRule.setContent {
+          val navController = rememberNavController()
+          val nav = NavigationActions(navController)
+          NavHost(navController, startDestination = "setup") {
+            composable("home") {
+              ProfileScaffold(
+                  NavigationActions(navController), viewModel { OwnProfileViewModel(db) })
+            }
+            composable("setup") { SetUpProfile(nav) }
+          }
         }
-        composable("setup") { SetUpProfile(nav) }
+        ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
+          composeTestRule.waitForIdle()
+          setUpInterests { assertExists() }
+          addBasketball { performClick() }
+          removeBasketball { assertExists() }
+          next { performClick() }
+          composeTestRule.waitForIdle()
+          setUpBio { assertExists() }
+          bioInput { performTextInput(string) }
+          next { performClick() }
+          composeTestRule.waitForIdle()
+          setUpImage { assertExists() }
+          // TODO: maybe add image test when it will be implemented
+          next { performClick() }
+          composeTestRule.waitForIdle()
+          setUpDone { assertExists() }
+          composeTestRule.waitUntilAtLeastOneExists(isEnabled())
+          done { performClick() }
+        }
+        ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
+          composeTestRule.waitUntilAtLeastOneExists(hasText(string), 10000)
+          usernameInput { assertExists() }
+        }
       }
-    }
-    ComposeScreen.onComposeScreen<SetUpScreen>(composeTestRule) {
-      composeTestRule.waitForIdle()
-      setUpInterests { assertExists() }
-      addBasketball { performClick() }
-      removeBasketball { assertExists() }
-      next { performClick() }
-      composeTestRule.waitForIdle()
-      setUpBio { assertExists() }
-      bioInput { performTextInput(string) }
-      next { performClick() }
-      composeTestRule.waitForIdle()
-      setUpImage { assertExists() }
-      // TODO: maybe add image test when it will be implemented
-      next { performClick() }
-      composeTestRule.waitForIdle()
-      setUpDone { assertExists() }
-      composeTestRule.waitUntilAtLeastOneExists(isEnabled())
-      done { performClick() }
-    }
-    ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
-      composeTestRule.waitUntilAtLeastOneExists(hasText(string), 10000)
-      usernameInput { assertExists() }
-    }
-  }
 }
