@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
@@ -216,7 +215,6 @@ class EventFirebaseConnectionTest {
                   listOfEvents2[j].categories!!.contains(interests[1]))
         }
 
-        testLoginCleanUp()
         eventFirebaseConnection.offset = null
       }
 
@@ -235,7 +233,6 @@ class EventFirebaseConnectionTest {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
-        testLoginCleanUp()
         eventFirebaseConnection.offset = null
       }
 
@@ -257,7 +254,6 @@ class EventFirebaseConnectionTest {
             events.all { event ->
               event.organizerID == FirebaseAuth.getInstance().currentUser!!.uid
             })
-        testLoginCleanUp()
       }
 
   @Test
@@ -271,7 +267,6 @@ class EventFirebaseConnectionTest {
             events.all { event ->
               event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
             })
-        testLoginCleanUp()
       }
 
   @Test
@@ -285,7 +280,6 @@ class EventFirebaseConnectionTest {
             events.all { event ->
               (event.finalAttendees!!.contains(FirebaseAuth.getInstance().currentUser!!.uid))
             })
-        testLoginCleanUp()
       }
 
   @Test
@@ -293,9 +287,8 @@ class EventFirebaseConnectionTest {
       runTest(timeout = Duration.parse("20s")) {
         testLogin()
         val idList = FollowList.following(uid = FirebaseAuth.getInstance().currentUser!!.uid)
-        val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(idList.elements)
+        val events = eventFirebaseConnection.fetchEventsFrom(idList.elements)
         assert(events.all { event -> idList.elements.contains(event.organizerID) })
-        testLoginCleanUp()
       }
 
   @Test

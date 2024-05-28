@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
@@ -113,7 +112,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
           FollowList.following(
               FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId)
       Log.d(TAG, "ids from viewModel ${ids.elements}")
-      val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(ids.elements)
+      val events = eventFirebaseConnection.fetchEventsFrom(ids.elements)
       _fromFollowedUsers.postValue(events)
     }
   }

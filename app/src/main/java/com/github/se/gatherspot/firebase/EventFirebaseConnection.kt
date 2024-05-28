@@ -397,7 +397,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
    * @param ids: The list of ids of the users followed
    * @return The list of events fetched
    */
-  suspend fun fetchEventsFromFollowedUsers(ids: List<String>): MutableList<Event> {
+  suspend fun fetchEventsFrom(ids: List<String>): MutableList<Event> {
     return when {
       ids.isEmpty() -> mutableListOf()
       else -> {
