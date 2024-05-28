@@ -585,5 +585,11 @@ class EventUtils {
         (endDate == now &&
             event.eventStartDate != now &&
             event.timeEnding?.isAfter(timeNow) == true)
+
+  fun isEventStarted(event: Event): Boolean {
+    val now = LocalDate.now()
+    val timeNow = LocalTime.now()
+    return event.eventStartDate?.isBefore(now) == true ||
+        (event.eventStartDate == now && event.timeBeginning?.isBefore(timeNow) == true)
   }
 }
