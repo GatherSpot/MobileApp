@@ -5,18 +5,20 @@ import android.content.Context
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.EventDataFormScreen
+import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.eventUI.EditEvent
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
@@ -34,12 +36,23 @@ class EditEventTest {
 
   @Before
   fun grantLocationPermission() {
+    testLogin()
     val context = ApplicationProvider.getApplicationContext<Context>()
     val packageName = context.packageName
     val uiAutomation =
         androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().uiAutomation
     uiAutomation.executeShellCommand(
         "pm grant $packageName android.permission.ACCESS_FINE_LOCATION")
+    val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+
+      EditEvent(
+          nav = NavigationActions(navController),
+          eventUtils = EventUtils(),
+          event = testEvent,
+      )
+    }
   }
 
   private val testEvent =
@@ -78,16 +91,6 @@ class EditEventTest {
 
   @Test
   fun testEditEveryFieldDisplayed() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-
-      EditEvent(
-          nav = NavigationActions(navController),
-          eventUtils = EventUtils(),
-          event = testEvent,
-          EventsViewModel())
-    }
-
     // Check that every field is displayed
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventTitle {
@@ -150,16 +153,6 @@ class EditEventTest {
 
   @Test
   fun testEditEventFieldsAreCorrects() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-
-      EditEvent(
-          nav = NavigationActions(navController),
-          eventUtils = EventUtils(),
-          event = testEvent,
-          EventsViewModel())
-    }
-
     // Check that every field is displayed
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventTitle.assert(hasText("Test Event"))
@@ -201,16 +194,6 @@ class EditEventTest {
 
   @Test
   fun testEditEventFieldsAreEditable() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-
-      EditEvent(
-          nav = NavigationActions(navController),
-          eventUtils = EventUtils(),
-          event = testEvent,
-          EventsViewModel())
-    }
-
     // Check that every field is displayed
     ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
       eventTitle {

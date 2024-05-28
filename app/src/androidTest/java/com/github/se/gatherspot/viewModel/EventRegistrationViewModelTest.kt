@@ -15,20 +15,12 @@ import java.time.LocalTime
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 
 class EventRegistrationViewModelTest {
 
-  @Before
-  fun setUp() {
+  init {
     testLogin()
-  }
-
-  @After
-  fun cleanUp() {
-    testLoginCleanUp()
   }
 
   @Test
