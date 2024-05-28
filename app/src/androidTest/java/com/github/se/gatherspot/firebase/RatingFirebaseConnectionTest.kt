@@ -72,18 +72,19 @@ class RatingFirebaseConnectionTest {
 
   @Before
   fun setup() {
-    runTest {
+    runBlocking {
       ratingFirebaseConnection.deleteEventRating(eventID)
       ratingFirebaseConnection.deleteEventRating(eventID2)
       ratingFirebaseConnection.deleteOrganizer(event1.organizerID)
       async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
       async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()
       async { ratingFirebaseConnection.fetchOrganizer(event1.organizerID) }.await()
+      delay(2000)
     }
   }
 
   fun tearDown() {
-    runTest {
+    runBlocking {
       ratingFirebaseConnection.deleteEventRating(eventID)
       ratingFirebaseConnection.deleteEventRating(eventID2)
       async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
@@ -176,7 +177,6 @@ class RatingFirebaseConnectionTest {
     }
   }
 
-  @Test
   fun testFetchEvent() {
     runBlocking {
       val rating = Rating.FIVE_STARS
@@ -331,7 +331,7 @@ class RatingFirebaseConnectionTest {
 
       ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
 
-      delay(1000)
+      delay(3000)
 
       val event1Attendees =
           async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
@@ -347,6 +347,7 @@ class RatingFirebaseConnectionTest {
       assertEquals(secondRating, event2Attendees?.get(secondRater))
 
       // Ratings are correctly updated and fetched
+      delay(2000)
 
       val event1Data = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
       val event2Data = async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()

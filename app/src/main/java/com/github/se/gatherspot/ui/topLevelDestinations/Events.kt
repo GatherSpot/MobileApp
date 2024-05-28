@@ -89,7 +89,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
-  val pagerState = rememberPagerState(pageCount = { 4 }, initialPage = 1)
+  val pagerState = rememberPagerState(pageCount = { 5 }, initialPage = 1)
   val showInterestsDialog = viewModel.showFilterDialog.observeAsState(false).value
   val showDialog = viewModel::showDialog
   val applyFilter = viewModel::applyFilter
@@ -396,10 +396,10 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
       2 ->
           EventList(
               vm,
-              vm::fetchRegisteredTo,
-              vm.registeredTo.observeAsState(listOf()),
+              vm::fetchUpComing,
+              vm.upComing.observeAsState(listOf()),
               nav,
-              "registeredEventsList")
+              "upComingEventsList")
       3 ->
           EventList(
               vm,
@@ -407,6 +407,13 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
               vm.fromFollowedUsers.observeAsState(listOf()),
               nav,
               "followedEventsList")
+      4 ->
+          EventList(
+              vm,
+              vm::fetchAttended,
+              vm.attended.observeAsState(listOf()),
+              nav,
+              "attendedEventsList")
       else -> throw IllegalStateException("Invalid page index")
     }
   }
