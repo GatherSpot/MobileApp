@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.firebase
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.room.util.query
 import com.github.se.gatherspot.model.IdList
 import com.google.firebase.firestore.QuerySnapshot

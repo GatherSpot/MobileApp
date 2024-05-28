@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model
 
-import androidx.lifecycle.MutableLiveData
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 

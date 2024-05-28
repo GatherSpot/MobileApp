@@ -1,8 +1,6 @@
 package com.github.se.gatherspot.ui
 
-import android.content.ContentValues.TAG
 import android.content.Context
-import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -11,7 +9,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.screens.EventsScreen
@@ -23,7 +20,6 @@ import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.lang.Thread.sleep
 import kotlinx.coroutines.runBlocking
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

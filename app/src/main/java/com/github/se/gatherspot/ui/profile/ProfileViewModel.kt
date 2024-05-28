@@ -232,14 +232,12 @@ class ProfileViewModel(
       viewModelScope.launch(Dispatchers.IO) {
         if (_isFollowing.value!!) {
           FollowList.unfollow(uid, target)
-        }
-
-        else {
+        } else {
           FollowList.follow(Firebase.auth.uid ?: "TEST", target)
         }
         _isFollowing.postValue(!(_isFollowing.value!!))
         // update the local database with online value
-        db.IdListDao().insert(IdList.fromFirebase(uid,FirebaseCollection.FOLLOWING))
+        db.IdListDao().insert(IdList.fromFirebase(uid, FirebaseCollection.FOLLOWING))
       }
     }
   }
