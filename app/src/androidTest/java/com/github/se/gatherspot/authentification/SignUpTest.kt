@@ -2,6 +2,7 @@ package com.github.se.gatherspot.authentification
 
 import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,6 +27,13 @@ import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.createTestCoroutineScope
 import java.lang.Thread.sleep
 import kotlin.time.Duration
 import kotlinx.coroutines.test.runTest
@@ -41,16 +49,21 @@ class SignUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var db: AppDatabase
 
+  @OptIn(ExperimentalCoroutinesApi::class)
+  private val testDispatcher = UnconfinedTestDispatcher()
+  private val testScope = TestScope(testDispatcher)
+
   @Before
-  fun createDb() {
+  fun setup() {
     val context = ApplicationProvider.getApplicationContext<Context>()
     db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+    val viewModel = SignUpViewModel(db,testScope,testDispatcher)
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
         navigation(startDestination = "signup", route = "auth") {
           composable("signup") {
-            SignUp(viewModel { SignUpViewModel(db) }, NavigationActions(navController))
+            SignUp(viewModel, NavigationActions(navController))
           }
         }
         navigation(startDestination = "events", route = "home") {
@@ -98,10 +111,7 @@ class SignUpTest : TestCase() {
             assertIsDisplayed()
             performClick()
           }
-          sleep(6000)
-          verifDialog { assertExists() }
-          // wait until one exist doesn't work consistently somehow, so i'll just use a sleep
-          // sadly this makes this test very slow but I did not find a workaround.
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 6000)
         }
 
         signUpCleanUp(userName)
