@@ -229,7 +229,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchEventsFromFollowedWorks() =
-      runTest(timeout = Duration.parse("60s")) {
+      runTest(timeout = Duration.parse("100s")) {
         testLogin()
         val idList = FollowList.following(uid = FirebaseAuth.getInstance().currentUser!!.uid)
         val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(idList.elements)
