@@ -12,8 +12,13 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.event.EventStatus
+import com.github.se.gatherspot.model.utils.UtilsForTests
 import com.github.se.gatherspot.screens.EventsScreen
 import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -27,12 +32,58 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDate
+import java.time.LocalTime
 
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var uid: String
   private lateinit var ids: List<String>
   private lateinit var viewModel: EventsViewModel
+  private val eventFirebaseConnection = EventFirebaseConnection()
+  private val futureRegisteredEvent = Event(
+    id = "EventsTest1",
+    title = "deseruisse",
+    description = "null",
+    location = null,
+    eventStartDate = LocalDate.of(2026, 7, 10),
+    eventEndDate = LocalDate.of(2026, 7, 11),
+    timeBeginning = LocalTime.of(10,0),
+    timeEnding = LocalTime.of(10,0),
+    attendanceMaxCapacity = null,
+    attendanceMinCapacity = 0,
+    inscriptionLimitDate = null,
+    inscriptionLimitTime = null,
+    eventStatus = EventStatus.CREATED,
+    categories = setOf(),
+    organizerID = "T1qNNU05QeeqB2OqIBb7GAtQd093",
+    registeredUsers = mutableListOf(testLoginUID),
+    finalAttendees = listOf(),
+    image = "hac",
+    globalRating = null
+  )
+
+  private val attendedEvent = Event(
+    id = "EventsTest2",
+    title = "deseruisse",
+    description = "null",
+    location = null,
+    eventStartDate = LocalDate.of(2023, 7, 10),
+    eventEndDate = LocalDate.of(2023, 7, 11),
+    timeBeginning = LocalTime.of(10,0),
+    timeEnding = LocalTime.of(10,0),
+    attendanceMaxCapacity = null,
+    attendanceMinCapacity = 0,
+    inscriptionLimitDate = null,
+    inscriptionLimitTime = null,
+    eventStatus = EventStatus.CREATED,
+    categories = setOf(),
+    organizerID = "T1qNNU05QeeqB2OqIBb7GAtQd093",
+    registeredUsers = mutableListOf(testLoginUID),
+    finalAttendees = listOf(testLoginUID),
+    image = "hac",
+    globalRating = null
+  )
 
   @Before
   fun setUp() {
@@ -44,13 +95,16 @@ class EventsTest {
     }
     val context = ApplicationProvider.getApplicationContext<Context>()
     val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+
+    eventFirebaseConnection.add(futureRegisteredEvent)
+    eventFirebaseConnection.add(attendedEvent)
+
+
     viewModel = EventsViewModel(db)
   }
 
   @After
   fun cleanUp() {
-    testLoginCleanUp()
-    Thread.sleep(1000)
   }
 
   @Test
