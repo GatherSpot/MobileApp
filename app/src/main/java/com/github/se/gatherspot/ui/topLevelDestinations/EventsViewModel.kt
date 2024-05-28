@@ -58,7 +58,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     fetchAttended()
     fetchMyEvents()
   }
-  /*
+  /**
   Fetch my events from the local database and update the live data with the new events.
    */
   fun fetchMyEvents() {
@@ -72,7 +72,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     }
   }
 
-  /*
+  /**
   Fetch events that the user is registered to and that are not over from the local database and update the live data with the new events.
    */
   fun fetchAttended() {
@@ -87,7 +87,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     }
   }
 
-  /*
+  /**
   Fetch events that the user is registered to and that are not over from the local database and update the live data with the new events.
    */
   fun fetchUpComing() {
@@ -101,7 +101,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
       } catch (_: Exception) {}
     }
   }
-  /*
+  /**
   Fetch events from the users that the current user follows and update the live data with the new events.
    */
   fun fetchFromFollowedUsers() {
@@ -116,7 +116,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     }
   }
 
-  /*
+  /**
   Fetch events from the database based on the interests of the user. Calling it again will fetch additional ones, unless we use resetOffset.
    */
   fun fetchWithInterests() {
@@ -130,7 +130,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
           _allEvents.postValue(events)
         }
   }
-  /*
+  /**
   Used to do the needed logic when changing the filter
   @Param s: Set of interests to filter the events
    */
@@ -144,7 +144,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     resetOffset()
     fetchWithInterests()
   }
-  /*
+  /**
   Set to cancel changes and revert to the previous filter from the view
   It is actually used when we dismiss the dialog
    */
@@ -152,7 +152,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     MainActivity.selectedInterests.value = _interests.value
     dismissDialog()
   }
-  /*
+  /**
   Apply the filter from the view
   Used when we commit the actual values from the dialog
    */
@@ -160,19 +160,19 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     setFilter(MainActivity.selectedInterests.value!!)
     dismissDialog()
   }
-  /*
+  /**
   Show the dialog to change the filter
    */
   fun showDialog() {
     _showFilterDialog.value = true
   }
-  /*
+  /**
   Dismiss the dialog to change the filter
    */
   private fun dismissDialog() {
     _showFilterDialog.value = false
   }
-  /*
+  /**
   Remove the filter and show all events
    */
   fun removeFilter() {
@@ -182,16 +182,16 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     resetOffset()
     fetchWithInterests()
   }
-  /*
-  Start fetching events from the beginning again.
-  This is needed because the fetchWith interest will fetch additional events at each call.
-  So we need to reset it if we fetch with a new filter.
+  /**
+   * Start fetching events from the beginning again.
+   * This is needed because the fetchWith interest will fetch additional events at each call.
+   * So we need to reset it if we fetch with a new filter.
    */
   private fun resetOffset() {
     eventFirebaseConnection.offset = null
     _allEvents.value = listOf()
   }
-  /*
+  /**
    * Get the timing of the event
    * @Param event: Event to get the timing of
    */
@@ -203,14 +203,14 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
       else -> EventTiming.FUTURE
     }
   }
-  /*
+  /**
    * Check if the user is the organizer of the event
    * @Param event: Event to check if the user is the organizer of
    */
 
   fun isOrganizer(event: Event) = event.organizerID == uid
 
-  /*
+  /**
    * Check if the user is registered to the event
    * @Param event: Event to check if the user is registered to
    */
