@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -29,6 +30,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlin.time.Duration
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -42,16 +44,11 @@ import org.junit.runner.RunWith
 class SignUpTest : TestCase() {
 
   @get:Rule val composeTestRule = createComposeRule()
-  private lateinit var db: AppDatabase
 
-  @OptIn(ExperimentalCoroutinesApi::class) private val testDispatcher = UnconfinedTestDispatcher()
-  private val testScope = TestScope(testDispatcher)
-
+  private lateinit var viewModel: SignUpViewModel
   @Before
   fun setup() {
-    val context = ApplicationProvider.getApplicationContext<Context>()
-    db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
-    val viewModel = SignUpViewModel(db, testScope, testDispatcher)
+    viewModel = SignUpViewModel()
     composeTestRule.setContent {
       val navController = rememberNavController()
       NavHost(navController = navController, startDestination = "auth") {
@@ -72,13 +69,11 @@ class SignUpTest : TestCase() {
       ProfileFirebaseConnection().delete(currentUser.uid)
       testLoginCleanUp()
     }
-    db.close()
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun signUp() =
-      runTest(timeout = Duration.parse("40s")) {
+  fun signUp() = runTest(timeout = Duration.parse("30s")) {
         val email = "gatherspot2024@gmail.com"
         val userName = "GatherSpot"
         ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {

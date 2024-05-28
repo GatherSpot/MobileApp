@@ -126,7 +126,7 @@ class MainActivity : ComponentActivity() {
 
               composable("signup") {
                 SignUp(
-                    viewModel<SignUpViewModel> { SignUpViewModel(localDatabase) },
+                    viewModel<SignUpViewModel> { SignUpViewModel() },
                     NavigationActions(navController))
               }
             }

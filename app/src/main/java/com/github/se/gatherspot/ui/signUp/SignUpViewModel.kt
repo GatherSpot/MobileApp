@@ -10,7 +10,6 @@ import com.github.se.gatherspot.sql.AppDatabase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,11 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 /** ViewModel for the sign up screen. */
-class SignUpViewModel(
-    private val db: AppDatabase,
-    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main),
-    private var dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : ViewModel() {
+class SignUpViewModel : ViewModel() {
   var userName = MutableLiveData("")
   var userNameError = MutableLiveData("")
   var email = MutableLiveData("")
@@ -83,6 +78,7 @@ class SignUpViewModel(
     Firebase.auth.currentUser!!.sendEmailVerification()
   }
 
+  private val scope = CoroutineScope(Dispatchers.Main)
   private var job: Job? = null
 
   /** Periodically check if email is verified, then run finish() when it is. */
@@ -109,7 +105,7 @@ class SignUpViewModel(
 
   /** Sign up the user and create profile */
   fun signUp() {
-    viewModelScope.launch(dispatcher) {
+    viewModelScope.launch() {
       try {
         Firebase.auth.createUserWithEmailAndPassword(email.value!!, password.value!!).await()
         async {
