@@ -288,10 +288,10 @@ class EventUITest {
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
+              eventEndDate = LocalDate.of(2025, 4, 15),
+              eventStartDate = LocalDate.of(2025, 4, 14),
               globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitDate = LocalDate.of(2025, 4, 11),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
               registeredUsers = mutableListOf(),
@@ -315,10 +315,10 @@ class EventUITest {
         assertExists()
         performClick()
       }
-      Thread.sleep(2000)
+      sleep(2000)
       registerButton {
-        assertIsNotEnabled()
-        assert(hasText("Registered"))
+        assertIsEnabled()
+        assert(hasText("Registered / Unregister"))
       }
     }
   }
@@ -338,10 +338,10 @@ class EventUITest {
               attendanceMinCapacity = 1,
               organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
+              eventEndDate = LocalDate.of(2025, 4, 15),
+              eventStartDate = LocalDate.of(2025, 4, 14),
               globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitDate = LocalDate.of(2025, 4, 11),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
               registeredUsers = mutableListOf("1", "2"),
@@ -352,24 +352,16 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      registerButton { performClick() }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
-      alertBox {
-        assertIsDisplayed()
-        hasText("Event is full")
-      }
-
-      okButton.performClick()
       registerButton {
+        assert(hasText("Full event"))
         assertIsNotEnabled()
-        assert(hasText("Full"))
       }
     }
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testAlreadyRegistered(): Unit = runBlocking {
+  fun testRegistrationStatus(): Unit = runBlocking {
     composeTestRule.setContent {
       val navController = rememberNavController()
       val event =
@@ -381,26 +373,32 @@ class EventUITest {
               attendanceMinCapacity = 1,
               organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
+              eventEndDate = LocalDate.of(2025, 4, 15),
+              eventStartDate = LocalDate.of(2025, 4, 14),
               globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitDate = LocalDate.of(2025, 4, 11),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
-              registeredUsers = mutableListOf(FirebaseAuth.getInstance().currentUser!!.uid),
+              registeredUsers = mutableListOf(),
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
               image = "")
-      val eventfirebase = EventFirebaseConnection()
-      eventfirebase.add(event)
+      val eventFirebase = EventFirebaseConnection()
+      eventFirebase.add(event)
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
-    Thread.sleep(3000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+      composeTestRule.waitForIdle()
       registerButton {
-        assertIsNotEnabled()
-        assert(hasText("Registered"))
+        assert(hasText("Unregistered / Register"))
+        performClick()
       }
+      okButton { performClick() }
+      registerButton {
+        assert(hasText("Registered / Unregister"))
+        performClick()
+      }
+      okButton { performClick() }
     }
   }
 
@@ -506,7 +504,6 @@ class EventUITest {
         performScrollTo()
         assertIsDisplayed()
       }
-
       bottomSpacer { performScrollTo() }
       starIcon_1 { assertIsDisplayed() }
     }
