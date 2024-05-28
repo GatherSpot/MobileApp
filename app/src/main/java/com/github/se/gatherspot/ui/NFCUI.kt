@@ -27,6 +27,14 @@ import com.github.se.gatherspot.ui.navigation.BottomNavigationMenu
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.navigation.TOP_LEVEL_DESTINATIONS
 
+/**
+ * NFCUI composable that displays the NFC screen. It differentiates between the organizer and the
+ * participant.
+ *
+ * @param nav NavigationActions object that contains the navigation actions.
+ * @param nfc NFCService object that contains the NFC service.
+ * @param event Event object that contains the event information we want NFC to be associated with.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NFCUI(nav: NavigationActions, nfc: NFCService, event: Event) {
