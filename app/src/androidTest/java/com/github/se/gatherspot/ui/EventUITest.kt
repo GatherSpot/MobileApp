@@ -315,7 +315,7 @@ class EventUITest {
         assertExists()
         performClick()
       }
-      sleep(2000)
+
       registerButton {
         assertIsEnabled()
         assert(hasText("Registered / Unregister"))
@@ -393,11 +393,13 @@ class EventUITest {
         assert(hasText("Unregistered / Register"))
         performClick()
       }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
       okButton { performClick() }
       registerButton {
         assert(hasText("Registered / Unregister"))
         performClick()
       }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
       okButton { performClick() }
     }
   }
