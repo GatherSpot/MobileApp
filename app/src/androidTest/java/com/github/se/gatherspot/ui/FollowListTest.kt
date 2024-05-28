@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
@@ -32,7 +33,9 @@ class FollowListTest {
     val profileTest =
         Profile("TEST", "Here for testing purposes", "", "TEST", setOf(Interests.FOOTBALL))
     val profileTest2 = Profile("TEST2", "Me too", "", "TEST2", setOf(Interests.NIGHTLIFE))
+    val profileLogin = Profile("TestLogin", "Here for testing purposes", "", testLoginUID, setOf(Interests.FOOTBALL))
 
+    fb.add(profileLogin)
     fb.add(profileTest)
     fb.add(profileTest2)
     FollowList.follow("TEST", "TEST2")
