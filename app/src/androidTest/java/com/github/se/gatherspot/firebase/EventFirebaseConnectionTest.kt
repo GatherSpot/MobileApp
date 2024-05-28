@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -283,12 +282,15 @@ class EventFirebaseConnectionTest {
       }
 
   @Test
-  fun fetchEventsFromFollowedWorks() =
+  fun fetchEventsFromWorks() =
       runTest(timeout = Duration.parse("20s")) {
-        testLogin()
-        val idList = FollowList.following(uid = FirebaseAuth.getInstance().currentUser!!.uid)
-        val events = eventFirebaseConnection.fetchEventsFrom(idList.elements)
-        assert(events.all { event -> idList.elements.contains(event.organizerID) })
+          eventFirebaseConnection.add(event1)
+          eventFirebaseConnection.add(event2)
+          val idList : List<String> = listOf("efcTestOrganizerNOTID")
+        val events = eventFirebaseConnection.fetchEventsFrom(idList)
+        assert(events.all { event -> idList.contains(event.organizerID) })
+          eventFirebaseConnection.delete(event1.id)
+            eventFirebaseConnection.delete(event2.id)
       }
 
   @Test
