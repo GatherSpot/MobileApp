@@ -72,18 +72,19 @@ class RatingFirebaseConnectionTest {
 
   @Before
   fun setup() {
-    runTest {
+    runBlocking {
       ratingFirebaseConnection.deleteEventRating(eventID)
       ratingFirebaseConnection.deleteEventRating(eventID2)
       ratingFirebaseConnection.deleteOrganizer(event1.organizerID)
       async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
       async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()
       async { ratingFirebaseConnection.fetchOrganizer(event1.organizerID) }.await()
+      delay(2000)
     }
   }
 
   fun tearDown() {
-    runTest {
+    runBlocking {
       ratingFirebaseConnection.deleteEventRating(eventID)
       ratingFirebaseConnection.deleteEventRating(eventID2)
       async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
