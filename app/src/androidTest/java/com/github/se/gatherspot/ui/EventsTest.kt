@@ -261,7 +261,7 @@ class EventsTest {
 
       fromFollowed { performClick() }
 
-      //composeTestRule.waitUntilAtLeastOneExists(hasTestTag("followedEventsList"), 20000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("followedEventsList"), 20000)
     }
   }
 

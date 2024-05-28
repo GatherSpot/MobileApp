@@ -32,7 +32,7 @@ class FollowList {
      * @param targetUID The user that might be followed
      * @return Boolean uid follows target
      */
-    suspend fun isFollowing(uid: String, targetUID: String): MutableLiveData<Boolean> {
+    suspend fun isFollowing(uid: String, targetUID: String): Boolean {
       return IdListFirebaseConnection().exists(uid, FirebaseCollection.FOLLOWING, targetUID)
     }
 

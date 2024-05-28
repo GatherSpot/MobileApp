@@ -207,11 +207,10 @@ class IdListFirebaseConnection {
       id: String,
       category: FirebaseCollection,
       element: String,
-  ): MutableLiveData<Boolean> {
+  ): Boolean {
     val tag = category.name
-    val data = MutableLiveData<Boolean>()
-    fcoll.document(tag).collection(id).document(element).get().await()
-    return data
+    val data = fcoll.document(tag).collection(id).document(element).get().await()
+    return data.exists()
   }
 
   /**

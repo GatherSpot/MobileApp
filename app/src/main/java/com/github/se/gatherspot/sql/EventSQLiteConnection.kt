@@ -38,7 +38,7 @@ interface EventDao {
   @Query("SELECT * FROM event WHERE id = :id") fun get(id: String): Event?
 
   @Query("SELECT * FROM event WHERE organizerID = :id")
-  fun getAllFromOrganizerId(id: String): List<Event>?
+  fun getAllFromOrganizerId(vararg id: String): List<Event>?
 
   @Query("SELECT * FROM event WHERE registeredUsers LIKE '%' || :id || '%'")
   fun getAllWhereIdIsRegistered(id: String): List<Event>?

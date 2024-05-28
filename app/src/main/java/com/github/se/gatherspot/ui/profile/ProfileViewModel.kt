@@ -12,6 +12,7 @@ import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.FirebaseImages
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.FollowList
+import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.sql.AppDatabase
@@ -220,7 +221,7 @@ class ProfileViewModel(
   init {
     viewModelScope.launch(Dispatchers.IO) {
       _profile.postValue(ProfileFirebaseConnection().fetch(target))
-      _isFollowing = FollowList.isFollowing(uid, target)
+      _isFollowing.postValue(FollowList.isFollowing(uid, target))
     }
   }
 
@@ -229,10 +230,16 @@ class ProfileViewModel(
     if (_profile.isInitialized) {
       if (_isFollowing.value == null) return
       viewModelScope.launch(Dispatchers.IO) {
-        if (_isFollowing.value!!) FollowList.unfollow(uid, target)
-        else FollowList.follow(Firebase.auth.uid ?: "TEST", target)
-        db.IdListDao().addElement(FirebaseCollection.FOLLOWING, uid, target)
+        if (_isFollowing.value!!) {
+          FollowList.unfollow(uid, target)
+        }
+
+        else {
+          FollowList.follow(Firebase.auth.uid ?: "TEST", target)
+        }
         _isFollowing.postValue(!(_isFollowing.value!!))
+        // update the local database with online value
+        db.IdListDao().insert(IdList.fromFirebase(uid,FirebaseCollection.FOLLOWING))
       }
     }
   }

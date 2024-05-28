@@ -91,7 +91,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
       // Try to get from local first
       val localIds = idListDao.get(FirebaseCollection.FOLLOWING, uid)
       if (localIds?.elements?.isNotEmpty() == true) {
-        val localEvents = eventDao.getAll(localIds.elements)
+        val localEvents = eventDao.getAllFromOrganizerId(*localIds.elements.toTypedArray())
         if (!localEvents.isNullOrEmpty()) {
           _fromFollowedUsers.postValue(localEvents!!)
         }
