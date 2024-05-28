@@ -38,4 +38,9 @@ class EventDataFormScreen(semanticsProvider: SemanticsNodeInteractionsProvider) 
   val alertBox: KNode = onNode { hasTestTag("alertBox") }
   val alertBoxText: KNode = onNode { hasTestTag("errorMessageIdentifier") }
   val alertBoxButton: KNode = onNode { hasTestTag("alertButton") }
+
+  val startTimePickerButton: KNode = onNode { hasTestTag("TimePickerButton" + "Select start time") }
+  val endTimePickerButton: KNode = onNode { hasTestTag("TimePickerButton" + "Select end time") }
+  val startDatePickerButton: KNode = onNode { hasTestTag("DatePickerButton" + "start") }
+  val endDatePickerButton: KNode = onNode { hasTestTag("DatePickerButton" + "end") }
 }
