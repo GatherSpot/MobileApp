@@ -125,7 +125,7 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
         db.ProfileDao().insert(_profile.value!!.withNewImage(""))
       }
     }
-      updateProfileImage("")
+    updateProfileImage("")
   }
 
   /**

@@ -85,9 +85,10 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db")
-      .fallbackToDestructiveMigration()
-      .build()
+    localDatabase =
+        Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db")
+            .fallbackToDestructiveMigration()
+            .build()
     eventDao = localDatabase.EventDao()
     app = application
     mapViewModel = MapViewModel(app)
