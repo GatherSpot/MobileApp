@@ -114,13 +114,13 @@ fun EventUINonOrganizer(
   val organizerProfile by eventUIViewModel.organizer.observeAsState()
 
   val registrationState by eventUIViewModel.registrationState.observeAsState()
-  val isButtonEnabled = registrationState == RegistrationState.NoError
+  val isButtonEnabled = eventUIViewModel.registrationState.value !is RegistrationState.Error
+
   val buttonText =
       when (registrationState) {
-        is RegistrationState.Success -> "Registered"
-        is RegistrationState.Error ->
-            if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
-            else "Registered"
+        is RegistrationState.Registered -> "Registered / Unregister"
+        is RegistrationState.Unregistered -> "Unregistered / Register"
+        is RegistrationState.Error -> (registrationState as RegistrationState.Error).message
         else -> "Register"
       }
 
@@ -150,7 +150,6 @@ fun EventUINonOrganizer(
                   eventUIViewModel,
               )
           RegisterButton(
-              event,
               eventUIViewModel,
               isButtonEnabled,
               buttonText,
@@ -343,10 +342,10 @@ fun EventRating(eventRating: Double?) {
 }
 
 /**
- * RegisterButton displays a button to register to an event. It also displays an alert dialog to
- * show the result of the registration.
+ * RegisterButton displays a button to register/unregister to an event. It also displays an alert
+ * dialog to show the result of the registration.
  *
- * @param event the event to register for
+ * @param event the event to register/unregister for
  * @param eventUIViewModel the view model for the event UI
  * @param isButtonEnabled true if the button is enabled, false otherwise
  * @param buttonText the text to display on the button
@@ -355,17 +354,16 @@ fun EventRating(eventRating: Double?) {
  */
 @Composable
 fun RegisterButton(
-    event: Event,
     eventUIViewModel: EventUIViewModel,
-    isButtonEnabled: Boolean,
+    buttonEnabled: Boolean,
     buttonText: String,
     showDialogRegistration: Boolean?,
     registrationState: RegistrationState?,
     eventDao: EventDao?
 ) {
   Button(
-      onClick = { eventUIViewModel.registerForEvent(event, eventDao) },
-      enabled = isButtonEnabled,
+      onClick = { eventUIViewModel.toggleRegistrationStatus(eventDao) },
+      enabled = buttonEnabled,
       modifier = Modifier.fillMaxWidth().testTag("registerButton"),
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
         Text(buttonText, color = Color.White)
@@ -378,8 +376,8 @@ fun RegisterButton(
         title = { Text("Registration Result") },
         text = {
           when (registrationState) {
-            is RegistrationState.Success -> Text("You have been successfully registered!")
-            is RegistrationState.Error -> Text(registrationState.message)
+            is RegistrationState.Registered -> Text("You have been successfully registered!")
+            is RegistrationState.Unregistered -> Text("You have been successfully unregistered!")
             else -> Text("Unknown state")
           }
         },

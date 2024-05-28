@@ -7,6 +7,8 @@ import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.FirebaseCollection
+import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
@@ -97,14 +99,16 @@ class ChatsTest {
   fun chatsAreDisplayedAndScrollable() {
 
     composeTestRule.waitForIdle()
-
     val viewModel = ChatsListViewModel()
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
       Chats(viewModel = viewModel, nav = nav)
     }
 
-    runBlocking { EventFirebaseConnection().addRegisteredUser("idTestEvent", id) }
+    runBlocking {
+      IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add("idTestEvent")
+      EventFirebaseConnection().addRegisteredUser("idTestEvent", id)
+    }
 
     ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 20000)
@@ -113,6 +117,11 @@ class ChatsTest {
         assertIsDisplayed()
         performGesture { swipeUp(400F, 0F, 1000) }
       }
+    }
+
+    runBlocking {
+      IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove("idTestEvent")
+      EventFirebaseConnection().delete("idTestEvent")
     }
   }
 }

@@ -25,8 +25,7 @@ import kotlinx.coroutines.launch
  * @property eventRating the rating of the event
  * @property organizer the organizer of the event
  */
-class EventUIViewModel(private val event: Event) :
-    EventRegistrationViewModel(event.registeredUsers) {
+class EventUIViewModel(private val event: Event) : EventRegistrationViewModel(event) {
 
   private val _organizer = MutableLiveData<Profile>()
   private val _displayAlertAttend = MutableLiveData(false)
