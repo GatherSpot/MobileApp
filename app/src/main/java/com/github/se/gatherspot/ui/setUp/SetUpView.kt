@@ -21,11 +21,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.intents.CircleImagePicker
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.profile.BioField
 import com.github.se.gatherspot.ui.profile.InterestsView
+import com.github.se.gatherspot.utils.CircleImagePicker
 
 /**
  * Composable for the setup view.

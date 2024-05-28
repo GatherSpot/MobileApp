@@ -50,7 +50,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.intents.BannerImageViewer
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
@@ -61,8 +60,8 @@ import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.eventUI.CalendarReminderGenerator.Companion.generateCalendarReminder
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.qrcode.EventQRCodeUI
-import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.GeoMap
+import com.github.se.gatherspot.utils.BannerImageViewer
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import java.time.format.DateTimeFormatter
@@ -76,20 +75,18 @@ import java.time.format.FormatStyle
  * @param event the event to display
  * @param navActions the navigation actions
  * @param eventUIViewModel the view model for the event UI
- * @param eventsViewModel the view model for the events
  */
 @Composable
 fun EventUI(
     event: Event,
     navActions: NavigationActions,
     eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel,
     eventDao: EventDao?
 ) {
   if (event.organizerID == Firebase.auth.currentUser?.uid) {
-    EventUIOrganizer(event, navActions, eventUIViewModel, eventsViewModel, eventDao)
+    EventUIOrganizer(event, navActions, eventUIViewModel, eventDao)
   } else {
-    EventUINonOrganizer(event, navActions, eventUIViewModel, eventsViewModel, eventDao)
+    EventUINonOrganizer(event, navActions, eventUIViewModel, eventDao)
   }
 }
 
@@ -101,14 +98,12 @@ fun EventUI(
  * @param event the event to display
  * @param navActions the navigation actions
  * @param eventUIViewModel the view model for the event UI
- * @param eventsViewModel the view model for the events
  */
 @Composable
 fun EventUINonOrganizer(
     event: Event,
     navActions: NavigationActions,
     eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel,
     eventDao: EventDao?
 ) {
 
@@ -151,7 +146,6 @@ fun EventUINonOrganizer(
         RegisterButton(
             event,
             eventUIViewModel,
-            eventsViewModel,
             isButtonEnabled,
             buttonText,
             showDialogRegistration,
@@ -196,7 +190,6 @@ fun EventUIOrganizer(
     event: Event,
     navActions: NavigationActions,
     eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel,
     eventDao: EventDao?
 ) {
 
@@ -227,10 +220,7 @@ fun EventUIOrganizer(
             actions = {
               // Edit button
               IconButton(
-                  onClick = {
-                    val eventJsonWellFormed = event.toJson()
-                    navActions.controller.navigate("editEvent/$eventJsonWellFormed")
-                  },
+                  onClick = { navActions.controller.navigate("editEvent/${event.toJson()}") },
                   modifier = Modifier.testTag("editEventButton")) {
                     Icon(
                         modifier = Modifier.size(24.dp).testTag("editEventIcon"),
@@ -278,7 +268,6 @@ fun EventUIOrganizer(
                 // Delete the event
                 eventUtils.deleteEvent(event, eventDao)
                 navActions.controller.navigate("events")
-                eventUIViewModel.dismissAlert()
               }) {
                 Text("Delete")
               }
@@ -312,7 +301,6 @@ fun EventRating(eventRating: Double?) {
  *
  * @param event the event to register for
  * @param eventUIViewModel the view model for the event UI
- * @param eventsViewModel the view model for the events
  * @param isButtonEnabled true if the button is enabled, false otherwise
  * @param buttonText the text to display on the button
  * @param showDialogRegistration true if the dialog should be displayed, false otherwise
@@ -322,7 +310,6 @@ fun EventRating(eventRating: Double?) {
 fun RegisterButton(
     event: Event,
     eventUIViewModel: EventUIViewModel,
-    eventsViewModel: EventsViewModel,
     isButtonEnabled: Boolean,
     buttonText: String,
     showDialogRegistration: Boolean?,
@@ -330,11 +317,7 @@ fun RegisterButton(
     eventDao: EventDao?
 ) {
   Button(
-      onClick = {
-        eventUIViewModel.registerForEvent(event, eventDao)
-        eventUIViewModel.clickRegisterButton()
-        eventsViewModel.updateNewRegistered(event)
-      },
+      onClick = { eventUIViewModel.registerForEvent(event, eventDao) },
       enabled = isButtonEnabled,
       modifier = Modifier.fillMaxWidth().testTag("registerButton"),
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {

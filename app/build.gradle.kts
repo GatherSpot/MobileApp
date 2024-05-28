@@ -176,6 +176,7 @@ dependencies {
   implementation(libs.androidx.core.animation)
   implementation(libs.play.services.location)
     implementation(libs.androidx.room.common)
+  implementation(libs.core.ktx)
 
     // ---------------------- /IMPLEMENTATION> ------------------
 
