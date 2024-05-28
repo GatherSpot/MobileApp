@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.Interests
@@ -14,7 +16,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 /** The database for the app. */
-@Database(entities = [Event::class, IdList::class, Profile::class], version = 1)
+@Database(entities = [Event::class, IdList::class, Profile::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
   abstract fun EventDao(): EventDao

@@ -118,13 +118,14 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
 
   /** Remove the profile picture. */
   fun removeProfilePicture() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       _profile.value?.let {
         FirebaseImages().removeProfilePicture(it.id)
         ProfileFirebaseConnection().update(it.id, "image", "")
+        db.ProfileDao().insert(_profile.value!!.withNewImage(""))
       }
-      updateProfileImage("")
     }
+      updateProfileImage("")
   }
 
   /**
@@ -158,7 +159,8 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
             }
             val newProfile = _profile.value!!.withNewImage(newUrl)
             ProfileFirebaseConnection().add(newProfile)
-            db.ProfileDao().update(newProfile)
+            db.ProfileDao().insert(newProfile)
+            _oldProfile = newProfile.copy()
           }
         } catch (e: Exception) {
           // TODO show error dialog

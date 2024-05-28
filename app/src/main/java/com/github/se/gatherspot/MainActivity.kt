@@ -77,18 +77,17 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var navController: NavHostController
   private lateinit var networkChangeReceiver: NetworkChangeReceiver
-  private var eventsViewModel: EventsViewModel? = null
   private var chatsViewModel: ChatsListViewModel? = null
-  private lateinit var localDatabase:
-      AppDatabase // = Room.databaseBuilder(applicationContext, AppDatabase::class.java,
-  // "db").build()
+  private lateinit var localDatabase: AppDatabase
   private lateinit var eventDao: EventDao
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
+    localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db")
+      .fallbackToDestructiveMigration()
+      .build()
     eventDao = localDatabase.EventDao()
     app = application
     mapViewModel = MapViewModel(app)
