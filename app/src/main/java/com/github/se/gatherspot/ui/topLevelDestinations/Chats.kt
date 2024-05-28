@@ -93,18 +93,14 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
         val chats = state.value.list.toList()
         val lazyState = rememberLazyListState()
         when {
-            chats.isEmpty() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = if (isOnline) "Loading..." else "Your device is currently offline.",
-                        color = Color.Black,
-                        modifier = Modifier.testTag("emptyText")
-                    )
+          chats.isEmpty() -> {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                contentAlignment = Alignment.Center) {
+                  Text(
+                      text = if (isOnline) "Loading..." else "Your device is currently offline.",
+                      color = Color.Black,
+                      modifier = Modifier.testTag("emptyText"))
                 }
 
             fetch = true

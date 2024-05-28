@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.IdList
@@ -104,8 +105,13 @@ fun FollowListUI(navActions: NavHostController, title: String, ids: suspend () -
 fun Loading(s: String) {
   Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-      Text("Loading your ${s.lowercase()} list")
+      Text(
+          text =
+              if (MainActivity.isOnline) {
+                "Loading your ${s.lowercase()} list"
+              } else {
+                "Your device is currently offline."
+              })
     }
   }
 }
