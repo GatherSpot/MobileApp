@@ -121,7 +121,8 @@ class EventUIViewModel(private val event: Event) :
   fun canAttend(): Boolean {
     return !isOrganizer() &&
         event.registeredUsers.contains(userID) &&
-        EventUtils().isEventStarted(event)
+        EventUtils().isEventStarted(event) &&
+        !EventUtils().isEventOver(event)
   }
 
   /** Attend the event */

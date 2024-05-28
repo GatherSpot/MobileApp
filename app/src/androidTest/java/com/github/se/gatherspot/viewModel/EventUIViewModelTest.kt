@@ -197,13 +197,13 @@ class EventUIViewModelTest {
       assertEquals(false, viewModel.canAttend()) // isn't registered
       viewModel.registerForEvent(event)
       delay(1000)
-      assertEquals(true, viewModel.canAttend()) // registered and event is over
+      assertEquals(false, viewModel.canAttend()) // registered and event is over
       val viewModel2 = EventUIViewModel(event2)
       delay(1000)
-      assertEquals(false, viewModel2.canAttend())
+      assertEquals(false, viewModel2.canAttend()) // isn't registered
       viewModel2.registerForEvent(event2)
       delay(1000)
-      assertEquals(true, viewModel2.canAttend())
+      assertEquals(true, viewModel2.canAttend()) // registered and event is started and not over
       val viewModel3 = EventUIViewModel(organizedEvent)
       delay(1000)
       assertEquals(false, viewModel3.canAttend())
