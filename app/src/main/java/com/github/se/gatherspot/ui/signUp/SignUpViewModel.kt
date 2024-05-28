@@ -105,7 +105,7 @@ class SignUpViewModel(private val db: AppDatabase) : ViewModel() {
 
   /** Sign up the user and create profile */
   fun signUp() {
-    viewModelScope.launch(Dispatchers.IO) {
+    viewModelScope.launch() {
       try {
         Firebase.auth.createUserWithEmailAndPassword(email.value!!, password.value!!).await()
         async {
