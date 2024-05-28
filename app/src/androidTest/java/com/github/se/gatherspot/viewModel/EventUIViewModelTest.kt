@@ -34,7 +34,7 @@ class EventUIViewModelTest {
       Event(
           id = "eventUIViewModelTest",
           title = "",
-          description = null,
+          description = "null",
           location = null,
           eventStartDate = LocalDate.of(2024, 5, 10),
           eventEndDate = LocalDate.of(2024, 5, 11),
@@ -56,7 +56,7 @@ class EventUIViewModelTest {
       Event(
           id = "eventUIViewModelTest2",
           title = "",
-          description = null,
+          description = "null",
           location = null,
           eventStartDate = LocalDate.of(2024, 5, 10),
           eventEndDate = LocalDate.of(2026, 5, 11),
