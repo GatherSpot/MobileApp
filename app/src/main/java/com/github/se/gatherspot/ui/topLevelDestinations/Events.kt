@@ -89,7 +89,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
 
-  val pagerState = rememberPagerState(pageCount = { 4 }, initialPage = 1)
+  val pagerState = rememberPagerState(pageCount = { 5 }, initialPage = 1)
   val showInterestsDialog = viewModel.showFilterDialog.observeAsState(false).value
   val showDialog = viewModel::showDialog
   val applyFilter = viewModel::applyFilter
