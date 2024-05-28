@@ -5,6 +5,7 @@ import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlin.time.Duration
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -79,7 +80,7 @@ class ProfileFirebaseConnectionTest {
 
   @Test
   fun testGetCurrentUserUid() {
-    runTest {
+    runTest(timeout = Duration.parse("20s")) {
       EnvironmentSetter.testLogin()
       var uid = profileFirebaseConnection.getCurrentUserUid()
       assertNotNull(uid)
