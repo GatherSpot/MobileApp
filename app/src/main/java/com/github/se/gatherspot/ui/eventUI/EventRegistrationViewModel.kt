@@ -104,7 +104,8 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
     _displayAlertDeletion.value = true
   }
 
-  fun dismissAlert() {
+  // Self-explanatory
+  open fun dismissAlert() {
     _displayAlertRegistration.value = false
     _displayAlertDeletion.value = false
   }

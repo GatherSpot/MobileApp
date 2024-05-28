@@ -95,6 +95,7 @@ dependencies {
   implementation(
       "androidx.compose.material:material:1.6.2") // necessary for EventUI Automirrored to work
   implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+  implementation ("androidx.compose.material:material-icons-extended")
   /// >
 
   // </firebase
