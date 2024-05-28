@@ -10,4 +10,6 @@ class ChatsScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val topBar: KNode = onNode { hasTestTag("chatsTopBar") }
   val eventsList: KNode = onNode { hasTestTag("chatsList") }
   val empty: KNode = onNode { hasTestTag("emptyText") }
+  val refresh: KNode = onNode { hasTestTag("refresh") }
+  val searchBar: KNode = onNode { hasTestTag("searchBar") }
 }
