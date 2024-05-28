@@ -104,6 +104,7 @@ fun FollowListUI(navActions: NavHostController, title: String, ids: suspend () -
 fun Loading(s: String) {
   Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
       Text("Loading your ${s.lowercase()} list")
     }
   }

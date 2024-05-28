@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
@@ -61,6 +64,7 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
   var loading by remember { mutableStateOf(false) }
   var fetched by remember { mutableStateOf(false) }
   var fetch by remember { mutableStateOf(false) }
+  val isOnline by rememberUpdatedState(MainActivity.isOnline)
 
   LaunchedEffect(fetch) {
     if (fetch) {
@@ -89,15 +93,20 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
         val chats = state.value.list.toList()
         val lazyState = rememberLazyListState()
         when {
-          chats.isEmpty() -> {
-            Box(
-                modifier = Modifier.fillMaxWidth().padding(paddingValues),
-                contentAlignment = Alignment.TopStart) {
-                  Text(
-                      text = "Loading...",
-                      color = Color.Black,
-                      modifier = Modifier.testTag("emptyText"))
+            chats.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (isOnline) "Loading..." else "Your device is currently offline.",
+                        color = Color.Black,
+                        modifier = Modifier.testTag("emptyText")
+                    )
                 }
+
             fetch = true
           }
           else -> {
