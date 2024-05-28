@@ -553,9 +553,9 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                 when (element.eventEndDate) {
                   null ->
                       EVENT_END_DATE_DEFAULT_VALUE.format(
-                          DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
+                          DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
                   else ->
-                      element.eventEndDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
+                      element.eventEndDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
                 },
             "timeBeginning" to
                 when (element.timeBeginning) {
