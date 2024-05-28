@@ -261,7 +261,7 @@ class EventFirebaseConnectionTest {
       }
 
   @Test
-  fun fetchRegisteredToWorks() =
+  fun fetchUpComingWorks() =
       runTest(timeout = Duration.parse("20s")) {
         testLogin()
 

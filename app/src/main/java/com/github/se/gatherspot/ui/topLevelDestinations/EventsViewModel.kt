@@ -92,7 +92,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
    */
   fun fetchUpComing() {
     viewModelScope.launch(Dispatchers.IO) {
-      _upComing.postValue(eventDao.getAllWhereIdIsRegistered(uid))
+      //_upComing.postValue(eventDao.getAllWhereIdIsRegistered(uid)) //TODO Make the eventDAO function
       lateinit var events: List<Event>
       try {
         events = eventFirebaseConnection.fetchUpComing()

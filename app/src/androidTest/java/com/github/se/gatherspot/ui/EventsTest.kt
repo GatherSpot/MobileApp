@@ -10,6 +10,7 @@ import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.github.se.gatherspot.EnvironmentSetter.Companion.melvinLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginUID
@@ -94,6 +95,7 @@ class EventsTest {
       ids = FollowList.following(uid).elements
     }
     val context = ApplicationProvider.getApplicationContext<Context>()
+    melvinLogin()
     val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
 
     eventFirebaseConnection.add(futureRegisteredEvent)
