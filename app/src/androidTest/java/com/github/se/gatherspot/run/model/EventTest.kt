@@ -2,6 +2,7 @@ package com.github.se.gatherspot.run.model
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
@@ -104,7 +105,7 @@ class EventTest {
             eventStatus = EventStatus.CREATED,
             globalRating = null,
             image = "")
-    assert(!testEvent.isOver())
+    assert(!EventUtils().isEventOver(testEvent))
   }
 
   @Test
@@ -126,6 +127,6 @@ class EventTest {
             eventStatus = EventStatus.COMPLETED,
             globalRating = null,
             image = "")
-    assert(event.isOver())
+    assert(EventUtils().isEventOver(event))
   }
 }

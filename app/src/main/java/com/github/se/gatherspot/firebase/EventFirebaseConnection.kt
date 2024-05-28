@@ -327,20 +327,32 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
    * @return The list of events fetched
    */
   suspend fun fetchUpComing(): MutableList<Event> {
-    Log.d(FirebaseAuth.getInstance().currentUser?.uid ?: "forTest", "fetchUpComing: ")
     val querySnapshot: QuerySnapshot =
         Firebase.firestore
             .collection(COLLECTION)
             .orderBy("eventEndDate")
-            .whereGreaterThanOrEqualTo(
-                "eventEndDate",
-                LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED)))
             .whereArrayContains(
                 "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
             .get()
             .await()
 
-    return eventsFromQuerySnapshot(querySnapshot)
+    // Filtering events that take place in the future
+    val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED)
+    val now = LocalDate.now()
+
+    val events =
+        querySnapshot.documents
+            .mapNotNull { document ->
+              val eventEndDate = document.getString("eventEndDate") ?: return@mapNotNull null
+              val eventEndDateParsed = LocalDate.parse(eventEndDate, formatter)
+              if (now <= eventEndDateParsed) {
+                getFromDocument(document)
+              } else {
+                null
+              }
+            }
+            .toMutableList()
+    return events
   }
 
   /**
@@ -543,8 +555,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                       EVENT_END_DATE_DEFAULT_VALUE.format(
                           DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                   else ->
-                      element.eventEndDate.format(
-                          DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
+                      element.eventEndDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
                 },
             "timeBeginning" to
                 when (element.timeBeginning) {

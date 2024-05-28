@@ -150,7 +150,6 @@ fun EventUINonOrganizer(
                   eventUIViewModel,
               )
           RegisterButton(
-              event,
               eventUIViewModel,
               isButtonEnabled,
               buttonText,
@@ -158,7 +157,6 @@ fun EventUINonOrganizer(
               registrationState,
               eventDao)
         }
-
       }) { innerPadding ->
         Column(
             modifier =
@@ -364,7 +362,7 @@ fun RegisterButton(
     eventDao: EventDao?
 ) {
   Button(
-      onClick = { eventUIViewModel.changeStatus(eventDao) },
+      onClick = { eventUIViewModel.toggleRegistrationStatus(eventDao) },
       enabled = buttonEnabled,
       modifier = Modifier.fillMaxWidth().testTag("registerButton"),
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {

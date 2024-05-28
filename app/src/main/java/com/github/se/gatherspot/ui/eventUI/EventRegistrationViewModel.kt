@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.sql.EventDao
@@ -29,7 +30,8 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
   // LiveData for holding registration state
   private val _registrationState: MutableLiveData<RegistrationState> =
       when {
-        event.isOver() -> MutableLiveData(RegistrationState.Error("Past event"))
+        EventUtils().isRegistrationOver(event) ->
+            MutableLiveData(RegistrationState.Error("Registration Over"))
         event.registeredUsers.contains(userId) -> MutableLiveData(RegistrationState.Registered)
         else -> {
           when {
@@ -58,7 +60,7 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
   private val eventFirebaseConnection = EventFirebaseConnection()
 
   /** Calls the register or unregistered function depending on the current state */
-  fun changeStatus(eventDao: EventDao? = null) {
+  fun toggleRegistrationStatus(eventDao: EventDao? = null) {
     _registrationState.value?.let { state ->
       when (state) {
         RegistrationState.Registered -> unregister(eventDao)
