@@ -71,9 +71,8 @@ import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.eventUI.EventAction.CREATE
 import com.github.se.gatherspot.ui.eventUI.EventAction.EDIT
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
-import java.text.SimpleDateFormat
 import com.github.se.gatherspot.utils.BannerImagePicker
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -113,7 +112,6 @@ fun ScrollableContent(content: @Composable () -> Unit) {
  * Composable function that displays the form to create or edit an event
  *
  * @param eventUtils the event utilities
- * @param viewModel the events view model
  * @param nav the navigation actions
  * @param eventAction the action to perform (create or edit)
  * @param event the event to edit
