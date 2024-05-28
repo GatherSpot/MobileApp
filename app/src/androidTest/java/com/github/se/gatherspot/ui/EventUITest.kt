@@ -28,14 +28,13 @@ import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.time.Duration
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.time.Duration
 
 class EventUITest {
   @get:Rule val composeTestRule = createComposeRule()
@@ -499,32 +498,33 @@ class EventUITest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun ratingIsDisplayed() = runTest(timeout = Duration.parse("20s")) {
-    val eventUIViewModel = EventUIViewModel(pastEventAttended)
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      EventUI(pastEventAttended, NavigationActions(navController), eventUIViewModel, null)
-    }
-    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
-      Log.e(
-          "In the list",
-          pastEventAttended.finalAttendees
-              ?.contains(FirebaseAuth.getInstance().currentUser!!.uid)
-              .toString())
-      Log.e("isEventOver", EventUtils().isEventOver(pastEventAttended).toString())
-      sleep(400)
-      assert(eventUIViewModel.canRate())
-      sleep(6000)
-      starRow {
-        performScrollTo()
-        assertIsDisplayed()
-      }
+  fun ratingIsDisplayed() =
+      runTest(timeout = Duration.parse("20s")) {
+        val eventUIViewModel = EventUIViewModel(pastEventAttended)
+        composeTestRule.setContent {
+          val navController = rememberNavController()
+          EventUI(pastEventAttended, NavigationActions(navController), eventUIViewModel, null)
+        }
+        ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+          Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
+          Log.e(
+              "In the list",
+              pastEventAttended.finalAttendees
+                  ?.contains(FirebaseAuth.getInstance().currentUser!!.uid)
+                  .toString())
+          Log.e("isEventOver", EventUtils().isEventOver(pastEventAttended).toString())
+          sleep(400)
+          assert(eventUIViewModel.canRate())
+          sleep(6000)
+          starRow {
+            performScrollTo()
+            assertIsDisplayed()
+          }
 
-      bottomSpacer { performScrollTo() }
-      starIcon_1 { assertIsDisplayed() }
-    }
-  }
+          bottomSpacer { performScrollTo() }
+          starIcon_1 { assertIsDisplayed() }
+        }
+      }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
