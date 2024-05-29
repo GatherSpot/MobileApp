@@ -10,7 +10,7 @@ class ProfileScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         viewBuilderAction = { hasTestTag("EditOwnProfileScreen") }) {
   val edit: KNode = onNode { hasTestTag("edit") }
   val back: KNode = onNode { hasTestTag("back") }
-  val cancel: KNode = onNode { hasTestTag("cancel") }
+  val cancel: KNode = onNode { hasText("Cancel") }
   val save: KNode = onNode { hasTestTag("save") }
   val usernameInput: KNode = onNode { hasTestTag("usernameInput") }
   val bioInput: KNode = onNode { hasTestTag("bioInput") }

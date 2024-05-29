@@ -117,11 +117,9 @@ class EventUtils {
     runBlocking {
       event.registeredUsers.forEach { userID ->
         val registeredEvents =
-            idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS) {}
-        registeredEvents?.remove(event.id)
-        if (registeredEvents != null) {
-          idListFirebase.saveToFirebase(registeredEvents)
-        }
+            idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS)
+        registeredEvents.remove(event.id)
+        idListFirebase.saveToFirebase(registeredEvents)
       }
       try {
         eventFirebaseConnection.delete(event.id)
@@ -604,5 +602,31 @@ class EventUtils {
     val timeNow = LocalTime.now()
     return event.eventStartDate?.isBefore(now) == true ||
         (event.eventStartDate == now && event.timeBeginning?.isBefore(timeNow) == true)
+  }
+
+  /**
+   * Simply returns whether the registration period for an event is over
+   *
+   * @param event
+   */
+  fun isRegistrationOver(event: Event): Boolean {
+    val now = LocalDate.now()
+    val timeNow = LocalTime.now()
+
+    // If there is no inscription limit date, registration is not over
+    event.inscriptionLimitDate ?: return false
+
+    // If the inscription limit date is after today, registration is not over
+    if (event.inscriptionLimitDate.isAfter(now)) return false
+
+    // If the inscription limit date is today, check the time
+    if (event.inscriptionLimitDate.isEqual(now)) {
+      // If there is no inscription limit time, registration is not over
+      event.inscriptionLimitTime ?: return false
+      // If the inscription limit time is after now, registration is not over
+      if (event.inscriptionLimitTime.isAfter(timeNow)) return false
+    }
+    // Otherwise, the registration is over
+    return true
   }
 }

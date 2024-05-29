@@ -40,14 +40,14 @@ class ChatsListViewModel : ViewModel() {
     if (uid == null) {
       return
     }
-    val idlist = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS) {}
+    val idList = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS)
 
-    eventsIDS = idlist.elements
+    eventsIDS = idList.elements
     Log.e("IDS", eventsIDS.toString())
 
     _uiState.value = ChatUIState(loadedEvents)
 
-    val events = eventFirebaseConnection.fetchNextEvents(idlist, PAGE_SIZE)
+    val events = eventFirebaseConnection.fetchNextEvents(idList, PAGE_SIZE)
     loadedEvents.addAll(events)
     _uiState.value = ChatUIState(loadedEvents)
   }

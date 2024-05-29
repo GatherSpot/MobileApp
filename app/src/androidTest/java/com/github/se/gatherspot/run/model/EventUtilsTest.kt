@@ -1,3 +1,5 @@
+package com.github.se.gatherspot.run.model
+
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
@@ -87,7 +89,7 @@ class EventUtilsTest {
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
     // Keep a clean database: suppress immediately the event
-    eventFirebaseConnection.delete(event.id)
+    runBlocking { eventFirebaseConnection.delete(event.id) }
   }
 
   @Test
@@ -126,7 +128,7 @@ class EventUtilsTest {
     Assert.assertEquals(LocalTime.of(9, 0), event.inscriptionLimitTime)
 
     // Keep a clean database: suppress immediately the event
-    eventFirebaseConnection.delete(event.id)
+    runBlocking { eventFirebaseConnection.delete(event.id) }
   }
 
   @Test
@@ -499,7 +501,7 @@ class EventUtilsTest {
             timeEnding = LocalTime.of(16, 0),
             image = "")
     val eventUtils = EventUtils()
-    eventFirebaseConnection.add(event)
+    runBlocking { eventFirebaseConnection.add(event) }
     val eventFromDB = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertEquals(event.id, eventFromDB?.id)
 

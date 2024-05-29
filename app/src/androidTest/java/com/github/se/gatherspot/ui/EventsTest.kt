@@ -1,8 +1,6 @@
 package com.github.se.gatherspot.ui
 
-import android.content.ContentValues.TAG
 import android.content.Context
-import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -25,11 +23,9 @@ import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalTime
-import kotlinx.coroutines.runBlocking
-import org.junit.After
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -84,14 +80,16 @@ class EventsTest {
           image = "hac",
           globalRating = null)
 
+  init {
+    testLogin()
+  }
+
   @Before
-  fun setUp() {
-    runBlocking {
-      testLogin()
-      uid = FirebaseAuth.getInstance().currentUser!!.uid
-      FollowList.follow(uid, uid)
-      ids = FollowList.following(uid).elements
-    }
+  fun setUp() = runTest {
+    uid = FirebaseAuth.getInstance().currentUser!!.uid
+    FollowList.follow(uid, uid)
+    ids = FollowList.following(uid).elements
+
     val context = ApplicationProvider.getApplicationContext<Context>()
     melvinLogin()
     val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
@@ -101,8 +99,6 @@ class EventsTest {
 
     viewModel = EventsViewModel(db)
   }
-
-  @After fun cleanUp() {}
 
   @Test
   fun testEverythingExists() {
@@ -315,16 +311,13 @@ class EventsTest {
 
       fromFollowed { performClick() }
 
-      composeTestRule.waitForIdle()
-      Log.d(TAG, "IDS followed $ids")
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("followedEventsList"), 20000)
     }
   }
-
+  /*
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun entireCreationFlow() {
-    /*
     val viewModel = EventsViewModel()
     Thread.sleep(6000)
     assert(viewModel.uiState.value.list.isNotEmpty())
@@ -446,7 +439,6 @@ class EventsTest {
     EventFirebaseConnection().delete(event.id)
 
      */
-  }
 }
 
 /*

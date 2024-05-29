@@ -51,6 +51,8 @@ import com.github.se.gatherspot.ui.profile.ProfileScaffold
 import com.github.se.gatherspot.ui.profile.ProfileScreen
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
+import com.github.se.gatherspot.ui.signUp.SignUp
+import com.github.se.gatherspot.ui.signUp.SignUpViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.github.se.gatherspot.ui.topLevelDestinations.Chats
 import com.github.se.gatherspot.ui.topLevelDestinations.Events
@@ -79,18 +81,18 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var navController: NavHostController
   private lateinit var networkChangeReceiver: NetworkChangeReceiver
-  private var eventsViewModel: EventsViewModel? = null
   private var chatsViewModel: ChatsListViewModel? = null
-  private lateinit var localDatabase:
-      AppDatabase // = Room.databaseBuilder(applicationContext, AppDatabase::class.java,
-  // "db").build()
+  private lateinit var localDatabase: AppDatabase
   private lateinit var eventDao: EventDao
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
+    localDatabase =
+        Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db")
+            .fallbackToDestructiveMigration()
+            .build()
     eventDao = localDatabase.EventDao()
     app = application
     mapViewModel = MapViewModel(app)
@@ -126,7 +128,11 @@ class MainActivity : ComponentActivity() {
             navigation(startDestination = "login", route = "auth") {
               composable("login") { LogIn(NavigationActions(navController), signInLauncher) }
 
-              composable("signup") { SignUp(NavigationActions(navController)) }
+              composable("signup") {
+                SignUp(
+                    viewModel<SignUpViewModel> { SignUpViewModel() },
+                    NavigationActions(navController))
+              }
             }
 
             navigation(startDestination = "events", route = "home") {
@@ -173,7 +179,9 @@ class MainActivity : ComponentActivity() {
               composable("map") { Map(NavigationActions(navController)) }
 
               composable("profile") {
-                ProfileScaffold(NavigationActions(navController), viewModel<OwnProfileViewModel>())
+                ProfileScaffold(
+                    NavigationActions(navController),
+                    viewModel { OwnProfileViewModel(localDatabase) })
               }
 
               composable("followers") {
@@ -188,7 +196,10 @@ class MainActivity : ComponentActivity() {
               }
               composable("viewProfile/{uid}") { backstackEntry ->
                 backstackEntry.arguments?.getString("uid")?.let {
-                  ProfileScreen(viewModel<ProfileViewModel> { ProfileViewModel(it, navController) })
+                  ProfileScreen(
+                      viewModel<ProfileViewModel> {
+                        ProfileViewModel(it, navController, localDatabase)
+                      })
                 }
               }
 

@@ -3,6 +3,7 @@ package com.github.se.gatherspot.firebase
 import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 class CleanUpEvents {
@@ -45,7 +46,7 @@ class CleanUpEvents {
           querySnapshot.documents.forEach { document ->
             val event = efc.getFromDocument(document)
             if (event != null) {
-              efc.add(event)
+              runBlocking { efc.add(event) }
             }
           }
         }
