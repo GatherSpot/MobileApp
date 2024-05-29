@@ -84,8 +84,10 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
    */
   fun updateUsername(userName: String) {
     _profile.value?.userName = userName
-    _profile.value = _profile.value // force update
-    _userNameIsUniqueCheck.value = false
+    _profile.value.apply {
+      this?.userName = userName
+      _profile.value = this
+    }
     viewModelScope.launch {
       try {
         Profile.checkUsername(userName, _oldProfile?.userName, _userNameError)
