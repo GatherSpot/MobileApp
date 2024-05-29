@@ -11,6 +11,7 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.sql.EventDao
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -79,6 +80,7 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
     viewModelScope.launch(Dispatchers.IO) {
       event.registeredUsers.add(userId)
       eventDao?.insert(event)
+      FirebaseMessaging.getInstance().subscribeToTopic("event_$userId")
       eventFirebaseConnection.addRegisteredUser(event.id, userId)
       registeredEventsList.add(event.id)
       _registrationState.postValue(RegistrationState.Registered)
@@ -95,6 +97,7 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
     viewModelScope.launch(Dispatchers.IO) {
       event.registeredUsers.remove(userId)
       eventDao?.delete(event)
+      FirebaseMessaging.getInstance().unsubscribeFromTopic("event_$userId")
       eventFirebaseConnection.removeRegisteredUser(event.id, userId)
       registeredEventsList.remove(event.id)
       _registrationState.postValue(RegistrationState.Unregistered)
