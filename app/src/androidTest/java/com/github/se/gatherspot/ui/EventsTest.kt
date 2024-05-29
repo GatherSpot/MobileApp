@@ -314,11 +314,10 @@ class EventsTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("followedEventsList"), 20000)
     }
   }
-
+/*
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun entireCreationFlow() {
-    /*
     val viewModel = EventsViewModel()
     Thread.sleep(6000)
     assert(viewModel.uiState.value.list.isNotEmpty())

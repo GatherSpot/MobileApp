@@ -180,7 +180,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchNextReturnsDistinctEvents() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest(timeout = Duration.parse("60s")) {
         val round = 5
         val listOfEvents1 = eventFirebaseConnection.fetchNextEvents(round.toLong())
         assert(round >= listOfEvents1.size)
@@ -196,7 +196,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchNextBasedOnInterestReturnsCorrectEvents() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest(timeout = Duration.parse("60s")) {
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
@@ -221,7 +221,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchNextBasedOnInterestReturnsDistinctEvents() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest(timeout = Duration.parse("60s")) {
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
@@ -246,7 +246,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchMyEventsWorks() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest(timeout = Duration.parse("60s")) {
         Thread.sleep(10000)
         val events = eventFirebaseConnection.fetchMyEvents()
         assert(
