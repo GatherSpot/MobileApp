@@ -33,6 +33,7 @@ import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.network.NetworkChangeReceiver
+import com.github.se.gatherspot.notification.NotificationHelper
 import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.ChatUI
@@ -56,6 +57,7 @@ import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.LogIn
 import com.github.se.gatherspot.ui.topLevelDestinations.Map
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.maps.android.compose.CameraPositionState
 
@@ -89,6 +91,8 @@ class MainActivity : ComponentActivity() {
         Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db")
             .fallbackToDestructiveMigration()
             .build()
+    FirebaseApp.initializeApp(this)
+    localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
     eventDao = localDatabase.EventDao()
     app = application
     mapViewModel = MapViewModel(app)
@@ -104,6 +108,7 @@ class MainActivity : ComponentActivity() {
           ->
           mapAccess = isGranted
         }
+    NotificationHelper().createNotificationChannel(applicationContext)
 
     networkChangeReceiver = NetworkChangeReceiver { connected -> isOnline = connected }
     registerReceiver(networkChangeReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
