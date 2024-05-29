@@ -25,7 +25,7 @@ class OwnProfileViewModel : ViewModel() {
   private var _username = MutableLiveData("")
   private var _bio = MutableLiveData("")
   private val _image = MutableLiveData("")
-  private val _interests = MutableLiveData<Set<Interests>>()
+  private val _interests = MutableLiveData<Set<Interests>>(setOf())
   private var _userNameError = MutableLiveData("")
   private var _bioError = MutableLiveData("")
   private var _userNameIsUniqueCheck = MutableLiveData(true)

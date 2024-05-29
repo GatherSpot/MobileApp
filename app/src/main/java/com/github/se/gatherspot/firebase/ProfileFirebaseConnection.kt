@@ -26,13 +26,13 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    */
   fun fetch(id: String, onSuccess: () -> Unit): Profile {
     Log.d(TAG, "id: $id")
-    val profile = Profile("", "", "", id, Interests.new())
+    val profile = Profile("", "", "", id, Interests.fromCompressedString("1"))
     Firebase.firestore
         .collection(COLLECTION)
         .document(id)
         .get()
         .addOnSuccessListener { document ->
-          if (document != null) {
+          if (document.exists()) {
             Log.d(TAG, "Document is empty")
             profile.userName = document.get("userName") as String
             profile.bio = document.get("bio") as String
@@ -42,6 +42,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
             Log.d(TAG, "DocumentSnapshot data: ${document.data}")
           } else {
             Log.d(TAG, "No such document")
+
           }
         }
         .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
