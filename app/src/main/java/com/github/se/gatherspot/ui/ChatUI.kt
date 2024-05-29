@@ -96,7 +96,7 @@ fun ChatUI(viewModel: ChatViewModel, currentUserId: String, navActions: Navigati
               items(messages) { message ->
                 ChatMessageCard(
                     message = message, isCurrentUser = message.senderId == currentUserId) {
-                      ProfileFirebaseConnection().fetch(message.senderId)!!.userName
+                      ProfileFirebaseConnection().fetch(message.senderId)?.userName ?: "?"
                     }
               }
               // Add a small space at the end of the list

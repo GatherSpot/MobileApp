@@ -143,7 +143,7 @@ class ChatsTest {
       ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
         searchBar { performTextInput(testEvent.title) }
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 5000)
-
+        composeTestRule.waitForIdle()
         assert(viewModel.allEvents.value!!.size == 1)
 
         searchBar {
@@ -152,10 +152,12 @@ class ChatsTest {
         }
 
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("emptyText"), 5000)
+        composeTestRule.waitForIdle()
         assert(viewModel.allEvents.value!!.isEmpty())
 
         refresh { performClick() }
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 5000)
+        composeTestRule.waitForIdle()
         assert(viewModel.allEvents.value!!.isNotEmpty())
       }
 
