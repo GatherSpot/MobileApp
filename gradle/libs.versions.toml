@@ -15,6 +15,7 @@ roomCommon = "2.6.1"
 places = "3.4.0"
 playServicesLocation = "21.2.0"
 workRuntimeKtx = "2.9.0"
+uiTestAndroid = "1.6.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
