@@ -331,7 +331,7 @@ class RatingFirebaseConnectionTest {
 
       ratingFirebaseConnection.update(eventID, userID, rating, event1.organizerID)
 
-      delay(3000)
+      async { delay(3000) }.await()
 
       val event1Attendees =
           async { ratingFirebaseConnection.fetchAttendeesRatings(eventID) }.await()
@@ -347,7 +347,7 @@ class RatingFirebaseConnectionTest {
       assertEquals(secondRating, event2Attendees?.get(secondRater))
 
       // Ratings are correctly updated and fetched
-      delay(2000)
+      async { delay(3000) }.await()
 
       val event1Data = async { ratingFirebaseConnection.fetchEvent(eventID) }.await()
       val event2Data = async { ratingFirebaseConnection.fetchEvent(eventID2) }.await()
@@ -391,7 +391,7 @@ class RatingFirebaseConnectionTest {
 
       ratingFirebaseConnection.deleteOrganizer(event1.organizerID)
       ratingFirebaseConnection.deleteEventRating(eventID)
-      delay(1000)
+      async { delay(1000) }.await()
 
       val fetchOrganizerAfterDelete =
           async { ratingFirebaseConnection.fetchOrganizerGlobalRating(event1.organizerID) }.await()
