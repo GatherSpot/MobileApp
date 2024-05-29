@@ -82,7 +82,7 @@ class ChatUITest {
               finalAttendees = mutableListOf(),
               image = "",
               globalRating = null)
-      eventFirebaseConnection.add(event)
+      runBlocking { eventFirebaseConnection.add(event) }
       chatViewModel.addMessage(UUID.randomUUID().toString(), id, "Hello")
       ChatUI(chatViewModel, id, NavigationActions(rememberNavController()))
     }

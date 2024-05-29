@@ -40,7 +40,7 @@ class ChatsListViewModel : ViewModel() {
   /** Fetches the next set of events from the database. */
   fun fetchNextEvents() {
     viewModelScope.launch {
-      val eventIds = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS) {}
+      val eventIds = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS)
       Log.d(TAG, "from vm of interest $eventIds")
       val events = eventFirebaseConnection.fetchNextEvents(eventIds, PAGE_SIZE)
       eventsCopy = eventsCopy.plus(events)
@@ -77,10 +77,3 @@ class ChatsListViewModel : ViewModel() {
     _allEvents.value = filteredEvents
   }
 }
-
-/**
- * Represents the state of the UI.
- *
- * @property list MutableList<Event> The list of events.
- */
-data class ChatUIState(val list: MutableList<Event> = mutableListOf())
