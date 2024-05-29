@@ -12,6 +12,7 @@ import java.time.LocalTime
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import junit.framework.Assert.assertNull
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -58,6 +59,26 @@ class EventSQLiteConnectionTest {
           timeEnding = LocalTime.of(16, 0),
           image = "")
 
+  private val modifiedEvent =
+      Event(
+          id = "1",
+          title = "New Title",
+          description = "New Description",
+          attendanceMaxCapacity = 10,
+          attendanceMinCapacity = 5,
+          organizerID = Profile.testParticipant().id,
+          categories = setOf(Interests.BOWLING),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+          image = "")
+
   @Before
   fun createDb() {
     val context = ApplicationProvider.getApplicationContext<Context>()
@@ -73,7 +94,7 @@ class EventSQLiteConnectionTest {
 
   @Test
   @Throws(Exception::class)
-  fun writeAndRead() {
+  fun writeAndRead() = runTest {
     eventDao.insert(event1)
     val getVal1 = eventDao.get("1")
     assertEquals(event1, getVal1)
@@ -81,7 +102,7 @@ class EventSQLiteConnectionTest {
 
   @Test
   @Throws(Exception::class)
-  fun delete() {
+  fun delete() = runTest {
     eventDao.insert(event1, event2)
     eventDao.delete(event1)
     val getVal1 = eventDao.get("1")
@@ -92,31 +113,10 @@ class EventSQLiteConnectionTest {
 
   @Test
   @Throws(Exception::class)
-  fun update() {
+  fun update() = runTest {
     eventDao.insert(event1)
-    val modifiedEvent =
-        Event(
-            id = "1",
-            title = "New Title",
-            description = "New Description",
-            attendanceMaxCapacity = 10,
-            attendanceMinCapacity = 5,
-            organizerID = Profile.testParticipant().id,
-            categories = setOf(Interests.BOWLING),
-            eventEndDate = LocalDate.of(2024, 4, 15),
-            eventStartDate = LocalDate.of(2024, 4, 14),
-            globalRating = 4,
-            inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-            inscriptionLimitTime = LocalTime.of(23, 59),
-            location = null,
-            registeredUsers = mutableListOf(),
-            timeBeginning = LocalTime.of(13, 0),
-            timeEnding = LocalTime.of(16, 0),
-            image = "")
     eventDao.update(modifiedEvent)
     val modifiedEventFromDB = eventDao.get("1")
-    assert(modifiedEventFromDB.title == modifiedEvent.title)
-    assert(modifiedEventFromDB.description == modifiedEvent.description)
-    assert(modifiedEventFromDB.attendanceMinCapacity == 5)
+    assertEquals(modifiedEventFromDB, modifiedEvent)
   }
 }
