@@ -12,6 +12,7 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -73,6 +74,9 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
       }
       if (!(event.registeredUsers.contains(userId))) {
         event.registeredUsers.add(userId)
+        FirebaseMessaging.getInstance().subscribeToTopic("event_$userId").addOnSuccessListener {
+          Log.d("EventRegistrationViewModel", "Subscribed to topic")
+        }
         eventFirebaseConnection.addRegisteredUser(event.id, userId)
         registeredEventsList.add(event.id)
         _registrationState.value = RegistrationState.Success

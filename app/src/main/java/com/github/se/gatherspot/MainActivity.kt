@@ -32,6 +32,7 @@ import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer
 import com.github.se.gatherspot.model.utils.LocalTimeDeserializer
 import com.github.se.gatherspot.model.utils.LocalTimeSerializer
+import com.github.se.gatherspot.notification.NotificationHelper
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.FollowListUI
 import com.github.se.gatherspot.ui.SignUp
@@ -52,6 +53,7 @@ import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.LogIn
 import com.github.se.gatherspot.ui.topLevelDestinations.Map
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -78,6 +80,7 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
+    FirebaseApp.initializeApp(this)
     // val chatViewModel = ChatViewModel()
     app = application
     mapViewModel = MapViewModel(app)
@@ -93,7 +96,7 @@ class MainActivity : ComponentActivity() {
           ->
           mapAccess = isGranted
         }
-
+    NotificationHelper().createNotificationChannel(applicationContext)
     setContent {
       GatherSpotTheme {
         // A surface container using the 'background' color from the theme

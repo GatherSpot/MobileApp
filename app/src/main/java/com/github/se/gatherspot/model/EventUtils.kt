@@ -16,6 +16,7 @@ import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.ui.eventUI.EventAction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.messaging.FirebaseMessaging
 import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalTime
@@ -92,6 +93,7 @@ class EventUtils {
             image = image,
             categories = categories?.toSet(),
             eventStatus = EventStatus.CREATED)
+    FirebaseMessaging.getInstance().subscribeToTopic("event_${eventID}")
 
     // Add the event to the database
     eventFirebaseConnection.add(event)
