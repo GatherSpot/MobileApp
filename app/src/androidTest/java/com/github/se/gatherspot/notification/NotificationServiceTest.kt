@@ -5,7 +5,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
-import com.google.firebase.messaging.RemoteMessage
 import java.util.*
 import org.junit.Before
 import org.junit.Test
@@ -38,21 +37,5 @@ class NotificationServiceTest {
     val workInfo = workRequests[0]
     assert(workInfo.tags.contains(NotificationWorker::class.java.name))
     assert(workInfo.state == androidx.work.WorkInfo.State.ENQUEUED)
-  }
-
-  private fun createRemoteMessage(
-      title: String,
-      message: String,
-      scheduledTime: String
-  ): RemoteMessage {
-    val notificationMap = mapOf("title" to title, "body" to message)
-    val dataMap = mapOf("scheduledTime" to scheduledTime)
-
-    val builder = RemoteMessage.Builder("testSender").setMessageId("1").setTtl(3600)
-
-    notificationMap.forEach { builder.addData(it.key, it.value) }
-    dataMap.forEach { builder.addData(it.key, it.value) }
-
-    return builder.build()
   }
 }

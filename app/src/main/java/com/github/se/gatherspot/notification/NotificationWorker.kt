@@ -27,7 +27,8 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
         PackageManager.PERMISSION_GRANTED) {
       return Result.failure()
     }
-    NotificationManagerCompat.from(applicationContext).notify(1, notification)
+    val notificationId = System.currentTimeMillis().toInt()
+    NotificationManagerCompat.from(applicationContext).notify(notificationId, notification)
 
     return Result.success()
   }
