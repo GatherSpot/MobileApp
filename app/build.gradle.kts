@@ -172,11 +172,17 @@ dependencies {
 
   implementation("androidx.compose.ui:ui-graphics")
 
+  // for notifications from firebase
+  implementation ("com.google.firebase:firebase-messaging")
+  implementation ("com.google.firebase:firebase-functions")
+
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
   implementation(libs.androidx.core.animation)
   implementation(libs.play.services.location)
     implementation(libs.androidx.room.common)
   implementation(libs.core.ktx)
+  implementation(libs.androidx.work.runtime.ktx)
+
 
     // ---------------------- /IMPLEMENTATION> ------------------
 
