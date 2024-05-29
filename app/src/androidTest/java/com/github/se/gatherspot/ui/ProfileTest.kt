@@ -33,7 +33,7 @@ import org.junit.runner.RunWith
 class ProfileInstrumentedTest {
 
   @get:Rule val composeTestRule = createComposeRule()
-  private lateinit var db : AppDatabase
+  private lateinit var db: AppDatabase
 
   // for useful documentation on testing compose
   // https://developer.android.com/develop/ui/compose/testing-cheatsheet
@@ -44,9 +44,10 @@ class ProfileInstrumentedTest {
     testLogin()
     ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
     ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testParticipant())
-    IdListFirebaseConnection().delete(
-        "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING)
+    IdListFirebaseConnection()
+        .delete("TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING)
   }
+
   @After
   fun tearDown() {
     db.close()
