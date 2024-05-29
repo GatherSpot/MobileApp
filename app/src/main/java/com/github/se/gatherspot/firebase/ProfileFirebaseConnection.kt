@@ -4,7 +4,6 @@ import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
@@ -45,16 +44,6 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         }
         .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
     return profile
-  }
-
-  /**
-   * Gets the UID of the user logged in the current instance.
-   *
-   * @return the UID of the user logged in the current instance, or null if the user is not logged
-   *   in
-   */
-  fun getCurrentUserUid(): String? {
-    return FirebaseAuth.getInstance().currentUser?.uid
   }
 
   /**
