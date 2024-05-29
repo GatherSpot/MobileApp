@@ -221,7 +221,7 @@ dependencies {
   /// >
 
   androidTestImplementation("org.mockito:mockito-core:3.11.2")
-  androidTestImplementation("org.mockito:mockito-inline:2.13.0")
+  androidTestImplementation ("org.mockito:mockito-android:3.11.2")
   androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
   androidTestImplementation("androidx.test.ext:junit:1.1.5")
   androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -234,6 +234,7 @@ dependencies {
   androidTestImplementation("com.kaspersky.android-components:kaspresso-compose-support:1.4.1")
   androidTestImplementation("com.google.firebase:firebase-database")
   androidTestImplementation("com.google.firebase:firebase-firestore")
+  androidTestImplementation ("androidx.work:work-testing:2.7.1")
 
   // Image fetching library
   implementation("io.coil-kt:coil-compose:2.6.0")
