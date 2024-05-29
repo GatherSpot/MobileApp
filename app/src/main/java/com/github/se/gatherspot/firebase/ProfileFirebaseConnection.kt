@@ -42,7 +42,6 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
             Log.d(TAG, "DocumentSnapshot data: ${document.data}")
           } else {
             Log.d(TAG, "No such document")
-
           }
         }
         .addOnFailureListener { exception -> Log.d(TAG, "get failed with :", exception) }
