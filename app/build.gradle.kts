@@ -97,6 +97,10 @@ dependencies {
   implementation(platform("androidx.compose:compose-bom:2023.08.00"))
   /// >
 
+  // for notifications from firebase
+  implementation ("com.google.firebase:firebase-messaging")
+  implementation ("com.google.firebase:firebase-functions")
+
   // </firebase
   implementation(platform("com.google.firebase:firebase-bom:32.8.1")) // changed to newer version
   implementation("com.google.firebase:firebase-analytics")
@@ -174,8 +178,9 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
   implementation(libs.androidx.core.animation)
   implementation(libs.play.services.location)
+  implementation(libs.androidx.work.runtime.ktx)
 
-  // ---------------------- /IMPLEMENTATION> ------------------
+    // ---------------------- /IMPLEMENTATION> ------------------
 
   // DEBUG IMPLEMENTATION DEPENDENCIES
 
