@@ -65,8 +65,8 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
       return null
     }
     val eventID = d.getString("eventID")!!
-    val title = d.getString("title")!!
-    val description = d.getString("description")!!
+    val title = d.getString("title") ?: eventID
+    val description = d.getString("description") ?: ""
     val location: Location?
     val locationName = d.getString("locationName")!!
     location =
@@ -109,7 +109,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     val categoriesList = d.get("categories") as List<String>
     val categories = categoriesList.map { Interests.valueOf(it) }.toSet()
     val registeredUsers = d.get("registeredUsers") as MutableList<String>
-    val finalAttendee = d.get("finalAttendee") as MutableList<String>
+    val finalAttendee = d.get("finalAttendee") as MutableList<String> ?: mutableListOf()
     val image = d.getString("image")
     val globalRating =
         when (val rating = d.getString("globalRating")!!) {
@@ -299,6 +299,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
     return eventsFromQuerySnapshot(querySnapshot)
   }
 
+  /*
   /**
    * Fetch events the user is registered to.
    *
@@ -312,6 +313,61 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
             .orderBy("eventID")
             .whereArrayContains(
                 "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
+            .get()
+            .await()
+
+    return eventsFromQuerySnapshot(querySnapshot)
+  }
+
+     */
+
+  /**
+   * Fetch events the user is registered to and that are not over yet.
+   *
+   * @return The list of events fetched
+   */
+  suspend fun fetchUpComing(): MutableList<Event> {
+    val querySnapshot: QuerySnapshot =
+        Firebase.firestore
+            .collection(COLLECTION)
+            .orderBy("eventEndDate")
+            .whereArrayContains(
+                "registeredUsers", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
+            .get()
+            .await()
+
+    // Filtering events that take place in the future
+    val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED)
+    val now = LocalDate.now()
+
+    val events =
+        querySnapshot.documents
+            .mapNotNull { document ->
+              val eventEndDate = document.getString("eventEndDate") ?: return@mapNotNull null
+              val eventEndDateParsed = LocalDate.parse(eventEndDate, formatter)
+              if (now <= eventEndDateParsed) {
+                getFromDocument(document)
+              } else {
+                null
+              }
+            }
+            .toMutableList()
+    return events
+  }
+
+  /**
+   * Fetch events the user has Attended.
+   *
+   * @return The list of events fetched
+   */
+  suspend fun fetchAttended(): MutableList<Event> {
+    Log.d(FirebaseAuth.getInstance().currentUser?.uid ?: "forTest", "fetchAttended: ")
+    val querySnapshot: QuerySnapshot =
+        Firebase.firestore
+            .collection(COLLECTION)
+            .orderBy("eventID")
+            .whereArrayContains(
+                "finalAttendee", FirebaseAuth.getInstance().currentUser?.uid ?: "noneForTests")
             .get()
             .await()
 
@@ -353,7 +409,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
    * @param ids: The list of ids of the users followed
    * @return The list of events fetched
    */
-  suspend fun fetchEventsFromFollowedUsers(ids: List<String>): MutableList<Event> {
+  suspend fun fetchEventsFrom(ids: List<String>): MutableList<Event> {
     return when {
       ids.isEmpty() -> mutableListOf()
       else -> {
@@ -381,6 +437,33 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
         .collection(COLLECTION)
         .document(eventID)
         .update("registeredUsers", FieldValue.arrayUnion(uid))
+        .await()
+  }
+  /**
+   * Remove a user to the list of registered users for an event.
+   *
+   * @param eventID: The id of the event
+   * @param uid: The id of the user
+   */
+  suspend fun removeRegisteredUser(eventID: String, uid: String) {
+    Firebase.firestore
+        .collection(COLLECTION)
+        .document(eventID)
+        .update("registeredUsers", FieldValue.arrayRemove(uid))
+        .await()
+  }
+
+  /**
+   * Add a user to the list of final attendee for an event.
+   *
+   * @param eventID: The id of the event
+   * @param uid: The id of the user
+   */
+  suspend fun addFinalAttendee(eventID: String, uid: String) {
+    Firebase.firestore
+        .collection(COLLECTION)
+        .document(eventID)
+        .update("finalAttendee", FieldValue.arrayUnion(uid))
         .await()
   }
 
@@ -470,7 +553,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
                 when (element.eventEndDate) {
                   null ->
                       EVENT_END_DATE_DEFAULT_VALUE.format(
-                          DateTimeFormatter.ofPattern(DATE_FORMAT_STORED))
+                          DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
                   else ->
                       element.eventEndDate.format(
                           DateTimeFormatter.ofPattern(DATE_FORMAT_DISPLAYED))
