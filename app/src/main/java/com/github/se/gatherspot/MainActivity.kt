@@ -76,7 +76,6 @@ class MainActivity : ComponentActivity() {
     lateinit var app: Application
     var savedCameraPositionState: CameraPositionState? = null
     var selectedInterests = MutableLiveData(Interests.new())
-
   }
 
   private lateinit var navController: NavHostController
@@ -93,24 +92,24 @@ class MainActivity : ComponentActivity() {
     builder.setTitle("Verification Email Sent")
     builder.setMessage("Please check your email to verify your account before continuing.")
     builder.setPositiveButton("Resend email", null)
-      //Firebase.auth.currentUser!!.sendEmailVerification()
+    // Firebase.auth.currentUser!!.sendEmailVerification()
     builder.setNeutralButton("Sign out", null)
-    builder.setOnDismissListener {
-    }
+    builder.setOnDismissListener {}
     val alertDialog: AlertDialog = builder.create()
-    alertDialog.setOnShowListener(DialogInterface.OnShowListener {
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+    alertDialog.setOnShowListener(
+        DialogInterface.OnShowListener {
+          alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             Firebase.auth.currentUser!!.sendEmailVerification()
-        }
+          }
 
-      alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
-        Firebase.auth.signOut()
-        alertDialog.dismiss()
-      }
-
-    })
+          alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+            Firebase.auth.signOut()
+            alertDialog.dismiss()
+          }
+        })
     alertDialog.show()
   }
+
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
 
