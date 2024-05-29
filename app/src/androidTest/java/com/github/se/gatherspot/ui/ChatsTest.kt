@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.model.IdList
@@ -20,8 +21,8 @@ import com.google.firebase.auth.auth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -34,40 +35,40 @@ class ChatsTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   lateinit var id: String
+  private var testEvent =
+      Event(
+          id = "idFilteringChat",
+          title = "Here to test filtering of chats",
+          description =
+              "Hello: I am a description of the event just saying that I would love to say" +
+                  "that Messi is not the best player in the world, but I can't. I am sorry.",
+          attendanceMaxCapacity = 5,
+          attendanceMinCapacity = 1,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.of(2024, 4, 15),
+          eventStartDate = LocalDate.of(2024, 4, 14),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf(),
+          timeBeginning = LocalTime.of(10, 0),
+          timeEnding = LocalTime.of(12, 0),
+          image = "")
 
   @Before
-  fun testLogin() = runBlocking {
-    Firebase.auth
-        .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;")
-        .addOnSuccessListener { id = Firebase.auth.currentUser?.uid ?: "" }
-        .await()
-
-    EventFirebaseConnection()
-        .add(
-            Event(
-                id = "idTestEvent",
-                title = "Event Title",
-                description =
-                    "Hello: I am a description of the event just saying that I would love to say" +
-                        "that Messi is not the best player in the world, but I can't. I am sorry.",
-                attendanceMaxCapacity = 5,
-                attendanceMinCapacity = 1,
-                categories = setOf(Interests.BASKETBALL),
-                eventEndDate = LocalDate.of(2024, 4, 15),
-                eventStartDate = LocalDate.of(2024, 4, 14),
-                globalRating = 4,
-                inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-                inscriptionLimitTime = LocalTime.of(23, 59),
-                location = null,
-                registeredUsers = mutableListOf(),
-                timeBeginning = LocalTime.of(10, 0),
-                timeEnding = LocalTime.of(12, 0),
-                image = ""))
+  fun setUp() = runBlocking {
+    EnvironmentSetter.testLogin()
+    id = Firebase.auth.currentUser!!.uid
+    EventFirebaseConnection().add(testEvent)
   }
 
   @After
-  fun testLoginCleanUp() {
-    Firebase.auth.signOut()
+  fun cleanUp() {
+    runBlocking {
+      EnvironmentSetter.testLoginCleanUp()
+      EventFirebaseConnection().delete(testEvent.id)
+    }
   }
 
   @Test
@@ -91,6 +92,12 @@ class ChatsTest {
         assertExists()
         assertIsDisplayed()
       }
+
+      refresh {
+        assertExists()
+        assertIsDisplayed()
+        assertHasClickAction()
+      }
     }
   }
 
@@ -98,16 +105,13 @@ class ChatsTest {
   @Test
   fun chatsAreDisplayedAndScrollable() {
 
+    runBlocking { IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add(testEvent.id) }
+
     composeTestRule.waitForIdle()
     val viewModel = ChatsListViewModel()
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
       Chats(viewModel = viewModel, nav = nav)
-    }
-
-    runBlocking {
-      IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add("idTestEvent")
-      EventFirebaseConnection().addRegisteredUser("idTestEvent", id)
     }
 
     ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
@@ -119,9 +123,44 @@ class ChatsTest {
       }
     }
 
+    runBlocking { IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove(testEvent.id) }
+  }
+
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun filteringAndRefreshWorkCorrectly() {
     runBlocking {
-      IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove("idTestEvent")
-      EventFirebaseConnection().delete("idTestEvent")
+      IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add(testEvent.id)
+      EventFirebaseConnection().addRegisteredUser(testEvent.id, id)
+      delay(5000)
+      val viewModel = ChatsListViewModel()
+      composeTestRule.setContent {
+        val nav = NavigationActions(rememberNavController())
+        Chats(viewModel = viewModel, nav = nav)
+      }
+
+      delay(5000)
+      ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
+        searchBar { performTextInput(testEvent.title) }
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 5000)
+
+        assert(viewModel.allEvents.value!!.size == 1)
+
+        searchBar {
+          performTextClearance()
+          performTextInput("NoneSense")
+        }
+
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("emptyText"), 5000)
+        assert(viewModel.allEvents.value!!.isEmpty())
+
+        refresh { performClick() }
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 5000)
+        assert(viewModel.allEvents.value!!.isNotEmpty())
+      }
+
+      IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove(testEvent.id)
+      EventFirebaseConnection().removeRegisteredUser(testEvent.id, id)
     }
   }
 }
