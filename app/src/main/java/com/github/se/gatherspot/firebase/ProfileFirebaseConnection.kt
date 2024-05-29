@@ -4,11 +4,9 @@ import android.util.Log
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
-import kotlin.coroutines.resume
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 
 /** Firebase connection for profiles. */
 class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
@@ -49,30 +47,15 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
   }
 
   /**
-   * Gets the UID of the user logged in the current instance.
-   *
-   * @return the UID of the user logged in the current instance, or null if the user is not logged
-   *   in
-   */
-  fun getCurrentUserUid(): String? {
-    return FirebaseAuth.getInstance().currentUser?.uid
-  }
-
-  /**
-   * Checks if the username exists in the database Once the check is done, the onComplete lambda is
-   * called with the result of the check : true if the username exists, false otherwise.
+   * Checks if the username exists in the database
    *
    * @param userName the username to check
-   * @param onComplete the lambda to call when the check is done
+   * @return true if the username exists, false otherwise
    */
-  fun ifUsernameExists(userName: String, onComplete: (Boolean) -> Unit) {
-
-    Firebase.firestore
-        .collection(COLLECTION)
-        .whereEqualTo("userName", userName)
-        .get()
-        .addOnSuccessListener { result -> onComplete(result.documents.isNotEmpty()) }
-        .addOnFailureListener { onComplete(true) }
+  suspend fun usernameExists(userName: String): Boolean {
+    val document =
+        Firebase.firestore.collection(COLLECTION).whereEqualTo("userName", userName).get().await()
+    return document.documents.isNotEmpty()
   }
 
   /**
@@ -82,42 +65,25 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @param userName the username of the user
    * @return the profile with the given username, or null if the username does not exist
    */
-  suspend fun fetchFromUserName(userName: String): Profile? =
-      suspendCancellableCoroutine { continuation ->
-        Firebase.firestore
-            .collection(COLLECTION)
-            .whereEqualTo("userName", userName)
-            .get()
-            .addOnSuccessListener { querysnps ->
-              when {
-                querysnps.documents.isEmpty() -> continuation.resume(null)
-                else -> continuation.resume(getFromDocument(querysnps.documents[0]))
-              }
-            }
-            .addOnFailureListener { exception ->
-              Log.d(TAG, exception.toString())
-              continuation.resume(null)
-            }
-      }
+  suspend fun fetchFromUserName(userName: String): Profile? {
+    val query =
+        Firebase.firestore.collection(COLLECTION).whereEqualTo("userName", userName).get().await()
+    return query.documents.firstOrNull()?.let { getFromDocument(it) }
+  }
 
   /**
    * Adds or overrides a profile to the database.
    *
    * @param element the profile to add
    */
-  override fun add(element: Profile) {
+  override suspend fun add(element: Profile) {
     val data =
         hashMapOf(
             "userName" to element.userName,
             "bio" to element.bio,
             "image" to element.image,
             "interests" to Interests.toCompressedString(element.interests))
-    Firebase.firestore
-        .collection(COLLECTION)
-        .document(element.id)
-        .set(data)
-        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
-        .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+    Firebase.firestore.collection(COLLECTION).document(element.id).set(data).await()
   }
 
   /**
@@ -127,7 +93,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @param field the field to update : {userName, bio, image, interests}
    * @param value the new value of the field
    */
-  override fun update(id: String, field: String, value: Any) {
+  override suspend fun update(id: String, field: String, value: Any) {
     when (field) {
       "interests" -> {
         when (value) {
@@ -147,16 +113,13 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
         }
       }
       "userName" -> {
-        ifUsernameExists(value as String) { exists ->
-          if (exists) {
-            Log.d(TAG, "Username already exists")
-            return@ifUsernameExists
-          }
+        if (!usernameExists(value as String)) super.update(id, field, value)
+        else {
+          Log.d(TAG, "Username already exists")
         }
       }
+      else -> super.update(id, field, value)
     }
-
-    super.update(id, field, value)
   }
 
   /**
@@ -164,7 +127,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    *
    * @param profile the profile to update
    */
-  fun update(profile: Profile) {
+  suspend fun update(profile: Profile) {
     this.add(profile)
   }
 
@@ -174,13 +137,12 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    * @param id the id of the profile
    * @param interests the new interests of the profile
    */
-  fun updateInterests(id: String, interests: Set<Interests>) {
+  private suspend fun updateInterests(id: String, interests: Set<Interests>) {
     Firebase.firestore
         .collection(COLLECTION)
         .document(id)
         .update("interests", Interests.toCompressedString(interests))
-        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
-        .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+        .await()
   }
 
   /**

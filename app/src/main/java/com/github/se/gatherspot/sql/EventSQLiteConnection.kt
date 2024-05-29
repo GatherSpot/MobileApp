@@ -3,6 +3,7 @@ package com.github.se.gatherspot.sql
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.github.se.gatherspot.model.event.Event
@@ -16,7 +17,7 @@ interface EventDao {
    *
    * @return the list of events
    */
-  @Query("SELECT * FROM event") fun getAll(): List<Event>
+  @Query("SELECT * FROM event") fun getAll(): List<Event>?
 
   /**
    * You can use this one to sort between events you are registered to vs your events, etc.. simply
@@ -26,22 +27,28 @@ interface EventDao {
    * @return the list of events
    */
   @Query("SELECT * FROM event WHERE id IN (:eventIds)")
-  fun getAll(eventIds: List<String>): List<Event>
+  fun getAll(eventIds: List<String>): List<Event>?
+
+  /**
+   * Get an event by its id
+   *
+   * @param id the id of the event
+   * @return the event
+   */
+  @Query("SELECT * FROM event WHERE id = :id") fun get(id: String): Event?
 
   @Query("SELECT * FROM event WHERE organizerID = :id")
-  fun getAllFromOrganizerId(id: String): List<Event>
+  fun getAllFromOrganizerId(vararg id: String): List<Event>?
 
   @Query("SELECT * FROM event WHERE registeredUsers LIKE '%' || :id || '%'")
-  fun getAllWhereIdIsRegistered(id: String): List<Event>
-
-  @Query("SELECT * FROM event WHERE id = :id") fun get(id: String): Event
+  fun getAllWhereIdIsRegistered(id: String): List<Event>?
 
   /**
    * Insert an event
    *
    * @param event the event
    */
-  @Insert fun insert(vararg event: Event)
+  @Insert(onConflict = OnConflictStrategy.REPLACE) fun insert(vararg event: Event)
 
   /**
    * Delete an event

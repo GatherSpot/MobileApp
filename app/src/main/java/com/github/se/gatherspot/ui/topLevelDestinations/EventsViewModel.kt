@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
+import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 
 class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   private val eventDao = localDataBase.EventDao()
+  private val idListDao = localDataBase.IdListDao()
   private val uid = Firebase.auth.uid!!
   val PAGESIZE: Long = 9
   private var _allEvents = MutableLiveData<List<Event>>(listOf())
@@ -106,7 +108,6 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
    * events.
    */
   fun fetchFromFollowedUsers() {
-    // TODO implement fetch thoses ids from localdatabase, as they are never stale locally
     viewModelScope.launch(Dispatchers.IO) {
       val ids =
           FollowList.following(
@@ -114,6 +115,24 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
       Log.d(TAG, "ids from viewModel ${ids.elements}")
       val events = eventFirebaseConnection.fetchEventsFrom(ids.elements)
       _fromFollowedUsers.postValue(events)
+      // Try to get from local first
+      val localIds = idListDao.get(FirebaseCollection.FOLLOWING, uid)
+      if (localIds?.elements?.isNotEmpty() == true) {
+        val localEvents = eventDao.getAllFromOrganizerId(*localIds.elements.toTypedArray())
+        if (!localEvents.isNullOrEmpty()) {
+          _fromFollowedUsers.postValue(localEvents!!)
+        }
+      }
+      // Try to get from firebase and update local
+      try {
+        val ids =
+            FollowList.following(
+                FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId)
+        Log.d(TAG, "ids from viewModel ${ids.elements}")
+        val events = eventFirebaseConnection.fetchEventsFrom(ids.elements)
+        eventDao.insert(*events.toTypedArray())
+        _fromFollowedUsers.postValue(events)
+      } catch (_: Exception) {}
     }
   }
 

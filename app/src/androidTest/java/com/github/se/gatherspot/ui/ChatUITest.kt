@@ -104,6 +104,7 @@ class ChatUITest {
       inputMessage.assertIsDisplayed()
       sendButton.assertIsDisplayed()
     }
+
     runBlocking {
       FirebaseFirestore.getInstance()
           .collection(chatViewModel.chatMessagesFirebase.CHATS)

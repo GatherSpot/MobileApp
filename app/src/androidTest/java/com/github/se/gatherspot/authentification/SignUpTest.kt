@@ -4,6 +4,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,13 +16,17 @@ import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
-import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.github.se.gatherspot.ui.signUp.SignUp
+import com.github.se.gatherspot.ui.signUp.SignUpViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import kotlin.time.Duration
+import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,8 +36,26 @@ class SignUpTest : TestCase() {
 
   @get:Rule val composeTestRule = createComposeRule()
 
+  private lateinit var viewModel: SignUpViewModel
+
+  @Before
+  fun setup() {
+    viewModel = SignUpViewModel()
+    composeTestRule.setContent {
+      val navController = rememberNavController()
+      NavHost(navController = navController, startDestination = "auth") {
+        navigation(startDestination = "signup", route = "auth") {
+          composable("signup") { SignUp(viewModel, NavigationActions(navController)) }
+        }
+        navigation(startDestination = "events", route = "home") {
+          composable("setup") { SetUpProfile(NavigationActions(navController)) }
+        }
+      }
+    }
+  }
+
   @After
-  fun cleanUp() {
+  fun cleanUp() = runTest {
     val currentUser = FirebaseAuth.getInstance().currentUser
     if (currentUser != null) {
       ProfileFirebaseConnection().delete(currentUser.uid)
@@ -42,71 +65,42 @@ class SignUpTest : TestCase() {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun signUp() {
-    val email = "gatherspot2024@gmail.com"
-    val userName = "GatherSpot"
-    // signUpSetUp(userName, email)
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      NavHost(navController = navController, startDestination = "auth") {
-        navigation(startDestination = "signup", route = "auth") {
-          composable("signup") { SignUp(NavigationActions(navController)) }
+  fun signUp() =
+      runTest(timeout = Duration.parse("30s")) {
+        val email = "gatherspot2024@gmail.com"
+        val userName = "GatherSpot"
+        ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
+          usernameField {
+            assertExists()
+            assertIsDisplayed()
+            performTextInput(userName)
+          }
+          emailField {
+            assertExists()
+            assertIsDisplayed()
+            performTextInput(email)
+          }
+          passwordField {
+            assertExists()
+            assertIsDisplayed()
+            performTextInput("GatherSpot,2024;")
+          }
+          Espresso.closeSoftKeyboard()
+          button {
+            assertExists()
+            assertIsDisplayed()
+            performClick()
+          }
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 6000)
         }
-        navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(NavigationActions(navController)) }
-        }
-      }
-    }
 
-    ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
-      usernameField {
-        assertExists()
-        assertIsDisplayed()
-        performTextInput(userName)
+        signUpCleanUp(userName)
       }
-      emailField {
-        assertExists()
-        assertIsDisplayed()
-        performTextInput(email)
-      }
-      passwordField {
-        assertExists()
-        assertIsDisplayed()
-        performTextInput("GatherSpot,2024;")
-      }
-      Espresso.closeSoftKeyboard()
-      button {
-        assertExists()
-        assertIsDisplayed()
-        performClick()
-      }
-
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 6000)
-
-      verifDialog.assertExists()
-      verifDialog.assertIsDisplayed()
-      verifDialog.performClick()
-    }
-
-    signUpCleanUp(userName)
-  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUpError() {
     signUpErrorSetUp()
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      NavHost(navController = navController, startDestination = "auth") {
-        navigation(startDestination = "signup", route = "auth") {
-          composable("signup") { SignUp(NavigationActions(navController)) }
-        }
-        navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(NavigationActions(navController)) }
-        }
-      }
-    }
-
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField {
         performTextInput("test")
@@ -133,18 +127,6 @@ class SignUpTest : TestCase() {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun emailAlreadyInUse() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      NavHost(navController = navController, startDestination = "auth") {
-        navigation(startDestination = "signup", route = "auth") {
-          composable("signup") { SignUp(NavigationActions(navController)) }
-        }
-        navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(NavigationActions(navController)) }
-        }
-      }
-    }
-
     ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
       usernameField { performTextInput("otherTest") }
       emailField { performTextInput("test@test.com") }

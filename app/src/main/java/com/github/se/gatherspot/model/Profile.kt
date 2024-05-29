@@ -1,6 +1,8 @@
 package com.github.se.gatherspot.model
 
 import androidx.lifecycle.MutableLiveData
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.github.se.gatherspot.firebase.CollectionClass
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 
@@ -13,13 +15,17 @@ import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
  * @param interests the interests of the user
  * @param id the id of the user
  */
-class Profile(
+@Entity
+data class Profile(
     var userName: String,
     var bio: String,
     var image: String,
-    override val id: String,
+    @PrimaryKey override val id: String,
     var interests: Set<Interests>,
 ) : CollectionClass() {
+  fun withNewImage(newImage: String?): Profile {
+    return Profile(userName, bio, newImage ?: image, id, interests)
+  }
 
   companion object {
     fun testOrganizer(): Profile {
@@ -28,16 +34,6 @@ class Profile(
 
     fun testParticipant(): Profile {
       return Profile("Steeve", "I play pokemon go", "", "TEST2", setOf(Interests.FOOTBALL))
-    }
-
-    /**
-     * Fetch a profile from Firebase
-     *
-     * @param id the id of the profile
-     * @param onSuccess the function to call when the profile is fetched
-     */
-    fun fromFirebase(id: String, onSuccess: () -> Unit) {
-      ProfileFirebaseConnection().fetch(id) { onSuccess() }
     }
 
     /**
@@ -56,11 +52,10 @@ class Profile(
      * @param oldName the old username
      * @return a string with the error message if there is one
      */
-    fun checkUsername(
+    suspend fun checkUsername(
         newName: String,
         oldName: String?,
         res: MutableLiveData<String>,
-        onSuccess: () -> Unit
     ) {
       val regex = ProfileRegex
       if (newName.isEmpty()) {
@@ -71,21 +66,11 @@ class Profile(
       } else if (newName.length > 20) {
         res.postValue("Username cannot be longer than 20 characters")
       } else if (newName != oldName) {
-        ProfileFirebaseConnection().ifUsernameExists(newName) {
-          res.postValue(if (it) "Username already taken" else "")
-          onSuccess()
-        }
+        if (ProfileFirebaseConnection().usernameExists(newName))
+            res.postValue("Username already taken")
+        else res.postValue("")
       }
     }
-
-    /**
-     * Add a profile to Firebase (with default values)
-     *
-     * @param username the username of the user
-     * @param id the id of the user
-     */
-    fun add(username: String, id: String) =
-        ProfileFirebaseConnection().add(Profile(username, "", "", id, Interests.new()))
 
     /**
      * Check if a bio is valid
