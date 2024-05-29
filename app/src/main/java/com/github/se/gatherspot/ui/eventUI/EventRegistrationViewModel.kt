@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
@@ -68,11 +69,16 @@ open class EventRegistrationViewModel(registered: List<String>) : ViewModel() {
    * Registers the user for the given event
    *
    * @param event the event to register for
+   * @param eventDao the eventDao to save the event to the local database
    */
   fun registerForEvent(event: Event, eventDao: EventDao? = null) {
     // Perform registration logic here, such as making network requests
     viewModelScope.launch(Dispatchers.IO) {
       // Simulate network request delay
+      if (!MainActivity.isOnline) {
+        _registrationState.postValue(
+            RegistrationState.Error("Currently offline. Please try again later."))
+      }
       if (event.attendanceMaxCapacity != null) {
         if (event.registeredUsers.size >= event.attendanceMaxCapacity) {
           _registrationState.postValue(RegistrationState.Error("Event is full"))
