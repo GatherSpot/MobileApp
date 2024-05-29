@@ -23,7 +23,9 @@ import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.eventUI.EventUI
 import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.lang.Thread.sleep
 import java.time.LocalDate
@@ -464,7 +466,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
+              organizerID = Firebase.auth.uid!!,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
