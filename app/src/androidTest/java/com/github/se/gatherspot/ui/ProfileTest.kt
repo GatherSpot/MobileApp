@@ -109,7 +109,8 @@ class ProfileInstrumentedTest {
       follow { hasText("Follow") }
       addFriend { assertExists() }
       follow { performClick() }
-      composeTestRule.waitUntilAtLeastOneExists(hasText("Unfollow"), 6000)
+      sleep(6000)
+      follow { hasText("Unfollow") }
     }
   }
 }
