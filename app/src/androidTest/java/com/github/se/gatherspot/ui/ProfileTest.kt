@@ -17,15 +17,12 @@ import com.github.se.gatherspot.ui.profile.ProfileScaffold
 import com.github.se.gatherspot.ui.profile.ProfileScreen
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import kotlinx.coroutines.delay
+import java.lang.Thread.sleep
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.Thread.sleep
-import kotlin.time.Duration
 
 @RunWith(AndroidJUnit4::class)
 class ProfileInstrumentedTest {
@@ -40,14 +37,14 @@ class ProfileInstrumentedTest {
     ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testOrganizer())
     ProfileFirebaseConnection().add(com.github.se.gatherspot.model.Profile.testParticipant())
     IdListFirebaseConnection().delete(
-      "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING) {}
+        "TEST", com.github.se.gatherspot.firebase.FirebaseCollection.FOLLOWING) {}
   }
 
   // For now on this branch, we will not test the profile screen because it does not pass the CI
 
   @OptIn(androidx.compose.ui.test.ExperimentalTestApi::class)
   @Test
-  fun editableProfileScreenTest(){
+  fun editableProfileScreenTest() {
     composeTestRule.setContent {
       val navController = rememberNavController()
       ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel() })
@@ -79,9 +76,7 @@ class ProfileInstrumentedTest {
       bioInput { performTextReplacement("I am a bot") }
       Espresso.closeSoftKeyboard()
       composeTestRule.waitForIdle()
-      cancel {
-        performClick()
-      }
+      cancel { performClick() }
       composeTestRule.waitForIdle()
       // check if things are here :
       usernameInput { hasText(original_username) }
