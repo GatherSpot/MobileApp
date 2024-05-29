@@ -88,7 +88,7 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
     _userNameIsUniqueCheck.value = false
     viewModelScope.launch {
       try {
-        Profile.checkUsername(userName, null, _userNameError)
+        Profile.checkUsername(userName, _oldProfile?.userName, _userNameError)
         _userNameIsUniqueCheck.postValue(true)
       } catch (e: Exception) {
         // TODO show error dialog
@@ -103,8 +103,10 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
    */
   fun updateBio(bio: String) {
     _bioError = Profile.checkBio(bio)
-    _profile.value?.bio = bio
-    _profile.value = _profile.value // force update
+    _profile.value?.apply {
+      this.bio = bio
+      _profile.value = this
+    }
   }
 
   /**
@@ -114,7 +116,10 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
    */
   fun updateProfileImage(url: String) {
     _profile.value?.image = url
-    _profile.value = _profile.value // force update
+    _profile.value?.apply {
+      this.image = url
+      _profile.value = this
+    }
   }
 
   /** Remove the profile picture. */
@@ -135,8 +140,10 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
    * @param interest The interest to flip
    */
   fun flipInterests(interest: Interests) {
-    _profile.value?.interests = Interests.flipInterest(interests.value ?: setOf(), interest)
-    _profile.value = _profile.value // force update
+    _profile.value?.apply {
+      this.interests = Interests.flipInterest(interests, interest)
+      _profile.value = this
+    }
   }
 
   private fun noErrors(): Boolean {
@@ -169,7 +176,7 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
           _profile.postValue(_oldProfile)
         }
       }
-    }
+    } else _profile.postValue(_oldProfile)
     _isEditing.value = false
   }
 
