@@ -373,48 +373,51 @@ class EventUITest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testRegistrationStatus(): Unit = runBlocking {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description = "Hello: I am a description",
-              attendanceMaxCapacity = 10,
-              attendanceMinCapacity = 1,
-              organizerID = Profile.testParticipant().id,
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2025, 4, 15),
-              eventStartDate = LocalDate.of(2025, 4, 14),
-              globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2025, 4, 11),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              registeredUsers = mutableListOf(),
-              timeBeginning = LocalTime.of(13, 0),
-              timeEnding = LocalTime.of(16, 0),
-              image = "")
-      val eventFirebase = EventFirebaseConnection()
-      eventFirebase.add(event)
-      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
-    }
-    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      composeTestRule.waitForIdle()
-      registerButton {
-        assert(hasText("Unregistered / Register"))
-        performClick()
+  fun testRegistrationStatus() =
+      runTest(timeout = Duration.parse("20s")) {
+        val eventFirebase = EventFirebaseConnection()
+        val event =
+            Event(
+                id = "1",
+                title = "Event Title",
+                description = "Hello: I am a description",
+                attendanceMaxCapacity = 10,
+                attendanceMinCapacity = 1,
+                organizerID = Profile.testParticipant().id,
+                categories = setOf(Interests.BASKETBALL),
+                eventEndDate = LocalDate.of(2025, 4, 15),
+                eventStartDate = LocalDate.of(2025, 4, 14),
+                globalRating = 4,
+                inscriptionLimitDate = LocalDate.of(2025, 4, 11),
+                inscriptionLimitTime = LocalTime.of(23, 59),
+                location = null,
+                registeredUsers = mutableListOf(),
+                timeBeginning = LocalTime.of(13, 0),
+                timeEnding = LocalTime.of(16, 0),
+                image = "")
+        eventFirebase.add(event)
+
+        composeTestRule.setContent {
+          val navController = rememberNavController()
+
+          EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
+        }
+        ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+          composeTestRule.waitForIdle()
+          registerButton {
+            assert(hasText("Unregistered / Register"))
+            performClick()
+          }
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
+          okButton { performClick() }
+          registerButton {
+            assert(hasText("Registered / Unregister"))
+            performClick()
+          }
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
+          okButton { performClick() }
+        }
       }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
-      okButton { performClick() }
-      registerButton {
-        assert(hasText("Registered / Unregister"))
-        performClick()
-      }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
-      okButton { performClick() }
-    }
-  }
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {

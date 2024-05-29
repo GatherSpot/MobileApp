@@ -314,7 +314,7 @@ class EventsTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("followedEventsList"), 20000)
     }
   }
-/*
+  /*
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun entireCreationFlow() {
@@ -439,7 +439,6 @@ class EventsTest {
     EventFirebaseConnection().delete(event.id)
 
      */
-  }
 }
 
 /*
