@@ -61,13 +61,6 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
   val state = viewModel.allEvents.observeAsState(listOf())
   var fetch by remember { mutableStateOf(false) }
 
-  LaunchedEffect(fetch) {
-    if (fetch) {
-      viewModel.fetchNextEvents()
-    }
-    fetch = false
-  }
-
   Scaffold(
       topBar = { ChatsTopAppBar("Chats", viewModel) },
       bottomBar = {
