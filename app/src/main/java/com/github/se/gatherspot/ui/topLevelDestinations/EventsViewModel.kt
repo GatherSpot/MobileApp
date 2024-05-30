@@ -32,6 +32,11 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   private var _myEvents = MutableLiveData<List<Event>>(listOf())
   private var _upComing = MutableLiveData<List<Event>>(listOf())
   private var _attended = MutableLiveData<List<Event>>(listOf())
+  private var _fetching = MutableLiveData(false)
+  private var _fetchingUpcoming = MutableLiveData(false)
+  private  var _fetchingAttended = MutableLiveData(false)
+  private var _fetchingFollowed = MutableLiveData(false)
+  private var _fetchingMine = MutableLiveData(false)
   private var _fromFollowedUsers = MutableLiveData<List<Event>>(listOf())
   private val viewModelJob = SupervisorJob()
   private val viewModelScope = CoroutineScope(Dispatchers.Main + viewModelJob)
@@ -50,6 +55,12 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   val attended: LiveData<List<Event>> = _attended
   val fromFollowedUsers: LiveData<List<Event>> = _fromFollowedUsers
   val showFilterDialog: LiveData<Boolean> = _showFilterDialog
+  val fetching: LiveData<Boolean> = _fetching
+  val fetchingUpcoming: LiveData<Boolean> = _fetchingUpcoming
+  val fetchingAttended: LiveData<Boolean> = _fetchingAttended
+  val fetchingFollowed: LiveData<Boolean> = _fetchingFollowed
+  val fetchingMine: LiveData<Boolean> = _fetchingMine
+
   // fetch all event lists on activity start.
   init {
     fetchWithInterests()
@@ -62,12 +73,14 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   /** Fetch my events from the local database and update the live data with the new events. */
   fun fetchMyEvents() {
     viewModelScope.launch(Dispatchers.IO) {
+      _fetchingMine.postValue(true)
       _myEvents.postValue(eventDao.getAllFromOrganizerId(uid))
       try {
         val events = eventFirebaseConnection.fetchMyEvents()
         _myEvents.postValue(events)
         eventDao.insert(*events.toTypedArray())
       } catch (_: Exception) {}
+      _fetchingMine.postValue(false)
     }
   }
 
@@ -77,13 +90,15 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
    */
   fun fetchAttended() {
     viewModelScope.launch(Dispatchers.IO) {
-      // _upComing.postValue(eventDao.getAllWhereIdIsRegistered(uid))
+      _fetchingAttended.postValue(true)
+      _upComing.postValue(eventDao.getAllPastWhereIdIsRegistered(uid))
       lateinit var events: List<Event>
       try {
         events = eventFirebaseConnection.fetchAttended()
         _attended.postValue(events)
         eventDao.insert(*events.toTypedArray())
       } catch (_: Exception) {}
+    _fetchingAttended.postValue(false)
     }
   }
 
@@ -93,14 +108,15 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
    */
   fun fetchUpComing() {
     viewModelScope.launch(Dispatchers.IO) {
-      // _upComing.postValue(eventDao.getAllWhereIdIsRegistered(uid)) //TODO Make the eventDAO
-      // function
+      _fetchingUpcoming.postValue(true)
+      _upComing.postValue(eventDao.getAllUpcomingWhereIdIsRegistered(uid))
       lateinit var events: List<Event>
       try {
         events = eventFirebaseConnection.fetchUpComing()
         _upComing.postValue(events)
         eventDao.insert(*events.toTypedArray())
       } catch (_: Exception) {}
+      _fetchingUpcoming.postValue(false)
     }
   }
   /**
@@ -109,6 +125,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
    */
   fun fetchFromFollowedUsers() {
     viewModelScope.launch(Dispatchers.IO) {
+      _fetchingFollowed.postValue(true)
       val ids =
           FollowList.following(
               FirebaseAuth.getInstance().currentUser?.uid ?: UtilsForTests.testLoginId)
@@ -133,6 +150,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
         eventDao.insert(*events.toTypedArray())
         _fromFollowedUsers.postValue(events)
       } catch (_: Exception) {}
+      _fetchingFollowed.postValue(false)
     }
   }
 
@@ -144,12 +162,22 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     fetchJob?.cancel()
     fetchJob =
         viewModelScope.launch(Dispatchers.IO) {
+          _fetching.postValue(true)
           val newEvents =
               eventFirebaseConnection.fetchEventsBasedOnInterests(
                   PAGESIZE, _interests.value!!.toList())
           val events = _allEvents.value!!.plus(newEvents)
           _allEvents.postValue(events)
+          _fetching.postValue(false)
         }
+  }
+  /**
+   * Refresh the events. This is used when we want to fetch the events from the beginning again.
+   * This is needed because the fetchWith interest will fetch additional events at each call.
+   */
+  fun refresh() {
+    resetOffset()
+    fetchWithInterests()
   }
   /**
    * Used to do the needed logic when changing the filter
@@ -163,8 +191,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     }
     // change -> reset offset and update interests
     _interests.value = s
-    resetOffset()
-    fetchWithInterests()
+    refresh()
   }
   /**
    * Set to cancel changes and revert to the previous filter from the view It is actually used when
