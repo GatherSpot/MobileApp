@@ -24,7 +24,7 @@ class ProfileFirebaseConnection : FirebaseConnectionInterface<Profile> {
    */
   fun fetch(id: String, onSuccess: () -> Unit): Profile {
     Log.d(TAG, "id: $id")
-    val profile = Profile("", "", "", id, Interests.fromCompressedString("1"))
+    val profile = Profile("", "", "", id, setOf())
     Firebase.firestore
         .collection(COLLECTION)
         .document(id)

@@ -24,13 +24,10 @@ import kotlinx.coroutines.launch
 
 /** ViewModel for the user's own profile. */
 class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
-  private var _profile = MutableLiveData<Profile?>(Profile("", "", "", id, Interests.fromCompressedString("1")))
-  private var _username = MutableLiveData("")
-  private var _bio = MutableLiveData("")
-  private val _image = MutableLiveData("")
-  private val _interests = MutableLiveData<Set<Interests>>(setOf())
+  private var _profile =
+      MutableLiveData<Profile?>(Profile("", "", "", Firebase.auth.currentUser?.uid ?: "", setOf()))
   private var _oldProfile: Profile? = null
-  
+
   private var _userNameError = MutableLiveData("")
   private var _bioError = MutableLiveData("")
   private var _userNameIsUniqueCheck = MutableLiveData(true)
@@ -96,7 +93,9 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
     viewModelScope.launch {
       try {
         Profile.checkUsername(userName, _oldProfile?.userName, _userNameError)
-        _userNameIsUniqueCheck.postValue(true)
+        _userNameIsUniqueCheck.postValue(
+            true) // userName might not be unique depending on how checkUsername goes. usernameError
+        // == "" already signifies uniqueness of username
       } catch (e: Exception) {
         // TODO show error dialog
       }
@@ -156,7 +155,9 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
   private fun noErrors(): Boolean {
     return _userNameError.value == "" &&
         _bioError.value == "" &&
-        _userNameIsUniqueCheck.value == true
+        _userNameIsUniqueCheck.value ==
+            true // usernameIsUniquecheck is used in conjunction with userNameError which is
+    // sufficient on its own
   }
 
   /** Save the edited profile and exit editing mode. */
