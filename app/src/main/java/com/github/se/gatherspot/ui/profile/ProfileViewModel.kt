@@ -30,7 +30,6 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
 
   private var _userNameError = MutableLiveData("")
   private var _bioError = MutableLiveData("")
-  private var _userNameIsUniqueCheck = MutableLiveData(true)
   private var _isEditing = MutableLiveData(false)
   val uid = Firebase.auth.uid ?: "TEST"
 
@@ -93,9 +92,6 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
     viewModelScope.launch {
       try {
         Profile.checkUsername(userName, _oldProfile?.userName, _userNameError)
-        _userNameIsUniqueCheck.postValue(
-            true) // userName might not be unique depending on how checkUsername goes. usernameError
-        // == "" already signifies uniqueness of username
       } catch (e: Exception) {
         // TODO show error dialog
       }
@@ -154,10 +150,7 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
 
   private fun noErrors(): Boolean {
     return _userNameError.value == "" &&
-        _bioError.value == "" &&
-        _userNameIsUniqueCheck.value ==
-            true // usernameIsUniquecheck is used in conjunction with userNameError which is
-    // sufficient on its own
+        _bioError.value == ""
   }
 
   /** Save the edited profile and exit editing mode. */
