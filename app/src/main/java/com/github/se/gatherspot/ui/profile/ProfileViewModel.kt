@@ -108,7 +108,7 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
    * @param bio The new bio
    */
   fun updateBio(bio: String) {
-    _bioError = Profile.checkBio(bio)
+    Profile.checkBio(bio, _bioError)
     _profile.value?.apply {
       this.bio = bio
       _profile.value = this
