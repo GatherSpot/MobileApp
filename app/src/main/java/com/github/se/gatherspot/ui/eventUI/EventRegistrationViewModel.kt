@@ -11,9 +11,9 @@ import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.sql.EventDao
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
