@@ -40,7 +40,6 @@ import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.FollowListUI
 import com.github.se.gatherspot.ui.NFCUI
-import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.eventUI.CreateEvent
 import com.github.se.gatherspot.ui.eventUI.EditEvent
 import com.github.se.gatherspot.ui.eventUI.EventUI

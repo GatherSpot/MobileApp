@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.NFCService
 import com.github.se.gatherspot.model.NFCStatus
 import com.github.se.gatherspot.model.Profile
@@ -47,7 +46,9 @@ fun NFCUI(nav: NavigationActions, nfc: NFCService, event: Event) {
         {
           if (nfc.status == NFCStatus.ORGANIZER) {
             completedText += "\nParticipant with ID ${data.id} has scanned their NFC tag."
-            EventFirebaseConnection().update(event.id, "finalAttendee", data.id)
+
+            // EventFirebaseConnection().update(event.id, "finalAttendee", data.id)
+
           } else if (nfc.status == NFCStatus.PARTICIPANT) {
             completedText = "Organizer has confirmed your attendance."
           }

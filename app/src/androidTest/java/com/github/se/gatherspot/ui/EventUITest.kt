@@ -418,13 +418,10 @@ class EventUITest {
           }
           composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
           okButton { performClick() }
+          checkin { assertExists() }
+          verifyCheckin { assertDoesNotExist() }
         }
       }
-      checkin { assertExists() }
-      verifyCheckin { assertDoesNotExist() }
-    }
-  }
-
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
