@@ -71,7 +71,6 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
       Log.d(ContentValues.TAG, "entered")
       delay(1000)
       viewModel.fetchNext(FirebaseAuth.getInstance().currentUser?.uid)
-
       fetch = false
     }
   }

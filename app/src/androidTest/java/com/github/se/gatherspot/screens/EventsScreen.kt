@@ -21,10 +21,12 @@ class EventsScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val fetchingText: KNode = onNode { hasTestTag("fetch") }
   val categories: List<KNode> =
       enumValues<Interests>().toList().map { i -> onNode { hasTestTag(i.name) } }
+  val upComing: KNode = onNode { hasTestTag("Planned") }
+  val attended: KNode = onNode { hasTestTag("Attended") }
   val myEvents: KNode = onNode { hasTestTag("Mine") }
-  val registeredTo: KNode = onNode { hasTestTag("Planned") }
   val fromFollowed: KNode = onNode { hasTestTag("Follows") }
   val eventFeed: KNode = onNode { hasTestTag("Feed") }
+
   val removeFilter: KNode = onNode { hasTestTag("removeFilter") }
   val eventCreated: KNode = onNode { hasTestTag("Basketball Game") }
 }

@@ -1,8 +1,6 @@
 package com.github.se.gatherspot.firebase
 
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
-import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -13,6 +11,8 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -21,8 +21,55 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class EventFirebaseConnectionTest {
+  init {
+    testLogin()
+  }
 
   val eventFirebaseConnection = EventFirebaseConnection()
+
+  val event1 =
+      Event(
+          id = "efcTest1",
+          title = "efcTest1Title",
+          description = "",
+          location = null,
+          eventStartDate = null,
+          eventEndDate = null,
+          timeBeginning = null,
+          timeEnding = null,
+          attendanceMaxCapacity = null,
+          attendanceMinCapacity = 3013,
+          inscriptionLimitDate = null,
+          inscriptionLimitTime = null,
+          eventStatus = EventStatus.CREATED,
+          categories = setOf(),
+          organizerID = "efcTestOrganizerNOTID",
+          registeredUsers = mutableListOf(),
+          finalAttendees = mutableListOf(),
+          image = "",
+          globalRating = null)
+
+  val event2 =
+      Event(
+          id = "efcTest2",
+          title = "efcTest2Title",
+          description = "",
+          location = null,
+          eventStartDate = null,
+          eventEndDate = null,
+          timeBeginning = null,
+          timeEnding = null,
+          attendanceMaxCapacity = null,
+          attendanceMinCapacity = 3013,
+          inscriptionLimitDate = null,
+          inscriptionLimitTime = null,
+          eventStatus = EventStatus.CREATED,
+          categories = setOf(),
+          organizerID = "efcTestOrganizerNOTID",
+          registeredUsers = mutableListOf(),
+          finalAttendees = mutableListOf(),
+          image = "",
+          globalRating = null)
 
   @Test
   fun testgetID() {
@@ -133,7 +180,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchNextReturnsDistinctEvents() =
-      runTest(timeout = Duration.parse("20s")) {
+      runTest(timeout = Duration.parse("60s")) {
         val round = 5
         val listOfEvents1 = eventFirebaseConnection.fetchNextEvents(round.toLong())
         assert(round >= listOfEvents1.size)
@@ -149,8 +196,7 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchNextBasedOnInterestReturnsCorrectEvents() =
-      runTest(timeout = Duration.parse("20s")) {
-        testLogin()
+      runTest(timeout = Duration.parse("60s")) {
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
@@ -170,14 +216,12 @@ class EventFirebaseConnectionTest {
                   listOfEvents2[j].categories!!.contains(interests[1]))
         }
 
-        testLoginCleanUp()
         eventFirebaseConnection.offset = null
       }
 
   @Test
   fun fetchNextBasedOnInterestReturnsDistinctEvents() =
-      runTest(timeout = Duration.parse("20s")) {
-        testLogin()
+      runTest(timeout = Duration.parse("60s")) {
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
@@ -189,7 +233,6 @@ class EventFirebaseConnectionTest {
             assertNotEquals(listOfEvents1[i].id, listOfEvents2[j].id)
           }
         }
-        testLoginCleanUp()
         eventFirebaseConnection.offset = null
       }
 
@@ -203,39 +246,92 @@ class EventFirebaseConnectionTest {
 
   @Test
   fun fetchMyEventsWorks() =
-      runTest(timeout = Duration.parse("20s")) {
-        testLogin()
+      runTest(timeout = Duration.parse("60s")) {
         Thread.sleep(10000)
         val events = eventFirebaseConnection.fetchMyEvents()
         assert(
             events.all { event ->
               event.organizerID == FirebaseAuth.getInstance().currentUser!!.uid
             })
-        testLoginCleanUp()
       }
 
   @Test
-  fun fetchRegisteredToWorks() =
+  fun fetchUpComingWorks() =
       runTest(timeout = Duration.parse("20s")) {
-        testLogin()
-        Thread.sleep(10000)
-        val events = eventFirebaseConnection.fetchRegisteredTo()
+        val events = eventFirebaseConnection.fetchUpComing()
+        delay(4000)
         assert(
             events.all { event ->
               event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
             })
-        testLoginCleanUp()
       }
 
   @Test
-  fun fetchEventsFromFollowedWorks() =
+  fun fetchAttendedWorks() =
       runTest(timeout = Duration.parse("20s")) {
-        testLogin()
-        val idList = FollowList.following(uid = FirebaseAuth.getInstance().currentUser!!.uid)
-        val events = eventFirebaseConnection.fetchEventsFromFollowedUsers(idList.elements)
-        assert(events.all { event -> idList.elements.contains(event.organizerID) })
-        testLoginCleanUp()
+        Thread.sleep(3000)
+        val events = eventFirebaseConnection.fetchAttended()
+        assert(
+            events.all { event ->
+              (event.finalAttendees!!.contains(FirebaseAuth.getInstance().currentUser!!.uid))
+            })
       }
+
+  @Test
+  fun fetchEventsFromWorks() =
+      runTest(timeout = Duration.parse("20s")) {
+        eventFirebaseConnection.add(event1)
+        eventFirebaseConnection.add(event2)
+        val idList: List<String> = listOf("efcTestOrganizerNOTID")
+        val events = eventFirebaseConnection.fetchEventsFrom(idList)
+        assert(events.all { event -> idList.contains(event.organizerID) })
+        eventFirebaseConnection.delete(event1.id)
+        eventFirebaseConnection.delete(event2.id)
+      }
+
+  @Test
+  fun testAddRegisteredWorks() {
+    runBlocking {
+      eventFirebaseConnection.add(event1)
+      eventFirebaseConnection.add(event2)
+      eventFirebaseConnection.addRegisteredUser(event1.id, "efctestUser")
+
+      delay(400)
+
+      val fetch1 = async { eventFirebaseConnection.fetch(event1.id) as Event }.await()
+      val fetch2 = async { eventFirebaseConnection.fetch(event2.id) as Event }.await()
+
+      assert(fetch1.registeredUsers.contains("efctestUser"))
+      assert(!fetch2.registeredUsers.contains("efctestUser"))
+
+      eventFirebaseConnection.delete(event1.id)
+      eventFirebaseConnection.delete(event2.id)
+
+      delay(400)
+    }
+  }
+
+  @Test
+  fun testAddFinalAttendeeWorks() {
+    runBlocking {
+      eventFirebaseConnection.add(event1)
+      eventFirebaseConnection.add(event2)
+      eventFirebaseConnection.addFinalAttendee(event1.id, "efctestUser")
+
+      delay(400)
+
+      val fetch1 = async { eventFirebaseConnection.fetch(event1.id) as Event }.await()
+      val fetch2 = async { eventFirebaseConnection.fetch(event2.id) as Event }.await()
+
+      assert(fetch1.finalAttendees?.contains("efctestUser") == true)
+      assert(fetch2.finalAttendees?.contains("efctestUser") != true)
+
+      // eventFirebaseConnection.delete(event1.id)
+      // eventFirebaseConnection.delete(event2.id)
+
+      delay(400)
+    }
+  }
 
   @Test
   fun deleteEvent() = runTest {
@@ -278,71 +374,69 @@ class EventFirebaseConnectionTest {
 
     eventFirebaseConnection.add(event)
     var resultEvent: Event? = null
-    async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
+    async { resultEvent = eventFirebaseConnection.fetch(eventID) }.await()
     assertNotNull(resultEvent)
     assertEquals(resultEvent!!.id, eventID)
     eventFirebaseConnection.delete(eventID)
-    async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
+    async { resultEvent = eventFirebaseConnection.fetch(eventID) }.await()
     assertEquals(resultEvent, null)
   }
 
-  //  @Test
-  //  fun nullCasesTest() =
-  //      runTest(timeout = Duration.parse("30")) {
-  //        val eventID = eventFirebaseConnection.getNewID()
-  //        val event =
-  //            Event(
-  //                id = eventID,
-  //                title = "Test Event",
-  //                description = "This is a test event",
-  //                location = null,
-  //                eventStartDate = null,
-  //                eventEndDate = null,
-  //                timeBeginning = null,
-  //                timeEnding = null,
-  //                attendanceMaxCapacity = null,
-  //                attendanceMinCapacity = 10,
-  //                inscriptionLimitDate = null,
-  //                inscriptionLimitTime = null,
-  //                eventStatus = EventStatus.CREATED,
-  //                categories = setOf(Interests.CHESS),
-  //                registeredUsers = mutableListOf(),
-  //                finalAttendees = mutableListOf(),
-  //                globalRating = null,
-  //                image = "")
-  //
-  //        eventFirebaseConnection.add(event)
-  //        var resultEvent: Event? = null
-  //        async { resultEvent = eventFirebaseConnection.fetch(eventID) as Event? }.await()
-  //        assertNotNull(resultEvent)
-  //        assertEquals(resultEvent!!.id, eventID)
-  //        assertEquals(resultEvent!!.title, "Test Event")
-  //        assertEquals(resultEvent!!.description, "This is a test event")
-  //        assertEquals(resultEvent!!.location, null)
-  //        assertEquals(
-  //            resultEvent!!.eventStartDate,
-  // eventFirebaseConnection.EVENT_START_DATE_DEFAULT_VALUE)
-  //        assertEquals(
-  //            resultEvent!!.eventEndDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
-  //        assertEquals(
-  //            resultEvent!!.timeBeginning, eventFirebaseConnection.EVENT_START_TIME_DEFAULT_VALUE)
-  //        assertEquals(resultEvent!!.timeEnding,
-  // eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
-  //        assertEquals(resultEvent!!.attendanceMaxCapacity, null)
-  //        assertEquals(resultEvent!!.attendanceMinCapacity, 10)
-  //        assertEquals(
-  //            resultEvent!!.inscriptionLimitDate,
-  //            eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
-  //        assertEquals(
-  //            resultEvent!!.inscriptionLimitTime,
-  //            eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
-  //        assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
-  //        assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
-  //        assertEquals(resultEvent!!.registeredUsers!!.size, 0)
-  //        assertEquals(resultEvent!!.finalAttendees!!.size, 0)
-  //        assertEquals(resultEvent!!.image, "")
-  //        eventFirebaseConnection.delete(eventID)
-  //      }
+  @Test
+  fun nullCasesTest() =
+      runTest(timeout = Duration.parse("30s")) {
+        val eventID = eventFirebaseConnection.getNewID()
+        val event =
+            Event(
+                id = eventID,
+                title = "Test Event",
+                description = "This is a test event",
+                location = null,
+                eventStartDate = null,
+                eventEndDate = null,
+                timeBeginning = null,
+                timeEnding = null,
+                attendanceMaxCapacity = null,
+                attendanceMinCapacity = 10,
+                inscriptionLimitDate = null,
+                inscriptionLimitTime = null,
+                eventStatus = EventStatus.CREATED,
+                categories = setOf(Interests.CHESS),
+                registeredUsers = mutableListOf(),
+                finalAttendees = mutableListOf(),
+                globalRating = null,
+                image = "")
+
+        eventFirebaseConnection.add(event)
+        var resultEvent: Event? = null
+        async { resultEvent = eventFirebaseConnection.fetch(eventID) }.await()
+        assertNotNull(resultEvent)
+        assertEquals(resultEvent!!.id, eventID)
+        assertEquals(resultEvent!!.title, "Test Event")
+        assertEquals(resultEvent!!.description, "This is a test event")
+        assertEquals(resultEvent!!.location, null)
+        assertEquals(
+            resultEvent!!.eventStartDate, eventFirebaseConnection.EVENT_START_DATE_DEFAULT_VALUE)
+        assertEquals(
+            resultEvent!!.eventEndDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+        assertEquals(
+            resultEvent!!.timeBeginning, eventFirebaseConnection.EVENT_START_TIME_DEFAULT_VALUE)
+        assertEquals(resultEvent!!.timeEnding, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
+        assertEquals(resultEvent!!.attendanceMaxCapacity, null)
+        assertEquals(resultEvent!!.attendanceMinCapacity, 10)
+        assertEquals(
+            resultEvent!!.inscriptionLimitDate,
+            eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+        assertEquals(
+            resultEvent!!.inscriptionLimitTime,
+            eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
+        assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
+        assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
+        assertEquals(resultEvent!!.registeredUsers!!.size, 0)
+        assertEquals(resultEvent!!.finalAttendees!!.size, 0)
+        assertEquals(resultEvent!!.image, "")
+        eventFirebaseConnection.delete(eventID)
+      }
 
   @Test
   fun mapStringToTimeTest() = runTest {

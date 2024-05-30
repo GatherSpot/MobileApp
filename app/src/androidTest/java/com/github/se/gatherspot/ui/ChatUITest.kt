@@ -17,6 +17,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -69,7 +70,7 @@ class ChatUITest {
               finalAttendees = mutableListOf(),
               image = "",
               globalRating = null)
-      eventFirebaseConnection.add(event)
+      runBlocking { eventFirebaseConnection.add(event) }
       chatViewModel.addMessage(UUID.randomUUID().toString(), "user1", "Hello")
       ChatUI(chatViewModel, "user1", NavigationActions(rememberNavController()))
     }
@@ -96,6 +97,6 @@ class ChatUITest {
         .document(eventId)
         .delete()
         .addOnFailureListener {}
-    eventFirebaseConnection.delete(eventId)
+    runBlocking { eventFirebaseConnection.delete(eventId) }
   }
 }

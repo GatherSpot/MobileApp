@@ -23,13 +23,17 @@ import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.ui.eventUI.EventUI
 import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 import com.github.se.gatherspot.ui.navigation.NavigationActions
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.time.Duration
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -63,7 +67,7 @@ class EventUITest {
     }
   }
 
-  private val pastEventRegisteredTo =
+  private val pastEventAttended =
       Event(
           id = "1",
           title = "Event Title",
@@ -79,6 +83,27 @@ class EventUITest {
           inscriptionLimitTime = LocalTime.of(23, 59),
           location = null,
           registeredUsers = mutableListOf(testLoginUID),
+          finalAttendees = listOf(testLoginUID),
+          timeBeginning = LocalTime.of(13, 0),
+          timeEnding = LocalTime.of(16, 0),
+          image = "")
+  val eventAttendable =
+      Event(
+          id = "1",
+          title = "Event Title",
+          description =
+              "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
+          organizerID = Profile.testOrganizer().id,
+          attendanceMaxCapacity = 100,
+          attendanceMinCapacity = 10,
+          categories = setOf(Interests.BASKETBALL),
+          eventEndDate = LocalDate.now().plusDays(5),
+          eventStartDate = LocalDate.now().minusDays(4),
+          globalRating = 4,
+          inscriptionLimitDate = LocalDate.now().plusDays(1),
+          inscriptionLimitTime = LocalTime.of(23, 59),
+          location = null,
+          registeredUsers = mutableListOf(testLoginUID),
           timeBeginning = LocalTime.of(13, 0),
           timeEnding = LocalTime.of(16, 0),
           image = "")
@@ -88,27 +113,12 @@ class EventUITest {
   fun testEverythingExists() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description =
-                  "Hello: I am a description of the event just saying that I would love to say that Messi is not the best player in the world, but I can't. I am sorry.",
-              organizerID = Profile.testOrganizer().id,
-              attendanceMaxCapacity = 100,
-              attendanceMinCapacity = 10,
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.now().plusDays(5),
-              eventStartDate = LocalDate.now().plusDays(4),
-              globalRating = 4,
-              inscriptionLimitDate = LocalDate.now().plusDays(1),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              timeBeginning = LocalTime.of(13, 0),
-              timeEnding = LocalTime.of(16, 0),
-              image = "")
 
-      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
+      EventUI(
+          eventAttendable,
+          NavigationActions(navController),
+          EventUIViewModel(eventAttendable),
+          null)
     }
     composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
@@ -128,6 +138,8 @@ class EventUITest {
       inscriptionLimitTitle.assertExists()
       inscriptionLimitDateAndTime.assertExists()
       registerButton.assertExists()
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("attendButton"), 10000)
+      attendButton.assertExists()
     }
   }
 
@@ -156,7 +168,7 @@ class EventUITest {
               timeBeginning = LocalTime.of(13, 0),
               timeEnding = LocalTime.of(16, 0),
               image = "")
-      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
+      EventUI(event, NavigationActions(navController), EventUIViewModel(eventAttendable), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("profileIndicator"), 10000)
@@ -206,6 +218,7 @@ class EventUITest {
         assertIsDisplayed()
       }
       registerButton { assertIsDisplayed() }
+      attendButton { assertIsDisplayed() }
       alertBox { assertIsNotDisplayed() }
     }
   }
@@ -289,10 +302,10 @@ class EventUITest {
               attendanceMaxCapacity = 100,
               attendanceMinCapacity = 10,
               categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
+              eventEndDate = LocalDate.of(2025, 4, 15),
+              eventStartDate = LocalDate.of(2025, 4, 14),
               globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitDate = LocalDate.of(2025, 4, 11),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
               registeredUsers = mutableListOf(),
@@ -316,10 +329,10 @@ class EventUITest {
         assertExists()
         performClick()
       }
-      Thread.sleep(2000)
+
       registerButton {
-        assertIsNotEnabled()
-        assert(hasText("Registered"))
+        assertIsEnabled()
+        assert(hasText("Registered / Unregister"))
       }
     }
   }
@@ -339,10 +352,10 @@ class EventUITest {
               attendanceMinCapacity = 1,
               organizerID = Profile.testParticipant().id,
               categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
+              eventEndDate = LocalDate.of(2025, 4, 15),
+              eventStartDate = LocalDate.of(2025, 4, 14),
               globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
+              inscriptionLimitDate = LocalDate.of(2025, 4, 11),
               inscriptionLimitTime = LocalTime.of(23, 59),
               location = null,
               registeredUsers = mutableListOf("1", "2"),
@@ -353,57 +366,60 @@ class EventUITest {
       EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      registerButton { performClick() }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("alertBox"), 6000)
-      alertBox {
-        assertIsDisplayed()
-        hasText("Event is full")
-      }
-
-      okButton.performClick()
       registerButton {
+        assert(hasText("Full event"))
         assertIsNotEnabled()
-        assert(hasText("Full"))
       }
     }
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testAlreadyRegistered(): Unit = runBlocking {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      val event =
-          Event(
-              id = "1",
-              title = "Event Title",
-              description = "Hello: I am a description",
-              attendanceMaxCapacity = 10,
-              attendanceMinCapacity = 1,
-              organizerID = Profile.testParticipant().id,
-              categories = setOf(Interests.BASKETBALL),
-              eventEndDate = LocalDate.of(2024, 4, 15),
-              eventStartDate = LocalDate.of(2024, 4, 14),
-              globalRating = 4,
-              inscriptionLimitDate = LocalDate.of(2024, 4, 11),
-              inscriptionLimitTime = LocalTime.of(23, 59),
-              location = null,
-              registeredUsers = mutableListOf(FirebaseAuth.getInstance().currentUser!!.uid),
-              timeBeginning = LocalTime.of(13, 0),
-              timeEnding = LocalTime.of(16, 0),
-              image = "")
-      val eventfirebase = EventFirebaseConnection()
-      eventfirebase.add(event)
-      EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
-    }
-    Thread.sleep(3000)
-    ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
-      registerButton {
-        assertIsNotEnabled()
-        assert(hasText("Registered"))
+  fun testRegistrationStatus() =
+      runTest(timeout = Duration.parse("20s")) {
+        val eventFirebase = EventFirebaseConnection()
+        val event =
+            Event(
+                id = "1",
+                title = "Event Title",
+                description = "Hello: I am a description",
+                attendanceMaxCapacity = 10,
+                attendanceMinCapacity = 1,
+                organizerID = Profile.testParticipant().id,
+                categories = setOf(Interests.BASKETBALL),
+                eventEndDate = LocalDate.of(2025, 4, 15),
+                eventStartDate = LocalDate.of(2025, 4, 14),
+                globalRating = 4,
+                inscriptionLimitDate = LocalDate.of(2025, 4, 11),
+                inscriptionLimitTime = LocalTime.of(23, 59),
+                location = null,
+                registeredUsers = mutableListOf(),
+                timeBeginning = LocalTime.of(13, 0),
+                timeEnding = LocalTime.of(16, 0),
+                image = "")
+        eventFirebase.add(event)
+
+        composeTestRule.setContent {
+          val navController = rememberNavController()
+
+          EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
+        }
+        ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
+          composeTestRule.waitForIdle()
+          registerButton {
+            assert(hasText("Unregistered / Register"))
+            performClick()
+          }
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
+          okButton { performClick() }
+          registerButton {
+            assert(hasText("Registered / Unregister"))
+            performClick()
+          }
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
+          okButton { performClick() }
+        }
       }
-    }
-  }
 
   @Test
   fun testOrganiserDeleteEditButtonAreHere() {
@@ -450,7 +466,7 @@ class EventUITest {
               description = "Hello: I am a description",
               attendanceMaxCapacity = 10,
               attendanceMinCapacity = 1,
-              organizerID = ProfileFirebaseConnection().getCurrentUserUid()!!,
+              organizerID = Firebase.auth.uid!!,
               categories = setOf(Interests.BASKETBALL),
               eventEndDate = LocalDate.of(2024, 4, 15),
               eventStartDate = LocalDate.of(2024, 4, 14),
@@ -488,26 +504,26 @@ class EventUITest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun ratingIsDisplayed() {
-    val eventUIViewModel = EventUIViewModel(pastEventRegisteredTo)
+    val eventUIViewModel = EventUIViewModel(pastEventAttended)
     composeTestRule.setContent {
       val navController = rememberNavController()
-      EventUI(pastEventRegisteredTo, NavigationActions(navController), eventUIViewModel, null)
+      EventUI(pastEventAttended, NavigationActions(navController), eventUIViewModel, null)
     }
     ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
       Log.e("isOrganizer", eventUIViewModel.isOrganizer().toString())
       Log.e(
           "In the list",
-          pastEventRegisteredTo.registeredUsers
-              .contains(FirebaseAuth.getInstance().currentUser!!.uid)
+          pastEventAttended.finalAttendees
+              ?.contains(FirebaseAuth.getInstance().currentUser!!.uid)
               .toString())
-      Log.e("isEventOver", EventUtils().isEventOver(pastEventRegisteredTo).toString())
+      Log.e("isEventOver", EventUtils().isEventOver(pastEventAttended).toString())
+      sleep(500)
       assert(eventUIViewModel.canRate())
       sleep(6000)
       starRow {
         performScrollTo()
         assertIsDisplayed()
       }
-
       bottomSpacer { performScrollTo() }
       starIcon_1 { assertIsDisplayed() }
     }
