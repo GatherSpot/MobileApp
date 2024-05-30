@@ -4,7 +4,6 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -12,8 +11,6 @@ import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -21,11 +18,12 @@ import com.github.se.gatherspot.ui.signUp.SignUp
 import com.github.se.gatherspot.ui.signUp.SignUpViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.lang.Thread.sleep
 import kotlin.time.Duration
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -40,27 +38,35 @@ class SignUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
 
   private lateinit var viewModel: SignUpViewModel
+  val email = "gatherspot2024@gmail.com"
+  val userName = "GatherSpot"
 
   @Before
   fun setup() {
     runBlocking {
-      try {
-        testLogin()
-        if (Firebase.auth.currentUser != null) {
-          ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
-          Firebase.auth.currentUser?.delete()
-        }
-      } catch (_: Exception) {}
-    }
-    viewModel = SignUpViewModel()
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      NavHost(navController = navController, startDestination = "auth") {
-        navigation(startDestination = "signup", route = "auth") {
-          composable("signup") { SignUp(viewModel, NavigationActions(navController)) }
-        }
-        navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(NavigationActions(navController)) }
+      async {
+            try {
+              Firebase.auth.signInWithEmailAndPassword(email, "GatherSpot,2024;")
+              if (Firebase.auth.currentUser != null) {
+                ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
+                Firebase.auth.currentUser?.delete()
+              }
+            } catch (_: Exception) {}
+          }
+          .await()
+
+      sleep(4000)
+
+      viewModel = SignUpViewModel()
+      composeTestRule.setContent {
+        val navController = rememberNavController()
+        NavHost(navController = navController, startDestination = "auth") {
+          navigation(startDestination = "signup", route = "auth") {
+            composable("signup") { SignUp(viewModel, NavigationActions(navController)) }
+          }
+          navigation(startDestination = "events", route = "home") {
+            composable("setup") { SetUpProfile(NavigationActions(navController)) }
+          }
         }
       }
     }
@@ -68,10 +74,9 @@ class SignUpTest : TestCase() {
 
   @After
   fun cleanUp() = runTest {
-    val currentUser = FirebaseAuth.getInstance().currentUser
-    if (currentUser != null) {
-      ProfileFirebaseConnection().delete(currentUser.uid)
-      testLoginCleanUp()
+    if (Firebase.auth.currentUser != null) {
+      ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
+      Firebase.auth.currentUser!!.delete()
     }
   }
 
@@ -79,8 +84,6 @@ class SignUpTest : TestCase() {
   @Test
   fun signUp() =
       runTest(timeout = Duration.parse("30s")) {
-        val email = "gatherspot2024@gmail.com"
-        val userName = "GatherSpot"
         ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
           usernameField {
             assertExists()
