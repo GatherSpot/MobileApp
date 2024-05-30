@@ -164,7 +164,7 @@ private fun EventList(
           }
       LaunchedEffect(endOfListReached) { if (endOfListReached) fetch() } //condition avoids re-fetching on recomposition,
     }
-    PullRefreshIndicator(refreshing = fetching.value, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter))
+    PullRefreshIndicator(refreshing = fetching.value, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter).testTag("fetching"))
   }
 }
 

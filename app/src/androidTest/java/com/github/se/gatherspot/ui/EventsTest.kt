@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.performGesture
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
@@ -149,29 +150,23 @@ class EventsTest {
       }
     }
   }
-  // NOTE: This button has been removed from now, I plan do add a swipe down to refresh method
-  // tough, so it might be good to keep this around
 
-  //  @OptIn(ExperimentalTestApi::class)
-  //  @Test
-  //  fun testRefreshButtonFunctional() {
-  //    Thread.sleep(5000)
-  //    //val prev = viewModel.getLoadedEvents().size.toLong()
-  //    composeTestRule.setContent {
-  //      val nav = NavigationActions(rememberNavController())
-  //      Events(viewModel = viewModel, nav = nav)
-  //    }
-  //
-  //    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
-  //      refresh {
-  //        assertExists()
-  //        performClick()
-  //      }
-  //      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 500)
-  //      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
-  //      //assert(viewModel.getLoadedEvents().size.toLong() >= prev)
-  //    }
-  //  }
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testRefreshButtonFunctional() {
+      composeTestRule.setContent {
+        val nav = NavigationActions(rememberNavController())
+        Events(viewModel = viewModel, nav = nav)
+      }
+      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
+
+      ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+        //swipe down to cause refresh
+        composeTestRule.onNode(hasTestTag("eventsList")).performGesture { swipeUp(400F, 0F, 1000) }
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 500)
+        composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
+      }
+    }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -225,8 +220,9 @@ class EventsTest {
         performClick()
       }
       composeTestRule.waitForIdle()
-
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 20000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 20000)
+      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 20000)
+      eventsList { assertExists()}
       assert(viewModel.allEvents.value!!.all { event -> event.categories!!.contains(sport) })
     }
   }
