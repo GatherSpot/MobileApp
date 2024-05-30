@@ -184,8 +184,8 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
           _profile.postValue(_oldProfile)
         }
       }
-    } else _profile.postValue(_oldProfile)
-    _isEditing.value = false
+    } else
+      cancel()
   }
 
   /** Cancel the editing of the profile and exit editing mode. */
