@@ -23,11 +23,9 @@ import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalTime
-import kotlinx.coroutines.runBlocking
-import org.junit.After
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -82,14 +80,16 @@ class EventsTest {
           image = "hac",
           globalRating = null)
 
+  init {
+    testLogin()
+  }
+
   @Before
-  fun setUp() {
-    runBlocking {
-      testLogin()
-      uid = FirebaseAuth.getInstance().currentUser!!.uid
-      FollowList.follow(uid, uid)
-      ids = FollowList.following(uid).elements
-    }
+  fun setUp() = runTest {
+    uid = FirebaseAuth.getInstance().currentUser!!.uid
+    FollowList.follow(uid, uid)
+    ids = FollowList.following(uid).elements
+
     val context = ApplicationProvider.getApplicationContext<Context>()
     melvinLogin()
     val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
@@ -99,8 +99,6 @@ class EventsTest {
 
     viewModel = EventsViewModel(db)
   }
-
-  @After fun cleanUp() {}
 
   @Test
   fun testEverythingExists() {
@@ -296,8 +294,6 @@ class EventsTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun testTabAndPagerWorks() {
-    // I comment this test for now it does not work will be addressed in another PR
-    /*
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
       Events(viewModel = viewModel, nav = nav)
@@ -315,17 +311,13 @@ class EventsTest {
 
       fromFollowed { performClick() }
 
-      composeTestRule.waitForIdle()
-      Log.d(TAG, "IDS followed $ids")
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("followedEventsList"), 30000)
-
-     */
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("followedEventsList"), 20000)
+    }
   }
-
+  /*
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun entireCreationFlow() {
-    /*
     val viewModel = EventsViewModel()
     Thread.sleep(6000)
     assert(viewModel.uiState.value.list.isNotEmpty())
@@ -447,42 +439,41 @@ class EventsTest {
     EventFirebaseConnection().delete(event.id)
 
      */
-  }
-
-  /*
-  ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
-
-  ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
-    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
-    eventTitle.performTextInput("Basketball Game")
-    Espresso.closeSoftKeyboard()
-    eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
-    Espresso.closeSoftKeyboard()
-    eventStartDate.performTextInput("10/07/2024")
-    Espresso.closeSoftKeyboard()
-    eventEndDate.performTextInput("10/07/2024")
-    Espresso.closeSoftKeyboard()
-    eventTimeStart.performTextInput("13:00")
-    Espresso.closeSoftKeyboard()
-    eventTimeEnd.performTextInput("19:00")
-    Espresso.closeSoftKeyboard()
-    eventLocation.performTextInput("Bussy-Saint-Georges")
-    Espresso.closeSoftKeyboard()
-    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
-    Espresso.closeSoftKeyboard()
-    locationProposition { performClick() }
-    Espresso.closeSoftKeyboard()
-    eventMaxAttendees.performTextInput("10")
-    Espresso.closeSoftKeyboard()
-    eventMinAttendees.performTextInput("5")
-    Espresso.closeSoftKeyboard()
-    eventInscriptionLimitDate.performTextInput("10/06/2024")
-    Espresso.closeSoftKeyboard()
-    eventInscriptionLimitTime.performTextInput("09:00")
-    Espresso.closeSoftKeyboard()
-    eventSaveButton.performScrollTo()
-    eventSaveButton.performClick()
-  }
-
-   */
 }
+
+/*
+ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) { createMenu.performClick() }
+
+ComposeScreen.onComposeScreen<EventDataFormScreen>(composeTestRule) {
+  composeTestRule.waitUntilAtLeastOneExists(hasTestTag("inputTitle"), 5000)
+  eventTitle.performTextInput("Basketball Game")
+  Espresso.closeSoftKeyboard()
+  eventDescription.performTextInput("Ayo, 5v5: Come show your skills")
+  Espresso.closeSoftKeyboard()
+  eventStartDate.performTextInput("10/07/2024")
+  Espresso.closeSoftKeyboard()
+  eventEndDate.performTextInput("10/07/2024")
+  Espresso.closeSoftKeyboard()
+  eventTimeStart.performTextInput("13:00")
+  Espresso.closeSoftKeyboard()
+  eventTimeEnd.performTextInput("19:00")
+  Espresso.closeSoftKeyboard()
+  eventLocation.performTextInput("Bussy-Saint-Georges")
+  Espresso.closeSoftKeyboard()
+  composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MenuItem"), 6000)
+  Espresso.closeSoftKeyboard()
+  locationProposition { performClick() }
+  Espresso.closeSoftKeyboard()
+  eventMaxAttendees.performTextInput("10")
+  Espresso.closeSoftKeyboard()
+  eventMinAttendees.performTextInput("5")
+  Espresso.closeSoftKeyboard()
+  eventInscriptionLimitDate.performTextInput("10/06/2024")
+  Espresso.closeSoftKeyboard()
+  eventInscriptionLimitTime.performTextInput("09:00")
+  Espresso.closeSoftKeyboard()
+  eventSaveButton.performScrollTo()
+  eventSaveButton.performClick()
+}
+
+ */

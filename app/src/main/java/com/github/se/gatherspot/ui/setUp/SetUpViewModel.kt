@@ -45,14 +45,17 @@ class SetUpViewModel : ViewModel() {
     profile.image = image.value!!
     profile.interests = interests.value!!
     doneButton.value = true
-    viewModelScope
-        .launch {
-          ProfileFirebaseConnection().add(profile)
-          if (!image.value.isNullOrEmpty()) {
-            FirebaseImages().pushProfilePicture(image.value!!.toUri(), profile.id)
-          }
+    viewModelScope.launch {
+      try {
+        ProfileFirebaseConnection().add(profile)
+        if (!image.value.isNullOrEmpty()) {
+          FirebaseImages().pushProfilePicture(image.value!!.toUri(), profile.id)
         }
-        .invokeOnCompletion { isDone.postValue(true) }
+      } catch (e: Exception) {
+        // TODO show error dialog
+      }
+    }
+    isDone.postValue(true)
   }
 
   /** Move to the next step in the setup process. */
