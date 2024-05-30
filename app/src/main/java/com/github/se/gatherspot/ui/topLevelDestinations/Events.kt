@@ -27,14 +27,19 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -121,20 +126,25 @@ fun Events(viewModel: EventsViewModel, nav: NavigationActions) {
       }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun EventList(
     vm: EventsViewModel,
     fetch: () -> Unit,
+    fetching: State<Boolean>,
     events: State<List<Event>>,
     nav: NavigationActions,
     testTag: String,
-    isFeed: Boolean = false
+    isFeed: Boolean = false,
+    refresh: () -> Unit =
+        fetch, // in most cases we just rerun fetch, just different when we use with interests
 ) {
   val lazyState = rememberLazyListState()
-  // utility to extend lazyList to know when we scrolled to the end
+  val pullRefreshState =
+      rememberPullRefreshState(refreshing = fetching.value, onRefresh = { refresh() })
+  //lines to add functionality to fetch next when we reach end of list
   fun LazyListState.isScrolledToEnd() =
       layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
-  // value that reflects if we reached and of list or not
   val endOfListReached by remember {
     derivedStateOf {
       // this if is used to make sure we don't re-fetch the same thing for no reason repeatedly on
@@ -143,15 +153,18 @@ private fun EventList(
     }
   }
   Log.d(TAG, "size = " + (events.value.size).toString())
-  if (events.value.isEmpty()) Empty(vm, MainActivity.selectedInterests, fetch)
-  else {
-    LazyColumn(state = lazyState, modifier = Modifier.padding(vertical = 15.dp).testTag(testTag)) {
-      items(events.value) { event ->
-        EventItem(event, vm::getEventTiming, vm::isOrganizer, vm::isRegistered, nav)
-      }
+  Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
+    if (events.value.isEmpty()) Empty(vm, MainActivity.selectedInterests, fetch)
+    else {
+      LazyColumn(
+          state = lazyState, modifier = Modifier.padding(vertical = 15.dp).testTag(testTag)) {
+            items(events.value) { event ->
+              EventItem(event, vm::getEventTiming, vm::isOrganizer, vm::isRegistered, nav)
+            }
+          }
+      LaunchedEffect(endOfListReached) { if (endOfListReached) fetch() } //condition avoids re-fetching on recomposition,
     }
-    // used to tell the viewModel to fetch more events when we get to the end of the list
-    LaunchedEffect(endOfListReached) { fetch() }
+    PullRefreshIndicator(refreshing = fetching.value, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter))
   }
 }
 
@@ -384,19 +397,27 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
       // fun EventList(vm: EventsViewModel, events: State<List<Event>>, nav: NavigationActions){
       0 ->
           EventList(
-              vm, vm::fetchMyEvents, vm.myEvents.observeAsState(listOf()), nav, "myEventsList")
+              vm,
+              vm::fetchMyEvents,
+              vm.fetchingMine.observeAsState(false),
+              vm.myEvents.observeAsState(listOf()),
+              nav,
+              "myEventsList")
       1 ->
           EventList(
               vm,
               vm::fetchWithInterests,
+              vm.fetching.observeAsState(false),
               vm.allEvents.observeAsState(listOf()),
               nav,
               "eventsList",
-              true)
+              true,
+              vm::refresh)
       2 ->
           EventList(
               vm,
               vm::fetchUpComing,
+              vm.fetchingUpcoming.observeAsState(false),
               vm.upComing.observeAsState(listOf()),
               nav,
               "upComingEventsList")
@@ -404,6 +425,7 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
           EventList(
               vm,
               vm::fetchFromFollowedUsers,
+              vm.fetchingFollowed.observeAsState(false),
               vm.fromFollowedUsers.observeAsState(listOf()),
               nav,
               "followedEventsList")
@@ -411,6 +433,7 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
           EventList(
               vm,
               vm::fetchAttended,
+              vm.fetchingAttended.observeAsState(false),
               vm.attended.observeAsState(listOf()),
               nav,
               "attendedEventsList")
