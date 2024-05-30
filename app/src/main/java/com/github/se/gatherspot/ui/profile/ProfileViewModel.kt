@@ -180,6 +180,7 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
           }
         } catch (e: Exception) {
           // TODO show error dialog
+          cancel()
           Log.d("Profile", "${e.message}")
           _profile.postValue(_oldProfile)
         }
