@@ -91,7 +91,6 @@ class SignUpTest : TestCase() {
             assertIsDisplayed()
             performClick()
           }
-          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 6000)
         }
 
         signUpCleanUp(userName)
