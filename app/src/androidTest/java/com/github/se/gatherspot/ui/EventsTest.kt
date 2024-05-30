@@ -5,6 +5,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performGesture
+import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
@@ -151,22 +152,22 @@ class EventsTest {
     }
   }
 
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun testRefreshButtonFunctional() {
-      composeTestRule.setContent {
-        val nav = NavigationActions(rememberNavController())
-        Events(viewModel = viewModel, nav = nav)
-      }
-      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
-
-      ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
-        //swipe down to cause refresh
-        composeTestRule.onNode(hasTestTag("eventsList")).performGesture { swipeUp(400F, 0F, 1000) }
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 500)
-        composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
-      }
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun testRefreshButtonFunctional() {
+    composeTestRule.setContent {
+      val nav = NavigationActions(rememberNavController())
+      Events(viewModel = viewModel, nav = nav)
     }
+    composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
+
+    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
+      // swipe down to cause refresh
+      composeTestRule.onNode(hasTestTag("eventsList")).performGesture { swipeDown(400F, 0F, 1000) }
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 500)
+      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
+    }
+  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -222,7 +223,7 @@ class EventsTest {
       composeTestRule.waitForIdle()
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 20000)
       composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 20000)
-      eventsList { assertExists()}
+      eventsList { assertExists() }
       assert(viewModel.allEvents.value!!.all { event -> event.categories!!.contains(sport) })
     }
   }

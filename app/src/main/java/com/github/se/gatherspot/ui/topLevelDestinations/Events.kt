@@ -39,7 +39,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -142,7 +141,7 @@ private fun EventList(
   val lazyState = rememberLazyListState()
   val pullRefreshState =
       rememberPullRefreshState(refreshing = fetching.value, onRefresh = { refresh() })
-  //lines to add functionality to fetch next when we reach end of list
+  // lines to add functionality to fetch next when we reach end of list
   fun LazyListState.isScrolledToEnd() =
       layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
   val endOfListReached by remember {
@@ -162,9 +161,14 @@ private fun EventList(
               EventItem(event, vm::getEventTiming, vm::isOrganizer, vm::isRegistered, nav)
             }
           }
-      LaunchedEffect(endOfListReached) { if (endOfListReached) fetch() } //condition avoids re-fetching on recomposition,
+      LaunchedEffect(endOfListReached) {
+        if (endOfListReached) fetch()
+      } // condition avoids re-fetching on recomposition,
     }
-    PullRefreshIndicator(refreshing = fetching.value, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter).testTag("fetching"))
+    PullRefreshIndicator(
+        refreshing = fetching.value,
+        state = pullRefreshState,
+        modifier = Modifier.align(Alignment.TopCenter).testTag("fetching"))
   }
 }
 

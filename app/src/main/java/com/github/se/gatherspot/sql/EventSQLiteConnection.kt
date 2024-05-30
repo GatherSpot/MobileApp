@@ -41,10 +41,12 @@ interface EventDao {
   @Query("SELECT * FROM event WHERE organizerID = :id")
   fun getAllFromOrganizerId(vararg id: String): List<Event>?
 
-  @Query("SELECT * FROM event WHERE registeredUsers LIKE '%' || :id || '%' AND eventStartDate < :date")
+  @Query(
+      "SELECT * FROM event WHERE registeredUsers LIKE '%' || :id || '%' AND eventStartDate < :date")
   fun getAllPastWhereIdIsRegistered(id: String, date: LocalDate = LocalDate.now()): List<Event>?
 
-  @Query("SELECT * FROM event WHERE registeredUsers LIKE '%' || :id || '%' AND eventStartDate >= :date")
+  @Query(
+      "SELECT * FROM event WHERE registeredUsers LIKE '%' || :id || '%' AND eventStartDate >= :date")
   fun getAllUpcomingWhereIdIsRegistered(id: String, date: LocalDate = LocalDate.now()): List<Event>?
   /**
    * Insert an event

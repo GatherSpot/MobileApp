@@ -34,7 +34,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   private var _attended = MutableLiveData<List<Event>>(listOf())
   private var _fetching = MutableLiveData(false)
   private var _fetchingUpcoming = MutableLiveData(false)
-  private  var _fetchingAttended = MutableLiveData(false)
+  private var _fetchingAttended = MutableLiveData(false)
   private var _fetchingFollowed = MutableLiveData(false)
   private var _fetchingMine = MutableLiveData(false)
   private var _fromFollowedUsers = MutableLiveData<List<Event>>(listOf())
@@ -98,7 +98,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
         _attended.postValue(events)
         eventDao.insert(*events.toTypedArray())
       } catch (_: Exception) {}
-    _fetchingAttended.postValue(false)
+      _fetchingAttended.postValue(false)
     }
   }
 
