@@ -26,13 +26,13 @@ import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.lang.Thread.sleep
 
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
