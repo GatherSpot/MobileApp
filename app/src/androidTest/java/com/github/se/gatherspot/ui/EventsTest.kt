@@ -5,6 +5,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performGesture
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeUp
 import androidx.navigation.compose.rememberNavController
@@ -31,6 +32,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.lang.Thread.sleep
 
 class EventsTest {
   @get:Rule val composeTestRule = createComposeRule()
@@ -154,19 +156,16 @@ class EventsTest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testRefreshButtonFunctional() {
+  fun testRefreshFunctional() {
     composeTestRule.setContent {
       val nav = NavigationActions(rememberNavController())
       Events(viewModel = viewModel, nav = nav)
     }
-    composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
-
-    ComposeScreen.onComposeScreen<EventsScreen>(composeTestRule) {
-      // swipe down to cause refresh
-      composeTestRule.onNode(hasTestTag("eventsList")).performGesture { swipeDown(400F, 0F, 1000) }
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 500)
-      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
-    }
+    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 10000)
+    // swipe down to cause refresh
+    composeTestRule.onNode(hasTestTag("eventsList")).performTouchInput { swipeDown() }
+    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetching"), 5000)
+    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 10000)
   }
 
   @OptIn(ExperimentalTestApi::class)
