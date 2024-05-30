@@ -11,8 +11,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.SignUpScreen
@@ -20,10 +20,13 @@ import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.signUp.SignUp
 import com.github.se.gatherspot.ui.signUp.SignUpViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import kotlin.time.Duration
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -40,6 +43,15 @@ class SignUpTest : TestCase() {
 
   @Before
   fun setup() {
+    runBlocking {
+      try {
+        testLogin()
+        if (Firebase.auth.currentUser != null) {
+          ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
+          Firebase.auth.currentUser?.delete()
+        }
+      } catch (_: Exception) {}
+    }
     viewModel = SignUpViewModel()
     composeTestRule.setContent {
       val navController = rememberNavController()
@@ -93,8 +105,6 @@ class SignUpTest : TestCase() {
           }
           composeTestRule.waitUntilAtLeastOneExists(hasTestTag("verification"), 6000)
         }
-
-        signUpCleanUp(userName)
       }
 
   @OptIn(ExperimentalTestApi::class)
