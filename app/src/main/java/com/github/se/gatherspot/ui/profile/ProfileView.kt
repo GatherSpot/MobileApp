@@ -341,7 +341,7 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
 @Composable
 fun SaveAlertDialog(bioError: String, usernameError: String, onDismiss: () -> Unit) {
   AlertDialog(
-      modifier = Modifier.testTag("saveAlertBox"),
+      modifier = Modifier.testTag("saveAlertDialog"),
       onDismissRequest = onDismiss,
       icon = { Icon(Icons.Default.Warning, contentDescription = null) },
       title = { Text("Could not save the your profile") },

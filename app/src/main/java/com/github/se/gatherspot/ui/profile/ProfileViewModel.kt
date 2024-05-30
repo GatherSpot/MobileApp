@@ -177,11 +177,12 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
             ProfileFirebaseConnection().add(newProfile)
             db.ProfileDao().insert(newProfile)
             _oldProfile = newProfile.copy()
+            _isEditing.postValue(false)
           }
         } catch (e: Exception) {
           // TODO show error dialog
-          cancel()
           Log.d("Profile", "${e.message}")
+          _isEditing.postValue(false)
           _profile.postValue(_oldProfile)
         }
       }
