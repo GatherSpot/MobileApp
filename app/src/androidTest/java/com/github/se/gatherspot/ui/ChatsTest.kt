@@ -21,8 +21,10 @@ import com.google.firebase.auth.auth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.time.Duration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -73,30 +75,31 @@ class ChatsTest {
 
   @Test
   fun testEverythingExists() {
+    runTest(timeout = Duration.parse("30s")) {
+      composeTestRule.waitForIdle()
 
-    composeTestRule.waitForIdle()
-
-    composeTestRule.setContent {
-      val viewModel = ChatsListViewModel()
-      val nav = NavigationActions(rememberNavController())
-      Chats(viewModel = viewModel, nav = nav)
-    }
-
-    ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
-      topBar {
-        assertExists()
-        assertIsDisplayed()
+      composeTestRule.setContent {
+        val viewModel = ChatsListViewModel()
+        val nav = NavigationActions(rememberNavController())
+        Chats(viewModel = viewModel, nav = nav)
       }
 
-      empty {
-        assertExists()
-        assertIsDisplayed()
-      }
+      ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
+        topBar {
+          assertExists()
+          assertIsDisplayed()
+        }
 
-      refresh {
-        assertExists()
-        assertIsDisplayed()
-        assertHasClickAction()
+        empty {
+          assertExists()
+          assertIsDisplayed()
+        }
+
+        refresh {
+          assertExists()
+          assertIsDisplayed()
+          assertHasClickAction()
+        }
       }
     }
   }
@@ -106,24 +109,25 @@ class ChatsTest {
   fun chatsAreDisplayedAndScrollable() {
 
     runBlocking { IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add(testEvent.id) }
-
-    composeTestRule.waitForIdle()
-    val viewModel = ChatsListViewModel()
-    composeTestRule.setContent {
-      val nav = NavigationActions(rememberNavController())
-      Chats(viewModel = viewModel, nav = nav)
-    }
-
-    ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 20000)
-      eventsList {
-        assertExists()
-        assertIsDisplayed()
-        performGesture { swipeUp(400F, 0F, 1000) }
+    runTest(timeout = Duration.parse("30s")) {
+      composeTestRule.waitForIdle()
+      val viewModel = ChatsListViewModel()
+      composeTestRule.setContent {
+        val nav = NavigationActions(rememberNavController())
+        Chats(viewModel = viewModel, nav = nav)
       }
-    }
 
-    runBlocking { IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove(testEvent.id) }
+      ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 20000)
+        eventsList {
+          assertExists()
+          assertIsDisplayed()
+          performGesture { swipeUp(400F, 0F, 1000) }
+        }
+      }
+
+      runBlocking { IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove(testEvent.id) }
+    }
   }
 
   @OptIn(ExperimentalTestApi::class)
