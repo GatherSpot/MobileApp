@@ -170,9 +170,10 @@ class EventsTest {
     composeTestRule.onNode(hasTestTag("eventsList")).performTouchInput { swipeDown() }
     sleep(100)
     assertTrue(viewModel.fetching.value!!)
+    composeTestRule.waitUntilDoesNotExist(hasTestTag("eventsList"), 20000)
     composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 20000)
     // add slight delay because we use post so it's not immediate
-    sleep(100)
+    sleep(300)
     assertFalse(viewModel.fetching.value!!)
   }
 
@@ -229,9 +230,9 @@ class EventsTest {
       }
       composeTestRule.waitForIdle()
       assertTrue(viewModel.fetching.value!!)
-      composeTestRule.waitUntilDoesNotExist(hasTestTag("eventList"), 20000)
+      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 20000)
       // add slight delay because we use post so it's not immediate
-      sleep(1000)
+      sleep(300)
       assertFalse(viewModel.fetching.value!!)
       eventsList { assertExists() }
       assert(viewModel.allEvents.value!!.all { event -> event.categories!!.contains(sport) })
