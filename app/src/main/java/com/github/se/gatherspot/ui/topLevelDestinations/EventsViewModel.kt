@@ -27,7 +27,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   private val eventDao = localDataBase.EventDao()
   private val idListDao = localDataBase.IdListDao()
   private val uid = Firebase.auth.uid!!
-  val PAGESIZE: Long = 9
+  val PAGESIZE: Long = 12
   private var _allEvents = MutableLiveData<List<Event>>(listOf())
   private var _myEvents = MutableLiveData<List<Event>>(listOf())
   private var _upComing = MutableLiveData<List<Event>>(listOf())

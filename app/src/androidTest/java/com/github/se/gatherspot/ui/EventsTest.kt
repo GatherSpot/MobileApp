@@ -30,6 +30,8 @@ import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -162,10 +164,16 @@ class EventsTest {
       Events(viewModel = viewModel, nav = nav)
     }
     composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 10000)
+    sleep(100)
+    assertFalse(viewModel.fetching.value!!)
     // swipe down to cause refresh
     composeTestRule.onNode(hasTestTag("eventsList")).performTouchInput { swipeDown() }
-    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetching"), 5000)
-    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 10000)
+    sleep(100)
+    assertTrue(viewModel.fetching.value!!)
+    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("eventsList"), 20000)
+    // add slight delay because we use post so it's not immediate
+    sleep(100)
+    assertFalse(viewModel.fetching.value!!)
   }
 
   @OptIn(ExperimentalTestApi::class)
@@ -220,8 +228,11 @@ class EventsTest {
         performClick()
       }
       composeTestRule.waitForIdle()
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 20000)
-      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 20000)
+      assertTrue(viewModel.fetching.value!!)
+      composeTestRule.waitUntilDoesNotExist(hasTestTag("eventList"), 20000)
+      // add slight delay because we use post so it's not immediate
+      sleep(1000)
+      assertFalse(viewModel.fetching.value!!)
       eventsList { assertExists() }
       assert(viewModel.allEvents.value!!.all { event -> event.categories!!.contains(sport) })
     }
@@ -272,8 +283,8 @@ class EventsTest {
 
   //      refresh { performClick() }
 
-  //      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetch"), 10000)
-  //      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetch"), 10000)
+  //      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("fetching"), 10000)
+  //      composeTestRule.waitUntilDoesNotExist(hasTestTag("fetching"), 10000)
 
   //      assert(
   //          viewModel.uiState.value.list.all { e ->
@@ -306,7 +317,6 @@ class EventsTest {
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("upComingEventsList"), 20000)
 
       fromFollowed { performClick() }
-
       composeTestRule.waitUntilAtLeastOneExists(hasTestTag("followedEventsList"), 20000)
     }
   }
