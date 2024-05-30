@@ -82,9 +82,7 @@ fun ProfileScaffold(nav: NavigationActions, viewModel: OwnProfileViewModel) {
  */
 @Composable
 fun TopBarOwnProfile(viewModel: OwnProfileViewModel, nav: NavigationActions, edit: () -> Unit) {
-  Row(modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 10.dp, vertical = 20.dp)) {
+  Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
     Followers(nav)
     Following(nav)
     Spacer(modifier = Modifier.padding(horizontal = 38.dp))
@@ -104,10 +102,7 @@ fun EditButton(edit: () -> Unit) {
   Icon(
       painter = painterResource(R.drawable.edit),
       contentDescription = "edit",
-      modifier = Modifier
-          .clickable { edit() }
-          .size(24.dp)
-          .testTag("edit"))
+      modifier = Modifier.clickable { edit() }.size(24.dp).testTag("edit"))
 }
 
 /**
@@ -121,9 +116,7 @@ fun Followers(nav: NavigationActions) {
     Text(
         text = "Followers",
         modifier =
-        Modifier
-            .testTag("followersButton")
-            .clickable { nav.controller.navigate("followers") })
+            Modifier.testTag("followersButton").clickable { nav.controller.navigate("followers") })
   }
 }
 
@@ -138,9 +131,7 @@ fun Following(nav: NavigationActions) {
     Text(
         text = "Following",
         modifier =
-        Modifier
-            .testTag("followingButton")
-            .clickable { nav.controller.navigate("following") })
+            Modifier.testTag("followingButton").clickable { nav.controller.navigate("following") })
   }
 }
 
@@ -151,24 +142,28 @@ fun Following(nav: NavigationActions) {
  * @param cancel The function to call when the cancel button is clicked
  */
 @Composable
-fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit, bioError : String, usernameError : String, showAlertDialog: ()->Unit) {
+fun SaveCancelButtons(
+    save: () -> Unit,
+    cancel: () -> Unit,
+    bioError: String,
+    usernameError: String,
+    showAlertDialog: () -> Unit
+) {
   Row(
-      modifier = Modifier
-          .fillMaxWidth()
-          .padding(8.dp),
+      modifier = Modifier.fillMaxWidth().padding(8.dp),
       horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = "Cancel", modifier = Modifier
-            .clickable { cancel() }
-            .testTag("cancel"))
-        Text(text = "Save", modifier = Modifier
-            .clickable {
-                if (bioError == "" && usernameError == "") {
-                    save()
-                } else {
-                    showAlertDialog()
-                }
-            }
-            .testTag("save"))
+        Text(text = "Cancel", modifier = Modifier.clickable { cancel() }.testTag("cancel"))
+        Text(
+            text = "Save",
+            modifier =
+                Modifier.clickable {
+                      if (bioError == "" && usernameError == "") {
+                        save()
+                      } else {
+                        showAlertDialog()
+                      }
+                    }
+                    .testTag("save"))
       }
 }
 
@@ -183,10 +178,7 @@ fun LogOutButton(nav: NavigationActions, viewModel: OwnProfileViewModel) {
   Icon(
       Icons.AutoMirrored.Filled.ExitToApp,
       contentDescription = "logout",
-      modifier = Modifier
-          .clickable { viewModel.logout(nav) }
-          .size(24.dp)
-          .testTag("logout"))
+      modifier = Modifier.clickable { viewModel.logout(nav) }.size(24.dp).testTag("logout"))
 }
 
 /**
@@ -205,20 +197,13 @@ private fun FollowButtons(
     addFriend: () -> Unit
 ) {
   Row(
-      modifier = Modifier
-          .fillMaxWidth()
-          .padding(8.dp),
+      modifier = Modifier.fillMaxWidth().padding(8.dp),
       horizontalArrangement = Arrangement.SpaceBetween) {
         Icon(
             painter = painterResource(R.drawable.backarrow),
             contentDescription = "back",
-            modifier = Modifier
-                .clickable { back() }
-                .testTag("back")
-                .size(24.dp))
-        Row(modifier = Modifier
-            .clickable { addFriend() }
-            .testTag("addFriend")) {
+            modifier = Modifier.clickable { back() }.testTag("back").size(24.dp))
+        Row(modifier = Modifier.clickable { addFriend() }.testTag("addFriend")) {
           Icon(
               painter = painterResource(R.drawable.add_friend),
               contentDescription = "add friend",
@@ -229,9 +214,7 @@ private fun FollowButtons(
         }
         Text(
             text = if (following) "Unfollow" else "  Follow",
-            modifier = Modifier
-                .clickable { follow() }
-                .testTag("follow"))
+            modifier = Modifier.clickable { follow() }.testTag("follow"))
       }
 }
 
@@ -244,10 +227,7 @@ private fun UsernameField(
 ) {
   Column {
     OutlinedTextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .testTag("usernameInput"),
+        modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("usernameInput"),
         label = { Text("username") },
         value = username.value,
         readOnly = !edit,
@@ -277,11 +257,7 @@ fun BioField(
         value = bio.value,
         onValueChange = { updateBio(it) },
         readOnly = !edit,
-        modifier = Modifier
-            .height(150.dp)
-            .fillMaxWidth()
-            .padding(8.dp)
-            .testTag("bioInput"),
+        modifier = Modifier.height(150.dp).fillMaxWidth().padding(8.dp).testTag("bioInput"),
         supportingText = { Text(text = bioValid?.value ?: "", color = Color.Red) })
   }
 }
@@ -301,9 +277,7 @@ private fun ViewOwnProfileContent(
 
   Column(modifier = Modifier.testTag("ProfileScreen")) {
     TopBarOwnProfile(viewModel, navController, viewModel::edit)
-    Column(modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .padding(8.dp)) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       CircleImageViewer(
           imageUri = imageUrl.value, placeHolder = R.drawable.profile, pictureName = "profile")
       UsernameField(username, null, {}, false)
@@ -311,15 +285,11 @@ private fun ViewOwnProfileContent(
       InterestsView().ShowInterests(interests.value ?: setOf())
       ProfileQRCodeUI(uid)
       Box(
-          modifier = Modifier
-              .fillMaxSize()
-              .testTag("scanQRCodeButtonContainer"),
+          modifier = Modifier.fillMaxSize().testTag("scanQRCodeButtonContainer"),
           contentAlignment = Alignment.Center) {
             Button(
                 onClick = { navController.controller.navigate("qrCodeScanner") },
-                modifier = Modifier
-                    .wrapContentSize()
-                    .testTag("scanQRCodeButton")) {
+                modifier = Modifier.wrapContentSize().testTag("scanQRCodeButton")) {
                   Text("Scan QR Code")
                 }
           }
@@ -342,15 +312,13 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
   val cancel = viewModel::cancel
   val setImageUri = viewModel::updateProfileImage
   val deleteImage = viewModel::removeProfilePicture
-    var showSaveAlertDialog by remember {mutableStateOf(false)}
+  var showSaveAlertDialog by remember { mutableStateOf(false) }
 
   Column {
     SaveCancelButtons(save, cancel, bioError.value, usernameError.value) {
-        showSaveAlertDialog = true
+      showSaveAlertDialog = true
     }
-      Column(modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .padding(56.dp)) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
       CircleImagePicker(
           imageUri = imageUri.value,
           placeHolder = R.drawable.profile,
@@ -365,24 +333,27 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
       }
     }
   }
-    if (showSaveAlertDialog){
-        SaveAlertDialog(bioError.value, usernameError.value){showSaveAlertDialog = false}
-    }
+  if (showSaveAlertDialog) {
+    SaveAlertDialog(bioError.value, usernameError.value) { showSaveAlertDialog = false }
+  }
 }
 
 @Composable
-fun SaveAlertDialog(bioError: String, usernameError: String, onDismiss : ()->Unit) {
-    AlertDialog(
-        modifier = Modifier.testTag("saveAlertBox"),
-        onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Default.Warning, contentDescription = null) },
-        title = { Text("Could not save the your profile") },
-        text = { Text(modifier = Modifier.testTag("saveAlertMessage"), text = (bioError +  " \n" + usernameError)) },
-        confirmButton = {
-            Button(onClick = onDismiss  , modifier = Modifier.testTag("saveAlertButton")) { Text("OK") }
-        },
-        dismissButton = {})
-
+fun SaveAlertDialog(bioError: String, usernameError: String, onDismiss: () -> Unit) {
+  AlertDialog(
+      modifier = Modifier.testTag("saveAlertBox"),
+      onDismissRequest = onDismiss,
+      icon = { Icon(Icons.Default.Warning, contentDescription = null) },
+      title = { Text("Could not save the your profile") },
+      text = {
+        Text(
+            modifier = Modifier.testTag("saveAlertMessage"),
+            text = (bioError + " \n" + usernameError))
+      },
+      confirmButton = {
+        Button(onClick = onDismiss, modifier = Modifier.testTag("saveAlertButton")) { Text("OK") }
+      },
+      dismissButton = {})
 }
 
 /**
@@ -403,9 +374,7 @@ fun ProfileScreen(viewModel: ProfileViewModel) {
 
   Column {
     FollowButtons(back, follow, following.value, addFriend)
-    Column(modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .padding(8.dp)) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       CircleImageViewer(
           imageUri = imageUri.value, placeHolder = R.drawable.profile, pictureName = "profile")
       UsernameField(username, null, {}, false)

@@ -52,11 +52,7 @@ data class Profile(
      * @param oldName the old username
      * @return a string with the error message if there is one
      */
-    suspend fun checkUsername(
-        newName: String,
-        oldName: String?,
-        res: MutableLiveData<String>
-    ) {
+    suspend fun checkUsername(newName: String, oldName: String?, res: MutableLiveData<String>) {
       val regex = ProfileRegex
       if (newName.isEmpty()) {
         res.postValue("Username cannot be empty")
@@ -78,7 +74,7 @@ data class Profile(
      * @param bio the bio to check
      * @return a string with an error message if bio is invalid
      */
-    fun checkBio(bio: String, res : MutableLiveData<String>) {
+    fun checkBio(bio: String, res: MutableLiveData<String>) {
       if (bio.length > 100) {
         res.postValue("Bio cannot be longer than 100 characters")
       } else {
