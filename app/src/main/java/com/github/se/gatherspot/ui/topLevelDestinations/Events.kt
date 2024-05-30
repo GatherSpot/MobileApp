@@ -153,7 +153,7 @@ private fun EventList(
   }
   Log.d(TAG, "size = " + (events.value.size).toString())
   Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
-    if (events.value.isEmpty()) Empty(vm, MainActivity.selectedInterests, fetch)
+    if (events.value.isEmpty()) Empty(vm, MainActivity.selectedInterests, fetch, isFeed)
     else {
       LazyColumn(
           state = lazyState, modifier = Modifier.padding(vertical = 15.dp).testTag(testTag)) {
@@ -290,7 +290,7 @@ private fun EventItem(
  * @param fetch The function to call when refreshing the events
  */
 @Composable
-private fun Empty(
+private fun EmptyFeed(
     viewModel: EventsViewModel,
     interests: MutableLiveData<Set<Interests>>,
     fetch: () -> Unit
@@ -310,6 +310,29 @@ private fun Empty(
                 })
         Text("or ")
         Text("try loading new ones", color = Color.Blue, modifier = Modifier.clickable { fetch() })
+      }
+    }
+  }
+}
+
+@Composable
+private fun EmptyForOtherTabs() {
+  Text("No event to display")
+}
+
+@Composable
+private fun Empty(
+    viewModel: EventsViewModel,
+    interests: MutableLiveData<Set<Interests>>,
+    fetch: () -> Unit,
+    isFeed: Boolean
+) {
+  Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+      if (isFeed) {
+        EmptyFeed(viewModel, interests, fetch)
+      } else {
+        EmptyForOtherTabs()
       }
     }
   }
