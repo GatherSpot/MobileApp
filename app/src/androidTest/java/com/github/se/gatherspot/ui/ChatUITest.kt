@@ -3,7 +3,6 @@ package com.github.se.gatherspot.ui
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.chat.ChatViewModel
@@ -12,7 +11,6 @@ import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.screens.ChatMessagesScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
@@ -20,7 +18,6 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlinx.coroutines.runBlocking
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,15 +26,6 @@ import org.junit.runner.RunWith
 class ChatUITest {
 
   @get:Rule val composeTestRule = createComposeRule()
-  private lateinit var id: String
-
-  @Before
-  fun setUp() {
-    runBlocking {
-      EnvironmentSetter.testLogin()
-      id = FirebaseAuth.getInstance().currentUser!!.uid
-    }
-  }
 
   @Test
   fun testEverythingExists() {
@@ -78,13 +66,13 @@ class ChatUITest {
                       "09:00", DateTimeFormatter.ofPattern(EventFirebaseConnection.TIME_FORMAT)),
               eventStatus = EventStatus.CREATED,
               categories = setOf(Interests.CHESS),
-              registeredUsers = mutableListOf(),
+              registeredUsers = mutableListOf("my_id"),
               finalAttendees = mutableListOf(),
               image = "",
               globalRating = null)
       runBlocking { eventFirebaseConnection.add(event) }
-      chatViewModel.addMessage(UUID.randomUUID().toString(), id, "Hello")
-      ChatUI(chatViewModel, id, NavigationActions(rememberNavController()))
+      chatViewModel.addMessage(UUID.randomUUID().toString(), "user1", "Hello")
+      ChatUI(chatViewModel, "user1", NavigationActions(rememberNavController()))
     }
     ComposeScreen.onComposeScreen<ChatMessagesScreen>(composeTestRule) {
       chatScaffold.assertExists()
@@ -104,14 +92,11 @@ class ChatUITest {
       inputMessage.assertIsDisplayed()
       sendButton.assertIsDisplayed()
     }
-
-    runBlocking {
-      FirebaseFirestore.getInstance()
-          .collection(chatViewModel.chatMessagesFirebase.CHATS)
-          .document(eventId)
-          .delete()
-          .addOnFailureListener {}
-      eventFirebaseConnection.delete(eventId)
-    }
+    FirebaseFirestore.getInstance()
+        .collection(chatViewModel.chatMessagesFirebase.CHATS)
+        .document(eventId)
+        .delete()
+        .addOnFailureListener {}
+    runBlocking { eventFirebaseConnection.delete(eventId) }
   }
 }

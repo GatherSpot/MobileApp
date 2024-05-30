@@ -263,12 +263,4 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
     TODAY,
     FUTURE,
   }
-
-  companion object {
-    const val MINE = 0
-    const val FEED = 1
-    const val PLANNED = 2
-    const val FOLLOWS = 3
-    const val ATTENDED = 4
-  }
 }

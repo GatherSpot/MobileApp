@@ -1,17 +1,13 @@
 package com.github.se.gatherspot.model.chat
 
-import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * ViewModel for the list of chats.
@@ -23,57 +19,43 @@ import kotlinx.coroutines.launch
  */
 class ChatsListViewModel : ViewModel() {
 
-  private val PAGE_SIZE: Long = 9
-  private var _isSearchEnabled = MutableLiveData(false)
-  val isSearchEnabled: LiveData<Boolean> = _isSearchEnabled
-  private var _allEvents = MutableLiveData<List<Event>>(listOf())
-  val allEvents: LiveData<List<Event>> = _allEvents
-  private val eventFirebaseConnection = EventFirebaseConnection()
-  private var listOfList: MutableList<List<String>> = mutableListOf()
-  private var eventsCopy: List<Event> = listOf()
-  private val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "None"
+  val PAGE_SIZE: Long = 9
+  private var _uiState = MutableStateFlow(ChatUIState())
+  val uiState: StateFlow<ChatUIState> = _uiState
+  private var loadedEvents: MutableList<Event> = mutableListOf()
+  private var eventsIDS = listOf<String>()
+  val eventFirebaseConnection = EventFirebaseConnection()
 
-  init {
-    fetchNextEvents()
-  }
-
-  /** Fetches the next set of events from the database. */
-  fun fetchNextEvents() {
-    viewModelScope.launch {
-      val eventIds = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS)
-      Log.d(TAG, "from vm of interest $eventIds")
-      val events = eventFirebaseConnection.fetchNextEvents(eventIds, PAGE_SIZE)
-      eventsCopy = eventsCopy.plus(events)
-      _allEvents.value = eventsCopy
-      listOfList = mutableListOf()
-      eventsCopy.forEach { event ->
-        listOfList.add(event.title.split(" ").map { s -> s.lowercase() })
-      }
-      _isSearchEnabled.value = true
-    }
-  }
-
-  /** Reset offset when a user wants to refresh */
-  fun resetOffset() {
-    _isSearchEnabled.value = false
-    eventFirebaseConnection.offset = null
-    eventsCopy = emptyList()
-    _allEvents.value = listOf()
-    fetchNextEvents()
-  }
+  // TEMPORARY
+  // val listEvents = listOf("-NwJSmLmQDUlF9booiq7")
+  //
 
   /**
-   * Filter events with title including a word starting with filter or the inverse
+   * Fetches the next set of events from the database.
    *
-   * @param filter: String to apply
+   * @param uid String? The user ID.
    */
-  fun filter(filter: String) {
-    val filteredEvents = mutableListOf<Event>()
-    listOfList.forEachIndexed { index, l ->
-      if (l.any { s -> s.startsWith(filter.lowercase()) || filter.lowercase().startsWith(s) }) {
-        filteredEvents.add(eventsCopy[index])
-      }
+  suspend fun fetchNext(uid: String?) {
+
+    if (uid == null) {
+      return
     }
-    _allEvents.value = filteredEvents
+    val idList = IdList.fromFirebase(uid, FirebaseCollection.REGISTERED_EVENTS)
+
+    eventsIDS = idList.elements
+    Log.e("IDS", eventsIDS.toString())
+
+    _uiState.value = ChatUIState(loadedEvents)
+
+    val events = eventFirebaseConnection.fetchNextEvents(idList, PAGE_SIZE)
+    loadedEvents.addAll(events)
+    _uiState.value = ChatUIState(loadedEvents)
   }
 }
+
+/**
+ * Represents the state of the UI.
+ *
+ * @property list MutableList<Event> The list of events.
+ */
+data class ChatUIState(val list: MutableList<Event> = mutableListOf())

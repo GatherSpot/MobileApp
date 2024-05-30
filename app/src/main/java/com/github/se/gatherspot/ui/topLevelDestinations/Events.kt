@@ -144,6 +144,7 @@ private fun EventList(
   // lines to add functionality to fetch next when we reach end of list
   fun LazyListState.isScrolledToEnd() =
       layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+  // value that reflects if we reached and of list or not
   val endOfListReached by remember {
     derivedStateOf {
       // this if is used to make sure we don't re-fetch the same thing for no reason repeatedly on
@@ -153,7 +154,7 @@ private fun EventList(
   }
   Log.d(TAG, "size = " + (events.value.size).toString())
   Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
-    if (events.value.isEmpty()) Empty(vm, MainActivity.selectedInterests, fetch, isFeed)
+    if (events.value.isEmpty()) EmptyFeed(vm, MainActivity.selectedInterests, fetch)
     else {
       LazyColumn(
           state = lazyState, modifier = Modifier.padding(vertical = 15.dp).testTag(testTag)) {
@@ -310,29 +311,6 @@ private fun EmptyFeed(
                 })
         Text("or ")
         Text("try loading new ones", color = Color.Blue, modifier = Modifier.clickable { fetch() })
-      }
-    }
-  }
-}
-
-@Composable
-private fun EmptyForOtherTabs() {
-  Text("No event to display")
-}
-
-@Composable
-private fun Empty(
-    viewModel: EventsViewModel,
-    interests: MutableLiveData<Set<Interests>>,
-    fetch: () -> Unit,
-    isFeed: Boolean
-) {
-  Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-      if (isFeed) {
-        EmptyFeed(viewModel, interests, fetch)
-      } else {
-        EmptyForOtherTabs()
       }
     }
   }

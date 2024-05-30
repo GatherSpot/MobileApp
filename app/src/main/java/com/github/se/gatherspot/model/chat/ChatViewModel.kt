@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.model.chat
 
-import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -49,7 +48,6 @@ class ChatViewModel(val eventId: String) : ViewModel() {
         val eventValue = withContext(Dispatchers.IO) { EventFirebaseConnection().fetch(eventId) }
         _messages.value = fetchedMessages
         event = eventValue
-        Log.d(TAG, "event null ${eventValue == null}")
       } catch (e: Exception) {
         // Handle exceptions
         Log.w("ChatViewModel", "Failed to fetch messages", e)
