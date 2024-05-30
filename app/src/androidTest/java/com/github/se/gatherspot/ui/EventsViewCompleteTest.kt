@@ -28,11 +28,27 @@ import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.Events
 import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.io.IOException
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class EventsViewCompleteTest {
   @get:Rule val composeTestRule = createComposeRule()
+  private lateinit var db: AppDatabase
+
+  @Before
+  fun createDb() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+  }
+
+  @After
+  @Throws(IOException::class)
+  fun closeDb() {
+    db.close()
+  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
@@ -58,11 +74,11 @@ class EventsViewCompleteTest {
                 eventDao = null)
           }
           composable("profile") {
-            ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel() })
+            ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel(db) })
           }
           composable("viewProfile/{uid}") { backstackEntry ->
             backstackEntry.arguments?.getString("uid")?.let {
-              ProfileScreen(viewModel<ProfileViewModel> { ProfileViewModel(it, navController) })
+              ProfileScreen(viewModel<ProfileViewModel> { ProfileViewModel(it, navController, db) })
             }
           }
         }

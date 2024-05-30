@@ -3,6 +3,7 @@ package com.github.se.gatherspot.sql
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.model.IdList
@@ -16,7 +17,7 @@ interface IdListDao {
    *
    * @param idList the IdList
    */
-  @Insert fun insert(vararg idList: IdList)
+  @Insert(onConflict = OnConflictStrategy.REPLACE) fun insert(vararg idList: IdList)
 
   /**
    * Get an IdList by its id
@@ -26,7 +27,7 @@ interface IdListDao {
    * @return the IdList
    */
   @Query("SELECT * FROM id_list WHERE collection = :collection AND id = :id")
-  fun get(collection: FirebaseCollection, id: String): IdList
+  fun get(collection: FirebaseCollection, id: String): IdList?
 
   /**
    * Delete an IdList

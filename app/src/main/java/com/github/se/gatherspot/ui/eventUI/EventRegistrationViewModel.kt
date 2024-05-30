@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.sql.EventDao
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -25,7 +27,7 @@ import kotlinx.coroutines.launch
  *   displayed
  */
 open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
-  private val userId = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
+  private val userId = Firebase.auth.uid ?: "TEST"
 
   // LiveData for holding registration state
   private val _registrationState: MutableLiveData<RegistrationState> =
@@ -56,6 +58,15 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
   // Profile of the user, is needed to add the event to the user's registered events
   private var registeredEventsList: IdList =
       IdList.empty(userId, FirebaseCollection.REGISTERED_EVENTS)
+
+  init {
+    viewModelScope.launch(Dispatchers.IO) {
+      try {
+        registeredEventsList =
+            IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS)
+      } catch (_: Exception) {}
+    }
+  }
 
   private val eventFirebaseConnection = EventFirebaseConnection()
 

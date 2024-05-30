@@ -21,6 +21,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class EventFirebaseConnectionTest {
+  init {
+    testLogin()
+  }
 
   val eventFirebaseConnection = EventFirebaseConnection()
 
@@ -194,7 +197,6 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchNextBasedOnInterestReturnsCorrectEvents() =
       runTest(timeout = Duration.parse("60s")) {
-        testLogin()
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
@@ -220,7 +222,6 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchNextBasedOnInterestReturnsDistinctEvents() =
       runTest(timeout = Duration.parse("60s")) {
-        testLogin()
         val round = 5
         val interests = listOf(Interests.CHESS, Interests.BASKETBALL)
         val listOfEvents1 =
@@ -246,7 +247,6 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchMyEventsWorks() =
       runTest(timeout = Duration.parse("60s")) {
-        testLogin()
         Thread.sleep(10000)
         val events = eventFirebaseConnection.fetchMyEvents()
         assert(
@@ -258,10 +258,8 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchUpComingWorks() =
       runTest(timeout = Duration.parse("20s")) {
-        testLogin()
-
-        Thread.sleep(3000)
         val events = eventFirebaseConnection.fetchUpComing()
+        delay(4000)
         assert(
             events.all { event ->
               event.registeredUsers.contains(FirebaseAuth.getInstance().currentUser!!.uid)
@@ -271,7 +269,6 @@ class EventFirebaseConnectionTest {
   @Test
   fun fetchAttendedWorks() =
       runTest(timeout = Duration.parse("20s")) {
-        testLogin()
         Thread.sleep(3000)
         val events = eventFirebaseConnection.fetchAttended()
         assert(
@@ -386,56 +383,60 @@ class EventFirebaseConnectionTest {
   }
 
   @Test
-  fun nullCasesTest() = runTest {
-    val eventID = eventFirebaseConnection.getNewID()
-    val event =
-        Event(
-            id = eventID,
-            title = "Test Event",
-            description = "This is a test event",
-            location = null,
-            eventStartDate = null,
-            eventEndDate = null,
-            timeBeginning = null,
-            timeEnding = null,
-            attendanceMaxCapacity = null,
-            attendanceMinCapacity = 10,
-            inscriptionLimitDate = null,
-            inscriptionLimitTime = null,
-            eventStatus = EventStatus.CREATED,
-            categories = setOf(Interests.CHESS),
-            registeredUsers = mutableListOf(),
-            finalAttendees = mutableListOf(),
-            globalRating = null,
-            image = "")
+  fun nullCasesTest() =
+      runTest(timeout = Duration.parse("30s")) {
+        val eventID = eventFirebaseConnection.getNewID()
+        val event =
+            Event(
+                id = eventID,
+                title = "Test Event",
+                description = "This is a test event",
+                location = null,
+                eventStartDate = null,
+                eventEndDate = null,
+                timeBeginning = null,
+                timeEnding = null,
+                attendanceMaxCapacity = null,
+                attendanceMinCapacity = 10,
+                inscriptionLimitDate = null,
+                inscriptionLimitTime = null,
+                eventStatus = EventStatus.CREATED,
+                categories = setOf(Interests.CHESS),
+                registeredUsers = mutableListOf(),
+                finalAttendees = mutableListOf(),
+                globalRating = null,
+                image = "")
 
-    eventFirebaseConnection.add(event)
-    var resultEvent: Event? = null
-    async { resultEvent = eventFirebaseConnection.fetch(eventID) }.await()
-    assertNotNull(resultEvent)
-    assertEquals(resultEvent!!.id, eventID)
-    assertEquals(resultEvent!!.title, "Test Event")
-    assertEquals(resultEvent!!.description, "This is a test event")
-    assertEquals(resultEvent!!.location, null)
-    assertEquals(
-        resultEvent!!.eventStartDate, eventFirebaseConnection.EVENT_START_DATE_DEFAULT_VALUE)
-    assertEquals(resultEvent!!.eventEndDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
-    assertEquals(
-        resultEvent!!.timeBeginning, eventFirebaseConnection.EVENT_START_TIME_DEFAULT_VALUE)
-    assertEquals(resultEvent!!.timeEnding, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
-    assertEquals(resultEvent!!.attendanceMaxCapacity, null)
-    assertEquals(resultEvent!!.attendanceMinCapacity, 10)
-    assertEquals(
-        resultEvent!!.inscriptionLimitDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
-    assertEquals(
-        resultEvent!!.inscriptionLimitTime, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
-    assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
-    assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
-    assertEquals(resultEvent!!.registeredUsers!!.size, 0)
-    assertEquals(resultEvent!!.finalAttendees!!.size, 0)
-    assertEquals(resultEvent!!.image, "")
-    eventFirebaseConnection.delete(eventID)
-  }
+        eventFirebaseConnection.add(event)
+        var resultEvent: Event? = null
+        async { resultEvent = eventFirebaseConnection.fetch(eventID) }.await()
+        assertNotNull(resultEvent)
+        assertEquals(resultEvent!!.id, eventID)
+        assertEquals(resultEvent!!.title, "Test Event")
+        assertEquals(resultEvent!!.description, "This is a test event")
+        assertEquals(resultEvent!!.location, null)
+        assertEquals(
+            resultEvent!!.eventStartDate, eventFirebaseConnection.EVENT_START_DATE_DEFAULT_VALUE)
+        assertEquals(
+            resultEvent!!.eventEndDate, eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+        assertEquals(
+            resultEvent!!.timeBeginning, eventFirebaseConnection.EVENT_START_TIME_DEFAULT_VALUE)
+        assertEquals(resultEvent!!.timeEnding, eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
+        assertEquals(resultEvent!!.attendanceMaxCapacity, null)
+        assertEquals(resultEvent!!.attendanceMinCapacity, 10)
+        assertEquals(
+            resultEvent!!.inscriptionLimitDate,
+            eventFirebaseConnection.EVENT_END_DATE_DEFAULT_VALUE)
+        assertEquals(
+            resultEvent!!.inscriptionLimitTime,
+            eventFirebaseConnection.EVENT_END_TIME_DEFAULT_VALUE)
+        assertEquals(resultEvent!!.eventStatus, EventStatus.CREATED)
+        assertEquals(resultEvent!!.categories, setOf(Interests.CHESS))
+        assertEquals(resultEvent!!.registeredUsers!!.size, 0)
+        assertEquals(resultEvent!!.finalAttendees!!.size, 0)
+        assertEquals(resultEvent!!.image, "")
+        eventFirebaseConnection.delete(eventID)
+      }
 
   @Test
   fun mapStringToTimeTest() = runTest {
