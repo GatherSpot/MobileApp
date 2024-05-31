@@ -105,9 +105,9 @@ private val MESSAGES = arrayOf(CREATE_SPECIFIC_MESSAGES, EDIT_SPECIFIC_MESSAGES)
  */
 @Composable
 fun ScrollableContent(paddingValues: PaddingValues, content: @Composable () -> Unit) {
-    Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) { content() }
-    }
+  Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) { content() }
+  }
 }
 
 /**
@@ -126,275 +126,275 @@ fun EventDataForm(
     eventAction: EventAction,
     event: Event? = null,
 ) {
-    // State of the event
-    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    var title by remember { mutableStateOf(TextFieldValue(event?.title ?: "")) }
-    var description by remember { mutableStateOf(TextFieldValue(event?.description ?: "")) }
-    var location by remember { mutableStateOf(event?.location) }
-    var eventStartDate by remember {
-        mutableStateOf(TextFieldValue(event?.eventStartDate?.format(dateFormatter) ?: ""))
-    }
-    var eventEndDate by remember {
-        mutableStateOf(TextFieldValue(event?.eventEndDate?.format(dateFormatter) ?: ""))
-    }
-    var eventTimeStart by remember {
-        mutableStateOf(TextFieldValue(event?.timeBeginning?.format(timeFormatter) ?: ""))
-    }
-    var eventTimeEnd by remember {
-        mutableStateOf(TextFieldValue(event?.timeEnding?.format(timeFormatter) ?: ""))
-    }
-    var maxAttendees by remember {
-        mutableStateOf(TextFieldValue(event?.attendanceMaxCapacity?.toString() ?: ""))
-    }
-    var minAttendees by remember {
-        mutableStateOf(TextFieldValue(event?.attendanceMinCapacity?.toString() ?: ""))
-    }
-    var inscriptionLimitDate by remember {
-        mutableStateOf(TextFieldValue(event?.inscriptionLimitDate?.format(dateFormatter) ?: ""))
-    }
-    var inscriptionLimitTime by remember {
-        mutableStateOf(TextFieldValue(event?.inscriptionLimitTime?.format(timeFormatter) ?: ""))
-    }
-    var imageUri by remember { mutableStateOf(event?.image ?: "") }
+  // State of the event
+  val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+  val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+  var title by remember { mutableStateOf(TextFieldValue(event?.title ?: "")) }
+  var description by remember { mutableStateOf(TextFieldValue(event?.description ?: "")) }
+  var location by remember { mutableStateOf(event?.location) }
+  var eventStartDate by remember {
+    mutableStateOf(TextFieldValue(event?.eventStartDate?.format(dateFormatter) ?: ""))
+  }
+  var eventEndDate by remember {
+    mutableStateOf(TextFieldValue(event?.eventEndDate?.format(dateFormatter) ?: ""))
+  }
+  var eventTimeStart by remember {
+    mutableStateOf(TextFieldValue(event?.timeBeginning?.format(timeFormatter) ?: ""))
+  }
+  var eventTimeEnd by remember {
+    mutableStateOf(TextFieldValue(event?.timeEnding?.format(timeFormatter) ?: ""))
+  }
+  var maxAttendees by remember {
+    mutableStateOf(TextFieldValue(event?.attendanceMaxCapacity?.toString() ?: ""))
+  }
+  var minAttendees by remember {
+    mutableStateOf(TextFieldValue(event?.attendanceMinCapacity?.toString() ?: ""))
+  }
+  var inscriptionLimitDate by remember {
+    mutableStateOf(TextFieldValue(event?.inscriptionLimitDate?.format(dateFormatter) ?: ""))
+  }
+  var inscriptionLimitTime by remember {
+    mutableStateOf(TextFieldValue(event?.inscriptionLimitTime?.format(timeFormatter) ?: ""))
+  }
+  var imageUri by remember { mutableStateOf(event?.image ?: "") }
 
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage = ""
-    var locationName by remember { mutableStateOf(event?.location?.name ?: "") }
-    val categories: MutableList<Interests> = remember {
-        event?.categories?.toMutableStateList() ?: mutableStateListOf()
-    }
-    // Flow for query text input
-    var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
-    // Context to use for draft saving
-    val context = LocalContext.current
+  var showErrorDialog by remember { mutableStateOf(false) }
+  var errorMessage = ""
+  var locationName by remember { mutableStateOf(event?.location?.name ?: "") }
+  val categories: MutableList<Interests> = remember {
+    event?.categories?.toMutableStateList() ?: mutableStateListOf()
+  }
+  // Flow for query text input
+  var suggestions: List<Location> by remember { mutableStateOf(emptyList()) }
+  // Context to use for draft saving
+  val context = LocalContext.current
 
-    // Coroutine scope for launching coroutines
-    val coroutineScope = rememberCoroutineScope()
-    // Permission handling
-    val locationPermissionGranted = remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED)
-    }
-    val requestLocationPermissionLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
-                isGranted ->
-            locationPermissionGranted.value = isGranted
-        }
+  // Coroutine scope for launching coroutines
+  val coroutineScope = rememberCoroutineScope()
+  // Permission handling
+  val locationPermissionGranted = remember {
+    mutableStateOf(
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED)
+  }
+  val requestLocationPermissionLauncher =
+      rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+          isGranted ->
+        locationPermissionGranted.value = isGranted
+      }
 
-    // Check and request permission if not already granted
-    LaunchedEffect(Unit) {
-        if (!locationPermissionGranted.value) {
-            requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
+  // Check and request permission if not already granted
+  LaunchedEffect(Unit) {
+    if (!locationPermissionGranted.value) {
+      requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
+  }
 
-    // image logic
-    val placeHolder = R.drawable.default_event_image
-    val updateImageUri: (String) -> Unit = { imageUri = it }
-    val deleteImage: () -> Unit = {
-        runBlocking {
-            // if we create event it should never be already in the database
-            if (eventAction == EDIT) {
-                event?.id?.let { FirebaseImages().removePicture("eventImage", it) }
-            }
-        }
-        imageUri = ""
+  // image logic
+  val placeHolder = R.drawable.default_event_image
+  val updateImageUri: (String) -> Unit = { imageUri = it }
+  val deleteImage: () -> Unit = {
+    runBlocking {
+      // if we create event it should never be already in the database
+      if (eventAction == EDIT) {
+        event?.id?.let { FirebaseImages().removePicture("eventImage", it) }
+      }
     }
-    val uploadImage: () -> Unit = {
-        if (event != null) {
-            runBlocking {
-                imageUri = FirebaseImages().pushPicture(imageUri.toUri(), "eventImage", event.id)
-            }
-        }
+    imageUri = ""
+  }
+  val uploadImage: () -> Unit = {
+    if (event != null) {
+      runBlocking {
+        imageUri = FirebaseImages().pushPicture(imageUri.toUri(), "eventImage", event.id)
+      }
     }
+  }
 
-    if (eventAction == CREATE) {
-        // Restore the draft
-        val draft = eventUtils.retrieveFromDraft(context)
-        if (draft != null) {
-            title = TextFieldValue(draft.title ?: "")
-            description = TextFieldValue(draft.description ?: "")
-            location = draft.location
-            eventStartDate = TextFieldValue(draft.eventStartDate ?: "")
-            eventEndDate = TextFieldValue(draft.eventEndDate ?: "")
-            eventTimeStart = TextFieldValue(draft.timeBeginning ?: "")
-            eventTimeEnd = TextFieldValue(draft.timeEnding ?: "")
-            maxAttendees = TextFieldValue(draft.attendanceMaxCapacity ?: "")
-            minAttendees = TextFieldValue(draft.attendanceMinCapacity ?: "")
-            inscriptionLimitDate = TextFieldValue(draft.inscriptionLimitDate ?: "")
-            inscriptionLimitTime = TextFieldValue(draft.inscriptionLimitTime ?: "")
-            categories.addAll(draft.categories ?: emptySet())
-        }
+  if (eventAction == CREATE) {
+    // Restore the draft
+    val draft = eventUtils.retrieveFromDraft(context)
+    if (draft != null) {
+      title = TextFieldValue(draft.title ?: "")
+      description = TextFieldValue(draft.description ?: "")
+      location = draft.location
+      eventStartDate = TextFieldValue(draft.eventStartDate ?: "")
+      eventEndDate = TextFieldValue(draft.eventEndDate ?: "")
+      eventTimeStart = TextFieldValue(draft.timeBeginning ?: "")
+      eventTimeEnd = TextFieldValue(draft.timeEnding ?: "")
+      maxAttendees = TextFieldValue(draft.attendanceMaxCapacity ?: "")
+      minAttendees = TextFieldValue(draft.attendanceMinCapacity ?: "")
+      inscriptionLimitDate = TextFieldValue(draft.inscriptionLimitDate ?: "")
+      inscriptionLimitTime = TextFieldValue(draft.inscriptionLimitTime ?: "")
+      categories.addAll(draft.categories ?: emptySet())
     }
+  }
 
-    var newEvent: Event? = null
+  var newEvent: Event? = null
 
-    Scaffold(
-        modifier = Modifier.testTag("EventDataFormScreen"),
-        topBar = {
-            MediumTopAppBar(
-                title = {
-                    Text(
-                        text = MESSAGES[eventAction.ordinal][TITLE_MESSAGE_INDEX],
-                        modifier = Modifier.testTag("createEventTitle"))
-                },
-                navigationIcon = {
-                    // SAVE DRAFT
-                    IconButton(
-                        onClick = {
-                            if (eventAction == CREATE) {
-                                eventUtils.saveDraftEvent(
-                                    title.text,
-                                    description.text,
-                                    location,
-                                    eventStartDate.text,
-                                    eventEndDate.text,
-                                    eventTimeStart.text,
-                                    eventTimeEnd.text,
-                                    maxAttendees.text,
-                                    minAttendees.text,
-                                    inscriptionLimitDate.text,
-                                    inscriptionLimitTime.text,
-                                    categories.toSet(),
-                                    image = imageUri,
-                                    context = context)
-                            }
-                            nav.goBack()
-                        },
-                        modifier = Modifier.testTag("goBackButton")) {
-                        Icon(
-                            modifier = Modifier.testTag("backIcon"),
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back to overview")
+  Scaffold(
+      modifier = Modifier.testTag("EventDataFormScreen"),
+      topBar = {
+        MediumTopAppBar(
+            title = {
+              Text(
+                  text = MESSAGES[eventAction.ordinal][TITLE_MESSAGE_INDEX],
+                  modifier = Modifier.testTag("createEventTitle"))
+            },
+            navigationIcon = {
+              // SAVE DRAFT
+              IconButton(
+                  onClick = {
+                    if (eventAction == CREATE) {
+                      eventUtils.saveDraftEvent(
+                          title.text,
+                          description.text,
+                          location,
+                          eventStartDate.text,
+                          eventEndDate.text,
+                          eventTimeStart.text,
+                          eventTimeEnd.text,
+                          maxAttendees.text,
+                          minAttendees.text,
+                          inscriptionLimitDate.text,
+                          inscriptionLimitTime.text,
+                          categories.toSet(),
+                          image = imageUri,
+                          context = context)
                     }
-                },
-                actions = {
-                    // ERASE FIELDS
-                    Button(
-                        onClick = {
-                            if (imageUri.isNotEmpty()) {
-                                deleteImage()
-                            }
-                            title = TextFieldValue("")
-                            description = TextFieldValue("")
-                            location = null
-                            eventStartDate = TextFieldValue("")
-                            eventEndDate = TextFieldValue("")
-                            eventTimeStart = TextFieldValue("")
-                            eventTimeEnd = TextFieldValue("")
-                            maxAttendees = TextFieldValue("")
-                            minAttendees = TextFieldValue("")
-                            inscriptionLimitDate = TextFieldValue("")
-                            inscriptionLimitTime = TextFieldValue("")
-                            imageUri = ""
-                            categories.clear()
-                            eventUtils.deleteDraft(context)
-                        },
-                        modifier = Modifier.testTag("clearFieldsButton"),
-                        shape = RoundedCornerShape(size = 10.dp)) {
-                        Text(text = "Clear all fields")
+                    nav.goBack()
+                  },
+                  modifier = Modifier.testTag("goBackButton")) {
+                    Icon(
+                        modifier = Modifier.testTag("backIcon"),
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Go back to overview")
+                  }
+            },
+            actions = {
+              // ERASE FIELDS
+              Button(
+                  onClick = {
+                    if (imageUri.isNotEmpty()) {
+                      deleteImage()
                     }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    // SAVE DRAFT AGAIN (?)
-                    Button(
-                        onClick = {
-                            eventUtils.saveDraftEvent(
-                                title.text,
-                                description.text,
-                                location,
-                                eventStartDate.text,
-                                eventEndDate.text,
-                                eventTimeStart.text,
-                                eventTimeEnd.text,
-                                maxAttendees.text,
-                                minAttendees.text,
-                                inscriptionLimitDate.text,
-                                inscriptionLimitTime.text,
-                                categories.toSet(),
-                                image = imageUri,
-                                context = context)
-                        },
-                        modifier = Modifier.testTag("saveDraftButton"),
-                        shape = RoundedCornerShape(size = 10.dp)) {
-                        Text(text = "Save draft")
-                    }
-                })
-        }) { innerPadding ->
+                    title = TextFieldValue("")
+                    description = TextFieldValue("")
+                    location = null
+                    eventStartDate = TextFieldValue("")
+                    eventEndDate = TextFieldValue("")
+                    eventTimeStart = TextFieldValue("")
+                    eventTimeEnd = TextFieldValue("")
+                    maxAttendees = TextFieldValue("")
+                    minAttendees = TextFieldValue("")
+                    inscriptionLimitDate = TextFieldValue("")
+                    inscriptionLimitTime = TextFieldValue("")
+                    imageUri = ""
+                    categories.clear()
+                    eventUtils.deleteDraft(context)
+                  },
+                  modifier = Modifier.testTag("clearFieldsButton"),
+                  shape = RoundedCornerShape(size = 10.dp)) {
+                    Text(text = "Clear all fields")
+                  }
+              Spacer(modifier = Modifier.width(10.dp))
+              // SAVE DRAFT AGAIN (?)
+              Button(
+                  onClick = {
+                    eventUtils.saveDraftEvent(
+                        title.text,
+                        description.text,
+                        location,
+                        eventStartDate.text,
+                        eventEndDate.text,
+                        eventTimeStart.text,
+                        eventTimeEnd.text,
+                        maxAttendees.text,
+                        minAttendees.text,
+                        inscriptionLimitDate.text,
+                        inscriptionLimitTime.text,
+                        categories.toSet(),
+                        image = imageUri,
+                        context = context)
+                  },
+                  modifier = Modifier.testTag("saveDraftButton"),
+                  shape = RoundedCornerShape(size = 10.dp)) {
+                    Text(text = "Save draft")
+                  }
+            })
+      }) { innerPadding ->
         // Make the content scrollable
         ScrollableContent(innerPadding) {
-            // Image picker
-            BannerImagePicker(imageUri, placeHolder, "event", updateImageUri, deleteImage)
-            // Create event form
-            Column(
+          // Image picker
+          BannerImagePicker(imageUri, placeHolder, "event", updateImageUri, deleteImage)
+          // Create event form
+          Column(
+              modifier =
+                  Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
+              verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
+              horizontalAlignment = Alignment.CenterHorizontally,
+          ) {
+            Text(text = "Fields with * are required", modifier = Modifier.testTag("requiredFields"))
+            // Title
+            OutlinedTextField(
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputTitle"),
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Event Title*") },
+                placeholder = { Text("Give a name to the event") })
+            // Description
+            OutlinedTextField(
                 modifier =
-                Modifier.padding(innerPadding).padding(horizontal = 28.dp).testTag("formColumn"),
-                verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(text = "Fields with * are required", modifier = Modifier.testTag("requiredFields"))
-                // Title
-                OutlinedTextField(
-                    modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputTitle"),
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Event Title*") },
-                    placeholder = { Text("Give a name to the event") })
-                // Description
-                OutlinedTextField(
-                    modifier =
                     Modifier.width(WIDTH).height(DESCRIPTION_HEIGHT).testTag("inputDescription"),
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Description*") },
-                    placeholder = { Text("Describe the event") })
-                // Start Date
-                Row(
-                    modifier = Modifier.width(WIDTH),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-                    OutlinedTextField(
-                        modifier =
-                        Modifier.width(WIDTH.times(0.8f))
-                            .height(HEIGHT)
-                            .testTag("inputStartDateEvent"),
-                        value = eventStartDate,
-                        onValueChange = { eventStartDate = it },
-                        label = { Text("Start Date of the event*") },
-                        placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Description*") },
+                placeholder = { Text("Describe the event") })
+            // Start Date
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH.times(0.8f))
+                              .height(HEIGHT)
+                              .testTag("inputStartDateEvent"),
+                      value = eventStartDate,
+                      onValueChange = { eventStartDate = it },
+                      label = { Text("Start Date of the event*") },
+                      placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
 
-                    MyDatePickerDialog(
-                        onDateChange = { eventStartDate = TextFieldValue(it) }, testTag = "start")
+                  MyDatePickerDialog(
+                      onDateChange = { eventStartDate = TextFieldValue(it) }, testTag = "start")
                 }
-                // End Date
-                Row(
-                    modifier = Modifier.width(WIDTH),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-                    OutlinedTextField(
-                        modifier =
-                        Modifier.width(WIDTH.times(0.8f))
-                            .height(HEIGHT)
-                            .testTag("inputEndDateEvent"),
-                        value = eventEndDate,
-                        onValueChange = { eventEndDate = it },
-                        label = { Text("End date of the event") },
-                        placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
-                    MyDatePickerDialog(
-                        onDateChange = { eventEndDate = TextFieldValue(it) }, testTag = "end")
+            // End Date
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH.times(0.8f))
+                              .height(HEIGHT)
+                              .testTag("inputEndDateEvent"),
+                      value = eventEndDate,
+                      onValueChange = { eventEndDate = it },
+                      label = { Text("End date of the event") },
+                      placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+                  MyDatePickerDialog(
+                      onDateChange = { eventEndDate = TextFieldValue(it) }, testTag = "end")
                 }
 
-                Row(
-                    modifier = Modifier.width(WIDTH),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-                    // Time Start
-                    Row(
-                        modifier = Modifier.width(WIDTH.times(0.5f)),
-                        horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  // Time Start
+                  Row(
+                      modifier = Modifier.width(WIDTH.times(0.5f)),
+                      horizontalArrangement = Arrangement.SpaceBetween) {
                         OutlinedTextField(
                             modifier =
-                            Modifier.width(WIDTH_2ELEM)
-                                .height(HEIGHT)
-                                .testTag("inputTimeStartEvent"),
+                                Modifier.width(WIDTH_2ELEM)
+                                    .height(HEIGHT)
+                                    .testTag("inputTimeStartEvent"),
                             value = eventTimeStart,
                             onValueChange = { eventTimeStart = it },
                             label = { Text("Start time*", fontSize = FONT_SIZE) },
@@ -404,17 +404,17 @@ fun EventDataForm(
                             onTimeChange = { eventTimeStart = TextFieldValue(it) },
                             title = "Select start time",
                             textFieldValue = eventTimeStart)
-                    }
+                      }
 
-                    // Time End
-                    Row(
-                        modifier = Modifier.width(WIDTH.times(0.5f)),
-                        horizontalArrangement = Arrangement.SpaceBetween) {
+                  // Time End
+                  Row(
+                      modifier = Modifier.width(WIDTH.times(0.5f)),
+                      horizontalArrangement = Arrangement.SpaceBetween) {
                         OutlinedTextField(
                             modifier =
-                            Modifier.width(WIDTH_2ELEM)
-                                .height(HEIGHT)
-                                .testTag("inputTimeEndEvent"),
+                                Modifier.width(WIDTH_2ELEM)
+                                    .height(HEIGHT)
+                                    .testTag("inputTimeEndEvent"),
                             value = eventTimeEnd,
                             onValueChange = { eventTimeEnd = it },
                             label = { Text("End time*", fontSize = FONT_SIZE) },
@@ -424,158 +424,158 @@ fun EventDataForm(
                             onTimeChange = { eventTimeEnd = TextFieldValue(it) },
                             title = "Select end time",
                             textFieldValue = eventTimeEnd)
-                    }
+                      }
                 }
-                // Location
-                var isDropdownExpanded by remember { mutableStateOf(false) }
-                var searchJob by remember { mutableStateOf<Job?>(null) }
-                ExposedDropdownMenuBox(
-                    modifier = Modifier.testTag("locationDropDownMenuBox"),
-                    expanded = isDropdownExpanded,
-                    onExpandedChange = { isDropdownExpanded = it }) {
-                    OutlinedTextField(
-                        modifier =
-                        Modifier.menuAnchor()
-                            .width(WIDTH)
-                            .height(HEIGHT)
-                            .testTag("inputLocation"),
-                        // Do a query to get a location from text input
-                        value = locationName,
-                        onValueChange = { newValue ->
-                            locationName = newValue
-                            // Give focus to the element
-                            isDropdownExpanded = true
-                            searchJob?.cancel()
-                            searchJob =
-                                coroutineScope.launch {
-                                    // Debounce logic: wait for 300 milliseconds after the last text
-                                    // change
-                                    delay(300)
-                                    suggestions = eventUtils.fetchLocationSuggestions(context, newValue)
-                                }
-                        },
-                        label = { Text("Location") },
-                        placeholder = { Text("Enter an address") })
-
-                    ExposedDropdownMenu(
-                        expanded = isDropdownExpanded && suggestions.isNotEmpty(),
-                        onDismissRequest = { isDropdownExpanded = false }) {
-                        suggestions.forEach { suggestion ->
-                            Log.e("EventDataForm", "Suggestion: ${suggestion.name}")
-                            DropdownMenuItem(
-                                modifier = Modifier.testTag("MenuItem"),
-                                text = { Text(suggestion.name) },
-                                onClick = {
-                                    location = suggestion
-                                    locationName = suggestion.name
-                                    isDropdownExpanded = false
-                                })
-                        }
-                    }
-                }
-
-                // Categories
-                InterestSelector(Interests.entries, categories)
-
-                Row(
-                    modifier = Modifier.width(WIDTH),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-                    // Min attendees
-                    OutlinedTextField(
-                        modifier =
-                        Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
-                        value = minAttendees,
-                        onValueChange = { minAttendees = it },
-                        label = { Text("Min Attendees", fontSize = FONT_SIZE) },
-                        placeholder = { Text("Min") })
-                    // Max attendees
-                    OutlinedTextField(
-                        modifier =
-                        Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
-                        value = maxAttendees,
-                        onValueChange = { maxAttendees = it },
-                        label = { Text("Max Attendees", fontSize = FONT_SIZE) },
-                        placeholder = { Text("Max") })
-                }
-
-                // Inscription limit date
-                OutlinedTextField(
-                    modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
-                    value = inscriptionLimitDate,
-                    onValueChange = { inscriptionLimitDate = it },
-                    label = { Text("Inscription Limit Date", fontSize = FONT_SIZE) },
-                    placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
-                // Inscription limit time
-                OutlinedTextField(
-                    modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
-                    value = inscriptionLimitTime,
-                    onValueChange = { inscriptionLimitTime = it },
-                    label = { Text("Inscription Limit Time", fontSize = FONT_SIZE) },
-                    placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
-
-                // CREATE EVENT
-                Button(
-                    onClick = {
-                        try {
-                            // give the event if update
-                            uploadImage()
-                            newEvent =
-                                eventUtils.validateAndCreateOrUpdateEvent(
-                                    title.text,
-                                    description.text,
-                                    location,
-                                    eventStartDate.text,
-                                    eventEndDate.text,
-                                    eventTimeStart.text,
-                                    eventTimeEnd.text,
-                                    categories.toList(),
-                                    maxAttendees.text,
-                                    minAttendees.text,
-                                    inscriptionLimitDate.text,
-                                    inscriptionLimitTime.text,
-                                    eventAction,
-                                    event,
-                                    imageUri)
-                        } catch (e: Exception) {
-                            errorMessage = e.message.toString()
-                            showErrorDialog = true
-                        }
-                        // Delete the draft
-                        eventUtils.deleteDraft(context)
-
-                        if (!showErrorDialog) {
-                            if (eventAction == CREATE) {
-                                // Go back to the list of events
-                                nav.controller.navigate("events")
-                            } else {
-                                // Go back to the event details
-                                val json = newEvent!!.toJson()
-                                nav.controller.navigate("event/$json")
+            // Location
+            var isDropdownExpanded by remember { mutableStateOf(false) }
+            var searchJob by remember { mutableStateOf<Job?>(null) }
+            ExposedDropdownMenuBox(
+                modifier = Modifier.testTag("locationDropDownMenuBox"),
+                expanded = isDropdownExpanded,
+                onExpandedChange = { isDropdownExpanded = it }) {
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.menuAnchor()
+                              .width(WIDTH)
+                              .height(HEIGHT)
+                              .testTag("inputLocation"),
+                      // Do a query to get a location from text input
+                      value = locationName,
+                      onValueChange = { newValue ->
+                        locationName = newValue
+                        // Give focus to the element
+                        isDropdownExpanded = true
+                        searchJob?.cancel()
+                        searchJob =
+                            coroutineScope.launch {
+                              // Debounce logic: wait for 300 milliseconds after the last text
+                              // change
+                              delay(300)
+                              suggestions = eventUtils.fetchLocationSuggestions(context, newValue)
                             }
+                      },
+                      label = { Text("Location") },
+                      placeholder = { Text("Enter an address") })
+
+                  ExposedDropdownMenu(
+                      expanded = isDropdownExpanded && suggestions.isNotEmpty(),
+                      onDismissRequest = { isDropdownExpanded = false }) {
+                        suggestions.forEach { suggestion ->
+                          Log.e("EventDataForm", "Suggestion: ${suggestion.name}")
+                          DropdownMenuItem(
+                              modifier = Modifier.testTag("MenuItem"),
+                              text = { Text(suggestion.name) },
+                              onClick = {
+                                location = suggestion
+                                locationName = suggestion.name
+                                isDropdownExpanded = false
+                              })
                         }
-                    },
-                    modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
-                    enabled =
-                    (title.text != "") &&
-                            (description.text != "") &&
-                            (eventStartDate.text != "") &&
-                            (eventTimeStart.text != "") &&
-                            (eventTimeEnd.text != ""),
-                    shape = RoundedCornerShape(size = 10.dp)) {
-                    Text(text = MESSAGES[eventAction.ordinal][BUTTON_MESSAGE_INDEX])
+                      }
                 }
-            }
+
+            // Categories
+            InterestSelector(Interests.entries, categories)
+
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  // Min attendees
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
+                      value = minAttendees,
+                      onValueChange = { minAttendees = it },
+                      label = { Text("Min Attendees", fontSize = FONT_SIZE) },
+                      placeholder = { Text("Min") })
+                  // Max attendees
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
+                      value = maxAttendees,
+                      onValueChange = { maxAttendees = it },
+                      label = { Text("Max Attendees", fontSize = FONT_SIZE) },
+                      placeholder = { Text("Max") })
+                }
+
+            // Inscription limit date
+            OutlinedTextField(
+                modifier =
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
+                value = inscriptionLimitDate,
+                onValueChange = { inscriptionLimitDate = it },
+                label = { Text("Inscription Limit Date", fontSize = FONT_SIZE) },
+                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+            // Inscription limit time
+            OutlinedTextField(
+                modifier =
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
+                value = inscriptionLimitTime,
+                onValueChange = { inscriptionLimitTime = it },
+                label = { Text("Inscription Limit Time", fontSize = FONT_SIZE) },
+                placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+
+            // CREATE EVENT
+            Button(
+                onClick = {
+                  try {
+                    // give the event if update
+                    uploadImage()
+                    newEvent =
+                        eventUtils.validateAndCreateOrUpdateEvent(
+                            title.text,
+                            description.text,
+                            location,
+                            eventStartDate.text,
+                            eventEndDate.text,
+                            eventTimeStart.text,
+                            eventTimeEnd.text,
+                            categories.toList(),
+                            maxAttendees.text,
+                            minAttendees.text,
+                            inscriptionLimitDate.text,
+                            inscriptionLimitTime.text,
+                            eventAction,
+                            event,
+                            imageUri)
+                  } catch (e: Exception) {
+                    errorMessage = e.message.toString()
+                    showErrorDialog = true
+                  }
+                  // Delete the draft
+                  eventUtils.deleteDraft(context)
+
+                  if (!showErrorDialog) {
+                    if (eventAction == CREATE) {
+                      // Go back to the list of events
+                      nav.controller.navigate("events")
+                    } else {
+                      // Go back to the event details
+                      val json = newEvent!!.toJson()
+                      nav.controller.navigate("event/$json")
+                    }
+                  }
+                },
+                modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("createEventButton"),
+                enabled =
+                    (title.text != "") &&
+                        (description.text != "") &&
+                        (eventStartDate.text != "") &&
+                        (eventTimeStart.text != "") &&
+                        (eventTimeEnd.text != ""),
+                shape = RoundedCornerShape(size = 10.dp)) {
+                  Text(text = MESSAGES[eventAction.ordinal][BUTTON_MESSAGE_INDEX])
+                }
+          }
         }
         if (showErrorDialog) {
-            Alert(MESSAGES[eventAction.ordinal][ERROR_MESSAGE_INDEX], errorMessage) {
-                showErrorDialog = false
-            }
+          Alert(MESSAGES[eventAction.ordinal][ERROR_MESSAGE_INDEX], errorMessage) {
+            showErrorDialog = false
+          }
         }
-    }
+      }
 
-    Log.d("ll", "end")
+  Log.d("ll", "end")
 }
 
 /**
@@ -587,12 +587,12 @@ fun EventDataForm(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InterestSelector(interests: List<Interests>, categories: MutableList<Interests>) {
-    var isExpanded by remember { mutableStateOf(false) }
+  var isExpanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox(
-        modifier = Modifier.testTag("interestSelector"),
-        expanded = isExpanded,
-        onExpandedChange = { isExpanded = it }) {
+  ExposedDropdownMenuBox(
+      modifier = Modifier.testTag("interestSelector"),
+      expanded = isExpanded,
+      onExpandedChange = { isExpanded = it }) {
         TextField(
             value = categories.joinToString(", "),
             onValueChange = {},
@@ -606,27 +606,27 @@ fun InterestSelector(interests: List<Interests>, categories: MutableList<Interes
             modifier = Modifier.testTag("exposedDropdownMenu"),
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false }) {
-            interests.forEach { interest ->
+              interests.forEach { interest ->
                 AnimatedContent(
                     targetState = categories.contains(interest),
                     label = "Animate the selected item") { isSelected ->
-                    if (isSelected) {
+                      if (isSelected) {
                         DropdownMenuItem(
                             text = { Text(text = interest.name) },
                             onClick = { categories.remove(interest) },
                             leadingIcon = {
-                                Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
+                              Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
                             })
-                    } else {
+                      } else {
                         DropdownMenuItem(
                             text = { Text(text = interest.name) },
                             onClick = { categories.add(interest) },
                         )
+                      }
                     }
-                }
+              }
             }
-        }
-    }
+      }
 }
 
 /**
@@ -638,16 +638,16 @@ fun InterestSelector(interests: List<Interests>, categories: MutableList<Interes
  */
 @Composable
 fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
-    AlertDialog(
-        modifier = Modifier.testTag("alertBox"),
-        onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Default.Warning, contentDescription = null) },
-        title = { Text(errorTitle) },
-        text = { Text(modifier = Modifier.testTag("errorMessageIdentifier"), text = errorMessage) },
-        confirmButton = {
-            Button(onClick = onDismiss, modifier = Modifier.testTag("alertButton")) { Text("OK") }
-        },
-        dismissButton = {})
+  AlertDialog(
+      modifier = Modifier.testTag("alertBox"),
+      onDismissRequest = onDismiss,
+      icon = { Icon(Icons.Default.Warning, contentDescription = null) },
+      title = { Text(errorTitle) },
+      text = { Text(modifier = Modifier.testTag("errorMessageIdentifier"), text = errorMessage) },
+      confirmButton = {
+        Button(onClick = onDismiss, modifier = Modifier.testTag("alertButton")) { Text("OK") }
+      },
+      dismissButton = {})
 }
 
 /**
@@ -657,59 +657,59 @@ fun Alert(errorTitle: String, errorMessage: String, onDismiss: () -> Unit) {
  * @property EDIT the action to edit an event
  */
 enum class EventAction {
-    CREATE,
-    EDIT
+  CREATE,
+  EDIT
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyDatePickerDialog(onDateSelected: (String) -> Unit, onDismiss: () -> Unit) {
-    fun convertMillisToDate(millis: Long): String {
-        val formatter =
-            SimpleDateFormat(EventFirebaseConnection.DATE_FORMAT_DISPLAYED, Locale.getDefault())
-        return formatter.format(Date(millis))
-    }
-    val datePickerState = rememberDatePickerState()
+  fun convertMillisToDate(millis: Long): String {
+    val formatter =
+        SimpleDateFormat(EventFirebaseConnection.DATE_FORMAT_DISPLAYED, Locale.getDefault())
+    return formatter.format(Date(millis))
+  }
+  val datePickerState = rememberDatePickerState()
 
-    val selectedDate = datePickerState.selectedDateMillis?.let { convertMillisToDate(it) } ?: ""
+  val selectedDate = datePickerState.selectedDateMillis?.let { convertMillisToDate(it) } ?: ""
 
-    DatePickerDialog(
-        onDismissRequest = { onDismiss() },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onDateSelected(selectedDate)
-                    onDismiss()
-                }) {
-                Text(text = "OK")
+  DatePickerDialog(
+      onDismissRequest = { onDismiss() },
+      confirmButton = {
+        Button(
+            onClick = {
+              onDateSelected(selectedDate)
+              onDismiss()
+            }) {
+              Text(text = "OK")
             }
-        },
-        dismissButton = { Button(onClick = { onDismiss() }) { Text(text = "Cancel") } }) {
+      },
+      dismissButton = { Button(onClick = { onDismiss() }) { Text(text = "Cancel") } }) {
         DatePicker(state = datePickerState)
-    }
+      }
 }
 
 @Composable
 fun MyDatePickerDialog(onDateChange: (String) -> Unit, testTag: String) {
 
-    var showDatePicker by remember { mutableStateOf(false) }
+  var showDatePicker by remember { mutableStateOf(false) }
 
-    androidx.compose.material.IconButton(
-        onClick = {
-            // Open DatePickerDialog
-            showDatePicker = true
-        },
-        modifier = Modifier.height(HEIGHT).testTag("DatePickerButton$testTag"),
-    ) {
-        androidx.compose.material.Icon(
-            modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("DatePickerIcon$testTag"),
-            painter = rememberVectorPainter(image = Icons.Filled.DateRange),
-            contentDescription = "Date picker icon")
-    }
+  androidx.compose.material.IconButton(
+      onClick = {
+        // Open DatePickerDialog
+        showDatePicker = true
+      },
+      modifier = Modifier.height(HEIGHT).testTag("DatePickerButton$testTag"),
+  ) {
+    androidx.compose.material.Icon(
+        modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("DatePickerIcon$testTag"),
+        painter = rememberVectorPainter(image = Icons.Filled.DateRange),
+        contentDescription = "Date picker icon")
+  }
 
-    if (showDatePicker) {
-        MyDatePickerDialog(onDateSelected = { onDateChange(it) }) { showDatePicker = false }
-    }
+  if (showDatePicker) {
+    MyDatePickerDialog(onDateSelected = { onDateChange(it) }) { showDatePicker = false }
+  }
 }
 
 @Composable
@@ -720,33 +720,33 @@ fun MyTimePickerDialog(
     title: String
 ) {
 
-    val listener =
-        TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-            val time = (hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0'))
-            onTimeSelected(time)
-            onDismiss()
-        }
+  val listener =
+      TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+        val time = (hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0'))
+        onTimeSelected(time)
+        onDismiss()
+      }
 
-    val initialHour =
-        try {
-            initialTime.split(":", limit = 2)[0].toInt()
-        } catch (e: Exception) {
-            12
-        }
-    val initialMinutes =
-        try {
-            initialTime.split(":", limit = 2)[1].toInt()
-        } catch (e: Exception) {
-            0
-        }
+  val initialHour =
+      try {
+        initialTime.split(":", limit = 2)[0].toInt()
+      } catch (e: Exception) {
+        12
+      }
+  val initialMinutes =
+      try {
+        initialTime.split(":", limit = 2)[1].toInt()
+      } catch (e: Exception) {
+        0
+      }
 
-    val timePickerDialog =
-        TimePickerDialog(LocalContext.current, listener, initialHour, initialMinutes, true)
+  val timePickerDialog =
+      TimePickerDialog(LocalContext.current, listener, initialHour, initialMinutes, true)
 
-    timePickerDialog.setMessage(title)
-    timePickerDialog.setOnDismissListener { onDismiss() }
+  timePickerDialog.setMessage(title)
+  timePickerDialog.setOnDismissListener { onDismiss() }
 
-    timePickerDialog.show()
+  timePickerDialog.show()
 }
 
 @Composable
@@ -756,26 +756,26 @@ fun MyTimePickerDialog(
     textFieldValue: TextFieldValue
 ) {
 
-    var showTimePicker by remember { mutableStateOf(false) }
+  var showTimePicker by remember { mutableStateOf(false) }
 
-    androidx.compose.material.IconButton(
-        onClick = {
-            // Open TimePickerDialog
-            showTimePicker = true
-        },
-        modifier = Modifier.height(HEIGHT).testTag("TimePickerButton$title"),
-    ) {
-        androidx.compose.material.Icon(
-            modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("TimePickerIcon$title"),
-            painter = rememberVectorPainter(image = Icons.Filled.WatchLater),
-            contentDescription = "Time picker icon $title")
-    }
+  androidx.compose.material.IconButton(
+      onClick = {
+        // Open TimePickerDialog
+        showTimePicker = true
+      },
+      modifier = Modifier.height(HEIGHT).testTag("TimePickerButton$title"),
+  ) {
+    androidx.compose.material.Icon(
+        modifier = Modifier.size(HEIGHT.times(0.5f)).testTag("TimePickerIcon$title"),
+        painter = rememberVectorPainter(image = Icons.Filled.WatchLater),
+        contentDescription = "Time picker icon $title")
+  }
 
-    if (showTimePicker) {
-        MyTimePickerDialog(
-            onTimeSelected = { onTimeChange(it) },
-            onDismiss = { showTimePicker = false },
-            initialTime = textFieldValue.text,
-            title = title)
-    }
+  if (showTimePicker) {
+    MyTimePickerDialog(
+        onTimeSelected = { onTimeChange(it) },
+        onDismiss = { showTimePicker = false },
+        initialTime = textFieldValue.text,
+        title = title)
+  }
 }
