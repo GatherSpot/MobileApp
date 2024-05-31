@@ -73,7 +73,7 @@ import com.google.maps.android.compose.CameraPositionState
 class MainActivity : ComponentActivity() {
   companion object {
     var _isOnline: MutableLiveData<Boolean> = MutableLiveData(false)
-    var isOnline : LiveData<Boolean> = _isOnline
+    var isOnline: LiveData<Boolean> = _isOnline
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
     lateinit var mapLauncher: ActivityResultLauncher<String>
     var mapAccess = false
