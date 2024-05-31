@@ -1,7 +1,7 @@
 # Software entreprise Project 2024: GatherSpot
 
 # Architecture diagram
-![Architecture_diagram_M4](https://github.com/GatherSpot/MobileApp/assets/93264382/1e1b0c40-d26f-4b51-9b94-d403aa8b2563)
+![Architecture_diagram_M4(1)](https://github.com/GatherSpot/MobileApp/assets/93264382/fac09be9-7e15-415d-acae-ed48fae1212e)
 
 
 # App Blurb
