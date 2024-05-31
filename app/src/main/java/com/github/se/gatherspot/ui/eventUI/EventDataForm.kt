@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -83,7 +82,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-private val WIDTH = 280.dp
+private val WIDTH = 300.dp
 private val WIDTH_2ELEM = 100.dp
 private val HEIGHT = 65.dp
 private val DESCRIPTION_HEIGHT = 150.dp
@@ -351,65 +350,81 @@ fun EventDataForm(
                 label = { Text("Description*") },
                 placeholder = { Text("Describe the event") })
             // Start Date
-            Row {
-              OutlinedTextField(
-                  modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputStartDateEvent"),
-                  value = eventStartDate,
-                  onValueChange = { eventStartDate = it },
-                  label = { Text("Start Date of the event*") },
-                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH.times(0.8f))
+                              .height(HEIGHT)
+                              .testTag("inputStartDateEvent"),
+                      value = eventStartDate,
+                      onValueChange = { eventStartDate = it },
+                      label = { Text("Start Date of the event*") },
+                      placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
 
-              MyDatePickerDialog(
-                  onDateChange = { eventStartDate = TextFieldValue(it) }, testTag = "start")
-            }
+                  MyDatePickerDialog(
+                      onDateChange = { eventStartDate = TextFieldValue(it) }, testTag = "start")
+                }
             // End Date
-            Row {
-              OutlinedTextField(
-                  modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
-                  value = eventEndDate,
-                  onValueChange = { eventEndDate = it },
-                  label = { Text("End date of the event") },
-                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
-              MyDatePickerDialog(
-                  onDateChange = { eventEndDate = TextFieldValue(it) }, testTag = "end")
-            }
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH.times(0.8f))
+                              .height(HEIGHT)
+                              .testTag("inputEndDateEvent"),
+                      value = eventEndDate,
+                      onValueChange = { eventEndDate = it },
+                      label = { Text("End date of the event") },
+                      placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+                  MyDatePickerDialog(
+                      onDateChange = { eventEndDate = TextFieldValue(it) }, testTag = "end")
+                }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
                   // Time Start
-                  Row {
-                    OutlinedTextField(
-                        modifier =
-                            Modifier.width(WIDTH_2ELEM)
-                                .height(HEIGHT)
-                                .testTag("inputTimeStartEvent"),
-                        value = eventTimeStart,
-                        onValueChange = { eventTimeStart = it },
-                        label = { Text("Start time*", fontSize = FONT_SIZE) },
-                        placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+                  Row(
+                      modifier = Modifier.width(WIDTH.times(0.5f)),
+                      horizontalArrangement = Arrangement.SpaceBetween) {
+                        OutlinedTextField(
+                            modifier =
+                                Modifier.width(WIDTH_2ELEM)
+                                    .height(HEIGHT)
+                                    .testTag("inputTimeStartEvent"),
+                            value = eventTimeStart,
+                            onValueChange = { eventTimeStart = it },
+                            label = { Text("Start time*", fontSize = FONT_SIZE) },
+                            placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
-                    MyTimePickerDialog(
-                        onTimeChange = { eventTimeStart = TextFieldValue(it) },
-                        title = "Select start time",
-                        textFieldValue = eventTimeStart)
-                  }
+                        MyTimePickerDialog(
+                            onTimeChange = { eventTimeStart = TextFieldValue(it) },
+                            title = "Select start time",
+                            textFieldValue = eventTimeStart)
+                      }
 
                   // Time End
-                  Row {
-                    OutlinedTextField(
-                        modifier =
-                            Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeEndEvent"),
-                        value = eventTimeEnd,
-                        onValueChange = { eventTimeEnd = it },
-                        label = { Text("End time*", fontSize = FONT_SIZE) },
-                        placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+                  Row(
+                      modifier = Modifier.width(WIDTH.times(0.5f)),
+                      horizontalArrangement = Arrangement.SpaceBetween) {
+                        OutlinedTextField(
+                            modifier =
+                                Modifier.width(WIDTH_2ELEM)
+                                    .height(HEIGHT)
+                                    .testTag("inputTimeEndEvent"),
+                            value = eventTimeEnd,
+                            onValueChange = { eventTimeEnd = it },
+                            label = { Text("End time*", fontSize = FONT_SIZE) },
+                            placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
-                    MyTimePickerDialog(
-                        onTimeChange = { eventTimeEnd = TextFieldValue(it) },
-                        title = "Select end time",
-                        textFieldValue = eventTimeEnd)
-                  }
+                        MyTimePickerDialog(
+                            onTimeChange = { eventTimeEnd = TextFieldValue(it) },
+                            title = "Select end time",
+                            textFieldValue = eventTimeEnd)
+                      }
                 }
             // Location
             var isDropdownExpanded by remember { mutableStateOf(false) }
@@ -463,8 +478,8 @@ fun EventDataForm(
             InterestSelector(Interests.entries, categories)
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
                   // Min attendees
                   OutlinedTextField(
                       modifier =
