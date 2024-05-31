@@ -118,8 +118,8 @@ fun EventUINonOrganizer(
 
   val buttonText =
       when (registrationState) {
-        is RegistrationState.Registered -> "Registered / Unregister"
-        is RegistrationState.Unregistered -> "Unregistered / Register"
+        is RegistrationState.Registered -> "Unregister"
+        is RegistrationState.Unregistered -> "Register"
         is RegistrationState.Error -> (registrationState as RegistrationState.Error).message
         else -> "Register"
       }
@@ -332,12 +332,19 @@ fun EventUIOrganizer(
 @Composable
 fun EventRating(eventRating: Double?) {
   if ((eventRating ?: 0.0) > 0.0) {
-    Modifier.testTag("eventRating")
-    Spacer(modifier = Modifier.height(4.dp))
-    Row {
-      Text(text = "$eventRating", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-      Text(text = "/ 5.0", fontWeight = FontWeight.Light, fontSize = 16.sp)
-    }
+    Column(
+        modifier = Modifier.fillMaxWidth().testTag("eventRating"),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center) {
+          Text(text = "Rating of the event:", fontWeight = FontWeight.Medium, fontSize = 18.sp)
+          Spacer(modifier = Modifier.height(4.dp))
+          Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.Center) {
+                Text(text = "$eventRating", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = "/ 5.0", fontWeight = FontWeight.Light, fontSize = 16.sp)
+              }
+        }
   }
 }
 
@@ -365,7 +372,12 @@ fun RegisterButton(
       onClick = { eventUIViewModel.toggleRegistrationStatus(eventDao) },
       enabled = buttonEnabled,
       modifier = Modifier.fillMaxWidth().testTag("registerButton"),
-      colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
+      colors =
+          when (registrationState) {
+            is RegistrationState.Registered -> ButtonDefaults.buttonColors(Color(0xFF3F51B5))
+            is RegistrationState.Unregistered -> ButtonDefaults.buttonColors(Color(0xFF4CAF50))
+            else -> ButtonDefaults.buttonColors(Color.Gray)
+          }) {
         Text(buttonText, color = Color.White)
       }
 
