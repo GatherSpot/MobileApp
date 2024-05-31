@@ -37,9 +37,6 @@ class EnvironmentSetter {
       }
     }
 
-    fun testLoginCleanUp() {
-      Firebase.auth.signOut()
-    }
 
     fun testDelete() {
       if (Firebase.auth.currentUser != null) {

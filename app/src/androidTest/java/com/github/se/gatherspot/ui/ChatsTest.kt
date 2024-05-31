@@ -68,7 +68,6 @@ class ChatsTest {
   @After
   fun cleanUp() {
     runBlocking {
-      EnvironmentSetter.testLoginCleanUp()
       EventFirebaseConnection().delete(testEvent.id)
     }
   }

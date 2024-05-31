@@ -13,7 +13,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testLogin
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.screens.ProfileScreen
 import com.github.se.gatherspot.screens.SetUpScreen
@@ -57,7 +56,6 @@ class SetUpTest : TestCase() {
 
   @After
   fun cleanUp() = runBlocking {
-    testLoginCleanUp()
     db.close()
   }
 
