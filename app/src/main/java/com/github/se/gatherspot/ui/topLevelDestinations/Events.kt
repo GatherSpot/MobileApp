@@ -383,7 +383,7 @@ private fun EventTypeTab(tabList: List<String>, pagerState: PagerState) {
   TabRow(selectedTabIndex = pagerState.currentPage) {
     tabList.forEachIndexed { index, title ->
       Tab(
-          text = { Text(title) },
+          text = { Text(title, fontSize = 11.sp) },
           selected = pagerState.currentPage == index,
           modifier = Modifier.testTag(title),
           onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } })

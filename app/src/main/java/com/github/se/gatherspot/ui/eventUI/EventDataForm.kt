@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -60,6 +59,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.github.se.gatherspot.R
@@ -77,16 +77,16 @@ import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 private val WIDTH = 300.dp
-private val WIDTH_2ELEM = 150.dp
+private val WIDTH_2ELEM = 100.dp
 private val HEIGHT = 65.dp
 private val DESCRIPTION_HEIGHT = 150.dp
+private val FONT_SIZE = 14.sp
 
 private const val TITLE_MESSAGE_INDEX = 0
 private const val BUTTON_MESSAGE_INDEX = 1
@@ -194,7 +194,7 @@ fun EventDataForm(
   val placeHolder = R.drawable.default_event_image
   val updateImageUri: (String) -> Unit = { imageUri = it }
   val deleteImage: () -> Unit = {
-    CoroutineScope(Dispatchers.IO).launch {
+    runBlocking {
       // if we create event it should never be already in the database
       if (eventAction == EDIT) {
         event?.id?.let { FirebaseImages().removePicture("eventImage", it) }
@@ -204,7 +204,7 @@ fun EventDataForm(
   }
   val uploadImage: () -> Unit = {
     if (event != null) {
-      CoroutineScope(Dispatchers.IO).launch {
+      runBlocking {
         imageUri = FirebaseImages().pushPicture(imageUri.toUri(), "eventImage", event.id)
       }
     }
@@ -350,65 +350,81 @@ fun EventDataForm(
                 label = { Text("Description*") },
                 placeholder = { Text("Describe the event") })
             // Start Date
-            Row {
-              OutlinedTextField(
-                  modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputStartDateEvent"),
-                  value = eventStartDate,
-                  onValueChange = { eventStartDate = it },
-                  label = { Text("Start Date of the event*") },
-                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH.times(0.8f))
+                              .height(HEIGHT)
+                              .testTag("inputStartDateEvent"),
+                      value = eventStartDate,
+                      onValueChange = { eventStartDate = it },
+                      label = { Text("Start Date of the event*") },
+                      placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
 
-              MyDatePickerDialog(
-                  onDateChange = { eventStartDate = TextFieldValue(it) }, testTag = "start")
-            }
+                  MyDatePickerDialog(
+                      onDateChange = { eventStartDate = TextFieldValue(it) }, testTag = "start")
+                }
             // End Date
-            Row {
-              OutlinedTextField(
-                  modifier = Modifier.width(WIDTH).height(HEIGHT).testTag("inputEndDateEvent"),
-                  value = eventEndDate,
-                  onValueChange = { eventEndDate = it },
-                  label = { Text("End date of the event") },
-                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
-              MyDatePickerDialog(
-                  onDateChange = { eventEndDate = TextFieldValue(it) }, testTag = "end")
-            }
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH.times(0.8f))
+                              .height(HEIGHT)
+                              .testTag("inputEndDateEvent"),
+                      value = eventEndDate,
+                      onValueChange = { eventEndDate = it },
+                      label = { Text("End date of the event") },
+                      placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+                  MyDatePickerDialog(
+                      onDateChange = { eventEndDate = TextFieldValue(it) }, testTag = "end")
+                }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
                   // Time Start
-                  Row {
-                    OutlinedTextField(
-                        modifier =
-                            Modifier.width(WIDTH_2ELEM)
-                                .height(HEIGHT)
-                                .testTag("inputTimeStartEvent"),
-                        value = eventTimeStart,
-                        onValueChange = { eventTimeStart = it },
-                        label = { Text("Start time*") },
-                        placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+                  Row(
+                      modifier = Modifier.width(WIDTH.times(0.5f)),
+                      horizontalArrangement = Arrangement.SpaceBetween) {
+                        OutlinedTextField(
+                            modifier =
+                                Modifier.width(WIDTH_2ELEM)
+                                    .height(HEIGHT)
+                                    .testTag("inputTimeStartEvent"),
+                            value = eventTimeStart,
+                            onValueChange = { eventTimeStart = it },
+                            label = { Text("Start time*", fontSize = FONT_SIZE) },
+                            placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
-                    MyTimePickerDialog(
-                        onTimeChange = { eventTimeStart = TextFieldValue(it) },
-                        title = "Select start time",
-                        textFieldValue = eventTimeStart)
-                  }
+                        MyTimePickerDialog(
+                            onTimeChange = { eventTimeStart = TextFieldValue(it) },
+                            title = "Select start time",
+                            textFieldValue = eventTimeStart)
+                      }
 
                   // Time End
-                  Row {
-                    OutlinedTextField(
-                        modifier =
-                            Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeEndEvent"),
-                        value = eventTimeEnd,
-                        onValueChange = { eventTimeEnd = it },
-                        label = { Text("End time*") },
-                        placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+                  Row(
+                      modifier = Modifier.width(WIDTH.times(0.5f)),
+                      horizontalArrangement = Arrangement.SpaceBetween) {
+                        OutlinedTextField(
+                            modifier =
+                                Modifier.width(WIDTH_2ELEM)
+                                    .height(HEIGHT)
+                                    .testTag("inputTimeEndEvent"),
+                            value = eventTimeEnd,
+                            onValueChange = { eventTimeEnd = it },
+                            label = { Text("End time*", fontSize = FONT_SIZE) },
+                            placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
-                    MyTimePickerDialog(
-                        onTimeChange = { eventTimeEnd = TextFieldValue(it) },
-                        title = "Select end time",
-                        textFieldValue = eventTimeEnd)
-                  }
+                        MyTimePickerDialog(
+                            onTimeChange = { eventTimeEnd = TextFieldValue(it) },
+                            title = "Select end time",
+                            textFieldValue = eventTimeEnd)
+                      }
                 }
             // Location
             var isDropdownExpanded by remember { mutableStateOf(false) }
@@ -462,49 +478,49 @@ fun EventDataForm(
             InterestSelector(Interests.entries, categories)
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
                   // Min attendees
                   OutlinedTextField(
                       modifier =
                           Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
                       value = minAttendees,
                       onValueChange = { minAttendees = it },
-                      label = { Text("Min Attendees") },
-                      placeholder = { Text("Min Attendees") })
+                      label = { Text("Min Attendees", fontSize = FONT_SIZE) },
+                      placeholder = { Text("Min") })
                   // Max attendees
                   OutlinedTextField(
                       modifier =
                           Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
                       value = maxAttendees,
                       onValueChange = { maxAttendees = it },
-                      label = { Text("Max Attendees") },
-                      placeholder = { Text("Max Attendees") })
+                      label = { Text("Max Attendees", fontSize = FONT_SIZE) },
+                      placeholder = { Text("Max") })
                 }
 
             // Inscription limit date
-            Row {
-              OutlinedTextField(
-                  modifier =
-                      Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
-                  value = inscriptionLimitDate,
-                  onValueChange = { inscriptionLimitDate = it },
-                  label = { Text("Inscription Limit Date") },
-                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
-
+            Row{
+            OutlinedTextField(
+                modifier =
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
+                value = inscriptionLimitDate,
+                onValueChange = { inscriptionLimitDate = it },
+                label = { Text("Inscription Limit Date", fontSize = FONT_SIZE) },
+                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) }
+                
               MyDatePickerDialog(
                   onDateChange = { inscriptionLimitDate = TextFieldValue(it) },
                   testTag = "inscriptionLimitDatePicker")
             }
             // Inscription limit time
             Row {
-              OutlinedTextField(
-                  modifier =
-                      Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
-                  value = inscriptionLimitTime,
-                  onValueChange = { inscriptionLimitTime = it },
-                  label = { Text("Inscription Limit Time") },
-                  placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+            OutlinedTextField(
+                modifier =
+                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
+                value = inscriptionLimitTime,
+                onValueChange = { inscriptionLimitTime = it },
+                label = { Text("Inscription Limit Time", fontSize = FONT_SIZE) },
+                placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
               MyTimePickerDialog(
                   onTimeChange = { inscriptionLimitTime = TextFieldValue(it) },

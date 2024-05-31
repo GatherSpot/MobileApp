@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
@@ -84,11 +85,15 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
   /**
    * Registers the user for the given event
    *
-   * @param event the event to register for
    * @param eventDao: the local database for events
    */
   private fun register(eventDao: EventDao? = null) {
     // Perform registration logic here, such as making network requests
+    if (!MainActivity.isOnline) {
+      _registrationState.postValue(RegistrationState.Error("No internet connection"))
+      _displayAlertRegistration.postValue(true)
+      return
+    }
     viewModelScope.launch(Dispatchers.IO) {
       event.registeredUsers.add(userId)
       eventDao?.insert(event)
@@ -106,6 +111,12 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
    * @param eventDao: local database for events
    */
   private fun unregister(eventDao: EventDao? = null) {
+    // Perform unregistration logic here, such as making network requests
+    if (!MainActivity.isOnline) {
+      _registrationState.postValue(RegistrationState.Error("No internet connection"))
+      _displayAlertRegistration.postValue(true)
+      return
+    }
     viewModelScope.launch(Dispatchers.IO) {
       event.registeredUsers.remove(userId)
       eventDao?.delete(event)
@@ -125,6 +136,9 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
   open fun dismissAlert() {
     _displayAlertRegistration.value = false
     _displayAlertDeletion.value = false
+    if (registrationState.value == RegistrationState.Error("No internet connection")) {
+      _registrationState.value = RegistrationState.Unregistered
+    }
   }
 }
 

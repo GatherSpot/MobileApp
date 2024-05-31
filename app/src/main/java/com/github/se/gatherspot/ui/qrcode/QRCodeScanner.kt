@@ -2,6 +2,9 @@ package com.github.se.gatherspot.ui.qrcode
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.Toast
@@ -26,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.qrcode.BarCodeAnalyser
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -43,6 +48,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlinx.coroutines.launch
 
 /**
  * Composable for the QR code scanner.
@@ -89,6 +95,7 @@ fun QRCodeScanner(navigationActions: NavigationActions) {
 @Composable
 fun CameraPreview(navigationActions: NavigationActions) {
   val context = LocalContext.current
+  val coroutineScope = rememberCoroutineScope()
   val lifecycleOwner = LocalLifecycleOwner.current
   var preview by remember { mutableStateOf<Preview?>(null) }
   val barCodeVal = remember { mutableStateOf("") }
@@ -124,10 +131,13 @@ fun CameraPreview(navigationActions: NavigationActions) {
                 barcodes.forEach { barcode ->
                   barcode.rawValue?.let { barcodeValue ->
                     barCodeVal.value = barcodeValue
-                    Toast.makeText(context, barcodeValue, Toast.LENGTH_SHORT).show()
-                    val navString = analyseAppQRCode(barcodeValue)
-                    if (navString != "") {
-                      navigationActions.controller.navigate(navString)
+                    coroutineScope.launch {
+                      val navString = analyseAppQRCode(barcodeValue, context)
+                      if (navString != "") {
+                        navigationActions.controller.navigate(navString)
+                      } else {
+                        navigationActions.controller.navigate("events")
+                      }
                     }
                   }
                 }
@@ -157,19 +167,42 @@ fun CameraPreview(navigationActions: NavigationActions) {
  * @return The navigation string
  */
 @SuppressLint("SuspiciousIndentation")
-fun analyseAppQRCode(text: String): String {
+suspend fun analyseAppQRCode(text: String, context: Context): String {
+  if (!isUserOnline(context)) {
+    Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show()
+    return ""
+  }
   val parts = text.split("/")
   if (parts[0] == "event") {
-    return text
-  }
-  if (parts.size == 2) {
-    if (parts[0] == "profile") {
-      return "viewProfile/${parts[1]}"
+    val uid = parts[1]
+    val event = EventFirebaseConnection().fetch(uid)
+    return if (event == null) {
+      ""
     } else {
-      return ""
+      "event/${event.toJson()}"
+    }
+  }
+  return if (parts.size == 2) {
+    if (parts[0] == "profile") {
+      "viewProfile/${parts[1]}"
+    } else {
+      ""
     }
   } else {
-    return ""
+    ""
+  }
+}
+
+fun isUserOnline(context: Context): Boolean {
+  val connectivityManager =
+      context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+  val network = connectivityManager.activeNetwork ?: return false
+  val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+  return when {
+    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+    else -> false
   }
 }
 
