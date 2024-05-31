@@ -373,10 +373,13 @@ fun RegisterButton(
       enabled = buttonEnabled,
       modifier = Modifier.fillMaxWidth().testTag("registerButton"),
       colors =
-          when (registrationState) {
-            is RegistrationState.Registered -> ButtonDefaults.buttonColors(Color(0xFF3F51B5))
-            is RegistrationState.Unregistered -> ButtonDefaults.buttonColors(Color(0xFF4CAF50))
-            else -> ButtonDefaults.buttonColors(Color.Gray)
+          if (buttonEnabled) ButtonDefaults.buttonColors(Color.Gray)
+          else {
+            when (registrationState) {
+              is RegistrationState.Registered -> ButtonDefaults.buttonColors(Color(0xFF3F51B5))
+              is RegistrationState.Unregistered -> ButtonDefaults.buttonColors(Color(0xFF4CAF50))
+              else -> ButtonDefaults.buttonColors(Color.Gray)
+            }
           }) {
         Text(buttonText, color = Color.White)
       }

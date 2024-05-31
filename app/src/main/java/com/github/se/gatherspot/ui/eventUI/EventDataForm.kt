@@ -483,22 +483,34 @@ fun EventDataForm(
                 }
 
             // Inscription limit date
-            OutlinedTextField(
-                modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
-                value = inscriptionLimitDate,
-                onValueChange = { inscriptionLimitDate = it },
-                label = { Text("Inscription Limit Date") },
-                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
-            // Inscription limit time
-            OutlinedTextField(
-                modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
-                value = inscriptionLimitTime,
-                onValueChange = { inscriptionLimitTime = it },
-                label = { Text("Inscription Limit Time") },
-                placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+            Row {
+              OutlinedTextField(
+                  modifier =
+                      Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
+                  value = inscriptionLimitDate,
+                  onValueChange = { inscriptionLimitDate = it },
+                  label = { Text("Inscription Limit Date") },
+                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
 
+              MyDatePickerDialog(
+                  onDateChange = { inscriptionLimitDate = TextFieldValue(it) },
+                  testTag = "inscriptionLimitDatePicker")
+            }
+            // Inscription limit time
+            Row {
+              OutlinedTextField(
+                  modifier =
+                      Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
+                  value = inscriptionLimitTime,
+                  onValueChange = { inscriptionLimitTime = it },
+                  label = { Text("Inscription Limit Time") },
+                  placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+
+              MyTimePickerDialog(
+                  onTimeChange = { inscriptionLimitTime = TextFieldValue(it) },
+                  title = "Select inscription limit time",
+                  textFieldValue = inscriptionLimitTime)
+            }
             // CREATE EVENT
             Button(
                 onClick = {
