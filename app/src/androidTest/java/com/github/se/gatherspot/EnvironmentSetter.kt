@@ -39,7 +39,8 @@ class EnvironmentSetter {
     }
 
     fun testDelete() {
-      if (Firebase.auth.currentUser?.uid != null && Firebase.auth.currentUser?.email != testLoginUID) {
+      if (Firebase.auth.currentUser?.uid != null &&
+          Firebase.auth.currentUser?.email != testLoginUID) {
         Firebase.auth.currentUser!!.delete()
       }
     }
@@ -51,7 +52,6 @@ class EnvironmentSetter {
             .await()
       }
     }
-
 
     fun allTestCleanUp(userName: String) {
       runTest { removeUserName(userName) }

@@ -74,7 +74,7 @@ class SignUpTest : TestCase() {
 
   @After
   fun cleanUp() = runTest {
-    if (Firebase.auth.currentUser != null && Firebase.auth.currentUser!!.email == email){
+    if (Firebase.auth.currentUser != null && Firebase.auth.currentUser!!.email == email) {
       ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
       Firebase.auth.currentUser!!.delete()
     }
