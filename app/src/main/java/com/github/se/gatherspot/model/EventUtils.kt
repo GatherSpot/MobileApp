@@ -26,8 +26,9 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -99,7 +100,7 @@ class EventUtils {
     FirebaseMessaging.getInstance().subscribeToTopic("event_${eventID}")
 
     // Add the event to the database
-    runBlocking {
+    CoroutineScope(Dispatchers.IO).launch {
       try {
         eventFirebaseConnection.add(event)
         eventDao?.insert(event)
@@ -116,7 +117,7 @@ class EventUtils {
   fun deleteEvent(event: Event, eventDao: EventDao? = null) {
     // Remove the event from all the users who registered for it
     val idListFirebase = IdListFirebaseConnection()
-    runBlocking {
+    CoroutineScope(Dispatchers.IO).launch {
       event.registeredUsers.forEach { userID ->
         val registeredEvents =
             idListFirebase.fetchFromFirebase(userID, FirebaseCollection.REGISTERED_EVENTS)
@@ -324,7 +325,7 @@ class EventUtils {
             eventStatus = EventStatus.CREATED,
         )
     // Add the event to the database
-    runBlocking {
+    CoroutineScope(Dispatchers.IO).launch {
       try {
         eventFirebaseConnection.add(event)
         eventDao?.insert(event)

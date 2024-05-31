@@ -21,8 +21,10 @@ import com.google.firebase.auth.auth
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.time.Duration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -65,38 +67,36 @@ class ChatsTest {
 
   @After
   fun cleanUp() {
-    runBlocking {
-      EnvironmentSetter.testLoginCleanUp()
-      EventFirebaseConnection().delete(testEvent.id)
-    }
+    runBlocking { EventFirebaseConnection().delete(testEvent.id) }
   }
 
   @Test
   fun testEverythingExists() {
+    runTest(timeout = Duration.parse("30s")) {
+      composeTestRule.waitForIdle()
 
-    composeTestRule.waitForIdle()
-
-    composeTestRule.setContent {
-      val viewModel = ChatsListViewModel()
-      val nav = NavigationActions(rememberNavController())
-      Chats(viewModel = viewModel, nav = nav)
-    }
-
-    ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
-      topBar {
-        assertExists()
-        assertIsDisplayed()
+      composeTestRule.setContent {
+        val viewModel = ChatsListViewModel()
+        val nav = NavigationActions(rememberNavController())
+        Chats(viewModel = viewModel, nav = nav)
       }
 
-      empty {
-        assertExists()
-        assertIsDisplayed()
-      }
+      ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
+        topBar {
+          assertExists()
+          assertIsDisplayed()
+        }
 
-      refresh {
-        assertExists()
-        assertIsDisplayed()
-        assertHasClickAction()
+        empty {
+          assertExists()
+          assertIsDisplayed()
+        }
+
+        refresh {
+          assertExists()
+          assertIsDisplayed()
+          assertHasClickAction()
+        }
       }
     }
   }
@@ -104,65 +104,67 @@ class ChatsTest {
   @OptIn(ExperimentalTestApi::class, ExperimentalTestApi::class)
   @Test
   fun chatsAreDisplayedAndScrollable() {
-
-    runBlocking { IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add(testEvent.id) }
-
-    composeTestRule.waitForIdle()
-    val viewModel = ChatsListViewModel()
-    composeTestRule.setContent {
-      val nav = NavigationActions(rememberNavController())
-      Chats(viewModel = viewModel, nav = nav)
-    }
-
-    ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
-      composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 20000)
-      eventsList {
-        assertExists()
-        assertIsDisplayed()
-        performGesture { swipeUp(400F, 0F, 1000) }
-      }
-    }
-
-    runBlocking { IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove(testEvent.id) }
-  }
-
-  @OptIn(ExperimentalTestApi::class)
-  @Test
-  fun filteringAndRefreshWorkCorrectly() {
-    runBlocking {
-      IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add(testEvent.id)
-      EventFirebaseConnection().addRegisteredUser(testEvent.id, id)
-      delay(5000)
+    runTest(timeout = Duration.parse("30s")) {
+      runBlocking { IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add(testEvent.id) }
+      composeTestRule.waitForIdle()
       val viewModel = ChatsListViewModel()
       composeTestRule.setContent {
         val nav = NavigationActions(rememberNavController())
         Chats(viewModel = viewModel, nav = nav)
       }
 
-      delay(5000)
       ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
-        searchBar { performTextInput(testEvent.title) }
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 5000)
-        composeTestRule.waitForIdle()
-        assert(viewModel.allEvents.value!!.size == 1)
-
-        searchBar {
-          performTextClearance()
-          performTextInput("NoneSense")
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 20000)
+        eventsList {
+          assertExists()
+          assertIsDisplayed()
+          performGesture { swipeUp(400F, 0F, 1000) }
         }
-
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("emptyText"), 5000)
-        composeTestRule.waitForIdle()
-        assert(viewModel.allEvents.value!!.isEmpty())
-
-        refresh { performClick() }
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 5000)
-        composeTestRule.waitForIdle()
-        assert(viewModel.allEvents.value!!.isNotEmpty())
       }
 
-      IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove(testEvent.id)
-      EventFirebaseConnection().removeRegisteredUser(testEvent.id, id)
+      runBlocking { IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove(testEvent.id) }
+    }
+  }
+
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun filteringAndRefreshWorkCorrectly() {
+    runTest(timeout = Duration.parse("30s")) {
+      runBlocking {
+        IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add(testEvent.id)
+        EventFirebaseConnection().addRegisteredUser(testEvent.id, id)
+        delay(5000)
+        val viewModel = ChatsListViewModel()
+        composeTestRule.setContent {
+          val nav = NavigationActions(rememberNavController())
+          Chats(viewModel = viewModel, nav = nav)
+        }
+
+        delay(5000)
+        ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
+          searchBar { performTextInput(testEvent.title) }
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 5000)
+          composeTestRule.waitForIdle()
+          assert(viewModel.allEvents.value!!.size == 1)
+
+          searchBar {
+            performTextClearance()
+            performTextInput("NoneSense")
+          }
+
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("emptyText"), 5000)
+          composeTestRule.waitForIdle()
+          assert(viewModel.allEvents.value!!.isEmpty())
+
+          refresh { performClick() }
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 5000)
+          composeTestRule.waitForIdle()
+          assert(viewModel.allEvents.value!!.isNotEmpty())
+        }
+
+        IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).remove(testEvent.id)
+        EventFirebaseConnection().removeRegisteredUser(testEvent.id, id)
+      }
     }
   }
 }

@@ -37,7 +37,7 @@ class SetUpViewModel : ViewModel() {
 
   fun setBio(string: String) {
     bio.value = string
-    bioError = Profile.checkBio(string)
+    Profile.checkBio(string, bioError)
   }
 
   private fun done() {

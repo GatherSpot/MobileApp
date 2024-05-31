@@ -3,26 +3,28 @@ package com.github.se.gatherspot.authentification
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpCleanUp
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
-import com.github.se.gatherspot.EnvironmentSetter.Companion.testLoginCleanUp
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testDelete
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.signUp.SignUp
 import com.github.se.gatherspot.ui.signUp.SignUpViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import java.lang.Thread.sleep
 import kotlin.time.Duration
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -36,18 +38,32 @@ class SignUpTest : TestCase() {
   @get:Rule val composeTestRule = createComposeRule()
 
   private lateinit var viewModel: SignUpViewModel
+  val email = "gatherspot2024@gmail.com"
+  val userName = "GatherSpot"
 
   @Before
   fun setup() {
-    viewModel = SignUpViewModel()
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      NavHost(navController = navController, startDestination = "auth") {
-        navigation(startDestination = "signup", route = "auth") {
-          composable("signup") { SignUp(viewModel, NavigationActions(navController)) }
-        }
-        navigation(startDestination = "events", route = "home") {
-          composable("setup") { SetUpProfile(NavigationActions(navController)) }
+    runBlocking {
+      async {
+            try {
+              Firebase.auth.signInWithEmailAndPassword(email, "GatherSpot,2024;")
+              testDelete()
+            } catch (_: Exception) {}
+          }
+          .await()
+
+      sleep(4000)
+
+      viewModel = SignUpViewModel()
+      composeTestRule.setContent {
+        val navController = rememberNavController()
+        NavHost(navController = navController, startDestination = "auth") {
+          navigation(startDestination = "signup", route = "auth") {
+            composable("signup") { SignUp(viewModel, NavigationActions(navController)) }
+          }
+          navigation(startDestination = "events", route = "home") {
+            composable("setup") { SetUpProfile(NavigationActions(navController)) }
+          }
         }
       }
     }
@@ -55,19 +71,14 @@ class SignUpTest : TestCase() {
 
   @After
   fun cleanUp() = runTest {
-    val currentUser = FirebaseAuth.getInstance().currentUser
-    if (currentUser != null) {
-      ProfileFirebaseConnection().delete(currentUser.uid)
-      testLoginCleanUp()
-    }
+    testDelete()
+    delay(1000)
   }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun signUp() =
       runTest(timeout = Duration.parse("30s")) {
-        val email = "gatherspot2024@gmail.com"
-        val userName = "GatherSpot"
         ComposeScreen.onComposeScreen<SignUpScreen>(composeTestRule) {
           usernameField {
             assertExists()
@@ -91,8 +102,6 @@ class SignUpTest : TestCase() {
             performClick()
           }
         }
-
-        signUpCleanUp(userName)
       }
 
   @OptIn(ExperimentalTestApi::class)

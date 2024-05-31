@@ -296,22 +296,36 @@ private fun EmptyFeed(
     interests: MutableLiveData<Set<Interests>>,
     fetch: () -> Unit
 ) {
+  Text("No loaded events matched your query")
+  Row {
+    Text(
+        "Remove filter ",
+        color = Color.Blue,
+        modifier =
+            Modifier.clickable {
+              viewModel.removeFilter()
+              interests.value = Interests.new()
+            })
+    Text("or ")
+    Text("try loading new ones", color = Color.Blue, modifier = Modifier.clickable { fetch() })
+  }
+}
 
+@Composable
+private fun EmptyOtherTab() {
+  Text("No events to show here")
+}
+
+@Composable
+private fun Empty(
+    viewModel: EventsViewModel,
+    interests: MutableLiveData<Set<Interests>>,
+    fetch: () -> Unit,
+    isFeed: Boolean
+) {
   Box(modifier = Modifier.fillMaxSize().testTag("empty"), contentAlignment = Alignment.Center) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-      Text("No loaded events matched your query")
-      Row {
-        Text(
-            "Remove filter ",
-            color = Color.Blue,
-            modifier =
-                Modifier.clickable {
-                  viewModel.removeFilter()
-                  interests.value = Interests.new()
-                })
-        Text("or ")
-        Text("try loading new ones", color = Color.Blue, modifier = Modifier.clickable { fetch() })
-      }
+      if (isFeed) EmptyFeed(viewModel, interests, fetch) else EmptyOtherTab()
     }
   }
 }
@@ -400,7 +414,7 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
   HorizontalPager(state = pagerState) { page ->
     when (page) {
       // fun EventList(vm: EventsViewModel, events: State<List<Event>>, nav: NavigationActions){
-      0 ->
+      EventsViewModel.MINE ->
           EventList(
               vm,
               vm::fetchMyEvents,
@@ -408,7 +422,7 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
               vm.myEvents.observeAsState(listOf()),
               nav,
               "myEventsList")
-      1 ->
+      EventsViewModel.FEED ->
           EventList(
               vm,
               vm::fetchWithInterests,
@@ -418,7 +432,7 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
               "eventsList",
               true,
               vm::refresh)
-      2 ->
+      EventsViewModel.PLANNED ->
           EventList(
               vm,
               vm::fetchUpComing,
@@ -426,7 +440,7 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
               vm.upComing.observeAsState(listOf()),
               nav,
               "upComingEventsList")
-      3 ->
+      EventsViewModel.FOLLOWS ->
           EventList(
               vm,
               vm::fetchFromFollowedUsers,
@@ -434,7 +448,7 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
               vm.fromFollowedUsers.observeAsState(listOf()),
               nav,
               "followedEventsList")
-      4 ->
+      EventsViewModel.ATTENDED ->
           EventList(
               vm,
               vm::fetchAttended,

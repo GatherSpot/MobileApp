@@ -57,7 +57,7 @@ class RatingFirebaseConnection {
             .document(userID)
             .get()
             .addOnSuccessListener { document ->
-              if (document != null) {
+              if (document.exists() && document != null) {
                 if (document.get("rating") != null) {
                   rating = Rating.fromLong(document.get("rating")!! as Long)
                   Log.d(TAG, "User $userID rated the event $eventID as $rating")
