@@ -89,7 +89,9 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
                 modifier = Modifier.fillMaxSize().padding(paddingValues),
                 contentAlignment = Alignment.Center) {
                   Text(
-                      text = if (isOnline) "No chatting group found." else "Your device is currently offline.",
+                      text =
+                          if (isOnline) "No chatting group found."
+                          else "Your device is currently offline.",
                       color = Color.Black,
                       modifier = Modifier.testTag("emptyText"))
                 }
