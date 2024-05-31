@@ -382,10 +382,10 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
   HorizontalPager(state = pagerState) { page ->
     when (page) {
       // fun EventList(vm: EventsViewModel, events: State<List<Event>>, nav: NavigationActions){
-      0 ->
+      EventsViewModel.MINE ->
           EventList(
               vm, vm::fetchMyEvents, vm.myEvents.observeAsState(listOf()), nav, "myEventsList")
-      1 ->
+      EventsViewModel.FEED ->
           EventList(
               vm,
               vm::fetchWithInterests,
@@ -393,21 +393,21 @@ private fun Pager(vm: EventsViewModel, nav: NavigationActions, pagerState: Pager
               nav,
               "eventsList",
               true)
-      2 ->
+      EventsViewModel.PLANNED ->
           EventList(
               vm,
               vm::fetchUpComing,
               vm.upComing.observeAsState(listOf()),
               nav,
               "upComingEventsList")
-      3 ->
+      EventsViewModel.FOLLOWS ->
           EventList(
               vm,
               vm::fetchFromFollowedUsers,
               vm.fromFollowedUsers.observeAsState(listOf()),
               nav,
               "followedEventsList")
-      4 ->
+      EventsViewModel.ATTENDED ->
           EventList(
               vm,
               vm::fetchAttended,
