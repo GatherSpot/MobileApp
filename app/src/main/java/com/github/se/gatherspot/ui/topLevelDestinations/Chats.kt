@@ -65,18 +65,18 @@ import com.google.gson.Gson
 @Composable
 fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
 
-    val state = viewModel.allEvents.observeAsState(listOf())
-    val isOnline by rememberUpdatedState(MainActivity.isOnline)
+  val isOnline by rememberUpdatedState(MainActivity.isOnline)
+  val state = viewModel.allEvents.observeAsState(listOf())
 
-    Scaffold(
-        modifier = Modifier.testTag("ChatsScreen"),
-        topBar = { ChatsTopAppBar("Chats", viewModel) },
-        bottomBar = {
-            BottomNavigationMenu(
-                onTabSelect = { tld -> nav.navigateTo(tld) },
-                tabList = TOP_LEVEL_DESTINATIONS,
-                selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
-        }) { paddingValues ->
+  Scaffold(
+      modifier = Modifier.testTag("ChatsScreen"),
+      topBar = { ChatsTopAppBar("Chats", viewModel) },
+      bottomBar = {
+        BottomNavigationMenu(
+            onTabSelect = { tld -> nav.navigateTo(tld) },
+            tabList = TOP_LEVEL_DESTINATIONS,
+            selectedItem = nav.controller.currentBackStackEntry?.destination?.route)
+      }) { paddingValues ->
         val lazyState = rememberLazyListState()
         fun LazyListState.isScrolledToEnd() =
             layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
@@ -84,27 +84,27 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
 
         val events = state.value
         when {
-            events.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
-                    contentAlignment = Alignment.Center) {
-                    Text(
-                        text = if (isOnline) "Loading..." else "Your device is currently offline.",
-                        color = Color.Black,
-                        modifier = Modifier.testTag("emptyText"))
+          events.isEmpty() -> {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                contentAlignment = Alignment.Center) {
+                  Text(
+                      text = if (isOnline) "Loading..." else "Your device is currently offline.",
+                      color = Color.Black,
+                      modifier = Modifier.testTag("emptyText"))
                 }
-            }
-            else -> {
-                LazyColumn(
-                    state = lazyState,
-                    modifier = Modifier.padding(paddingValues).testTag("chatsList")) {
-                    items(events) { event -> ChatRow(event, nav) }
+          }
+          else -> {
+            LazyColumn(
+                state = lazyState,
+                modifier = Modifier.padding(paddingValues).testTag("chatsList")) {
+                  items(events) { event -> ChatRow(event, nav) }
                 }
 
-                LaunchedEffect(endOfListReached) { viewModel.fetchNextEvents() }
-            }
+            LaunchedEffect(endOfListReached) { viewModel.fetchNextEvents() }
+          }
         }
-    }
+      }
 }
 
 /**
@@ -116,39 +116,39 @@ fun Chats(viewModel: ChatsListViewModel, nav: NavigationActions) {
 @Composable
 fun ChatRow(event: Event, navigation: NavigationActions) {
 
-    Box(
-        modifier =
-        Modifier.clickable {
+  Box(
+      modifier =
+          Modifier.clickable {
             val gson = Gson()
             val chatJson = gson.toJson(event.id)
             navigation.controller.navigate("chat/$chatJson")
             Log.e("Display", "eventJson = $chatJson")
-        }) {
+          }) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.weight(1f)) {
+              Column(modifier = Modifier.weight(1f)) {
                 Icon(
                     painter = painterResource(R.drawable.chat),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp))
-            }
+              }
 
-            Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
+              Column(modifier = Modifier.weight(1f).padding(end = 1.dp)) {
                 Text(text = event.title, fontWeight = FontWeight.Bold, fontSize = 10.sp)
-            }
+              }
 
-            Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+              Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(R.drawable.arrow_right),
-                        contentDescription = null,
-                        modifier = Modifier.width(24.dp).height(24.dp).clickable {})
+                  Icon(
+                      painter = painterResource(R.drawable.arrow_right),
+                      contentDescription = null,
+                      modifier = Modifier.width(24.dp).height(24.dp).clickable {})
                 }
+              }
             }
-        }
-    }
-    Divider(color = Color.Black, thickness = 1.dp)
+      }
+  Divider(color = Color.Black, thickness = 1.dp)
 }
 
 /**
@@ -158,42 +158,42 @@ fun ChatRow(event: Event, navigation: NavigationActions) {
  */
 @Composable
 fun ChatsTopAppBar(title: String, viewModel: ChatsListViewModel) {
-    val isSearchEnabled = viewModel.isSearchEnabled.observeAsState()
-    var search by remember { mutableStateOf("") }
+  val isSearchEnabled = viewModel.isSearchEnabled.observeAsState()
+  var search by remember { mutableStateOf("") }
 
-    TopAppBar(
-        modifier = Modifier.testTag("chatsTopBar"),
-        title = { androidx.compose.material.Text(text = title, color = Color.Black) },
-        backgroundColor = Color.White,
-        contentColor = Color.Black,
-        elevation = 4.dp,
-        actions = {
-            OutlinedTextField(
-                enabled = isSearchEnabled.value!!,
-                value = search,
-                onValueChange = {
-                    search = it
-                    viewModel.filter(search)
-                },
-                label = { Text("Type in event title") },
-                modifier =
+  TopAppBar(
+      modifier = Modifier.testTag("chatsTopBar"),
+      title = { androidx.compose.material.Text(text = title, color = Color.Black) },
+      backgroundColor = Color.White,
+      contentColor = Color.Black,
+      elevation = 4.dp,
+      actions = {
+        OutlinedTextField(
+            enabled = isSearchEnabled.value!!,
+            value = search,
+            onValueChange = {
+              search = it
+              viewModel.filter(search)
+            },
+            label = { Text("Type in event title") },
+            modifier =
                 Modifier.width(250.dp)
                     .testTag("searchBar")
                     .fillMaxHeight()
                     .background(color = Color.White, shape = RoundedCornerShape(20.dp)),
-            )
+        )
 
-            IconButton(modifier = Modifier.testTag("refresh"), onClick = { viewModel.resetOffset() }) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = rememberVectorPainter(image = Icons.Filled.Refresh),
-                    contentDescription = "Refresh chats")
-            }
-        })
+        IconButton(modifier = Modifier.testTag("refresh"), onClick = { viewModel.resetOffset() }) {
+          Icon(
+              modifier = Modifier.size(24.dp),
+              painter = rememberVectorPainter(image = Icons.Filled.Refresh),
+              contentDescription = "Refresh chats")
+        }
+      })
 }
 
 @Preview
 @Composable
 fun ChatPreview() {
-    Chats(ChatsListViewModel(), NavigationActions(rememberNavController()))
+  Chats(ChatsListViewModel(), NavigationActions(rememberNavController()))
 }

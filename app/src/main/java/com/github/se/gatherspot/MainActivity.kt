@@ -87,12 +87,12 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    FirebaseApp.initializeApp(this)
-    localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
     localDatabase =
         Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db")
             .fallbackToDestructiveMigration()
             .build()
+    FirebaseApp.initializeApp(this)
+    localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
     eventDao = localDatabase.EventDao()
     app = application
     mapViewModel = MapViewModel(app)
