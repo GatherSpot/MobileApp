@@ -499,28 +499,28 @@ fun EventDataForm(
                 }
 
             // Inscription limit date
-            Row{
-            OutlinedTextField(
-                modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
-                value = inscriptionLimitDate,
-                onValueChange = { inscriptionLimitDate = it },
-                label = { Text("Inscription Limit Date", fontSize = FONT_SIZE) },
-                placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) }
-                
+            Row {
+              OutlinedTextField(
+                  modifier =
+                      Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
+                  value = inscriptionLimitDate,
+                  onValueChange = { inscriptionLimitDate = it },
+                  label = { Text("Inscription Limit Date", fontSize = FONT_SIZE) },
+                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+
               MyDatePickerDialog(
                   onDateChange = { inscriptionLimitDate = TextFieldValue(it) },
                   testTag = "inscriptionLimitDatePicker")
             }
             // Inscription limit time
             Row {
-            OutlinedTextField(
-                modifier =
-                    Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
-                value = inscriptionLimitTime,
-                onValueChange = { inscriptionLimitTime = it },
-                label = { Text("Inscription Limit Time", fontSize = FONT_SIZE) },
-                placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+              OutlinedTextField(
+                  modifier =
+                      Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
+                  value = inscriptionLimitTime,
+                  onValueChange = { inscriptionLimitTime = it },
+                  label = { Text("Inscription Limit Time", fontSize = FONT_SIZE) },
+                  placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
               MyTimePickerDialog(
                   onTimeChange = { inscriptionLimitTime = TextFieldValue(it) },
