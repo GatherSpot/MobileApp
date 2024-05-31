@@ -52,12 +52,6 @@ class EnvironmentSetter {
       }
     }
 
-    fun allTestSetUp(userName: String, email: String) {
-      runTest {
-        removeUserName(userName)
-        checkEmailNotUsed(email)
-      }
-    }
 
     fun allTestCleanUp(userName: String) {
       runTest { removeUserName(userName) }
