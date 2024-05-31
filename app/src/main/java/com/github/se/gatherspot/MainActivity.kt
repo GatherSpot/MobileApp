@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -71,7 +72,8 @@ import com.google.maps.android.compose.CameraPositionState
  */
 class MainActivity : ComponentActivity() {
   companion object {
-    var isOnline: Boolean = false
+    var _isOnline: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isOnline : LiveData<Boolean> = _isOnline
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
     lateinit var mapLauncher: ActivityResultLauncher<String>
     var mapAccess = false
@@ -137,7 +139,7 @@ class MainActivity : ComponentActivity() {
         }
     NotificationHelper().createNotificationChannel(applicationContext)
 
-    networkChangeReceiver = NetworkChangeReceiver { connected -> isOnline = connected }
+    networkChangeReceiver = NetworkChangeReceiver { connected -> _isOnline.value = connected }
     registerReceiver(networkChangeReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
     setContent {

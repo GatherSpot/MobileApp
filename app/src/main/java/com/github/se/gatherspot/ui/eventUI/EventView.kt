@@ -49,6 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
@@ -115,6 +116,7 @@ fun EventUINonOrganizer(
 
   val registrationState by eventUIViewModel.registrationState.observeAsState()
   val isButtonEnabled = eventUIViewModel.registrationState.value !is RegistrationState.Error
+    val isOnline by MainActivity.isOnline.observeAsState()
 
   val buttonText =
       when (registrationState) {
@@ -155,15 +157,18 @@ fun EventUINonOrganizer(
               buttonText,
               showDialogRegistration,
               registrationState,
-              eventDao)
+              eventDao,
+              isOnline
+          )
         }
       }) { innerPadding ->
         Column(
             modifier =
-                Modifier.padding(innerPadding)
-                    .padding(8.dp)
-                    .testTag("eventColumn")
-                    .verticalScroll(rememberScrollState())) {
+            Modifier
+                .padding(innerPadding)
+                .padding(8.dp)
+                .testTag("eventColumn")
+                .verticalScroll(rememberScrollState())) {
               EventBody(event, organizerProfile, organizerRating ?: 0.0, navActions)
               // Rating Action
               if (eventUIViewModel.canRate()) {
@@ -173,7 +178,9 @@ fun EventUINonOrganizer(
 
               EventRating(eventRating)
 
-              Spacer(modifier = Modifier.height(16.dp).testTag("bottomSpacer"))
+              Spacer(modifier = Modifier
+                  .height(16.dp)
+                  .testTag("bottomSpacer"))
 
               // Registration Button
               // Spacer(modifier = Modifier.height(16.dp))
@@ -201,7 +208,9 @@ fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel) {
   Button(
       onClick = { eventUIViewModel.attendEvent() },
       enabled = (attended == false),
-      modifier = Modifier.fillMaxWidth().testTag("attendButton"),
+      modifier = Modifier
+          .fillMaxWidth()
+          .testTag("attendButton"),
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
         Text(buttonText, color = Color.White)
       }
@@ -269,7 +278,9 @@ fun EventUIOrganizer(
                   onClick = { navActions.controller.navigate("editEvent/${event.toJson()}") },
                   modifier = Modifier.testTag("editEventButton")) {
                     Icon(
-                        modifier = Modifier.size(24.dp).testTag("editEventIcon"),
+                        modifier = Modifier
+                            .size(24.dp)
+                            .testTag("editEventIcon"),
                         painter = painterResource(id = R.drawable.edit),
                         contentDescription = "Edit event")
                   }
@@ -278,7 +289,9 @@ fun EventUIOrganizer(
                   onClick = { eventUIViewModel.clickDeleteButton() },
                   modifier = Modifier.testTag("deleteEventButton")) {
                     Icon(
-                        modifier = Modifier.size(24.dp).testTag("deleteEventIcon"),
+                        modifier = Modifier
+                            .size(24.dp)
+                            .testTag("deleteEventIcon"),
                         painter = painterResource(id = R.drawable.delete),
                         contentDescription = "Delete event")
                   }
@@ -287,10 +300,11 @@ fun EventUIOrganizer(
       }) { innerPadding ->
         Column(
             modifier =
-                Modifier.padding(innerPadding)
-                    .padding(8.dp)
-                    .testTag("eventColumn")
-                    .verticalScroll(rememberScrollState())) {
+            Modifier
+                .padding(innerPadding)
+                .padding(8.dp)
+                .testTag("eventColumn")
+                .verticalScroll(rememberScrollState())) {
               EventBody(
                   event = event,
                   organizerProfile = organizerProfile,
@@ -359,12 +373,20 @@ fun RegisterButton(
     buttonText: String,
     showDialogRegistration: Boolean?,
     registrationState: RegistrationState?,
-    eventDao: EventDao?
+    eventDao: EventDao?,
+    isOnline: Boolean?,
 ) {
+
+
   Button(
-      onClick = { eventUIViewModel.toggleRegistrationStatus(eventDao) },
+      onClick = {
+              eventUIViewModel.toggleRegistrationStatus(eventDao)
+
+                },
       enabled = buttonEnabled,
-      modifier = Modifier.fillMaxWidth().testTag("registerButton"),
+      modifier = Modifier
+          .fillMaxWidth()
+          .testTag("registerButton"),
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
         Text(buttonText, color = Color.White)
       }
@@ -372,13 +394,16 @@ fun RegisterButton(
   if (showDialogRegistration!!) {
     AlertDialog(
         modifier = Modifier.testTag("alertBox"),
-        onDismissRequest = { eventUIViewModel.dismissAlert() },
+        onDismissRequest = {
+            eventUIViewModel.dismissAlert()
+        },
         title = { Text("Registration Result") },
         text = {
           when (registrationState) {
             is RegistrationState.Registered -> Text("You have been successfully registered!")
             is RegistrationState.Unregistered -> Text("You have been successfully unregistered!")
-            else -> Text("Unknown state")
+            is RegistrationState.Error -> Text("Couldn't perform requested action because : \n ${(registrationState as RegistrationState.Error).message}")
+              else -> Text("Unknown state")
           }
         },
         confirmButton = {
@@ -399,7 +424,9 @@ fun RegisterButton(
 @Composable
 fun Chip(interest: Interests) {
   Surface(
-      modifier = Modifier.padding(4.dp).testTag("chip"),
+      modifier = Modifier
+          .padding(4.dp)
+          .testTag("chip"),
       elevation = 4.dp,
       shape = RoundedCornerShape(50), // Circular shaped corners
       color = Color(0xFF3A89C9) // Use the primary color from the theme
@@ -423,23 +450,26 @@ fun ProfileIndicator(profile: Profile?, navActions: NavigationActions, organizer
   Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =
-          Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-              .testTag("profileIndicator")
-              .clickable {
-                // Navigate to the profile of the organizer
-                if (profile.id != Firebase.auth.currentUser?.uid) {
+      Modifier
+          .padding(horizontal = 16.dp, vertical = 8.dp)
+          .testTag("profileIndicator")
+          .clickable {
+              // Navigate to the profile of the organizer
+              if (profile.id != Firebase.auth.currentUser?.uid) {
                   navActions.controller.navigate("viewProfile/${profile.id}")
-                } else {
+              } else {
                   navActions.controller.navigate("profile")
-                }
-              }) {
+              }
+          }) {
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-                Modifier.size(40.dp) // Set the size of the circle
-                    .background(
-                        color = Color(0xFF9C27B0),
-                        shape = CircleShape) // Set the background color and shape of the circle
+            Modifier
+                .size(40.dp) // Set the size of the circle
+                .background(
+                    color = Color(0xFF9C27B0),
+                    shape = CircleShape
+                ) // Set the background color and shape of the circle
             ) {
               Text(
                   text =
@@ -485,9 +515,10 @@ fun StarRating(ownRating: Long, onRatingChanged: (Long) -> Unit) {
               contentDescription = null,
               tint = if (i <= ownRating) Color(0xFFFFB907) else Color.Gray,
               modifier =
-                  Modifier.size(40.dp)
-                      .clickable { onRatingChanged(i.toLong()) }
-                      .testTag("starIcon_$i"))
+              Modifier
+                  .size(40.dp)
+                  .clickable { onRatingChanged(i.toLong()) }
+                  .testTag("starIcon_$i"))
         }
       }
 }
@@ -509,7 +540,9 @@ fun ExportToCalendarIcon(event: Event) {
       },
       modifier = Modifier.testTag("exportToCalendarButton")) {
         Icon(
-            modifier = Modifier.size(24.dp).testTag("exportToCalendarIcon"),
+            modifier = Modifier
+                .size(24.dp)
+                .testTag("exportToCalendarIcon"),
             painter = rememberVectorPainter(image = Icons.Filled.DateRange),
             contentDescription = "Export to calendar")
       }
@@ -526,10 +559,11 @@ fun ExportToCalendarIcon(event: Event) {
 fun RatingDisplay(ownRating: Rating, eventUIViewModel: EventUIViewModel) {
   Column(
       modifier =
-          Modifier.padding(vertical = 8.dp)
-              .fillMaxWidth()
-              .wrapContentHeight()
-              .testTag("ratingColumn"),
+      Modifier
+          .padding(vertical = 8.dp)
+          .fillMaxWidth()
+          .wrapContentHeight()
+          .testTag("ratingColumn"),
       horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = "Rate this event",
@@ -581,7 +615,9 @@ fun ColumnScope.EventBody(
 
   Text(
       text = "Number of attendees",
-      modifier = Modifier.align(Alignment.CenterHorizontally).testTag("attendeesInfoTitle"),
+      modifier = Modifier
+          .align(Alignment.CenterHorizontally)
+          .testTag("attendeesInfoTitle"),
       fontWeight = FontWeight.Bold)
 
   // Event Capacity
@@ -604,13 +640,19 @@ fun ColumnScope.EventBody(
 
   // Map View Placeholder
   Spacer(modifier = Modifier.height(16.dp))
-  Box(modifier = Modifier.height(200.dp).fillMaxWidth().background(Color.Gray).testTag("mapView")) {
+  Box(modifier = Modifier
+      .height(200.dp)
+      .fillMaxWidth()
+      .background(Color.Gray)
+      .testTag("mapView")) {
     // Here should be the code to integrate the actual map
     event.location?.let { location ->
       GeoMap(
           userCoordinates = location,
           interestsCoordinates = emptyList(),
-          modifier = Modifier.fillMaxWidth().height(200.dp))
+          modifier = Modifier
+              .fillMaxWidth()
+              .height(200.dp))
     } ?: BasicText(text = "No location provided for this event")
   }
   // Event Dates and Times
