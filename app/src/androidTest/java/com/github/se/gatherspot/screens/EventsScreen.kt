@@ -24,7 +24,7 @@ class EventsScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val upComing: KNode = onNode { hasTestTag("Planned") }
   val attended: KNode = onNode { hasTestTag("Attended") }
   val myEvents: KNode = onNode { hasTestTag("Mine") }
-  val fromFollowed: KNode = onNode { hasTestTag("Follows") }
+  val fromFollowed: KNode = onNode { hasTestTag("Followed") }
   val eventFeed: KNode = onNode { hasTestTag("Feed") }
 
   val removeFilter: KNode = onNode { hasTestTag("removeFilter") }

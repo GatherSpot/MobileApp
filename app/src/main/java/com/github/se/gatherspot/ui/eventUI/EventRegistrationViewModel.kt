@@ -94,17 +94,16 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
       _displayAlertRegistration.postValue(true)
       return
     }
-      viewModelScope.launch(Dispatchers.IO) {
-        event.registeredUsers.add(userId)
-        eventDao?.insert(event)
-        FirebaseMessaging.getInstance().subscribeToTopic("event_$userId")
-        eventFirebaseConnection.addRegisteredUser(event.id, userId)
-        registeredEventsList.add(event.id)
-        _registrationState.postValue(RegistrationState.Registered)
-        _displayAlertRegistration.postValue(true)
-      }
+    viewModelScope.launch(Dispatchers.IO) {
+      event.registeredUsers.add(userId)
+      eventDao?.insert(event)
+      FirebaseMessaging.getInstance().subscribeToTopic("event_$userId")
+      eventFirebaseConnection.addRegisteredUser(event.id, userId)
+      registeredEventsList.add(event.id)
+      _registrationState.postValue(RegistrationState.Registered)
+      _displayAlertRegistration.postValue(true)
     }
-
+  }
 
   /**
    * Unregister user for the event (remove it from list of registered, etc)

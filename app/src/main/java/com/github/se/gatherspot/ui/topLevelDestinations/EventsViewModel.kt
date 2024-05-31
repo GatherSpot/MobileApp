@@ -41,7 +41,7 @@ class EventsViewModel(private val localDataBase: AppDatabase) : ViewModel() {
   // To synchronize between screens, it is initialized with the selected interests from MainActivity
   private var _interests = MutableLiveData(MainActivity.selectedInterests.value!!)
   private var _showFilterDialog = MutableLiveData(false)
-  val tabList = listOf("Mine", "Feed", "Planned", "Follows", "Attended")
+  val tabList = listOf("Mine", "Feed", "Planned", "Followed", "Attended")
   // we start at Feed, so default is 1 !!!
 
   val allEvents: LiveData<List<Event>> = _allEvents
