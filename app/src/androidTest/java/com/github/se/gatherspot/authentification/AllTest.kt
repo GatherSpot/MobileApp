@@ -1,11 +1,13 @@
 package com.github.se.gatherspot.authentification
 
+import android.Manifest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.gatherspot.EnvironmentSetter.Companion.testDelete
 import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
@@ -31,6 +33,9 @@ const val PASSWORD = "AuthEndToEndTest,2024;"
 
 @RunWith(AndroidJUnit4::class)
 class AllTest : TestCase() {
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(Manifest.permission.POST_NOTIFICATIONS)
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
   @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
