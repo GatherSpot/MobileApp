@@ -282,7 +282,6 @@ class EventUIViewModelTest {
     assert(viewModel.registrationState.value is RegistrationState.Unregistered)
     // To keep a clean database delete the test event
     EventUtils().deleteEvent(event)
-    EnvironmentSetter.testLoginCleanUp()
   }
 
   @Test

@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
@@ -16,14 +17,15 @@ class EnvironmentSetter {
   companion object {
 
     val profileFirebaseConnection = ProfileFirebaseConnection()
-    val testLoginUID = "CpsyL2BH9TTQKEfpDC3YwZB6NLE2"
+    val testLoginUID = "G6B6Z67yu7NyWhk1IzTLdnZXQEA2"
+    val testLoginEmail = "neverdeleted@mail.com"
 
     /** This function logs in the user for testing purposes this user has his email verified */
     fun testLogin() {
       runBlocking {
         if (Firebase.auth.currentUser?.uid != testLoginUID) {
           Firebase.auth
-              .signInWithEmailAndPassword("neverdeleted@mail.com", "GatherSpot,2024;") // uid =
+              .signInWithEmailAndPassword(testLoginEmail, "GatherSpot,2024;") // uid =
               .await()
         }
       }
@@ -37,12 +39,10 @@ class EnvironmentSetter {
       }
     }
 
-    fun testLoginCleanUp() {
-      Firebase.auth.signOut()
-    }
-
     fun testDelete() {
-      if (Firebase.auth.currentUser != null) {
+      if (Firebase.auth.currentUser?.uid != null &&
+          Firebase.auth.currentUser?.email != testLoginEmail) {
+        runBlocking { ProfileFirebaseConnection().delete(Firebase.auth.currentUser?.uid!!) }
         Firebase.auth.currentUser!!.delete()
       }
     }
@@ -52,54 +52,6 @@ class EnvironmentSetter {
         // Make sure the "test" username is already in use
         async { ProfileFirebaseConnection().add(Profile("test", "", "", "t_SignUpError", setOf())) }
             .await()
-      }
-    }
-
-    fun signUpSetUp(userName: String, email: String) {
-      runTest {
-        async {
-              // Make sure the username is not in use
-              var toDelete: Profile? = null
-              async { toDelete = profileFirebaseConnection.fetchFromUserName(userName) }.await()
-              if (toDelete != null) profileFirebaseConnection.delete(toDelete!!.id)
-            }
-            .await()
-
-        // Make sure the email is not in use
-        try {
-
-          Firebase.auth.createUserWithEmailAndPassword(email, "to be Deleted 128 okay").await()
-        } catch (e: FirebaseAuthUserCollisionException) {
-          Log.d(
-              "testSignUpSetUp",
-              "User already exists you need to delete them manually from the database")
-          return@runTest // If the user already exists we can't do anything from here
-        } catch (e: FirebaseAuthInvalidCredentialsException) {
-          Log.d("testSignUpSetUp", "Invalid email")
-          return@runTest
-        }
-
-        // We just created a user with the email so now we delete him
-        if (Firebase.auth.currentUser == null)
-            async { Firebase.auth.signInWithEmailAndPassword(email, "to be Deleted 128 okay") }
-                .await()
-        async { Firebase.auth.currentUser!!.delete() }.await()
-      }
-    }
-
-    fun signUpCleanUp(userName: String) {
-      runTest {
-        if (Firebase.auth.currentUser != null)
-            async { Firebase.auth.currentUser!!.delete() }.await()
-        val toDelete: Profile? = profileFirebaseConnection.fetchFromUserName(userName)
-        if (toDelete != null) async { profileFirebaseConnection.delete(toDelete.id) }.await()
-      }
-    }
-
-    fun allTestSetUp(userName: String, email: String) {
-      runTest {
-        removeUserName(userName)
-        checkEmailNotUsed(email)
       }
     }
 
@@ -128,7 +80,8 @@ class EnvironmentSetter {
         if (Firebase.auth.currentUser == null)
             async { Firebase.auth.signInWithEmailAndPassword(email, "to be Deleted 128 okay") }
                 .await()
-        async { Firebase.auth.currentUser!!.delete() }.await()
+        testDelete()
+        delay(400)
       }
     }
 

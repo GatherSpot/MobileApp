@@ -24,8 +24,10 @@ import kotlinx.coroutines.launch
 
 /** ViewModel for the user's own profile. */
 class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
-  private var _profile = MutableLiveData<Profile?>()
+  private var _profile =
+      MutableLiveData<Profile?>(Profile("", "", "", Firebase.auth.currentUser?.uid ?: "", setOf()))
   private var _oldProfile: Profile? = null
+
   private var _userNameError = MutableLiveData("")
   private var _bioError = MutableLiveData("")
   private var _userNameIsUniqueCheck = MutableLiveData(true)
@@ -91,7 +93,9 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
     viewModelScope.launch {
       try {
         Profile.checkUsername(userName, _oldProfile?.userName, _userNameError)
-        _userNameIsUniqueCheck.postValue(true)
+        _userNameIsUniqueCheck.postValue(
+            true) // userName might not be unique depending on how checkUsername goes. usernameError
+        // == "" already signifies uniqueness of username
       } catch (e: Exception) {
         // TODO show error dialog
       }
@@ -104,7 +108,7 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
    * @param bio The new bio
    */
   fun updateBio(bio: String) {
-    _bioError = Profile.checkBio(bio)
+    Profile.checkBio(bio, _bioError)
     _profile.value?.apply {
       this.bio = bio
       _profile.value = this
@@ -151,7 +155,9 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
   private fun noErrors(): Boolean {
     return _userNameError.value == "" &&
         _bioError.value == "" &&
-        _userNameIsUniqueCheck.value == true
+        _userNameIsUniqueCheck.value ==
+            true // usernameIsUniquecheck is used in conjunction with userNameError which is
+    // sufficient on its own
   }
 
   /** Save the edited profile and exit editing mode. */
@@ -171,15 +177,16 @@ class OwnProfileViewModel(private val db: AppDatabase) : ViewModel() {
             ProfileFirebaseConnection().add(newProfile)
             db.ProfileDao().insert(newProfile)
             _oldProfile = newProfile.copy()
+            _isEditing.postValue(false)
           }
         } catch (e: Exception) {
           // TODO show error dialog
           Log.d("Profile", "${e.message}")
+          _isEditing.postValue(false)
           _profile.postValue(_oldProfile)
         }
       }
-    } else _profile.postValue(_oldProfile)
-    _isEditing.value = false
+    } else cancel()
   }
 
   /** Cancel the editing of the profile and exit editing mode. */

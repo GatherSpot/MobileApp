@@ -1,7 +1,9 @@
 package com.github.se.gatherspot
 
 import android.Manifest
+import android.app.AlertDialog
 import android.app.Application
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -60,8 +62,10 @@ import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.LogIn
 import com.github.se.gatherspot.ui.topLevelDestinations.Map
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
+import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.maps.android.compose.CameraPositionState
 
 /**
@@ -88,6 +92,29 @@ class MainActivity : ComponentActivity() {
   private var chatsViewModel: ChatsListViewModel? = null
   private lateinit var localDatabase: AppDatabase
   private lateinit var eventDao: EventDao
+
+  fun showUnverifiedDialog() {
+    val builder = AlertDialog.Builder(this)
+    builder.setTitle("Verification Email Sent")
+    builder.setMessage("Please check your email to verify your account before continuing.")
+    builder.setPositiveButton("Resend email", null)
+    // Firebase.auth.currentUser!!.sendEmailVerification()
+    builder.setNeutralButton("Sign out", null)
+    builder.setOnDismissListener {}
+    val alertDialog: AlertDialog = builder.create()
+    alertDialog.setOnShowListener(
+        DialogInterface.OnShowListener {
+          alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            Firebase.auth.currentUser!!.sendEmailVerification()
+          }
+
+          alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+            Firebase.auth.signOut()
+            alertDialog.dismiss()
+          }
+        })
+    alertDialog.show()
+  }
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -254,7 +281,7 @@ class MainActivity : ComponentActivity() {
     if (result.resultCode == RESULT_OK) {
       if (!FirebaseAuth.getInstance().currentUser?.isEmailVerified!!) {
         FirebaseAuth.getInstance().currentUser!!.sendEmailVerification()
-        navController.navigate("auth")
+        showUnverifiedDialog()
         return RESULT_CANCELED
       } else {
         if (mapViewModel == null) {
