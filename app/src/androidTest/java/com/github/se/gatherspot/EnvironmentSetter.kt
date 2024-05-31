@@ -16,7 +16,7 @@ class EnvironmentSetter {
   companion object {
 
     val profileFirebaseConnection = ProfileFirebaseConnection()
-    val testLoginUID = "MXX2zhhtCdUZlZzNrJG5qhVqbe82"
+    val testLoginUID = "uWFthTqLO5Ng2heIgQbLs0XY4rN2"
     val testLoginEmail = "neverdeleted@mail.com"
 
     /** This function logs in the user for testing purposes this user has his email verified */
