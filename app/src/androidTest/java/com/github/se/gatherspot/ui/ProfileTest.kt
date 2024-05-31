@@ -62,7 +62,7 @@ class ProfileInstrumentedTest {
       val navController = rememberNavController()
       ProfileScaffold(NavigationActions(navController), viewModel { OwnProfileViewModel(db) })
     }
-    sleep(6000) // forced to use sleep when coroutines are there as waituntil seems undeterministic.
+    sleep(3000) // forced to use sleep when coroutines are there as waituntil seems undeterministic.
     val original_username = "testOrganizer"
     val original_bio = "Bio"
     ComposeScreen.onComposeScreen<ProfileScreen>(composeTestRule) {
@@ -99,6 +99,31 @@ class ProfileInstrumentedTest {
       bioInput { performTextReplacement("I am a bot") }
       save { performClick() }
       bioInput { assert(hasText("I am a bot")) }
+
+      // modify into an unsaveable State
+      sleep(300)
+      edit { performClick() }
+      usernameInput { performTextReplacement("") }
+      saveAlertDialog { assertDoesNotExist() }
+      save { performClick() }
+      sleep(200)
+      saveAlertDialog { assertExists() }
+      saveAlertMessage { hasText("Username cannot be empty") }
+      saveAlertButton { performClick() }
+      saveAlertDialog { assertDoesNotExist() }
+      usernameInput { hasText("") }
+      save { assertExists() }
+      cancel {
+        assertExists()
+        performClick()
+      }
+      sleep(200)
+      // modify into another unsaveable state
+      edit { performClick() }
+      bioInput { performTextReplacement("a".repeat(101)) }
+      save { performClick() }
+      saveAlertDialog { assertExists() }
+      saveAlertMessage { hasText("Bio cannot be longer than 100 characters") }
     }
   }
 

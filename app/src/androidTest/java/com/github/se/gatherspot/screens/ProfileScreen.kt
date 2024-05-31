@@ -20,4 +20,7 @@ class ProfileScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val followersButton: KNode = onNode { hasTestTag("followersButton") }
   val followingButton: KNode = onNode { hasTestTag("followingButton") }
   val basketball: KNode = onNode { hasTestTag("BASKETBALL") }
+  val saveAlertDialog: KNode = onNode { hasTestTag("saveAlertDialog") }
+  val saveAlertMessage: KNode = onNode { hasTestTag("saveAlertMessage") }
+  val saveAlertButton: KNode = onNode { hasTestTag("saveAlertButton") }
 }

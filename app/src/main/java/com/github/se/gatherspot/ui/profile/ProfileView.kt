@@ -18,6 +18,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -25,7 +27,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -136,12 +142,28 @@ fun Following(nav: NavigationActions) {
  * @param cancel The function to call when the cancel button is clicked
  */
 @Composable
-fun SaveCancelButtons(save: () -> Unit, cancel: () -> Unit) {
+fun SaveCancelButtons(
+    save: () -> Unit,
+    cancel: () -> Unit,
+    bioError: String,
+    usernameError: String,
+    showAlertDialog: () -> Unit
+) {
   Row(
       modifier = Modifier.fillMaxWidth().padding(8.dp),
       horizontalArrangement = Arrangement.SpaceBetween) {
         Text(text = "Cancel", modifier = Modifier.clickable { cancel() }.testTag("cancel"))
-        Text(text = "Save", modifier = Modifier.clickable { save() }.testTag("save"))
+        Text(
+            text = "Save",
+            modifier =
+                Modifier.clickable {
+                      if (bioError == "" && usernameError == "") {
+                        save()
+                      } else {
+                        showAlertDialog()
+                      }
+                    }
+                    .testTag("save"))
       }
 }
 
@@ -290,9 +312,12 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
   val cancel = viewModel::cancel
   val setImageUri = viewModel::updateProfileImage
   val deleteImage = viewModel::removeProfilePicture
+  var showSaveAlertDialog by remember { mutableStateOf(false) }
 
   Column {
-    SaveCancelButtons(save, cancel)
+    SaveCancelButtons(save, cancel, bioError.value, usernameError.value) {
+      showSaveAlertDialog = true
+    }
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(56.dp)) {
       CircleImagePicker(
           imageUri = imageUri.value,
@@ -308,6 +333,27 @@ private fun EditOwnProfileContent(viewModel: OwnProfileViewModel) {
       }
     }
   }
+  if (showSaveAlertDialog) {
+    SaveAlertDialog(bioError.value, usernameError.value) { showSaveAlertDialog = false }
+  }
+}
+
+@Composable
+fun SaveAlertDialog(bioError: String, usernameError: String, onDismiss: () -> Unit) {
+  AlertDialog(
+      modifier = Modifier.testTag("saveAlertDialog"),
+      onDismissRequest = onDismiss,
+      icon = { Icon(Icons.Default.Warning, contentDescription = null) },
+      title = { Text("Could not save the your profile") },
+      text = {
+        Text(
+            modifier = Modifier.testTag("saveAlertMessage"),
+            text = (bioError + " \n" + usernameError))
+      },
+      confirmButton = {
+        Button(onClick = onDismiss, modifier = Modifier.testTag("saveAlertButton")) { Text("OK") }
+      },
+      dismissButton = {})
 }
 
 /**
