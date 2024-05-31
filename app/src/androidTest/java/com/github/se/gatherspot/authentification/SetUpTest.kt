@@ -54,10 +54,7 @@ class SetUpTest : TestCase() {
                 interests = setOf()))
   }
 
-  @After
-  fun cleanUp() = runBlocking {
-    db.close()
-  }
+  @After fun cleanUp() = runBlocking { db.close() }
 
   @OptIn(ExperimentalTestApi::class)
   @Test

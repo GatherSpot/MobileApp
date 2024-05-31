@@ -67,9 +67,7 @@ class ChatsTest {
 
   @After
   fun cleanUp() {
-    runBlocking {
-      EventFirebaseConnection().delete(testEvent.id)
-    }
+    runBlocking { EventFirebaseConnection().delete(testEvent.id) }
   }
 
   @Test

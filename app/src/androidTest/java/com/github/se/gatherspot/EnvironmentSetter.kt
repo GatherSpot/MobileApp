@@ -16,7 +16,7 @@ class EnvironmentSetter {
   companion object {
 
     val profileFirebaseConnection = ProfileFirebaseConnection()
-    val testLoginUID = "CpsyL2BH9TTQKEfpDC3YwZB6NLE2"
+    val testLoginUID = "tSwQYFL5QBQExhwXUoE4fPzuS6D3"
 
     /** This function logs in the user for testing purposes this user has his email verified */
     fun testLogin() {
@@ -36,7 +36,6 @@ class EnvironmentSetter {
             .await()
       }
     }
-
 
     fun testDelete() {
       if (Firebase.auth.currentUser != null) {
