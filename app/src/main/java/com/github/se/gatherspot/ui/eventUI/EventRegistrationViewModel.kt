@@ -84,6 +84,7 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
   /**
    * Registers the user for the given event
    *
+   * @param event the event to register for
    * @param eventDao: the local database for events
    */
   private fun register(eventDao: EventDao? = null) {
