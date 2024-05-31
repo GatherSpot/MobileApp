@@ -517,9 +517,9 @@ class EventUITest {
               ?.contains(FirebaseAuth.getInstance().currentUser!!.uid)
               .toString())
       Log.e("isEventOver", EventUtils().isEventOver(pastEventAttended).toString())
-      sleep(500)
+      sleep(1000)
       assert(eventUIViewModel.canRate())
-      sleep(6000)
+      sleep(1000)
       starRow {
         performScrollTo()
         assertIsDisplayed()
