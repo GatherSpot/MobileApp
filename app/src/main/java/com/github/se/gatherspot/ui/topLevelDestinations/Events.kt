@@ -154,12 +154,10 @@ private fun EventList(
   }
   Log.d(TAG, "size = " + (events.value.size).toString())
   Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
-    if (events.value.isEmpty()) EmptyFeed(vm, MainActivity.selectedInterests, fetch)
+    if (events.value.isEmpty()) Empty(vm, MainActivity.selectedInterests, fetch, isFeed)
     else {
       LazyColumn(
-          state = lazyState, modifier = Modifier
-          .padding(vertical = 15.dp)
-          .testTag(testTag)) {
+          state = lazyState, modifier = Modifier.padding(vertical = 15.dp).testTag(testTag)) {
             items(events.value) { event ->
               EventItem(event, vm::getEventTiming, vm::isOrganizer, vm::isRegistered, nav)
             }
@@ -171,9 +169,7 @@ private fun EventList(
     PullRefreshIndicator(
         refreshing = fetching.value,
         state = pullRefreshState,
-        modifier = Modifier
-          .align(Alignment.TopCenter)
-          .testTag("fetching"))
+        modifier = Modifier.align(Alignment.TopCenter).testTag("fetching"))
   }
 }
 
@@ -193,31 +189,29 @@ private fun EventItem(
   }
   Box(
       modifier =
-      Modifier
-        .background(
-          color =
-          when (getEventTiming(event)) {
-            EventsViewModel.EventTiming.PAST -> Color.LightGray
-            EventsViewModel.EventTiming.TODAY -> Color.Green
-            EventsViewModel.EventTiming.FUTURE -> Color.White
-          },
-          // maybe find a way to discern if it is ours in other way than the timing, as it
-          // becomes non intuitive
-          //            Color.LightGray
-          //          } else if (isToday) {
-          //            Color(255, 0, 0, 160)
-          //          } else if (isOrganizer) {
-          //            Color(80, 50, 200, 120)
-          //          } else if (isRegistered) {
-          //            Color(46, 204, 113, 120)
-          //          } else {
-          //            Color.White
-          //          },
-          shape = RoundedCornerShape(5.dp)
-        )
-        .clickable { navigation.controller.navigate("event/${event.toJson()}") }
-        .testTag("eventItem")
-        .fillMaxSize()) {
+          Modifier.background(
+                  color =
+                      when (getEventTiming(event)) {
+                        EventsViewModel.EventTiming.PAST -> Color.LightGray
+                        EventsViewModel.EventTiming.TODAY -> Color.Green
+                        EventsViewModel.EventTiming.FUTURE -> Color.White
+                      },
+                  // maybe find a way to discern if it is ours in other way than the timing, as it
+                  // becomes non intuitive
+                  //            Color.LightGray
+                  //          } else if (isToday) {
+                  //            Color(255, 0, 0, 160)
+                  //          } else if (isOrganizer) {
+                  //            Color(80, 50, 200, 120)
+                  //          } else if (isRegistered) {
+                  //            Color(46, 204, 113, 120)
+                  //          } else {
+                  //            Color.White
+                  //          },
+                  shape = RoundedCornerShape(5.dp))
+              .clickable { navigation.controller.navigate("event/${event.toJson()}") }
+              .testTag("eventItem")
+              .fillMaxSize()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp)) {
@@ -233,23 +227,23 @@ private fun EventItem(
                 Text(
                     text =
                         "Start date: ${
-                        event.eventStartDate?.format(
-                            DateTimeFormatter.ofPattern(
-                                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
-                            )
-                        )
-                    }",
+            event.eventStartDate?.format(
+              DateTimeFormatter.ofPattern(
+                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
+              )
+            )
+          }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
                 Text(
                     text =
                         "End date: ${
-                        event.eventEndDate?.format(
-                            DateTimeFormatter.ofPattern(
-                                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
-                            )
-                        )
-                    }",
+            event.eventEndDate?.format(
+              DateTimeFormatter.ofPattern(
+                EventFirebaseConnection.DATE_FORMAT_DISPLAYED
+              )
+            )
+          }",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp)
                 Text(
@@ -302,20 +296,18 @@ private fun EmptyFeed(
     interests: MutableLiveData<Set<Interests>>,
     fetch: () -> Unit
 ) {
-  Column {
-    Text("No loaded events matched your query")
-    Row {
-      Text(
+  Text("No loaded events matched your query")
+  Row {
+    Text(
         "Remove filter ",
         color = Color.Blue,
         modifier =
-        Modifier.clickable {
-          viewModel.removeFilter()
-          interests.value = Interests.new()
-        })
-      Text("or ")
-      Text("try loading new ones", color = Color.Blue, modifier = Modifier.clickable { fetch() })
-    }
+            Modifier.clickable {
+              viewModel.removeFilter()
+              interests.value = Interests.new()
+            })
+    Text("or ")
+    Text("try loading new ones", color = Color.Blue, modifier = Modifier.clickable { fetch() })
   }
 }
 
