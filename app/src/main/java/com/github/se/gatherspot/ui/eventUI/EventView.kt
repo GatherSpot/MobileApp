@@ -359,8 +359,9 @@ fun RegisterButton(
     buttonText: String,
     showDialogRegistration: Boolean?,
     registrationState: RegistrationState?,
-    eventDao: EventDao?
+    eventDao: EventDao?,
 ) {
+
   Button(
       onClick = { eventUIViewModel.toggleRegistrationStatus(eventDao) },
       enabled = buttonEnabled,
@@ -378,6 +379,9 @@ fun RegisterButton(
           when (registrationState) {
             is RegistrationState.Registered -> Text("You have been successfully registered!")
             is RegistrationState.Unregistered -> Text("You have been successfully unregistered!")
+            is RegistrationState.Error ->
+                Text(
+                    "Couldn't perform requested action because : \n ${(registrationState as RegistrationState.Error).message}")
             else -> Text("Unknown state")
           }
         },
