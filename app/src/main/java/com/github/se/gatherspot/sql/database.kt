@@ -7,18 +7,21 @@ import androidx.room.TypeConverters
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.Interests
+import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 /** The database for the app. */
-@Database(entities = [Event::class, IdList::class], version = 1)
+@Database(entities = [Event::class, IdList::class, Profile::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
   abstract fun EventDao(): EventDao
 
   abstract fun IdListDao(): IdListDao
+
+  abstract fun ProfileDao(): ProfileDao
 }
 
 class Converters {

@@ -3,6 +3,8 @@ package com.github.se.gatherspot.ui.signUp
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -10,9 +12,11 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 /** ViewModel for the sign up screen. */
 class SignUpViewModel : ViewModel() {
@@ -29,18 +33,21 @@ class SignUpViewModel : ViewModel() {
   private var isUsernameUnique = false
 
   private fun updateEverythingOk() {
-    isEverythingOk.value =
+    isEverythingOk.postValue(
         (userNameError.value == "" &&
             emailError.value == "" &&
             passwordError.value == "" &&
-            isUsernameUnique)
+            isUsernameUnique))
   }
 
   /** Update the username and check if it is unique. */
   fun updateUsername(string: String) {
     userName.value = string
     isUsernameUnique = false
-    Profile.checkUsername(string, null, userNameError) { isUsernameUnique = true }
+    viewModelScope.launch(Dispatchers.IO) {
+      Profile.checkUsername(string, null, userNameError)
+      isUsernameUnique = userNameError.value == ""
+    }
   }
 
   /** Update the email and check if it is valid. */
@@ -82,7 +89,7 @@ class SignUpViewModel : ViewModel() {
             user?.reload()?.addOnCompleteListener {
               if (user.isEmailVerified) {
                 // Email is verified, you can now proceed
-                finish()
+                emailIsVerified()
               }
             }
             delay(3000) // delay for 3 seconds before checking again
@@ -90,32 +97,34 @@ class SignUpViewModel : ViewModel() {
         }
   }
 
-  private fun finish() {
+  private fun emailIsVerified() {
     isFinished.value = true
     job?.cancel()
   }
 
-  /** Sign up the user. */
+  /** Sign up the user and create profile */
   fun signUp() {
-    Firebase.auth
-        .createUserWithEmailAndPassword(email.value!!, password.value!!)
-        .addOnSuccessListener {
-          Firebase.auth.currentUser!!.sendEmailVerification()
-          isEverythingOk.value = false
-          waitingEmailConfirmation.value = true
-          Profile.add(userName.value!!, Firebase.auth.uid!!)
-          checkEmailVerification()
-        }
-        .addOnFailureListener {
-          when (it) {
-            is FirebaseAuthUserCollisionException -> {
-              emailError.value = "Email already in use, try signing in!"
-              updateEverythingOk()
+    viewModelScope.launch() {
+      try {
+        Firebase.auth.createUserWithEmailAndPassword(email.value!!, password.value!!).await()
+        async {
+              Firebase.auth.currentUser!!.sendEmailVerification()
+              ProfileFirebaseConnection()
+                  .add(Profile(userName.value!!, "", "", Firebase.auth.uid!!, setOf()))
             }
-            else -> {
-              Log.e("SignUpViewModel", "Error: ${it.message}")
-            }
-          }
+            .await()
+        isEverythingOk.postValue(false)
+        waitingEmailConfirmation.postValue(true)
+        checkEmailVerification()
+      } catch (e: Exception) {
+        if (e is FirebaseAuthUserCollisionException) {
+          emailError.postValue("Email already in use, try signing in!")
+          updateEverythingOk()
+        } else {
+          // TODO : add alert dialog to the view
+          Log.e("SignUpViewModel", "Error: ${e.message}")
         }
+      }
+    }
   }
 }

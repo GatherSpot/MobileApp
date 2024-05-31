@@ -37,7 +37,7 @@ class IdListSQLiteConnectionTest {
   fun writeAndRead() {
     idListDao.insert(idList1)
     val getVal = idListDao.get(FirebaseCollection.EVENTS, "TEST")
-    assertEquals(idList1.elements.toSet(), getVal.elements.toSet())
+    assertEquals(idList1.elements.toSet(), getVal?.elements?.toSet())
   }
 
   @Test

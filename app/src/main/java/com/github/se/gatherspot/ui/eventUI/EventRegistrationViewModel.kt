@@ -6,11 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.firebase.IdListFirebaseConnection
 import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.sql.EventDao
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -25,7 +28,7 @@ import kotlinx.coroutines.launch
  *   displayed
  */
 open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
-  private val userId = ProfileFirebaseConnection().getCurrentUserUid() ?: "TEST"
+  private val userId = Firebase.auth.uid ?: "TEST"
 
   // LiveData for holding registration state
   private val _registrationState: MutableLiveData<RegistrationState> =
@@ -57,6 +60,15 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
   private var registeredEventsList: IdList =
       IdList.empty(userId, FirebaseCollection.REGISTERED_EVENTS)
 
+  init {
+    viewModelScope.launch(Dispatchers.IO) {
+      try {
+        registeredEventsList =
+            IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS)
+      } catch (_: Exception) {}
+    }
+  }
+
   private val eventFirebaseConnection = EventFirebaseConnection()
 
   /** Calls the register or unregistered function depending on the current state */
@@ -79,6 +91,7 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
     viewModelScope.launch(Dispatchers.IO) {
       event.registeredUsers.add(userId)
       eventDao?.insert(event)
+      FirebaseMessaging.getInstance().subscribeToTopic("event_$userId")
       eventFirebaseConnection.addRegisteredUser(event.id, userId)
       registeredEventsList.add(event.id)
       _registrationState.postValue(RegistrationState.Registered)
@@ -95,6 +108,7 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
     viewModelScope.launch(Dispatchers.IO) {
       event.registeredUsers.remove(userId)
       eventDao?.delete(event)
+      FirebaseMessaging.getInstance().unsubscribeFromTopic("event_$userId")
       eventFirebaseConnection.removeRegisteredUser(event.id, userId)
       registeredEventsList.remove(event.id)
       _registrationState.postValue(RegistrationState.Unregistered)

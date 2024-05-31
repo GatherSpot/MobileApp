@@ -1,6 +1,5 @@
 package com.github.se.gatherspot.firebase
 
-import com.github.se.gatherspot.EnvironmentSetter
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.google.firebase.Firebase
@@ -27,27 +26,16 @@ class ProfileFirebaseConnectionTest {
           image = "image",
           id = "profileFirebaseConnectionTest",
           interests = setOf())
-  val usernameTooLong =
-      Profile(
-          userName = "ThisUsernameIsTooLong",
-          bio = "bio",
-          image = "image",
-          id = "thisUsernameIsTooLong",
-          interests = setOf())
 
   @Before
   fun setUp() {
-    runTest {
-      async { profileFirebaseConnection.delete(toAdd.id) }.await()
-      async { profileFirebaseConnection.delete(usernameTooLong.id) }.await()
-    }
+    runTest { profileFirebaseConnection.delete(toAdd.id) }
   }
 
   @After
   fun tearDown() {
     runTest {
-      async { profileFirebaseConnection.delete(toAdd.id) }.await()
-      async { profileFirebaseConnection.delete(usernameTooLong.id) }.await()
+      profileFirebaseConnection.delete(toAdd.id)
       Firebase.auth.signOut()
     }
   }
@@ -89,55 +77,26 @@ class ProfileFirebaseConnectionTest {
   }
 
   @Test
-  fun testGetCurrentUserUid() {
-    runTest {
-      EnvironmentSetter.testLogin()
-      var uid = profileFirebaseConnection.getCurrentUserUid()
-      assertNotNull(uid)
-      assertEquals(Firebase.auth.currentUser?.uid, uid)
-      Firebase.auth.signOut()
-      uid = profileFirebaseConnection.getCurrentUserUid()
-      assertEquals(null, uid)
-    }
-  }
-
-  @Test
   fun testIfUsernameExists() {
     // bogus does not actually test correctly
     runBlocking {
       profileFirebaseConnection.add(toAdd)
-      var wasSet = false
-      profileFirebaseConnection.ifUsernameExists(toAdd.userName) {
-        assertTrue(it)
-        wasSet = true
-      }
+      assertTrue(profileFirebaseConnection.usernameExists(toAdd.userName))
 
-      profileFirebaseConnection.ifUsernameExists("nonExistentUsername") {
-        assertFalse(it)
-        wasSet = true
-      }
+      assertFalse(profileFirebaseConnection.usernameExists("nonExistentUsername"))
 
       delay(2000)
-
-      assert(wasSet)
     }
   }
 
   @Test
-  fun testfetchFromUserName() {
+  fun testFetchFromUserName() {
     runTest {
       profileFirebaseConnection.add(toAdd)
       var fetched: Profile? = null
       var otherFetch: Profile? = null
-      async { fetched = profileFirebaseConnection.fetchFromUserName(toAdd.userName) }.await()
-      async { otherFetch = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      assertEquals(toAdd.userName, fetched?.userName)
-      assertEquals(toAdd.bio, fetched?.bio)
-      assertEquals(toAdd.image, fetched?.image)
-      assertEquals(toAdd.interests, fetched?.interests)
-      assertEquals(fetched?.userName, otherFetch?.userName)
-      assertEquals(fetched?.bio, otherFetch?.bio)
+      assertEquals(toAdd, profileFirebaseConnection.fetch(toAdd.id))
+      assertEquals(toAdd, profileFirebaseConnection.fetchFromUserName(toAdd.userName))
     }
   }
 
@@ -145,13 +104,7 @@ class ProfileFirebaseConnectionTest {
   fun testUpdate() {
     runTest {
       profileFirebaseConnection.add(toAdd)
-      var fetched: Profile? = null
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      assertEquals(toAdd.userName, fetched?.userName)
-      assertEquals(toAdd.bio, fetched?.bio)
-      assertEquals(toAdd.image, fetched?.image)
-      assertEquals(toAdd.interests, fetched?.interests)
+      assertEquals(toAdd, profileFirebaseConnection.fetch(toAdd.id))
 
       val updated =
           Profile(
@@ -161,12 +114,7 @@ class ProfileFirebaseConnectionTest {
               id = toAdd.id,
               interests = setOf())
       profileFirebaseConnection.update(updated)
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      assertEquals(updated.userName, fetched?.userName)
-      assertEquals(updated.bio, fetched?.bio)
-      assertEquals(updated.image, fetched?.image)
-      assertEquals(updated.interests, fetched?.interests)
+      assertEquals(updated, profileFirebaseConnection.fetch(toAdd.id))
     }
   }
 
@@ -175,84 +123,38 @@ class ProfileFirebaseConnectionTest {
     runTest {
       // username
       profileFirebaseConnection.add(toAdd)
-      var fetched: Profile? = null
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
       profileFirebaseConnection.update(toAdd.id, "userName", "updated")
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
+      var fetched = profileFirebaseConnection.fetch(toAdd.id)
       assertEquals("updated", fetched?.userName)
-      assertEquals(toAdd.bio, fetched?.bio)
-      assertEquals(toAdd.image, fetched?.image)
-      assertEquals(toAdd.interests, fetched?.interests)
 
       // interests
-      // Set passed
-      profileFirebaseConnection.add(toAdd)
-      fetched = null
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
+      // passing a set
       val updateSet = setOf(Interests.BASKETBALL, Interests.FOOTBALL)
       profileFirebaseConnection.update(toAdd.id, "interests", updateSet)
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      assertEquals(toAdd.userName, fetched?.userName)
-      assertEquals(toAdd.bio, fetched?.bio)
-      assertEquals(toAdd.image, fetched?.image)
-      assert(updateSet.equals(fetched?.interests))
+      fetched = profileFirebaseConnection.fetch(toAdd.id)
+      assertEquals(updateSet, (fetched?.interests))
 
-      profileFirebaseConnection.add(toAdd)
-      fetched = null
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      profileFirebaseConnection.updateInterests(toAdd.id, updateSet)
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      assertEquals(toAdd.userName, fetched?.userName)
-      assertEquals(toAdd.bio, fetched?.bio)
-      assertEquals(toAdd.image, fetched?.image)
-      assert(updateSet.equals(fetched?.interests))
-
-      // List passed
-      profileFirebaseConnection.add(toAdd)
-      fetched = null
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      val updateList = listOf(Interests.BASKETBALL, Interests.FOOTBALL)
+      // passing a list
+      val updateList = listOf(Interests.CHESS, Interests.BOARD_GAMES)
       profileFirebaseConnection.update(toAdd.id, "interests", updateList)
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      assertEquals(toAdd.userName, fetched?.userName)
-      assertEquals(toAdd.bio, fetched?.bio)
-      assertEquals(toAdd.image, fetched?.image)
-      assert(updateList.toSet().equals(fetched?.interests))
+      fetched = profileFirebaseConnection.fetch(toAdd.id)
+      assertEquals(updateList.toSet(), fetched?.interests)
 
       // String passed
-      profileFirebaseConnection.add(toAdd)
-      fetched = null
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
       val updateString = Interests.toCompressedString(updateSet)
       profileFirebaseConnection.update(toAdd.id, "interests", updateString)
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      assertEquals(toAdd.userName, fetched?.userName)
-      assertEquals(toAdd.bio, fetched?.bio)
-      assertEquals(toAdd.image, fetched?.image)
-      assert(updateSet.equals(fetched?.interests))
+      fetched = profileFirebaseConnection.fetch(toAdd.id)
+      assertEquals(updateSet, fetched?.interests)
 
-      // bio (same logic with image)
-      profileFirebaseConnection.add(toAdd)
-      fetched = null
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
+      // bio
       profileFirebaseConnection.update(toAdd.id, "bio", "updated")
-      async { fetched = profileFirebaseConnection.fetch(toAdd.id) }.await()
-      assertNotNull(fetched)
-      assertEquals(toAdd.userName, fetched?.userName)
+      fetched = profileFirebaseConnection.fetch(toAdd.id)
       assertEquals("updated", fetched?.bio)
-      assertEquals(toAdd.image, fetched?.image)
-      assertEquals(toAdd.interests, fetched?.interests)
+
+      // image
+      profileFirebaseConnection.update(toAdd.id, "image", "updated")
+      fetched = profileFirebaseConnection.fetch(toAdd.id)
+      assertEquals("updated", fetched?.image)
     }
   }
 }

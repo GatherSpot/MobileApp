@@ -36,11 +36,11 @@ import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.network.NetworkChangeReceiver
+import com.github.se.gatherspot.notification.NotificationHelper
 import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.FollowListUI
-import com.github.se.gatherspot.ui.SignUp
 import com.github.se.gatherspot.ui.eventUI.CreateEvent
 import com.github.se.gatherspot.ui.eventUI.EditEvent
 import com.github.se.gatherspot.ui.eventUI.EventUI
@@ -51,6 +51,8 @@ import com.github.se.gatherspot.ui.profile.ProfileScaffold
 import com.github.se.gatherspot.ui.profile.ProfileScreen
 import com.github.se.gatherspot.ui.profile.ProfileViewModel
 import com.github.se.gatherspot.ui.qrcode.QRCodeScanner
+import com.github.se.gatherspot.ui.signUp.SignUp
+import com.github.se.gatherspot.ui.signUp.SignUpViewModel
 import com.github.se.gatherspot.ui.theme.GatherSpotTheme
 import com.github.se.gatherspot.ui.topLevelDestinations.Chats
 import com.github.se.gatherspot.ui.topLevelDestinations.Events
@@ -58,6 +60,7 @@ import com.github.se.gatherspot.ui.topLevelDestinations.EventsViewModel
 import com.github.se.gatherspot.ui.topLevelDestinations.LogIn
 import com.github.se.gatherspot.ui.topLevelDestinations.Map
 import com.github.se.gatherspot.ui.topLevelDestinations.SetUpProfile
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.maps.android.compose.CameraPositionState
 
@@ -82,11 +85,8 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var navController: NavHostController
   private lateinit var networkChangeReceiver: NetworkChangeReceiver
-  private var eventsViewModel: EventsViewModel? = null
   private var chatsViewModel: ChatsListViewModel? = null
-  private lateinit var localDatabase:
-      AppDatabase // = Room.databaseBuilder(applicationContext, AppDatabase::class.java,
-  // "db").build()
+  private lateinit var localDatabase: AppDatabase
   private lateinit var eventDao: EventDao
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -105,6 +105,11 @@ class MainActivity : ComponentActivity() {
     }
 
     super.onCreate(savedInstanceState)
+    localDatabase =
+        Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db")
+            .fallbackToDestructiveMigration()
+            .build()
+    FirebaseApp.initializeApp(this)
     localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
     eventDao = localDatabase.EventDao()
     app = application
@@ -121,6 +126,7 @@ class MainActivity : ComponentActivity() {
           ->
           mapAccess = isGranted
         }
+    NotificationHelper().createNotificationChannel(applicationContext)
 
     networkChangeReceiver = NetworkChangeReceiver { connected -> isOnline = connected }
     registerReceiver(networkChangeReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
@@ -141,7 +147,11 @@ class MainActivity : ComponentActivity() {
             navigation(startDestination = "login", route = "auth") {
               composable("login") { LogIn(NavigationActions(navController), signInLauncher) }
 
-              composable("signup") { SignUp(NavigationActions(navController)) }
+              composable("signup") {
+                SignUp(
+                    viewModel<SignUpViewModel> { SignUpViewModel() },
+                    NavigationActions(navController))
+              }
             }
 
             navigation(startDestination = "events", route = "home") {
@@ -172,7 +182,9 @@ class MainActivity : ComponentActivity() {
               composable("map") { Map(NavigationActions(navController)) }
 
               composable("profile") {
-                ProfileScaffold(NavigationActions(navController), viewModel<OwnProfileViewModel>())
+                ProfileScaffold(
+                    NavigationActions(navController),
+                    viewModel { OwnProfileViewModel(localDatabase) })
               }
 
               composable("followers") {
@@ -187,7 +199,10 @@ class MainActivity : ComponentActivity() {
               }
               composable("viewProfile/{uid}") { backstackEntry ->
                 backstackEntry.arguments?.getString("uid")?.let {
-                  ProfileScreen(viewModel<ProfileViewModel> { ProfileViewModel(it, navController) })
+                  ProfileScreen(
+                      viewModel<ProfileViewModel> {
+                        ProfileViewModel(it, navController, localDatabase)
+                      })
                 }
               }
 

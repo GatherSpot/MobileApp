@@ -25,10 +25,9 @@ class IdList(
    *
    * @param elementId the id of the element to add
    */
-  fun add(elementId: String) {
-    IdListFirebaseConnection().addElement(id, collection, elementId) {
-      elements = elements.plus(elementId)
-    }
+  suspend fun add(elementId: String) {
+    IdListFirebaseConnection().addElement(id, collection, elementId)
+    elements = elements.plus(elementId)
   }
 
   /**
@@ -36,7 +35,7 @@ class IdList(
    *
    * @param elementId the id of the element to remove
    */
-  fun remove(elementId: String) {
+  suspend fun remove(elementId: String) {
     IdListFirebaseConnection().deleteElement(id, collection, elementId) {
       elements = elements.minus(elementId)
     }
@@ -51,18 +50,17 @@ class IdList(
      * @return an empty IdList useful for tests, the creation of a new list, and enabling non
      *   blocking access to the list
      */
-    fun new(id: String, collection: FirebaseCollection, elements: List<String>) =
-        IdListFirebaseConnection().add(id, collection, elements) {}
+    suspend fun new(id: String, collection: FirebaseCollection, elements: List<String>) =
+        IdListFirebaseConnection().add(id, collection, elements)
 
     /**
      * Fetch an IdList from Firebase
      *
      * @param id the id of the list
      * @param collection the collection associated with the list
-     * @param onSuccess a callback to execute when the list is fetched
      */
-    suspend fun fromFirebase(id: String, collection: FirebaseCollection, onSuccess: () -> Unit) =
-        IdListFirebaseConnection().fetch(id, collection) { onSuccess() }
+    suspend fun fromFirebase(id: String, collection: FirebaseCollection) =
+        IdListFirebaseConnection().fetch(id, collection)
 
     /**
      * Create an empty IdList
