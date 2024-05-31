@@ -60,6 +60,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.github.se.gatherspot.R
@@ -82,10 +83,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-private val WIDTH = 300.dp
-private val WIDTH_2ELEM = 150.dp
+private val WIDTH = 280.dp
+private val WIDTH_2ELEM = 100.dp
 private val HEIGHT = 65.dp
 private val DESCRIPTION_HEIGHT = 150.dp
+private val FONT_SIZE = 14.sp
 
 private const val TITLE_MESSAGE_INDEX = 0
 private const val BUTTON_MESSAGE_INDEX = 1
@@ -384,7 +386,7 @@ fun EventDataForm(
                                 .testTag("inputTimeStartEvent"),
                         value = eventTimeStart,
                         onValueChange = { eventTimeStart = it },
-                        label = { Text("Start time*") },
+                        label = { Text("Start time*", fontSize = FONT_SIZE) },
                         placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
                     MyTimePickerDialog(
@@ -400,7 +402,7 @@ fun EventDataForm(
                             Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputTimeEndEvent"),
                         value = eventTimeEnd,
                         onValueChange = { eventTimeEnd = it },
-                        label = { Text("End time*") },
+                        label = { Text("End time*", fontSize = FONT_SIZE) },
                         placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
                     MyTimePickerDialog(
@@ -469,16 +471,16 @@ fun EventDataForm(
                           Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMinAttendees"),
                       value = minAttendees,
                       onValueChange = { minAttendees = it },
-                      label = { Text("Min Attendees") },
-                      placeholder = { Text("Min Attendees") })
+                      label = { Text("Min Attendees", fontSize = FONT_SIZE) },
+                      placeholder = { Text("Min") })
                   // Max attendees
                   OutlinedTextField(
                       modifier =
                           Modifier.width(WIDTH_2ELEM).height(HEIGHT).testTag("inputMaxAttendees"),
                       value = maxAttendees,
                       onValueChange = { maxAttendees = it },
-                      label = { Text("Max Attendees") },
-                      placeholder = { Text("Max Attendees") })
+                      label = { Text("Max Attendees", fontSize = FONT_SIZE) },
+                      placeholder = { Text("Max") })
                 }
 
             // Inscription limit date
@@ -487,7 +489,7 @@ fun EventDataForm(
                     Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
                 value = inscriptionLimitDate,
                 onValueChange = { inscriptionLimitDate = it },
-                label = { Text("Inscription Limit Date") },
+                label = { Text("Inscription Limit Date", fontSize = FONT_SIZE) },
                 placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
             // Inscription limit time
             OutlinedTextField(
@@ -495,7 +497,7 @@ fun EventDataForm(
                     Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
                 value = inscriptionLimitTime,
                 onValueChange = { inscriptionLimitTime = it },
-                label = { Text("Inscription Limit Time") },
+                label = { Text("Inscription Limit Time", fontSize = FONT_SIZE) },
                 placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
             // CREATE EVENT
