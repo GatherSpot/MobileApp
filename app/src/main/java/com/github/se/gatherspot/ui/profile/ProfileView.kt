@@ -82,19 +82,16 @@ fun ProfileScaffold(nav: NavigationActions, viewModel: OwnProfileViewModel) {
  */
 @Composable
 fun TopBarOwnProfile(viewModel: OwnProfileViewModel, nav: NavigationActions, edit: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp, vertical = 20.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+  Row(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp),
+      verticalAlignment = Alignment.CenterVertically) {
         Followers(nav)
         Following(nav)
         Spacer(modifier = Modifier.weight(1f))
         LogOutButton(nav, viewModel)
         Spacer(modifier = Modifier.width(8.dp))
         EditButton(edit)
-    }
+      }
 }
 
 /**
