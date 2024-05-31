@@ -1,7 +1,6 @@
 package com.github.se.gatherspot.model
 
 import com.github.se.gatherspot.model.event.Event
-import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 
 /**
  * Wrapper class for the NFC service.
@@ -11,7 +10,7 @@ import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
 class NFCService(NFCStatus: NFCStatus) {
 
   val status: NFCStatus = NFCStatus
-  var newEvent: Boolean = false
+  var newEvent: Boolean = false // Needs to be set to true when an NFC event happens
 
   /**
    * Temporary function to handle NFC events. Supposedly, this function would be called when an NFC
@@ -21,17 +20,16 @@ class NFCService(NFCStatus: NFCStatus) {
    * @return the result of the function passed in with the profile we got from the NFC event as a
    *   parameter.
    */
-
   private fun getProfile(): Profile? {
     return null
   }
 
   fun onEvent(function: (Profile) -> () -> Unit, event: Event): () -> Unit {
     // Handle NFC event
-    newEvent = true
-    //val profile = getProfile()
-    //EventUIViewModel(event).attendEvent(profile.id)
-    //return function(profile)
+    // newEvent = true
+    // val profile = getProfile()
+    // EventUIViewModel(event).attendEvent(profile.id)
+    // return function(profile)
     return {}
   }
 }

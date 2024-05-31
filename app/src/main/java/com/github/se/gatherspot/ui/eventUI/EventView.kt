@@ -203,7 +203,7 @@ fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel) {
    */
 
   Button(
-      onClick = { /*eventUIViewModel.attendEvent()*/ },
+      onClick = { /*eventUIViewModel.attendEvent()*/},
       enabled = (attended == false),
       modifier = Modifier.fillMaxWidth().testTag("attendButton"),
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {

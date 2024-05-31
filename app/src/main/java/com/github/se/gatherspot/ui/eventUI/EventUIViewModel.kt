@@ -139,10 +139,10 @@ class EventUIViewModel(private val event: Event) : EventRegistrationViewModel(ev
         Log.e("AttendEvent", "User $userID is not registered for the event ${event.id}")
         return@launch
       }
-      //_attended.value = true
+      // _attended.value = true
       event.finalAttendees?.plus(userID)
       EventFirebaseConnection().addFinalAttendee(event.id, userID)
-      //_displayAlertAttend.value = true
+      // _displayAlertAttend.value = true
     }
   }
 
