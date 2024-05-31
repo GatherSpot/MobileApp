@@ -33,19 +33,19 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
 
   // LiveData for holding registration state
   private val _registrationState: MutableLiveData<RegistrationState> =
-    when {
-      EventUtils().isRegistrationOver(event) ->
-        MutableLiveData(RegistrationState.Error("Registration Over"))
-      event.registeredUsers.contains(userId) -> MutableLiveData(RegistrationState.Registered)
-      else -> {
-        when {
-          event.attendanceMaxCapacity == null -> MutableLiveData(RegistrationState.Unregistered)
-          event.registeredUsers.size >= event.attendanceMaxCapacity ->
-            MutableLiveData(RegistrationState.Error("Full event"))
-          else -> MutableLiveData(RegistrationState.Unregistered)
+      when {
+        EventUtils().isRegistrationOver(event) ->
+            MutableLiveData(RegistrationState.Error("Registration Over"))
+        event.registeredUsers.contains(userId) -> MutableLiveData(RegistrationState.Registered)
+        else -> {
+          when {
+            event.attendanceMaxCapacity == null -> MutableLiveData(RegistrationState.Unregistered)
+            event.registeredUsers.size >= event.attendanceMaxCapacity ->
+                MutableLiveData(RegistrationState.Error("Full event"))
+            else -> MutableLiveData(RegistrationState.Unregistered)
+          }
         }
       }
-    }
 
   val registrationState: LiveData<RegistrationState> = _registrationState
 
@@ -59,13 +59,13 @@ open class EventRegistrationViewModel(private val event: Event) : ViewModel() {
 
   // Profile of the user, is needed to add the event to the user's registered events
   private var registeredEventsList: IdList =
-    IdList.empty(userId, FirebaseCollection.REGISTERED_EVENTS)
+      IdList.empty(userId, FirebaseCollection.REGISTERED_EVENTS)
 
   init {
     viewModelScope.launch(Dispatchers.IO) {
       try {
         registeredEventsList =
-          IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS)
+            IdListFirebaseConnection().fetch(userId, FirebaseCollection.REGISTERED_EVENTS)
       } catch (_: Exception) {}
     }
   }
