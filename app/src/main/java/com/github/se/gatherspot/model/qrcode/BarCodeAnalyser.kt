@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import androidx.compose.runtime.Composable
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeUnit
  */
 @SuppressLint("UnsafeOptInUsageError")
 class BarCodeAnalyser(
-    private val onBarcodeDetected: @Composable (barcodes: List<Barcode>) -> Unit,
+    private val onBarcodeDetected: (barcodes: List<Barcode>) -> Unit,
 ) : ImageAnalysis.Analyzer {
   private var lastAnalyzedTimeStamp = 0L
 

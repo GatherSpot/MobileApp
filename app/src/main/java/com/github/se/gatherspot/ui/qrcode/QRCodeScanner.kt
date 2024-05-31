@@ -95,6 +95,7 @@ fun QRCodeScanner(navigationActions: NavigationActions) {
 @Composable
 fun CameraPreview(navigationActions: NavigationActions) {
   val context = LocalContext.current
+  val coroutineScope = rememberCoroutineScope()
   val lifecycleOwner = LocalLifecycleOwner.current
   var preview by remember { mutableStateOf<Preview?>(null) }
   val barCodeVal = remember { mutableStateOf("") }
@@ -130,8 +131,6 @@ fun CameraPreview(navigationActions: NavigationActions) {
                 barcodes.forEach { barcode ->
                   barcode.rawValue?.let { barcodeValue ->
                     barCodeVal.value = barcodeValue
-                    Toast.makeText(context, barcodeValue, Toast.LENGTH_SHORT).show()
-                    val coroutineScope = rememberCoroutineScope()
                     coroutineScope.launch {
                       val navString = analyseAppQRCode(barcodeValue, context)
                       if (navString != "") {
