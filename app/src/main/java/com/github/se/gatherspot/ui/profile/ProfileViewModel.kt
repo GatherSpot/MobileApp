@@ -258,13 +258,6 @@ class ProfileViewModel(
     }
   }
 
-  /**
-   * NOT IMPLEMENTED
-   *
-   * Request to be friends with the user.
-   */
-  fun requestFriend() {}
-
   /** Navigate back. */
   fun back() {
     NavigationActions(nav).goBack()

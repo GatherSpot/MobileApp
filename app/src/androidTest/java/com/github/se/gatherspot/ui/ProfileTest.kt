@@ -145,7 +145,6 @@ class ProfileInstrumentedTest {
       save { assertDoesNotExist() }
       cancel { assertDoesNotExist() }
       follow { hasText("Follow") }
-      addFriend { assertExists() }
       follow { performClick() }
       sleep(6000)
       follow { hasText("Unfollow") }

@@ -133,10 +133,6 @@ class EventsViewCompleteTest {
         assertIsDisplayed()
         performClick()
       }
-      addFriend {
-        assertIsDisplayed()
-        performClick()
-      }
 
       back.performClick()
     }
