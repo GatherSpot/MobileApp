@@ -40,7 +40,6 @@ class AllTest : TestCase() {
     try {
       val p = runBlocking { ProfileFirebaseConnection().fetchFromUserName("AuthEndToEndTest") }
       p?.let { ProfileFirebaseConnection().delete(it.id) }
-      ProfileFirebaseConnection().delete(FirebaseAuth.getInstance().currentUser!!.uid)
       testDelete()
     } catch (e: Exception) {
       e.printStackTrace()
