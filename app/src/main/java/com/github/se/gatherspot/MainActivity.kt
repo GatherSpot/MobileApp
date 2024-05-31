@@ -1,8 +1,10 @@
 package com.github.se.gatherspot
 
+import android.Manifest
 import android.app.Application
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -63,6 +66,9 @@ import com.google.maps.android.compose.CameraPositionState
  * some global variables.
  */
 class MainActivity : ComponentActivity() {
+  private val requestPermissionLauncher =
+      registerForActivityResult(ActivityResultContracts.RequestPermission()) { _: Boolean -> }
+
   companion object {
     var isOnline: Boolean = false
     lateinit var signInLauncher: ActivityResultLauncher<Intent>
@@ -85,6 +91,18 @@ class MainActivity : ComponentActivity() {
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate(savedInstanceState: Bundle?) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      when {
+        ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+            PackageManager.PERMISSION_GRANTED -> {
+          // Permission is already granted, proceed with notifications
+        }
+        shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {}
+        else -> {
+          requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+      }
+    }
 
     super.onCreate(savedInstanceState)
     localDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "db").build()
