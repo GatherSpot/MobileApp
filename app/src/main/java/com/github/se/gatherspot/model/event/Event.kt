@@ -1,9 +1,12 @@
 package com.github.se.gatherspot.model.event
 
+import android.util.Log
+import androidx.lifecycle.viewModelScope
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.github.se.gatherspot.firebase.CollectionClass
+import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.location.Location
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
@@ -13,6 +16,7 @@ import com.github.se.gatherspot.model.utils.LocalTimeSerializer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate

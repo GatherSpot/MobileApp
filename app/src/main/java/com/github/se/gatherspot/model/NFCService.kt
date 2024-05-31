@@ -1,5 +1,8 @@
 package com.github.se.gatherspot.model
 
+import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.ui.eventUI.EventUIViewModel
+
 /**
  * Wrapper class for the NFC service.
  *
@@ -18,11 +21,18 @@ class NFCService(NFCStatus: NFCStatus) {
    * @return the result of the function passed in with the profile we got from the NFC event as a
    *   parameter.
    */
-  fun onEvent(function: (Profile) -> () -> Unit): () -> Unit {
+
+  private fun getProfile(): Profile? {
+    return null
+  }
+
+  fun onEvent(function: (Profile) -> () -> Unit, event: Event): () -> Unit {
     // Handle NFC event
     newEvent = true
-    val profile: Profile = TODO()
-    return function(profile)
+    //val profile = getProfile()
+    //EventUIViewModel(event).attendEvent(profile.id)
+    //return function(profile)
+    return {}
   }
 }
 

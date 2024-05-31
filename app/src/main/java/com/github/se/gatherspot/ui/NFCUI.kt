@@ -42,19 +42,17 @@ fun NFCUI(nav: NavigationActions, nfc: NFCService, event: Event) {
 
   LaunchedEffect(key1 = nfc.newEvent) {
     if (nfc.newEvent) {
-      nfc.onEvent { data: Profile ->
+      nfc.onEvent({ data: Profile ->
         {
           if (nfc.status == NFCStatus.ORGANIZER) {
             completedText += "\nParticipant with ID ${data.id} has scanned their NFC tag."
-
-            // EventFirebaseConnection().update(event.id, "finalAttendee", data.id)
 
           } else if (nfc.status == NFCStatus.PARTICIPANT) {
             completedText = "Organizer has confirmed your attendance."
           }
         }
         // Handle NFC event
-      }
+      }, event)
       nfc.newEvent = false
     }
   }
