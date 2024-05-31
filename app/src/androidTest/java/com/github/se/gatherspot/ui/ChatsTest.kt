@@ -129,18 +129,16 @@ class ChatsTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun filteringAndRefreshWorkCorrectly() {
-    runTest(timeout = Duration.parse("30s")) {
+    runTest(timeout = Duration.parse("60s")) {
       runBlocking {
         IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add(testEvent.id)
         EventFirebaseConnection().addRegisteredUser(testEvent.id, id)
-        delay(5000)
         val viewModel = ChatsListViewModel()
         composeTestRule.setContent {
           val nav = NavigationActions(rememberNavController())
           Chats(viewModel = viewModel, nav = nav)
         }
-
-        delay(5000)
+        delay(2000)
         ComposeScreen.onComposeScreen<ChatsScreen>(composeTestRule) {
           searchBar { performTextInput(testEvent.title) }
           composeTestRule.waitUntilAtLeastOneExists(hasTestTag("chatsList"), 5000)

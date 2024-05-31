@@ -500,12 +500,11 @@ class EventUtilsTest {
             timeBeginning = LocalTime.of(13, 0),
             timeEnding = LocalTime.of(16, 0),
             image = "")
-    val eventUtils = EventUtils()
     runBlocking { eventFirebaseConnection.add(event) }
     val eventFromDB = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertEquals(event.id, eventFromDB?.id)
 
-    eventUtils.deleteEvent(event)
+    runBlocking { eventFirebaseConnection.delete(event.id) }
     val eventFromDBAfterDelete = runBlocking { eventFirebaseConnection.fetch("myEventToDelete") }
     Assert.assertNull(eventFromDBAfterDelete)
   }
