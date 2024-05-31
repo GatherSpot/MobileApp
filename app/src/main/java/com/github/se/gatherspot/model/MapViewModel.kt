@@ -128,7 +128,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         IdListFirebaseConnection()
             .fetchFromFirebase(
                 FirebaseAuth.getInstance().currentUser?.uid ?: "0",
-                FirebaseCollection.REGISTERED_EVENTS) {}!!
+                FirebaseCollection.REGISTERED_EVENTS)
             .elements
             .toMutableList()
     registered_events =

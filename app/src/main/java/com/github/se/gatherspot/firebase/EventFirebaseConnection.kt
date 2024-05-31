@@ -512,7 +512,7 @@ class EventFirebaseConnection : FirebaseConnectionInterface<Event> {
    *
    * @param element: The event to add
    */
-  override fun add(element: Event) {
+  override suspend fun add(element: Event) {
     val eventItem =
         hashMapOf(
             "eventID" to
