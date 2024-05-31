@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
@@ -16,7 +17,7 @@ class EnvironmentSetter {
   companion object {
 
     val profileFirebaseConnection = ProfileFirebaseConnection()
-    val testLoginUID = "uWFthTqLO5Ng2heIgQbLs0XY4rN2"
+    val testLoginUID = "G6B6Z67yu7NyWhk1IzTLdnZXQEA2"
     val testLoginEmail = "neverdeleted@mail.com"
 
     /** This function logs in the user for testing purposes this user has his email verified */
@@ -40,7 +41,8 @@ class EnvironmentSetter {
 
     fun testDelete() {
       if (Firebase.auth.currentUser?.uid != null &&
-          Firebase.auth.currentUser?.email != testLoginUID) {
+          Firebase.auth.currentUser?.email != testLoginEmail) {
+        runBlocking { ProfileFirebaseConnection().delete(Firebase.auth.currentUser?.uid!!) }
         Firebase.auth.currentUser!!.delete()
       }
     }
@@ -78,7 +80,8 @@ class EnvironmentSetter {
         if (Firebase.auth.currentUser == null)
             async { Firebase.auth.signInWithEmailAndPassword(email, "to be Deleted 128 okay") }
                 .await()
-        async { Firebase.auth.currentUser!!.delete() }.await()
+        testDelete()
+        delay(400)
       }
     }
 

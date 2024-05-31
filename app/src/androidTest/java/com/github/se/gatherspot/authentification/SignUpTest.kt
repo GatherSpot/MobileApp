@@ -11,7 +11,7 @@ import androidx.navigation.navigation
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.gatherspot.EnvironmentSetter.Companion.signUpErrorSetUp
-import com.github.se.gatherspot.firebase.ProfileFirebaseConnection
+import com.github.se.gatherspot.EnvironmentSetter.Companion.testDelete
 import com.github.se.gatherspot.screens.SignUpScreen
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 import com.github.se.gatherspot.ui.signUp.SignUp
@@ -24,6 +24,7 @@ import io.github.kakaocup.compose.node.element.ComposeScreen
 import java.lang.Thread.sleep
 import kotlin.time.Duration
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -47,10 +48,7 @@ class SignUpTest : TestCase() {
       async {
             try {
               Firebase.auth.signInWithEmailAndPassword(email, "GatherSpot,2024;")
-              if (Firebase.auth.currentUser != null) {
-                ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
-                Firebase.auth.currentUser?.delete()
-              }
+              testDelete()
             } catch (_: Exception) {}
           }
           .await()
@@ -74,10 +72,8 @@ class SignUpTest : TestCase() {
 
   @After
   fun cleanUp() = runTest {
-    if (Firebase.auth.currentUser != null && Firebase.auth.currentUser!!.email == email) {
-      ProfileFirebaseConnection().delete(Firebase.auth.currentUser!!.uid)
-      Firebase.auth.currentUser!!.delete()
-    }
+    testDelete()
+    delay(1000)
   }
 
   @OptIn(ExperimentalTestApi::class)
