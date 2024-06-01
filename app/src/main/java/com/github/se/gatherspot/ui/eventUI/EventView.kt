@@ -50,12 +50,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.gatherspot.R
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.getEventImageHeader
+import com.github.se.gatherspot.model.utils.EventUtils
 import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.eventUI.CalendarReminderGenerator.Companion.generateCalendarReminder
 import com.github.se.gatherspot.ui.navigation.NavigationActions

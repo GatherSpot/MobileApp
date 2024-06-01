@@ -30,13 +30,13 @@ import androidx.navigation.navigation
 import androidx.room.Room
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.MapViewModel
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.utils.EventUtils
 import com.github.se.gatherspot.network.NetworkChangeReceiver
 import com.github.se.gatherspot.notification.NotificationHelper
 import com.github.se.gatherspot.sql.AppDatabase

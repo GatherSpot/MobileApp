@@ -65,10 +65,10 @@ import androidx.core.net.toUri
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseImages
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.model.utils.EventUtils
 import com.github.se.gatherspot.ui.eventUI.EventAction.CREATE
 import com.github.se.gatherspot.ui.eventUI.EventAction.EDIT
 import com.github.se.gatherspot.ui.navigation.NavigationActions
