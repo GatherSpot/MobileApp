@@ -580,7 +580,7 @@ class EventUtils {
   fun isEventUnderway(event: Event): Boolean {
     val now = LocalDate.now()
     val timeNow = LocalTime.now().plusHours(2)
-    val endDate: LocalDate = event.eventEndDate ?: event.eventStartDate!!.plusYears(10)
+    val endDate: LocalDate = event.eventEndDate ?: event.eventStartDate!!.plusDays(2)
     return (event.eventStartDate?.isBefore(now) == true && (endDate.isAfter(now)) == true) ||
         (event.eventStartDate == now &&
             event.timeBeginning?.isBefore(timeNow) == true &&

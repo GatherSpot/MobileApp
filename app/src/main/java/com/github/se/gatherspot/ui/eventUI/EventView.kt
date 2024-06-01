@@ -33,7 +33,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
@@ -184,22 +186,15 @@ fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel, status: USER_
   val attended by eventUIViewModel.attended.observeAsState()
   val buttonText: MutableState<String> = remember {
     mutableStateOf(
-        if (attended == true && status == USER_STATUS.PARTICIPANT) "Attended"
-        else if (status == USER_STATUS.ORGANIZER) "Verify Users Attendance"
-        else if (attended == false && status == USER_STATUS.PARTICIPANT) "Verify Attendance"
-        else "")
+        if (attended == true && status == USER_STATUS.PARTICIPANT) "Ticket already sent"
+        else if (status == USER_STATUS.ORGANIZER) "Verify users attendance"
+        else if (attended == false && status == USER_STATUS.PARTICIPANT) "Send ticket" else "")
   }
 
   Button(
       onClick = {
-        if (status == USER_STATUS.PARTICIPANT && attended == false)
-            buttonText.value =
-                "Bring your phone closer to the organizer's phone to verify attendance.\n" +
-                    "Your phone will vibrate when the verification is successful."
-        else if (status == USER_STATUS.ORGANIZER)
-            buttonText.value =
-                "Bring the participant's phone closer to your phone to verify attendance.\n" +
-                    "Your phone will vibrate when the verification is successful."
+        if (status == USER_STATUS.PARTICIPANT) buttonText.value = "Sending..."
+        else if (status == USER_STATUS.ORGANIZER) buttonText.value = "Receiving..."
         /*
         ConnectionRequestAPICalls(status)
         // Call eventUIViewModel.attendEvent() if the API calls are successful
@@ -208,9 +203,19 @@ fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel, status: USER_
       enabled = (attended == false),
       modifier = Modifier.fillMaxWidth().testTag("attendButton"),
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-        Text(buttonText.value, color = Color.White)
+        Row {
+          if (status == USER_STATUS.PARTICIPANT)
+              Icon(
+                  imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                  contentDescription = "share icon")
+          else if (status == USER_STATUS.ORGANIZER)
+              Icon(
+                  painter = painterResource(id = R.drawable.connect),
+                  contentDescription = "share icon")
+          Spacer(modifier = Modifier.width(12.dp))
+          Text(buttonText.value, color = Color.White)
+        }
       }
-
   if (showDialogAttend!!) {
     AlertDialog(
         modifier = Modifier.testTag("alertBox"),
@@ -290,13 +295,8 @@ fun EventUIOrganizer(
               ExportToCalendarIcon(event)
             })
       },
-      bottomBar = {
-        Column {
-          if (EventUtils().isEventUnderway(event)) {
-            AttendButton(event, eventUIViewModel, USER_STATUS.ORGANIZER)
-          }
-        }
-      }) { innerPadding ->
+      bottomBar = { Column { AttendButton(event, eventUIViewModel, USER_STATUS.ORGANIZER) } }) {
+          innerPadding ->
         Column(
             modifier =
                 Modifier.padding(innerPadding)
