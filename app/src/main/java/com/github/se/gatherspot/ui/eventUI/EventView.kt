@@ -27,7 +27,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -38,8 +37,11 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -146,10 +148,7 @@ fun EventUINonOrganizer(
       bottomBar = {
         Column {
           if (eventUIViewModel.canAttend())
-              AttendButton(
-                  event,
-                  eventUIViewModel,
-              )
+              AttendButton(event, eventUIViewModel, USER_STATUS.PARTICIPANT)
           RegisterButton(
               eventUIViewModel,
               isButtonEnabled,
@@ -175,39 +174,41 @@ fun EventUINonOrganizer(
               EventRating(eventRating)
 
               Spacer(modifier = Modifier.height(16.dp).testTag("bottomSpacer"))
-
-              OutlinedButton(
-                  onClick = { navActions.controller.navigate("nfc_participant/${event.toJson()}") },
-                  enabled = EventUtils().isEventUnderway(event),
-                  modifier = Modifier.testTag("checkin")) {
-                    Text("Check-in")
-                  }
             }
       }
 }
 
 @Composable
-fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel) {
+fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel, status: USER_STATUS) {
   val showDialogAttend by eventUIViewModel.displayAlertAttend.observeAsState()
   val attended by eventUIViewModel.attended.observeAsState()
-  val buttonText = if (attended == true) "Attended" else "Attend"
-  /*
-  when (registrationState) {
-      is RegistrationState.Success -> "Registered"
-      is RegistrationState.Error ->
-          if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
-          else "Registered"
-      else -> "Register"
+  val buttonText: MutableState<String> = remember {
+    mutableStateOf(
+        if (attended == true && status == USER_STATUS.PARTICIPANT) "Attended"
+        else if (status == USER_STATUS.ORGANIZER) "Verify Users Attendance"
+        else if (attended == false && status == USER_STATUS.PARTICIPANT) "Verify Attendance"
+        else "")
   }
 
-   */
-
   Button(
-      onClick = { /*eventUIViewModel.attendEvent()*/},
+      onClick = {
+        if (status == USER_STATUS.PARTICIPANT && attended == false)
+            buttonText.value =
+                "Bring your phone closer to the organizer's phone to verify attendance.\n" +
+                    "Your phone will vibrate when the verification is successful."
+        else if (status == USER_STATUS.ORGANIZER)
+            buttonText.value =
+                "Bring the participant's phone closer to your phone to verify attendance.\n" +
+                    "Your phone will vibrate when the verification is successful."
+        /*
+        ConnectionRequestAPICalls(status)
+        // Call eventUIViewModel.attendEvent() if the API calls are successful
+        */
+      },
       enabled = (attended == false),
       modifier = Modifier.fillMaxWidth().testTag("attendButton"),
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-        Text(buttonText, color = Color.White)
+        Text(buttonText.value, color = Color.White)
       }
 
   if (showDialogAttend!!) {
@@ -288,6 +289,13 @@ fun EventUIOrganizer(
                   }
               ExportToCalendarIcon(event)
             })
+      },
+      bottomBar = {
+        Column {
+          if (EventUtils().isEventUnderway(event)) {
+            AttendButton(event, eventUIViewModel, USER_STATUS.ORGANIZER)
+          }
+        }
       }) { innerPadding ->
         Column(
             modifier =
@@ -301,12 +309,6 @@ fun EventUIOrganizer(
                   organizerRating = organizerRating,
                   navActions = navActions)
               EventRating(eventRating = eventRating)
-              OutlinedButton(
-                  onClick = { navActions.controller.navigate("nfc_organizer/${event.toJson()}") },
-                  enabled = EventUtils().isEventUnderway(event),
-                  modifier = Modifier.testTag("verifyCheckin")) {
-                    Text("Verify check-ins")
-                  }
             }
       }
   if (showDialogDelete!!) {
@@ -682,4 +684,9 @@ fun ColumnScope.EventBody(
     }
   }
   EventQRCodeUI(event = event)
+}
+
+enum class USER_STATUS() {
+  ORGANIZER,
+  PARTICIPANT
 }
