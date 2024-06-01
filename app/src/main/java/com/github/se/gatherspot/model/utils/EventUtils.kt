@@ -43,7 +43,7 @@ class EventUtils {
   private val ELEMENTSTODISPLAY = 5
 
   /**
-   * Create an event from verified data
+   * Create an event from verified data.
    *
    * @param title: The title of the event
    * @param description: A short description of the event
@@ -110,7 +110,7 @@ class EventUtils {
   }
 
   /**
-   * Delete an event from the database Need the firebase to be implemented to be properly tested
+   * Delete an event from the database Need the firebase to be implemented to be properly tested.
    *
    * @param event: The event to delete
    */
@@ -335,7 +335,7 @@ class EventUtils {
   }
 
   /**
-   * Validate a date
+   * Validate a date.
    *
    * @param date The date to validate
    * @param eMessage The error message to throw if the date is invalid
@@ -352,7 +352,7 @@ class EventUtils {
   }
 
   /**
-   * Validate a time
+   * Validate a time.
    *
    * @param time The time to validate
    * @param eMessage The error message to throw if the time is invalid
@@ -368,7 +368,7 @@ class EventUtils {
   }
 
   /**
-   * Validate a number
+   * Validate a number.
    *
    * @param number The number to validate
    * @param eMessage The error message to throw if the number is invalid
@@ -456,7 +456,7 @@ class EventUtils {
   }
 
   /**
-   * Calculate the distance between two GPS coordinates
+   * Calculate the distance between two GPS coordinates.
    *
    * @param lat1: The latitude of the first location
    * @param lon1: The longitude of the first location
@@ -479,7 +479,7 @@ class EventUtils {
   }
 
   /**
-   * Save a draft event to the local storage
+   * Save a draft event to the local storage.
    *
    * @param title: The title of the event
    * @param description: A short description of the event
@@ -533,7 +533,7 @@ class EventUtils {
   }
 
   /**
-   * Retrieve a draft event from the local storage
+   * Retrieve a draft event from the local storage.
    *
    * @param context: The context of the application
    * @return The draft event
@@ -544,7 +544,7 @@ class EventUtils {
   }
 
   /**
-   * Delete a draft event from the local storage
+   * Delete a draft event from the local storage.
    *
    * @param context: The context of the application
    * @throws Exception if the draft event cannot be deleted
@@ -559,18 +559,47 @@ class EventUtils {
   }
 
   /**
-   * Check if an event is over
+   * Check if an event is over.
    *
    * @param event: The event to check
    * @return true if the event is over
    */
   fun isEventOver(event: Event): Boolean {
     val now = LocalDate.now()
-    val timeNow = LocalTime.now()
+    val timeNow = LocalTime.now().plusHours(2)
     return event.eventEndDate?.isBefore(now) == true ||
         (event.eventEndDate == now && event.timeEnding?.isBefore(timeNow) == true)
   }
 
+  /**
+   * Check if an event is underway.
+   *
+   * @param event: The event to check
+   * @return true if the event is underway
+   */
+  fun isEventUnderway(event: Event): Boolean {
+    val now = LocalDate.now()
+    val timeNow = LocalTime.now().plusHours(2)
+    val endDate: LocalDate = event.eventEndDate ?: event.eventStartDate!!.plusYears(10)
+    return (event.eventStartDate?.isBefore(now) == true && (endDate.isAfter(now)) == true) ||
+        (event.eventStartDate == now &&
+            event.timeBeginning?.isBefore(timeNow) == true &&
+            event.timeEnding?.isAfter(timeNow) == true) ||
+        (endDate == now &&
+            event.eventStartDate == now &&
+            event.timeEnding?.isAfter(timeNow) == true &&
+            event.timeBeginning?.isBefore(timeNow) == true) ||
+        (endDate == now &&
+            event.eventStartDate != now &&
+            event.timeEnding?.isAfter(timeNow) == true)
+  }
+
+  /**
+   * Check if an event is started.
+   *
+   * @param event: The event to check
+   * @return true if the event is started
+   */
   fun isEventStarted(event: Event): Boolean {
     val now = LocalDate.now()
     val timeNow = LocalTime.now()

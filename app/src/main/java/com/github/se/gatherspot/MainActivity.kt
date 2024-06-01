@@ -33,6 +33,8 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.se.gatherspot.model.FollowList
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.MapViewModel
+import com.github.se.gatherspot.model.NFCService
+import com.github.se.gatherspot.model.NFCStatus
 import com.github.se.gatherspot.model.chat.ChatViewModel
 import com.github.se.gatherspot.model.chat.ChatsListViewModel
 import com.github.se.gatherspot.model.event.Event
@@ -43,6 +45,7 @@ import com.github.se.gatherspot.sql.AppDatabase
 import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.ChatUI
 import com.github.se.gatherspot.ui.FollowListUI
+import com.github.se.gatherspot.ui.NFCUI
 import com.github.se.gatherspot.ui.eventUI.CreateEvent
 import com.github.se.gatherspot.ui.eventUI.EditEvent
 import com.github.se.gatherspot.ui.eventUI.EventUI
@@ -204,6 +207,22 @@ class MainActivity : ComponentActivity() {
                     eventUtils = EventUtils(),
                     nav = NavigationActions(navController),
                 )
+              }
+              composable("nfc_organizer/{eventJson}") { backStackEntry ->
+                val eventObject =
+                    backStackEntry.arguments!!.getString("eventJson")?.let { Event.fromJson(it) }
+                NFCUI(
+                    NavigationActions(navController),
+                    NFCService(NFCStatus.ORGANIZER),
+                    eventObject!!)
+              }
+              composable("nfc_participant/{eventJson}") { backStackEntry ->
+                val eventObject =
+                    backStackEntry.arguments!!.getString("eventJson")?.let { Event.fromJson(it) }
+                NFCUI(
+                    NavigationActions(navController),
+                    NFCService(NFCStatus.PARTICIPANT),
+                    eventObject!!)
               }
 
               composable("map") { Map(NavigationActions(navController)) }

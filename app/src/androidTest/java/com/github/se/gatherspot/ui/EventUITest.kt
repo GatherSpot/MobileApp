@@ -415,6 +415,8 @@ class EventUITest {
           }
           composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
           okButton { performClick() }
+          checkin { assertExists() }
+          verifyCheckin { assertDoesNotExist() }
         }
       }
 
@@ -448,6 +450,8 @@ class EventUITest {
       calendarButton { assertIsDisplayed() }
       editEventButton { assertIsDisplayed() }
       deleteButton { assertIsDisplayed() }
+      verifyCheckin { assertExists() }
+      checkin { assertDoesNotExist() }
     }
   }
 

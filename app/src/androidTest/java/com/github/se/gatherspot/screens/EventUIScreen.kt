@@ -35,4 +35,6 @@ class EventUIScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val starIcon_1 = onNode { hasTestTag("starIcon_1") }
   val eventRating = onNode { hasTestTag("eventRating") }
   val bottomSpacer = onNode { hasTestTag("bottomSpacer") }
+  val checkin = onNode { hasTestTag("checkin") }
+  val verifyCheckin = onNode { hasTestTag("verifyCheckin") }
 }
