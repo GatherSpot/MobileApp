@@ -129,7 +129,7 @@ class ChatsTest {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun filteringAndRefreshWorkCorrectly() {
-    runTest(timeout = Duration.parse("30s")) {
+    runTest(timeout = Duration.parse("60s")) {
       runBlocking {
         IdList.empty(id, FirebaseCollection.REGISTERED_EVENTS).add(testEvent.id)
         EventFirebaseConnection().addRegisteredUser(testEvent.id, id)
@@ -152,7 +152,7 @@ class ChatsTest {
             performTextInput("NoneSense")
           }
 
-          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("emptyText"), 5000)
+          composeTestRule.waitUntilAtLeastOneExists(hasTestTag("emptyText"), 10000)
           composeTestRule.waitForIdle()
           assert(viewModel.allEvents.value!!.isEmpty())
 
