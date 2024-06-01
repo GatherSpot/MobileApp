@@ -205,7 +205,7 @@ fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel) {
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
         Text(buttonText, color = Color.White)
       }
-    /*
+  /*
   if (showDialogAttend!!) {
     AlertDialog(
         modifier = Modifier.testTag("alertBox"),
