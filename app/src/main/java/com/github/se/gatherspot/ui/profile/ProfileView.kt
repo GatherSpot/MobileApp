@@ -82,14 +82,16 @@ fun ProfileScaffold(nav: NavigationActions, viewModel: OwnProfileViewModel) {
  */
 @Composable
 fun TopBarOwnProfile(viewModel: OwnProfileViewModel, nav: NavigationActions, edit: () -> Unit) {
-  Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp)) {
-    Followers(nav)
-    Following(nav)
-    Spacer(modifier = Modifier.padding(horizontal = 38.dp))
-    LogOutButton(nav, viewModel)
-    Spacer(modifier = Modifier.width(8.dp))
-    EditButton(edit)
-  }
+  Row(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 20.dp),
+      verticalAlignment = Alignment.CenterVertically) {
+        Followers(nav)
+        Following(nav)
+        Spacer(modifier = Modifier.weight(1f))
+        LogOutButton(nav, viewModel)
+        Spacer(modifier = Modifier.width(8.dp))
+        EditButton(edit)
+      }
 }
 
 /**
@@ -187,14 +189,12 @@ fun LogOutButton(nav: NavigationActions, viewModel: OwnProfileViewModel) {
  * @param back The function to call when the back button is clicked
  * @param follow The function to call when the follow button is clicked
  * @param following Whether the user is following the profile
- * @param addFriend The function to call when the add friend button is clicked
  */
 @Composable
 private fun FollowButtons(
     back: () -> Unit,
     follow: () -> Unit,
     following: Boolean,
-    addFriend: () -> Unit
 ) {
   Row(
       modifier = Modifier.fillMaxWidth().padding(8.dp),
@@ -203,15 +203,6 @@ private fun FollowButtons(
             painter = painterResource(R.drawable.backarrow),
             contentDescription = "back",
             modifier = Modifier.clickable { back() }.testTag("back").size(24.dp))
-        Row(modifier = Modifier.clickable { addFriend() }.testTag("addFriend")) {
-          Icon(
-              painter = painterResource(R.drawable.add_friend),
-              contentDescription = "add friend",
-              modifier = Modifier.size(24.dp))
-          Spacer(modifier = Modifier.width(8.dp))
-
-          Text(text = "Add Friend")
-        }
         Text(
             text = if (following) "Unfollow" else "  Follow",
             modifier = Modifier.clickable { follow() }.testTag("follow"))
@@ -370,10 +361,9 @@ fun ProfileScreen(viewModel: ProfileViewModel) {
   val following = viewModel.isFollowing.observeAsState(false)
   val back = viewModel::back
   val follow = viewModel::follow
-  val addFriend = viewModel::requestFriend
 
   Column {
-    FollowButtons(back, follow, following.value, addFriend)
+    FollowButtons(back, follow, following.value)
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(8.dp)) {
       CircleImageViewer(
           imageUri = imageUri.value, placeHolder = R.drawable.profile, pictureName = "profile")

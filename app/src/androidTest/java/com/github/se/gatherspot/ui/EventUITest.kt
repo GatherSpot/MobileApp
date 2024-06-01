@@ -330,7 +330,7 @@ class EventUITest {
 
       registerButton {
         assertIsEnabled()
-        assert(hasText("Registered / Unregister"))
+        assert(hasText("Unregister"))
       }
     }
   }
@@ -399,19 +399,18 @@ class EventUITest {
 
         composeTestRule.setContent {
           val navController = rememberNavController()
-
           EventUI(event, NavigationActions(navController), EventUIViewModel(event), null)
         }
         ComposeScreen.onComposeScreen<EventUIScreen>(composeTestRule) {
           composeTestRule.waitForIdle()
           registerButton {
-            assert(hasText("Unregistered / Register"))
+            assert(hasText("Register"))
             performClick()
           }
           composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
           okButton { performClick() }
           registerButton {
-            assert(hasText("Registered / Unregister"))
+            assert(hasText("Unregister"))
             performClick()
           }
           composeTestRule.waitUntilAtLeastOneExists(hasTestTag("okButton"), 6000)
