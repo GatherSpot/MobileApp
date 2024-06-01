@@ -65,10 +65,10 @@ import androidx.core.net.toUri
 import com.github.se.gatherspot.R
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseImages
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.model.utils.EventUtils
 import com.github.se.gatherspot.ui.eventUI.EventAction.CREATE
 import com.github.se.gatherspot.ui.eventUI.EventAction.EDIT
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -84,6 +84,7 @@ import kotlinx.coroutines.runBlocking
 
 private val WIDTH = 300.dp
 private val WIDTH_2ELEM = 100.dp
+private val WIDTH_WITH_PICKER = WIDTH.times(0.8f)
 private val HEIGHT = 65.dp
 private val DESCRIPTION_HEIGHT = 150.dp
 private val FONT_SIZE = 14.sp
@@ -355,7 +356,7 @@ fun EventDataForm(
                 horizontalArrangement = Arrangement.SpaceBetween) {
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH.times(0.8f))
+                          Modifier.width(WIDTH_WITH_PICKER)
                               .height(HEIGHT)
                               .testTag("inputStartDateEvent"),
                       value = eventStartDate,
@@ -372,7 +373,7 @@ fun EventDataForm(
                 horizontalArrangement = Arrangement.SpaceBetween) {
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTH.times(0.8f))
+                          Modifier.width(WIDTH_WITH_PICKER)
                               .height(HEIGHT)
                               .testTag("inputEndDateEvent"),
                       value = eventEndDate,
@@ -499,34 +500,42 @@ fun EventDataForm(
                 }
 
             // Inscription limit date
-            Row {
-              OutlinedTextField(
-                  modifier =
-                      Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitDate"),
-                  value = inscriptionLimitDate,
-                  onValueChange = { inscriptionLimitDate = it },
-                  label = { Text("Inscription Limit Date", fontSize = FONT_SIZE) },
-                  placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH_WITH_PICKER)
+                              .height(HEIGHT)
+                              .testTag("inputInscriptionLimitDate"),
+                      value = inscriptionLimitDate,
+                      onValueChange = { inscriptionLimitDate = it },
+                      label = { Text("Inscription Limit Date", fontSize = FONT_SIZE) },
+                      placeholder = { Text(EventFirebaseConnection.DATE_FORMAT_DISPLAYED) })
 
-              MyDatePickerDialog(
-                  onDateChange = { inscriptionLimitDate = TextFieldValue(it) },
-                  testTag = "inscriptionLimitDatePicker")
-            }
+                  MyDatePickerDialog(
+                      onDateChange = { inscriptionLimitDate = TextFieldValue(it) },
+                      testTag = "inscriptionLimitDatePicker")
+                }
             // Inscription limit time
-            Row {
-              OutlinedTextField(
-                  modifier =
-                      Modifier.width(WIDTH).height(HEIGHT).testTag("inputInscriptionLimitTime"),
-                  value = inscriptionLimitTime,
-                  onValueChange = { inscriptionLimitTime = it },
-                  label = { Text("Inscription Limit Time", fontSize = FONT_SIZE) },
-                  placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
+            Row(
+                modifier = Modifier.width(WIDTH),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  OutlinedTextField(
+                      modifier =
+                          Modifier.width(WIDTH_WITH_PICKER)
+                              .height(HEIGHT)
+                              .testTag("inputInscriptionLimitTime"),
+                      value = inscriptionLimitTime,
+                      onValueChange = { inscriptionLimitTime = it },
+                      label = { Text("Inscription Limit Time", fontSize = FONT_SIZE) },
+                      placeholder = { Text(EventFirebaseConnection.TIME_FORMAT) })
 
-              MyTimePickerDialog(
-                  onTimeChange = { inscriptionLimitTime = TextFieldValue(it) },
-                  title = "Select inscription limit time",
-                  textFieldValue = inscriptionLimitTime)
-            }
+                  MyTimePickerDialog(
+                      onTimeChange = { inscriptionLimitTime = TextFieldValue(it) },
+                      title = "Select inscription limit time",
+                      textFieldValue = inscriptionLimitTime)
+                }
             // CREATE EVENT
             Button(
                 onClick = {

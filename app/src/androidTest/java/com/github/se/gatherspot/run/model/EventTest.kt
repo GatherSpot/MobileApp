@@ -2,12 +2,12 @@ package com.github.se.gatherspot.run.model
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.Profile
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
 import com.github.se.gatherspot.model.location.Location
+import com.github.se.gatherspot.model.utils.EventUtils
 import com.github.se.gatherspot.model.utils.ImageBitmapSerializer
 import com.github.se.gatherspot.model.utils.LocalDateDeserializer
 import com.github.se.gatherspot.model.utils.LocalDateSerializer

@@ -1,8 +1,8 @@
 package com.github.se.gatherspot.ui.eventUI
 
 import androidx.compose.runtime.Composable
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.utils.EventUtils
 import com.github.se.gatherspot.ui.navigation.NavigationActions
 
 /**

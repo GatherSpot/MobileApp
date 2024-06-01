@@ -8,9 +8,9 @@ import com.github.se.gatherspot.MainActivity
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
-import com.github.se.gatherspot.model.EventUtils
 import com.github.se.gatherspot.model.IdList
 import com.github.se.gatherspot.model.event.Event
+import com.github.se.gatherspot.model.utils.EventUtils
 import com.github.se.gatherspot.sql.EventDao
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth

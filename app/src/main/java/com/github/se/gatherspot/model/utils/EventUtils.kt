@@ -1,4 +1,4 @@
-package com.github.se.gatherspot.model
+package com.github.se.gatherspot.model.utils
 
 import android.Manifest
 import android.content.Context
@@ -9,6 +9,7 @@ import com.github.se.gatherspot.cache.LocalStorage
 import com.github.se.gatherspot.firebase.EventFirebaseConnection
 import com.github.se.gatherspot.firebase.FirebaseCollection
 import com.github.se.gatherspot.firebase.IdListFirebaseConnection
+import com.github.se.gatherspot.model.Interests
 import com.github.se.gatherspot.model.event.DraftEvent
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.event.EventStatus
@@ -35,12 +36,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
 
-private const val ELEMENTS_TO_DISPLAY = 5
-
 /** Utility class for events */
 class EventUtils {
 
   private val eventFirebaseConnection = EventFirebaseConnection()
+  private val ELEMENTSTODISPLAY = 5
 
   /**
    * Create an event from verified data
@@ -420,7 +420,7 @@ class EventUtils {
             }
           }
           if (userLocation == null) {
-            return@withContext suggestions.take(ELEMENTS_TO_DISPLAY)
+            return@withContext suggestions.take(ELEMENTSTODISPLAY)
           }
           // Sort suggestions based on distance to user's current location
           suggestions.sortBy { location ->
@@ -432,7 +432,7 @@ class EventUtils {
           }
 
           // Limit the number of elements to display
-          return@withContext suggestions.take(ELEMENTS_TO_DISPLAY)
+          return@withContext suggestions.take(ELEMENTSTODISPLAY)
         } catch (e: Exception) {
           e.printStackTrace()
           return@withContext emptyList()
