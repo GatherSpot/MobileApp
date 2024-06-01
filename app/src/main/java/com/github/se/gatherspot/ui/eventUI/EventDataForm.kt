@@ -84,7 +84,7 @@ import kotlinx.coroutines.runBlocking
 
 private val WIDTH = 300.dp
 private val WIDTH_2ELEM = 100.dp
-private val WIDTHWITHPICKER = WIDTH.times(0.8f)
+private val WIDTH_WITH_PICKER = WIDTH.times(0.8f)
 private val HEIGHT = 65.dp
 private val DESCRIPTION_HEIGHT = 150.dp
 private val FONT_SIZE = 14.sp
@@ -356,7 +356,7 @@ fun EventDataForm(
                 horizontalArrangement = Arrangement.SpaceBetween) {
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTHWITHPICKER)
+                          Modifier.width(WIDTH_WITH_PICKER)
                               .height(HEIGHT)
                               .testTag("inputStartDateEvent"),
                       value = eventStartDate,
@@ -373,7 +373,7 @@ fun EventDataForm(
                 horizontalArrangement = Arrangement.SpaceBetween) {
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTHWITHPICKER)
+                          Modifier.width(WIDTH_WITH_PICKER)
                               .height(HEIGHT)
                               .testTag("inputEndDateEvent"),
                       value = eventEndDate,
@@ -505,7 +505,7 @@ fun EventDataForm(
                 horizontalArrangement = Arrangement.SpaceBetween) {
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTHWITHPICKER)
+                          Modifier.width(WIDTH_WITH_PICKER)
                               .height(HEIGHT)
                               .testTag("inputInscriptionLimitDate"),
                       value = inscriptionLimitDate,
@@ -523,7 +523,7 @@ fun EventDataForm(
                 horizontalArrangement = Arrangement.SpaceBetween) {
                   OutlinedTextField(
                       modifier =
-                          Modifier.width(WIDTHWITHPICKER)
+                          Modifier.width(WIDTH_WITH_PICKER)
                               .height(HEIGHT)
                               .testTag("inputInscriptionLimitTime"),
                       value = inscriptionLimitTime,
