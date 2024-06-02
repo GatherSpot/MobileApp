@@ -15,10 +15,13 @@ import com.google.android.gms.nearby.connection.ConnectionInfo
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
 import com.google.android.gms.nearby.connection.ConnectionResolution
 import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
+import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
 import com.google.android.gms.nearby.connection.DiscoveryOptions
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
+import com.google.android.gms.nearby.connection.Payload
+import com.google.android.gms.nearby.connection.PayloadCallback
+import com.google.android.gms.nearby.connection.PayloadTransferUpdate
 import com.google.android.gms.nearby.connection.Strategy
-
 
 class NearbyConnect {
   /* Handle the permissions required by the nearby share service */
@@ -71,7 +74,7 @@ class NearbyConnect {
             .startAdvertising(
                 organiserId,
                 SERVICE_ID,
-                MyConnectionLifeCycleCallback(),
+                MyConnectionLifeCycleCallback(true, null, markUserPresence),
                 advertisingOptions
             )
             .addOnSuccessListener({})
@@ -83,34 +86,55 @@ class NearbyConnect {
         val discoveryOptions = DiscoveryOptions.Builder().setStrategy(CONNECTION_STRATEGY).build()
 
         Nearby.getConnectionsClient(context)
-            .startDiscovery(SERVICE_ID, MyEndpointDiscoveryCallback(organiserId), discoveryOptions)
+            .startDiscovery(SERVICE_ID, MyEndpointDiscoveryCallback(organiserId, ticketData), discoveryOptions)
             .addOnSuccessListener { unused: Void? -> }
             .addOnFailureListener { e: Exception? -> Log.d("ticket share error", "couldn't share text") }
     }
 
-    private class MyEndpointDiscoveryCallback(val organiserId: String): EndpointDiscoveryCallback() {
-        override fun onEndpointFound(p0: String, p1: com.google.android.gms.nearby.connection.DiscoveredEndpointInfo) {
-            Log.d("EndpointDiscoveryCallback", "onEndpointFound")
-            if(p0 == organiserId) {
-                // connect to the organiser
+    private class MyEndpointDiscoveryCallback(
+        val organiserId: String,
+        val ticketData: String,
+        val callback: (String) -> Unit = {}
+    ): EndpointDiscoveryCallback() {
+        override fun onEndpointFound(endpointId: String, p1: DiscoveredEndpointInfo) {
+            Log.d("EndpointDiscovery", "endpoint found")
+            if(endpointId == organiserId) {
+                Nearby.getConnectionsClient(
+                    getApplicationContext()
+                ).requestConnection(
+                    "deviceName",
+                    endpointId,
+                    MyConnectionLifeCycleCallback(false, ticketData, callback)
+                ).addOnSuccessListener {
+                    // 5
+                    Log.d("connection", "Successfully requested a connection")
+                }.addOnFailureListener {
+                    // 6
+                    Log.d("connection", "Failed to request the connection")
+                }
             }
         }
 
         override fun onEndpointLost(p0: String) {
-            Log.d("EndpointDiscoveryCallback", "onEndpointLost")
+            Log.d("EndpointDiscovery", "endpoint lost")
         }
     }
 
-    private class MyConnectionLifeCycleCallback(): ConnectionLifecycleCallback() {
-        override fun onConnectionInitiated(p0: String, p1: ConnectionInfo) {
-            Log.d("Advertiser", "onConnectionInitiated")
+    private class MyConnectionLifeCycleCallback(
+        val isOrganiserCallback: Boolean,
+        val ticketData: String?,
+        val callback: (String) -> Unit = {}
+    ): ConnectionLifecycleCallback() {
+        override fun onConnectionInitiated(endpointId: String, p1: ConnectionInfo) {
+            Nearby.getConnectionsClient(getApplicationContext()).acceptConnection(endpointId, MyPayloadCallback(isOrganiserCallback, ticketData, callback))
         }
-
-        override fun onConnectionResult(p0: String, p1: ConnectionResolution) {
-            Log.d("Advertiser", "onConnectionResult")
+        override fun onConnectionResult(endpoint: String, p1: ConnectionResolution) {
             when (p1.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     Log.d("Advertiser connection successful", "ConnectionsStatusCodes.STATUS_OK")
+                    if(!isOrganiserCallback){
+                        Nearby.getConnectionsClient(getApplicationContext()).sendPayload(endpoint, Payload.fromBytes(ticketData!!.toByteArray()))
+                    }
                 }
                 else -> {
                     Log.d(
@@ -120,9 +144,28 @@ class NearbyConnect {
                 }
             }
         }
-
         override fun onDisconnected(p0: String) {
             Log.d("Connection", "peripheral disconnected")
+        }
+    }
+
+    private class MyPayloadCallback(
+        val isOrganiserCallback: Boolean,
+        val ticketData: String?,
+        val callback: (String) -> Unit = {}
+    ): PayloadCallback() {
+        override fun onPayloadReceived(p0: String, payload: Payload) {
+            if(isOrganiserCallback) {
+                if (payload.type == Payload.Type.BYTES) {
+                    callback(payload.asBytes()?.toString(Charsets.UTF_8) ?: "")
+                }else{
+                    Log.d("PayloadCallback", "payload type is not BYTES")
+                }
+            }
+            Log.d("PayloadCallback", "onPayloadReceived")
+        }
+        override fun onPayloadTransferUpdate(p0: String, p1: PayloadTransferUpdate) {
+            Log.d("PayloadCallback", "onPayloadTransferUpdate")
         }
     }
 }
