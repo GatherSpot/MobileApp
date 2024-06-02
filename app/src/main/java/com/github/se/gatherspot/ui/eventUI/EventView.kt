@@ -61,6 +61,7 @@ import com.github.se.gatherspot.model.Rating
 import com.github.se.gatherspot.model.event.Event
 import com.github.se.gatherspot.model.getEventImageHeader
 import com.github.se.gatherspot.model.utils.EventUtils
+import com.github.se.gatherspot.network.NearbyConnect
 import com.github.se.gatherspot.sql.EventDao
 import com.github.se.gatherspot.ui.eventUI.CalendarReminderGenerator.Companion.generateCalendarReminder
 import com.github.se.gatherspot.ui.navigation.NavigationActions
@@ -191,14 +192,31 @@ fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel, status: USER_
         else if (attended == false && status == USER_STATUS.PARTICIPANT) "Send ticket" else "")
   }
 
+    val context = LocalContext.current
+
   Button(
       onClick = {
-        if (status == USER_STATUS.PARTICIPANT) buttonText.value = "Sending..."
-        else if (status == USER_STATUS.ORGANIZER) buttonText.value = "Receiving..."
-        /*
-        ConnectionRequestAPICalls(status)
-        // Call eventUIViewModel.attendEvent() if the API calls are successful
-        */
+        if (status == USER_STATUS.PARTICIPANT) {
+            if(NearbyConnect().arePermissionGranted(context)) {
+                buttonText.value = "Sending..."
+                NearbyConnect().shareTicket(context, event.organizerID, eventUIViewModel.ownID)
+            } else {
+                NearbyConnect().askForPermissions(context)
+            }
+        }
+        else if (status == USER_STATUS.ORGANIZER) {
+            if(NearbyConnect().arePermissionGranted(context)) {
+                buttonText.value = "Receiving..."
+                NearbyConnect().scanTicket(context, event.organizerID){
+                    ticketData ->
+                        if(ticketData in event.registeredUsers) {
+                            eventUIViewModel.attendEvent(ticketData)
+                        }
+                }
+            } else {
+                NearbyConnect().askForPermissions(context)
+            }
+        }
       },
       enabled = (attended == false),
       modifier = Modifier.fillMaxWidth().testTag("attendButton"),

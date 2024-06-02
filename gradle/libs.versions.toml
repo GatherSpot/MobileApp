@@ -16,6 +16,7 @@ places = "3.4.0"
 playServicesLocation = "21.2.0"
 uiTestAndroid = "1.6.7"
 workRuntimeKtx = "2.9.0"
+playServicesNearby = "19.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +40,7 @@ core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxV
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
+play-services-nearby = { group = "com.google.android.gms", name = "play-services-nearby", version.ref = "playServicesNearby" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

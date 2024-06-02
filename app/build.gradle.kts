@@ -182,6 +182,7 @@ dependencies {
     implementation(libs.androidx.room.common)
   implementation(libs.core.ktx)
   implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.play.services.nearby)
 
 
     // ---------------------- /IMPLEMENTATION> ------------------

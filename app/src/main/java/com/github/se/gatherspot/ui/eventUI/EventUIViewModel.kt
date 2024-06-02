@@ -32,7 +32,7 @@ class EventUIViewModel(private val event: Event) : EventRegistrationViewModel(ev
   private val _ownRating = MutableLiveData(Rating.UNRATED)
   private val _organizerRating = MutableLiveData<Double>()
   private val _eventRating = MutableLiveData<Double>()
-  private val ownID = Firebase.auth.currentUser?.uid ?: "TEST"
+  val ownID = Firebase.auth.currentUser?.uid ?: "TEST"
   private val ratingFirebaseConnection = RatingFirebaseConnection()
   private val _attended = MutableLiveData<Boolean>()
 
