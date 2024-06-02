@@ -3,13 +3,20 @@ package com.github.se.gatherspot.network
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.github.se.gatherspot.MainActivity
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
+import com.google.android.gms.nearby.connection.ConnectionInfo
+import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
+import com.google.android.gms.nearby.connection.ConnectionResolution
+import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
 import com.google.android.gms.nearby.connection.DiscoveryOptions
+import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 import com.google.android.gms.nearby.connection.Strategy
 
 
@@ -58,23 +65,64 @@ class NearbyConnect {
     fun scanTicket(context: Context, organiserId: String, markUserPresence: (String) -> Unit) {
         Log.d("scanning event ticket", "organiserId: $organiserId")
 
-      // advertise the scanning of tickets
+       // advertise the scanning of tickets
         val advertisingOptions = AdvertisingOptions.Builder().setStrategy(CONNECTION_STRATEGY).build()
         Nearby.getConnectionsClient(context)
             .startAdvertising(
-                organiserId, SERVICE_ID, connectionLifecycleCallback, advertisingOptions)
+                organiserId,
+                SERVICE_ID,
+                MyConnectionLifeCycleCallback(),
+                advertisingOptions
+            )
             .addOnSuccessListener({})
         .addOnFailureListener({})
     }
 
     fun shareTicket(context: Context, organiserId: String, ticketData: String) {
         Log.d("sharing event ticket", "organiserId: $organiserId, ticketData: $ticketData")
-
-        // search for the organiser's device
         val discoveryOptions = DiscoveryOptions.Builder().setStrategy(CONNECTION_STRATEGY).build()
+
         Nearby.getConnectionsClient(context)
-            .startDiscovery(SERVICE_ID, endpointDiscoveryCallback, discoveryOptions)
+            .startDiscovery(SERVICE_ID, MyEndpointDiscoveryCallback(organiserId), discoveryOptions)
             .addOnSuccessListener { unused: Void? -> }
             .addOnFailureListener { e: Exception? -> Log.d("ticket share error", "couldn't share text") }
+    }
+
+    private class MyEndpointDiscoveryCallback(val organiserId: String): EndpointDiscoveryCallback() {
+        override fun onEndpointFound(p0: String, p1: com.google.android.gms.nearby.connection.DiscoveredEndpointInfo) {
+            Log.d("EndpointDiscoveryCallback", "onEndpointFound")
+            if(p0 == organiserId) {
+                // connect to the organiser
+            }
+        }
+
+        override fun onEndpointLost(p0: String) {
+            Log.d("EndpointDiscoveryCallback", "onEndpointLost")
+        }
+    }
+
+    private class MyConnectionLifeCycleCallback(): ConnectionLifecycleCallback() {
+        override fun onConnectionInitiated(p0: String, p1: ConnectionInfo) {
+            Log.d("Advertiser", "onConnectionInitiated")
+        }
+
+        override fun onConnectionResult(p0: String, p1: ConnectionResolution) {
+            Log.d("Advertiser", "onConnectionResult")
+            when (p1.status.statusCode) {
+                ConnectionsStatusCodes.STATUS_OK -> {
+                    Log.d("Advertiser connection successful", "ConnectionsStatusCodes.STATUS_OK")
+                }
+                else -> {
+                    Log.d(
+                        "Advertiser connection failed",
+                        "Connection failed. Received status $p1.status"
+                    )
+                }
+            }
+        }
+
+        override fun onDisconnected(p0: String) {
+            Log.d("Connection", "peripheral disconnected")
+        }
     }
 }
