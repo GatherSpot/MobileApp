@@ -33,12 +33,17 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -145,10 +150,7 @@ fun EventUINonOrganizer(
       bottomBar = {
         Column {
           if (eventUIViewModel.canAttend())
-              AttendButton(
-                  event,
-                  eventUIViewModel,
-              )
+              AttendButton(event, eventUIViewModel, USER_STATUS.PARTICIPANT)
           RegisterButton(
               eventUIViewModel,
               isButtonEnabled,
@@ -174,38 +176,46 @@ fun EventUINonOrganizer(
               EventRating(eventRating)
 
               Spacer(modifier = Modifier.height(16.dp).testTag("bottomSpacer"))
-
-              // Registration Button
-              // Spacer(modifier = Modifier.height(16.dp))
-
             }
       }
 }
 
 @Composable
-fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel) {
+fun AttendButton(event: Event, eventUIViewModel: EventUIViewModel, status: USER_STATUS) {
   val showDialogAttend by eventUIViewModel.displayAlertAttend.observeAsState()
   val attended by eventUIViewModel.attended.observeAsState()
-  val buttonText = if (attended == true) "Attended" else "Attend"
-  /*
-  when (registrationState) {
-      is RegistrationState.Success -> "Registered"
-      is RegistrationState.Error ->
-          if ((registrationState as RegistrationState.Error).message == "Event is full") "Full"
-          else "Registered"
-      else -> "Register"
+  val buttonText: MutableState<String> = remember {
+    mutableStateOf(
+        if (attended == true && status == USER_STATUS.PARTICIPANT) "Ticket already sent"
+        else if (status == USER_STATUS.ORGANIZER) "Verify users attendance"
+        else if (attended == false && status == USER_STATUS.PARTICIPANT) "Send ticket" else "")
   }
 
-   */
-
   Button(
-      onClick = { eventUIViewModel.attendEvent() },
+      onClick = {
+        if (status == USER_STATUS.PARTICIPANT) buttonText.value = "Sending..."
+        else if (status == USER_STATUS.ORGANIZER) buttonText.value = "Receiving..."
+        /*
+        ConnectionRequestAPICalls(status)
+        // Call eventUIViewModel.attendEvent() if the API calls are successful
+        */
+      },
       enabled = (attended == false),
       modifier = Modifier.fillMaxWidth().testTag("attendButton"),
       colors = ButtonDefaults.buttonColors(Color(0xFF3A89C9))) {
-        Text(buttonText, color = Color.White)
+        Row {
+          if (status == USER_STATUS.PARTICIPANT)
+              Icon(
+                  imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                  contentDescription = "share icon")
+          else if (status == USER_STATUS.ORGANIZER)
+              Icon(
+                  painter = painterResource(id = R.drawable.connect),
+                  contentDescription = "share icon")
+          Spacer(modifier = Modifier.width(12.dp))
+          Text(buttonText.value, color = Color.White)
+        }
       }
-
   if (showDialogAttend!!) {
     AlertDialog(
         modifier = Modifier.testTag("alertBox"),
@@ -284,7 +294,9 @@ fun EventUIOrganizer(
                   }
               ExportToCalendarIcon(event)
             })
-      }) { innerPadding ->
+      },
+      bottomBar = { Column { AttendButton(event, eventUIViewModel, USER_STATUS.ORGANIZER) } }) {
+          innerPadding ->
         Column(
             modifier =
                 Modifier.padding(innerPadding)
@@ -672,4 +684,9 @@ fun ColumnScope.EventBody(
     }
   }
   EventQRCodeUI(event = event)
+}
+
+enum class USER_STATUS() {
+  ORGANIZER,
+  PARTICIPANT
 }

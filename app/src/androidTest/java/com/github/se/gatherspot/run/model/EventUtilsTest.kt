@@ -577,7 +577,7 @@ class EventUtilsTest {
 
   @Test
   fun eventIsOverTestNotOver() {
-    assert(!eventUtils.isEventOver(testEvent))
+    assert(!eventUtils.isEventOver(testEvent) && !eventUtils.isEventUnderway(testEvent))
   }
 
   @Test
@@ -599,7 +599,7 @@ class EventUtilsTest {
             eventStatus = EventStatus.COMPLETED,
             globalRating = null,
             image = "")
-    assert(eventUtils.isEventOver(event))
+    assert(eventUtils.isEventOver(event) && !eventUtils.isEventUnderway(event))
   }
 
   @Test

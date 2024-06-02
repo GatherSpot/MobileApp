@@ -183,7 +183,7 @@ class EventUIViewModelTest {
       viewModel.toggleRegistrationStatus()
       delay(400)
       assertEquals(false, viewModel.canRate()) // registered but not attended
-      viewModel.attendEvent()
+      viewModel.attendEvent(Firebase.auth.currentUser?.uid ?: "TEST")
       delay(1000)
       assertEquals(true, viewModel.attended.value)
       assertEquals(true, viewModel.canRate()) // attended
@@ -290,7 +290,7 @@ class EventUIViewModelTest {
       val viewModel = EventUIViewModel(organizedEvent)
       delay(1000)
       assertEquals(false, (viewModel.attended.value == true))
-      viewModel.attendEvent()
+      viewModel.attendEvent(Firebase.auth.currentUser?.uid ?: "TEST")
       delay(1000)
       assertEquals(false, (viewModel.attended.value == true))
     }
@@ -303,13 +303,15 @@ class EventUIViewModelTest {
       val viewModel = EventUIViewModel(event)
       delay(1000)
       assertEquals(false, (viewModel.attended.value == true))
-      viewModel.attendEvent() // not registered so attempt to attend should fail
+      viewModel.attendEvent(
+          Firebase.auth.currentUser?.uid
+              ?: "TEST") // not registered so attempt to attend should fail
       delay(1000)
       assertEquals(false, (viewModel.attended.value == true))
 
       viewModel.toggleRegistrationStatus()
       delay(400)
-      viewModel.attendEvent()
+      viewModel.attendEvent(Firebase.auth.currentUser?.uid ?: "TEST")
       delay(1000)
       assertEquals(
           true,

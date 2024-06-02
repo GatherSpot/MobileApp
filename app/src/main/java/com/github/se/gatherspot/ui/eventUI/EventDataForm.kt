@@ -690,6 +690,7 @@ fun MyDatePickerDialog(onDateSelected: (String) -> Unit, onDismiss: () -> Unit) 
         SimpleDateFormat(EventFirebaseConnection.DATE_FORMAT_DISPLAYED, Locale.getDefault())
     return formatter.format(Date(millis))
   }
+
   val datePickerState = rememberDatePickerState()
 
   val selectedDate = datePickerState.selectedDateMillis?.let { convertMillisToDate(it) } ?: ""
